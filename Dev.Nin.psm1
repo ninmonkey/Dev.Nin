@@ -72,7 +72,7 @@ if ($true) {
 
     # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
     $aliasesToExport = @(
-        # 'docs'
+        'Table'
     )
 
     Export-ModuleMember -Alias $aliasesToExport

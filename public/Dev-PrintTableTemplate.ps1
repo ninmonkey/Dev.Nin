@@ -29,8 +29,8 @@ function Dev-PrintTableTemplate {
 
         [Parameter(
             Position = 0,
-            HelpMessage = 'Total number of columns per column')]
-        [uint]$NumColumns = 4,
+            HelpMessage = 'Total number of columns per row')]
+        [uint]$NumColumns = 1,
 
         [Parameter(
             Position = 0,
@@ -83,14 +83,3 @@ function Dev-PrintTableTemplate {
 
     Dev-PrintTableTemplate -MinColWidth $MinColWidth -NumColumns $ActualColumnCount
 }
-
-
-Dev-PrintTableTemplate
-Dev-PrintTableTemplate -MinColWidth 5 -FillRemainingWidth -Debug
-
-h1 'start'
-
-hr
-Table -NumColumns 15
-Table -FillRemainingWidth -MinColWidth 10
-Table -MinColWidth 30 -FillRemainingWidth
