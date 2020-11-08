@@ -23,21 +23,26 @@ function Dev-PrintTableTemplate {
     [alias('Table')]
     param(
         [Parameter(
-            Position = 0,
+            # Position = 0,
             HelpMessage = 'Min width for all columns')]
         [uint]$MinColWidth = 4,
 
         [Parameter(
-            Position = 0,
+            # Position = 0,
             HelpMessage = 'Total number of columns per row')]
         [uint]$NumColumns = 1,
 
         [Parameter(
-            Position = 0,
+            # Position = 0,
             HelpMessage = 'limit width of table')]
         [uint]$MaxConsoleWidth = [console]::WindowWidth,
 
-        [Parameter(HelpMessage = "Fill remaining width with columns")][switch]$FillRemainingWidth
+        [Parameter(HelpMessage = "Fill remaining width with columns, rather than maximize cells with a static number of columns, ex: format-wide verses format-table")][switch]$FillRemainingWidth,
+
+        [Parameter(HelpMessage = 'character to join on')][string]$ColumnsSeparator = '|',
+        [Parameter(HelpMessage = 'character to join on')][string]$TablePrefix = '|',
+        [Parameter(HelpMessage = 'character to join on')][string]$TableSuffix = '|'
+
 
 
     )
@@ -46,10 +51,10 @@ function Dev-PrintTableTemplate {
     # [uint]$MaxConsoleWidth = [console]::WindowWidth
 
     $Template = @{}
-    $Template.RowPrefix = '|'
-    $Template.RowSuffix = '|'
-    $Template.Column = 'x'
-    $Template.ColumnSeperator = '|'
+    $Template.RowPrefix = $TablePrefix
+    $Template.RowSuffix = $TableSuffix
+    $Template.ColumnChar = 'x'
+    $Template.ColumnSeperator = $ColumnsSeparator
 
     $splat_TableJoinString = @{
         Separator    = $Template.ColumnSeperator
@@ -60,7 +65,7 @@ function Dev-PrintTableTemplate {
     if (! $FillRemainingWidth ) {
 
         1..$NumColumns | ForEach-Object {
-            'x' * $MinColWidth -join ''
+            $Template.ColumnChar * $MinColWidth -join ''
         } | Join-String @splat_TableJoinString
         return
     }
