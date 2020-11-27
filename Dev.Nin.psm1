@@ -53,6 +53,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Dev-PrintTableTemplate'
+    'Dev-FormatTabExpansionResult'
 )
 
 foreach ($file in $public) {
@@ -65,6 +66,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Dev-PrintTableTemplate'
+    'Dev-FormatTabExpansionResult'
 )
 Export-ModuleMember -Function $functionsToExport
 
