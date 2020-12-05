@@ -1,9 +1,10 @@
-﻿1, 127, 128, 255, 256 | hex | Join-String -sep ' '
+﻿<#
+1, 127, 128, 255, 256 | hex | Join-String -sep ' '
 
 hr
 1, 127, 128, 255, 256 | hex | Join-String { '{0,10}' -f $_ }
 1, 127, 128, 255, 256 | hex | Join-String { '{0,-10}' -f $_ }
-
+#>
 
 function Dev-PrintTableTemplate {
     <#

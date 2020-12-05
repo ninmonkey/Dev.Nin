@@ -2,8 +2,11 @@
 function nameFrom {
     <#
     .synopsis
+        find the required imports for a list of type names
+    .description
         temporary function to get full namespaces (to add missing imports in dev)
         saves to clipboard
+
     #>
     param (
         [Parameter(
@@ -18,13 +21,22 @@ function nameFrom {
 
     process {
         $prefix = 'using namespace '
+
+        $joinStringSplat = @{
+            Separator    = ";`n$prefix"
+            OutputPrefix = $prefix
+        }
+
         $TypeNames | ForEach-Object {
             Find-Type $_
-        } | ForEach-Object Namespace | Sort-Object -Unique -ov sorted
-        | Join-String -Separator "`n$prefix" -OutputPrefix $prefix
+        } | ForEach-Object Namespace
+        | Sort-Object -Unique #-ov sorted
+        | Join-String @joinStringSplat
 
         # wasn't copying everything
         # $sorted | Join-String -sep "`n" | Set-Clipboard
 
     }
 }
+
+# 'string', 'list' | nameFrom
