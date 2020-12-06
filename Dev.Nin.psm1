@@ -55,6 +55,7 @@ $public = @(
     'Dev-PrintTableTemplate'
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
+    'Get-Exponentiation'
 )
 
 foreach ($file in $public) {
@@ -69,15 +70,54 @@ $functionsToExport = @(
     'Dev-PrintTableTemplate'
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
+    'Get-Exponentiation'
 )
 Export-ModuleMember -Function $functionsToExport
 
-if ($true) {
 
-    # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
-    $aliasesToExport = @(
-        'Table'
-    )
+# New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
+$aliasesToExport = @(
+    'Table'
+    'Pow'
+)
+Export-ModuleMember -Alias $aliasesToExport
 
-    Export-ModuleMember -Alias $aliasesToExport
+<#
+Sketch: Detect imports
+if ($False) {
+    try {
+        # is it imported? otherwise skip
+        ( Get-Command label | ForEach-Object CommandType ) -eq 'Alias'
+    } catch {
+        Import-Module Ninmonkey.Console -Force
+    }
+    $InformationPreference = 'Continue'
+    Write-Warning 'this really should be refactored'
+    if ($true -or $ShowExportMapping) {
+        Label 'Exported Aliases' '(WIP Debug screen)' -fg red
+        | Write-Informationpow
+        "to add: 'formatdata', 'private', 'public_nativeWrapper', 'completer', 'public', 'functionsToExport', 'aliasesToExport'"
+        | Write-Information
+        $aliasesToExport | ForEach-Object {
+            $curAlias = $_
+            $curCommand = Get-Alias $curAlias | ForEach-Object ResolvedCommand | ForEach-Object Name
+            $labelSplat = @{
+                Label = $curAlias
+                Text  = $curCommand
+            }
+            Label @labelSplat
+        } | Write-Information -Tags 'ModuleDebug'
+
+
+        Label '## Exported Aliases' '(WIP Debug screen)' -fg red
+        | Write-Information
+
+        $public
+        | Sort-Object -Unique
+        | Join-String -sep "`n" #', '
+        | Label '$Public'
+        | Write-Information
+
+    }
 }
+#>
