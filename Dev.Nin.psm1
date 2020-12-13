@@ -1,15 +1,15 @@
 ﻿$formatData = @(
 )
 
-foreach ($typeName in $formatData) {
-    $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $typeName)
-    if (Test-Path $FileName ) {
-        Update-FormatData -PrependPath $FileName
-        Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-    } else {
-        Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
-    }
-}
+# foreach ($typeName in $formatData) {
+#     $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $typeName)
+#     if (Test-Path $FileName ) {
+#         Update-FormatData -PrependPath $FileName
+#         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
+#     } else {
+#         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
+#     }
+# }
 
 $private = @(
 
@@ -52,8 +52,10 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
+    'Out-Fzf'
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
+    'Dev-GetNameFrom'
     'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
@@ -70,6 +72,8 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Dev-PrintTableTemplate'
+    'Out-Fzf'
+    'Dev-GetNameFrom'
     'Dev-GetManPage'
     'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
@@ -81,9 +85,11 @@ Export-ModuleMember -Function $functionsToExport
 
 # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
 $aliasesToExport = @(
+    'NameFrom'
     'Table'
     'Pow'
-    'Man', 'nMan'
+    'Man',
+    'nMan'
 )
 Export-ModuleMember -Alias $aliasesToExport
 

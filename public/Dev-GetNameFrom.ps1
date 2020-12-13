@@ -1,5 +1,6 @@
 ﻿
-function nameFrom {
+function Dev-GetNameFrom {
+    [Alias('nameFrom')]
     <#
     .synopsis
         find the required imports for a list of type names
@@ -28,8 +29,12 @@ function nameFrom {
         }
 
         $TypeNames | ForEach-Object {
-            Find-Type $_
+            $typeList = Find-Type $_
+            $typeList
+
+            $typeList | Label 'Types' | Write-Debug
         } | ForEach-Object Namespace
+        # | Where-Object { ! [string]::IsNullOrWhiteSpace( $_ ) }
         | Sort-Object -Unique #-ov sorted
         | Join-String @joinStringSplat
 
@@ -39,4 +44,4 @@ function nameFrom {
     }
 }
 
-# 'string', 'list' | nameFrom
+# 'string', 'list' | nameFrom -Debug
