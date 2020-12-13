@@ -3,7 +3,11 @@
     .synopsis
         shortcut to read and 'grep' man pages
     .example
+        # show entire man page, highlight flags
         PS> nman rg
+
+
+        PS> nman code -FlagName 's', 'v'
         PS> nman pwsh -FlagName 'i', 'I'
 
         # find '-i', '-I' in 'fd'
@@ -13,13 +17,14 @@
         PS> man bat u
     .notes
         - [ ] Add syntax highlighting or at least regex-based syntax highlighting of flags
+        - [ ] if piping to LESS, pass search argument so user can hit 'next'/'prev' without doing anything
     #>
     [Alias('Man', 'nMan')]
     param (
         # app name, hard coded for test
         [Parameter(Mandatory, Position = 0)]
         [Alias('Name')]
-        [ValidateSet('fd', 'fzf', 'rg', 'python', 'pwsh', 'bat', 'powershell')]
+        [ValidateSet('fd', 'code', 'less', 'grep', 'git', 'gh', 'fzf', 'rg', 'python', 'pwsh', 'bat', 'powershell')]
         [string]$CommandName,
 
         # search for specific flag names
@@ -53,7 +58,7 @@
 
     switch ($FlagName) {
         { $true } {
-            Write-Warning 'wip: Multi-flag filtering.
+            Write-Debug 'wip: Multi-flag filtering.
                 use own coloring instead of ''grep'''
             # works for single flag
             # $Inner = $FlagName -join '|'
