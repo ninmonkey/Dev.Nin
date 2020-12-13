@@ -1,9 +1,21 @@
 {
+    //metadata to load man pages
     "manPages": [
         {
             "name": "bat",
             "url": "https://github.com/sharkdp/bat",
-            "local": "bat.txt",
+            "local": "bat.man.txt",
+            "extraUrls": [
+                {
+                    "name": "Integration with other tools",
+                    "url": "https://github.com/sharkdp/bat#integration-with-other-tools"
+                },
+            ]
+        },
+        {
+            "name": "fd",
+            "url": "https://github.com/sharkdp/bat",
+            "local": "fd.man.txt",
             "extraUrls": [
                 {
                     "name": "Integration with other tools",
@@ -14,12 +26,12 @@
         {
             "name": "fzf",
             // "url": "https://github.com/sharkdp/bat",
-            "local": "fzf.txt",
+            "local": "fzf.man.txt",
         },
         {
             "name": "rg",
             "url": "https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md",
-            "local": "rg.txt",
+            "local": "rg.man.txt",
             "extraUrls": [
                 {
                     "name": "config",

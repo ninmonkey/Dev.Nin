@@ -53,6 +53,8 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Dev-PrintTableTemplate'
+    'Dev-GetManPage'
+    'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
     'Get-Exponentiation'
@@ -68,6 +70,8 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Dev-PrintTableTemplate'
+    'Dev-GetManPage'
+    'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
     'Get-Exponentiation'
@@ -79,6 +83,7 @@ Export-ModuleMember -Function $functionsToExport
 $aliasesToExport = @(
     'Table'
     'Pow'
+    'Man', 'nMan'
 )
 Export-ModuleMember -Alias $aliasesToExport
 
