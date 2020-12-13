@@ -1,0 +1,35 @@
+{
+    "manPages": [
+        {
+            "name": "bat",
+            "url": "https://github.com/sharkdp/bat",
+            "local": "bat.txt",
+            "extraUrls": [
+                {
+                    "name": "Integration with other tools",
+                    "url": "https://github.com/sharkdp/bat#integration-with-other-tools"
+                },
+            ]
+        },
+        {
+            "name": "fzf",
+            // "url": "https://github.com/sharkdp/bat",
+            "local": "fzf.txt",
+        },
+        {
+            "name": "rg",
+            "url": "https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md",
+            "local": "rg.txt",
+            "extraUrls": [
+                {
+                    "name": "config",
+                    "url": "https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file"
+                },
+                {
+                    "name": "FAQ",
+                    "url": "https://github.com/BurntSushi/ripgrep/blob/master/FAQ.md"
+                },
+            ]
+        },
+    ]
+}
