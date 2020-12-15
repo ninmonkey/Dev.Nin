@@ -52,7 +52,7 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
-    'Dev-GetDocs'
+    'Dev-GetHelpFromType'
     'Out-Fzf'
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
@@ -73,7 +73,7 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
-    'Dev-GetDocs'
+    'Dev-GetHelpFromType'
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'
     'Out-Fzf'
@@ -89,6 +89,7 @@ Export-ModuleMember -Function $functionsToExport
 
 # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
 $aliasesToExport = @(
+    'TypeHelp'
     'NameFrom'
     'Table'
     'Pow'

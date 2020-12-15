@@ -44,7 +44,7 @@ Explicit Interface Implementations:
 
 
 
-'@ | Label 'Next'
+'@ | Label 'Next' | Write-Debug
 
 function Format-Template {
     <#
@@ -57,6 +57,7 @@ function Format-Template {
 
 
 function Get-HelpFromType {
+    [Alias('TypeHelp')]
     <#
     .synopsis
         look up .net TypeName
@@ -67,9 +68,9 @@ function Get-HelpFromType {
             see 'Find-Member'
     .example
         $Sample = @{ 'a' = 'b' }
-        # 20, $Sample | Get-DocsFromType -Debug
-        $Sample | Get-DocsFromType -Debug
-        $Sample | Get-DocsFromType -MemberName Keys -Debug
+        # 20, $Sample | Get-HelpFromType -Debug
+        $Sample | Get-HelpFromType -Debug
+        $Sample | Get-HelpFromType -MemberName Keys -Debug
     #>
     param(
         # object to get type of
@@ -80,7 +81,10 @@ function Get-HelpFromType {
         # member or property name
         [Parameter(Position = 0)]
         [Alias('Name')]
-        [String]$MemberName
+        [String]$MemberName,
+
+        # Returns urls instead of opening the browser
+        [Parameter()][switch]$PassThru
     )
 
     begin {
@@ -119,19 +123,24 @@ function Get-HelpFromType {
             Url         = "<$Url>"
         }
 
-        $meta | Format-HashTable -Title 'metaGet-DocsFromType' | Out-String -Width 9999 | Write-Debug
+        $meta | Format-HashTable -Title 'metaGet-HelpFromType' | Out-String -Width 9999 | Write-Debug
 
-        Write-Warning "autoload disabled: <$Url>"
-        # Start-Process $Url
+        if (! $PassThru) {
+            Start-Process $Url
+        }
 
-
+        $Url
+        return
     }
 }
 
-$Sample = @{ 'a' = 'b' }
-# 20, $Sample | Get-DocsFromType -Debug
-$Sample | Get-DocsFromType -Debug
-$Sample | Get-DocsFromType -MemberName Keys -Debug
+if ($false -and $DevTest) {
+
+    $Sample = @{ 'a' = 'b' }
+    # 20, $Sample | Get-HelpFromType -Debug
+    $Sample | Get-HelpFromType -Debug
+    $Sample | Get-HelpFromType -MemberName Keys -Debug
+}
 
 
 # lazy eval so that initial import doesn't take a long time
