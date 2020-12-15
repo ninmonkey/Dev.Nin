@@ -52,12 +52,14 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
+    'Dev-GetDocs'
     'Out-Fzf'
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
     'Dev-GetNameFrom'
     'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
+    'Dev-GetNewestItem'
     'Import-NinModule'
     'Get-Exponentiation'
 )
@@ -71,7 +73,9 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    'Dev-GetDocs'
     'Dev-PrintTableTemplate'
+    'Dev-GetNewestItem'
     'Out-Fzf'
     'Dev-GetNameFrom'
     'Dev-GetManPage'
