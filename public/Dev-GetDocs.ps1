@@ -27,6 +27,25 @@ https://ninmonkeys.com/blog/wp-admin/post.php?post=337&action=edit
 '@ | Write-Debug
 
 
+@'
+optionalView:
+view = '<namespace>-<versionNum>'
+
+member:
+    https://docs.microsoft.com/en-us/dotnet/api/system.int32.minvalue?view=net-5.0
+    https://docs.microsoft.com/en-us/dotnet/api/<FullName>.<MemberName>?<OptionalView>
+
+Explicit Interface Implementations:
+    https://docs.microsoft.com/en-us/dotnet/api/<fullname>-iconvertible-toboolean
+
+    https://docs.microsoft.com/en-us/dotnet/api/system.iconvertible.toboolean?view=netcore-3.1#System_IConvertible_ToBoolean_System_IFormatProvider_
+
+    https://docs.microsoft.com/en-us/dotnet/api/<FullName>.<Member>?<OptionalView>#<FunctionSignatureMaybe?>
+
+
+
+'@ | Label 'Next'
+
 function Format-Template {
     <#
     .synopsis
@@ -37,22 +56,43 @@ function Format-Template {
 }
 
 
-function Get-DocsFromType {
+function Get-HelpFromType {
     <#
     .synopsis
         look up .net TypeName
+    .notes
+        improvements:
+        - [ ] autocomplete $MemberName
+        - [ ] inspect [ReflectedType] ?
+            see 'Find-Member'
+    .example
+        $Sample = @{ 'a' = 'b' }
+        # 20, $Sample | Get-DocsFromType -Debug
+        $Sample | Get-DocsFromType -Debug
+        $Sample | Get-DocsFromType -MemberName Keys -Debug
     #>
     param(
         # object to get type of
         [Parameter(
             Mandatory, ValueFromPipeline)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # member or property name
+        [Parameter(Position = 0)]
+        [Alias('Name')]
+        [String]$MemberName
     )
 
     begin {
         $UrlTemplate = @{
             'Default' = 'https://docs.microsoft.com/en-us/dotnet/api/{0}' # system.io.fileinfo
         }
+
+        $ValidDocVersions = @(
+            'net-5.0'
+            'netcore-3.1'
+            'netframework-4.8'
+        )
     }
 
     process {
@@ -68,6 +108,9 @@ function Get-DocsFromType {
         # drop assembly info
         $NormalName = $typeInstance.Namespace, $typeInstance.Name -join '.'
         $Url = $UrlTemplate.Default -f $NormalName
+        if (! [string]::IsNullOrWhiteSpace( $MemberName )) {
+            $Url += '.{0}' -f $MemberName
+        }
 
         $meta = @{
             InputObject = $InputObject | Format-TypeName
@@ -78,14 +121,17 @@ function Get-DocsFromType {
 
         $meta | Format-HashTable -Title 'metaGet-DocsFromType' | Out-String -Width 9999 | Write-Debug
 
-        Start-Process $Url
+        Write-Warning "autoload disabled: <$Url>"
+        # Start-Process $Url
 
 
     }
 }
 
-# $Sample = @{ 'a' = 'b' }
+$Sample = @{ 'a' = 'b' }
 # 20, $Sample | Get-DocsFromType -Debug
+$Sample | Get-DocsFromType -Debug
+$Sample | Get-DocsFromType -MemberName Keys -Debug
 
 
 # lazy eval so that initial import doesn't take a long time
