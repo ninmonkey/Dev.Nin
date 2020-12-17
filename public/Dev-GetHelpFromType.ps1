@@ -1,52 +1,4 @@
-﻿@'
-more
-urls for get docs
-
-
-format strings
-	https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
-
-about_*
-	https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_calculated_properties?view=powershell-7
-
-cmdlet
-	https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/export-formatdata?view=powershell-7
-
-
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/character-encoding-introduction
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
-https://docs.microsoft.com/en-us/dotnet/standard/base-types/character-classes-in-regular-expressions
-
-urls at:
-https://ninmonkeys.com/blog/wp-admin/post.php?post=337&action=edit
-
-
-'@ | Write-Debug
-
-
-@'
-optionalView:
-view = '<namespace>-<versionNum>'
-
-member:
-    https://docs.microsoft.com/en-us/dotnet/api/system.int32.minvalue?view=net-5.0
-    https://docs.microsoft.com/en-us/dotnet/api/<FullName>.<MemberName>?<OptionalView>
-
-Explicit Interface Implementations:
-    https://docs.microsoft.com/en-us/dotnet/api/<fullname>-iconvertible-toboolean
-
-    https://docs.microsoft.com/en-us/dotnet/api/system.iconvertible.toboolean?view=netcore-3.1#System_IConvertible_ToBoolean_System_IFormatProvider_
-
-    https://docs.microsoft.com/en-us/dotnet/api/<FullName>.<Member>?<OptionalView>#<FunctionSignatureMaybe?>
-
-
-
-'@ | Label 'Next' | Write-Debug
-
-function Format-Template {
+﻿function Format-Template {
     <#
     .synopsis
         hashtable template
@@ -56,26 +8,29 @@ function Format-Template {
 }
 
 
-function Get-HelpFromType {
+function Dev-GetHelpFromType {
     [Alias('TypeHelp')]
     <#
     .synopsis
         look up .net TypeName
     .notes
         improvements:
+        - [ ] pipe array so that duplicate types are removed
         - [ ] autocomplete $MemberName
         - [ ] inspect [ReflectedType] ?
+        - [ ] select -First or First count ?
             see 'Find-Member'
     .example
         $Sample = @{ 'a' = 'b' }
-        # 20, $Sample | Get-HelpFromType -Debug
-        $Sample | Get-HelpFromType -Debug
-        $Sample | Get-HelpFromType -MemberName Keys -Debug
+        # 20, $Sample | Dev-GetHelpFromType -Debug
+        $Sample | Dev-GetHelpFromType -Debug
+        $Sample | Dev-GetHelpFromType -MemberName Keys -Debug
     #>
     param(
         # object to get type of
         [Parameter(
             Mandatory, ValueFromPipeline)]
+        [AllowEmptyString()]
         [object]$InputObject,
 
         # member or property name
@@ -97,10 +52,18 @@ function Get-HelpFromType {
             'netcore-3.1'
             'netframework-4.8'
         )
+        $ItemCount = 0
+        #todo: handle already typeinfo instance being passed
+        $UrlList = @()
     }
 
     process {
-        #todo: handle already typeinfo instance being passed
+        Write-Warning "WIP: Finish"
+        $ItemCount++
+        if ((! $PassThru) -and $ItemCount -gt 3) {
+            # throttle spam
+            throw "TooManyResults: Throttle to prevent accidental browser spam. This should, fallback to ShouldProcess. and/or increase impact level"
+        }
         if ($InputObject -is [type]) {
             $typeInstance = $InputObject
         } elseif ($InputObject -is [string]) {
@@ -108,39 +71,51 @@ function Get-HelpFromType {
         } else {
             $typeInstance = $InputObject.GetType()
         }
-        # do⇽┐no notes ┤
-        # drop assembly info
+
+        # verify drop assembly info
         $NormalName = $typeInstance.Namespace, $typeInstance.Name -join '.'
         $Url = $UrlTemplate.Default -f $NormalName
         if (! [string]::IsNullOrWhiteSpace( $MemberName )) {
-            $Url += '.{0}' -f $MemberName
+            $Url += '{0}.{1}' -f ( $Url, $MemberName )
         }
+        $UrlList += $Url
 
         $meta = @{
-            InputObject = $InputObject | Format-TypeName
+            InputObject = $InputObject ? ($InputObject | Format-TypeName) : $InputObject
             NormalName  = $NormalName
             PSTypeNames = $InputObject.PSTypeNames | Join-String -Separator ', ' -prop { $_ | Format-TypeName }
             Url         = "<$Url>"
         }
 
-        $meta | Format-HashTable -Title 'metaGet-HelpFromType' | Out-String -Width 9999 | Write-Debug
+        $meta | Format-HashTable -Title 'meta' | Out-String -Width 9999 | Write-Debug
 
-        if (! $PassThru) {
-            Start-Process $Url
+    }
+    end {
+
+        foreach ($Url in $UrlList) {
+            if (! $PassThru) {
+                Start-Process $Url
+            } else {
+                "<$Url>"
+            }
         }
 
-        $Url
-        return
     }
 }
+
+'afds' | Dev-GetHelpFromType -PassThru
 
 if ($false -and $DevTest) {
 
     $Sample = @{ 'a' = 'b' }
-    # 20, $Sample | Get-HelpFromType -Debug
-    $Sample | Get-HelpFromType -Debug
-    $Sample | Get-HelpFromType -MemberName Keys -Debug
+    # 20, $Sample | Dev-GetHelpFromType -Debug
+    $Sample | Dev-GetHelpFromType -Debug
+    $Sample | Dev-GetHelpFromType -MemberName Keys -Debug
 }
+H1 '1'
+20, 'a' | Dev-GetHelpFromType -MemberName Keys -Debug -PassThru
+H1 '2'
+20, 'a', 'a' | Dev-GetHelpFromType -Debug -PassThru
 
 
 # lazy eval so that initial import doesn't take a long time
@@ -299,7 +274,7 @@ function Dev-GetDocs {
 
             }
 
-            Write-Warning "Nyi: Query '$Type' | ? '$Pattern'"
+            Write-Warning "Nyi: Query '$Type' | Where-Object '$Pattern'"
             break
         }
         # { '.Net' -or
