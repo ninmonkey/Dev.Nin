@@ -64,6 +64,12 @@ $public = @(
     'Get-Exponentiation'
 )
 
+$public_ToRefactorOutside = @(
+    'Restart-LGHubDriver'
+)
+
+$functionsToExport += $public_ToRefactorOutside
+
 foreach ($file in $public) {
     if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
     } else {
@@ -84,6 +90,11 @@ $functionsToExport = @(
     'Import-NinModule'
     'Get-Exponentiation'
 )
+
+$functionsToExport_ToRefactorOutside = @(
+    'Restart-LGHubDriver'
+)
+$functionsToExport += $functionsToExport_ToRefactorOutside
 Export-ModuleMember -Function $functionsToExport
 
 
