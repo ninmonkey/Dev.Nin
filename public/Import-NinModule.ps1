@@ -2,7 +2,10 @@
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, HelpMessage = 'Modules to import, else use defaults')]
-        [string[]]$ModuleNames
+        [string[]]$ModuleNames,
+
+        # Ignore Verbose
+        [Parameter()][switch]$IgnoreVerbose
     )
     <#
     .description
@@ -12,16 +15,17 @@
         $ModuleNames = @(
             'Ninmonkey.PowerShell'
             'Ninmonkey.Console'
+            'Dev.Nin'
             # 'Ninmonkey.Console-dotsource'
             # 'Ninmonkey.ConsolidateWip'
             # 'Ninmonkey.PowershellExamples'
             # 'Ninmonkey.VSCodeUtil'
             # 'Ninmonkey.Unicode'
             # 'Ninmonkey.PowerBI'
-            'Dev.Nin'
             # 'Ninmonkey.Ansi'
         )
     }
     # Import-Module $ModuleNames -Force -Verbose:( $null -eq $Verbose ? $false : $true )
-    Import-Module $ModuleNames -Force -Verbose
+    [bool]$isVerbose = ! $IgnoreVerbose
+    Import-Module $ModuleNames -Force -Verbose:$isVerbose
 }

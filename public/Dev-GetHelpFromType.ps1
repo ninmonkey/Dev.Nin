@@ -61,7 +61,7 @@ function Dev-GetHelpFromType {
     }
 
     process {
-        Write-Warning "WIP: Finish"
+        # Write-Warning "WIP: Finish"
         $ItemCount++
         if ((! $PassThru) -and $ItemCount -gt 3) {
             # throttle spam
@@ -115,10 +115,13 @@ if ($false -and $DevTest) {
     $Sample | Dev-GetHelpFromType -Debug
     $Sample | Dev-GetHelpFromType -MemberName Keys -Debug
 }
-H1 '1'
-20, 'a' | Dev-GetHelpFromType -MemberName Keys -Debug -PassThru
-H1 '2'
-20, 'a', 'a' | Dev-GetHelpFromType -Debug -PassThru
+if ($false) {
+
+    H1 '1'
+    20, 'a' | Dev-GetHelpFromType -MemberName Keys -Debug -PassThru
+    H1 '2'
+    20, 'a', 'a' | Dev-GetHelpFromType -Debug -PassThru
+}
 
 
 # lazy eval so that initial import doesn't take a long time
@@ -188,7 +191,7 @@ function _old_get-DocsDotnet {
 }
 
 
-if ($true -and $TERM_DEBUG) {
+if ($false -and $TERM_DEBUG) {
     $type_gcm = Get-Command | Select-Object -First 1
     $type_file = Get-ChildItem . -File | Select-Object -First 1
 

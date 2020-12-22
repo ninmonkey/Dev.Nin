@@ -126,4 +126,6 @@ if ($false) {
 
     }
 }
-'afds' | Dev-GetHelpFromType -PassThru
+# if ($isdebugTest) {
+#     'afds' | Dev-GetHelpFromType -PassThru
+# }

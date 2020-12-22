@@ -47,4 +47,4 @@ function Edit-FunctionSource {
     }
 }
 
-Edit-FunctionSource 'Write-ConsoleNewline'
+# Edit-FunctionSource 'Write-ConsoleNewline'
