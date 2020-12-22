@@ -47,6 +47,9 @@ function Dev-GetHelpFromType {
             'Default' = 'https://docs.microsoft.com/en-us/dotnet/api/{0}' # system.io.fileinfo
         }
 
+        Get-FunctionDebugInfo $PSCmdlet
+        | Write-Debug
+
         $ValidDocVersions = @(
             'net-5.0'
             'netcore-3.1'
@@ -103,7 +106,7 @@ function Dev-GetHelpFromType {
     }
 }
 
-'afds' | Dev-GetHelpFromType -PassThru
+# 'afds' | Dev-GetHelpFromType -PassThru
 
 if ($false -and $DevTest) {
 

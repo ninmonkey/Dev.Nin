@@ -28,6 +28,10 @@ function Dev-GetNameFrom {
             OutputPrefix = $prefix
         }
 
+        Get-FunctionDebugInfo $PSCmdlet | Write-Debug
+        # | Format-HashTable
+        # hr
+
         $TypeNames | ForEach-Object {
             $typeList = Find-Type $_
             $typeList
@@ -43,5 +47,3 @@ function Dev-GetNameFrom {
 
     }
 }
-
-# 'string', 'list' | nameFrom -Debug

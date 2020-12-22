@@ -52,6 +52,7 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
+    'Get-FunctionDebugInfo'
     'Dev-GetHelpFromType'
     'Out-Fzf'
     'Dev-PrintTableTemplate'
@@ -71,11 +72,12 @@ $public_ToRefactorOutside = @(
 $functionsToExport += $public_ToRefactorOutside
 
 foreach ($file in $public) {
-    if (Test-Path ("{0}\public\{1}.ps1" -f $psscriptroot, $file)) {
+    $ExpectedPath = Get-Item -ea stop ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
+    if (Test-Path $ExpectedPath) {
     } else {
         Write-Error "Import: failed: public: $File"
     }
-    . ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
+    . $ExpectedPath
 }
 
 $functionsToExport = @(
@@ -89,6 +91,7 @@ $functionsToExport = @(
     'Dev-FormatTabExpansionResult'
     'Import-NinModule'
     'Get-Exponentiation'
+    'Get-FunctionDebugInfo'
 )
 
 $functionsToExport_ToRefactorOutside = @(
