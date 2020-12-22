@@ -63,6 +63,7 @@ $public = @(
     'Dev-GetNewestItem'
     'Import-NinModule'
     'Get-Exponentiation'
+    'Edit-FunctionSource'
 )
 
 $public_ToRefactorOutside = @(
@@ -92,6 +93,7 @@ $functionsToExport = @(
     'Import-NinModule'
     'Get-Exponentiation'
     'Get-FunctionDebugInfo'
+    'Edit-FunctionSource'
 )
 
 $functionsToExport_ToRefactorOutside = @(
