@@ -4,16 +4,20 @@ function Restart-LGHubDriver {
     fixes running LGHub when it's stuck
 
     .example
-        Restart-LGHubDriver -ListOnly
-        Restart-LGHubDriver -StopOnly
+        PS> # Normal kill, and restart
 
-        Restart-LGHubDriver -Debug -WhatIf
+    .example
+        PS> # only List processes, do not start or stop
+        Restart-LGHubDriver -ListOnly
+    .example
+        PS> # Stop processes, but do not start them again
+        Restart-LGHubDriver -StopOnly
     #>
-    # [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         # don't actualy kill processes
-        [Parameter()]
-        [switch]$WhatIf,
+        # [Parameter()]
+        # [switch]$WhatIfX,
 
         # show list, do not start
         [Parameter()]
@@ -21,11 +25,11 @@ function Restart-LGHubDriver {
 
         # StopProcesses, do not start any
         [Parameter()]
-        [switch]$StopOnly,
+        [switch]$StopOnly
 
-        # skip questions
-        [Parameter()]
-        [switch]$Confirm
+        # # skip prompt?
+        # [Parameter()]
+        # [switch]$ConfirmX
     )
 
     $TargetProcessNames = 'lghub*', 'lghub_agent', 'lghub_updater'
@@ -43,7 +47,8 @@ function Restart-LGHubDriver {
         OutputPrefix = "`n  "
     }
 
-    Label 'Path' $Paths.AppPath
+    H1 'Info'
+    Label 'AppPath' $Paths.AppPath
 
     Get-ChildItem $Paths.AppPath *.exe
     | Join-String @joinStringSplat_MultiLineList -Prop 'Name'
@@ -51,75 +56,89 @@ function Restart-LGHubDriver {
 
 
 
+    Label 'Binaries in' $Paths.AppPath
     Get-ChildItem $Paths.AppPath *.exe -Name | Sort-Object
     | Join-String @joinStringSplat_MultiLineList
-    | Label 'exe names: ' -bef 1
 
 
-    function _get-LGHubProcess {
 
-
-        Get-Process -ea  SilentlyContinue -Name $TargetProcessNames
-        | Sort-Object Name
+    function _getLGHubProcess {
+        # format a single name result
+        $psList = Get-Process -ea  SilentlyContinue -Name $TargetProcessNames
+        $psList | Sort-Object Name
         | Join-String @splatJoinString_ArrayList
-        | Label 'Running' -bef 1
+        | Label "Running $($psList.Count)" -bef 1 -LinesAfter 1
     }
 
-
+    Write-Warning '-List, and -StopOnly work pretty good, code to actually launch it is not as stable'
+    H1 'Start'
     # list, shutdown, list, start, list
-    _get-LGHubProcess
+    _getLGHubProcess
     if ($ListOnly) {
         return
     }
 
     $ScriptBlock = {
         $TargetProcessNames = 'lghub*', 'lghub_agent', 'lghub_updater'
-        Get-Process -Name $TargetProcessNames -ea SilentlyContinue
-        | Stop-Process -Confirm
-        'Done'
+        $items = Get-Process -Name $TargetProcessNames -ea SilentlyContinue
+        # $items | ForEach-Object | Stop-Process -Confirm:$Confirm
+
+        $items | ForEach-Object {
+            $_ | Stop-Process -Confirm:$Confirm
+            # if ($PSCmdlet.ShouldProcess($_, "Stop-Process")) {
+            # }
+        }
+        Label 'Done' -sep ''
+        Start-Sleep 2
     }
 
-    _get-LGHubProcess | Write-Debug
-
-    if (! $WhatIf ) {
-        Start-Process 'pwsh' -Verb 'RunAs' -Wait -Args @(
-            '-C'
-            $ScriptBlock
-        )
-    }
-
+    _getLGHubProcess | Write-Debug
+    H1 'Start pwsh $ScriptBlock'
+    # if (! $WhatIf ) {
+    # -Confirm:$Confirm -WhatIf:$WhatIf
+    Start-Process 'pwsh' -Verb 'RunAs' -Wait -Args @(
+        '-C'
+        $ScriptBlock
+    )
+    # }
 
     $startProcessSplat = @{
-        FilePath = Join-Path $Paths.AppPath -ChildPath 'lghub_updater.exe'
-        Verb     = 'RunAs'
         # ArgumentList
-        WhatIf   = $WhatIf
-        Confirm  = $Confirm
-        Wait     = $false
+        Confirm     = $true
+        FilePath    = Join-Path $Paths.AppPath -ChildPath 'lghub_updater.exe'
+        Verb        = 'RunAs'
+        Wait        = $false
+        WhatIf      = $false #$WhatIf
+        WindowStyle = 'Hidden'
     }
 
-    _get-LGHubProcess | Write-Debug
-    H1 'launching again'
+    H1 'After Process-Stop, befopre Launching'
+    _getLGHubProcess
 
     if (! $StopOnly ) {
         Start-Process @startProcessSplat
+        _getLGHubProcess | Join-String -sep ', ' | Label 'A] Running' | Write-Debug
     }
-    _get-LGHubProcess | Write-Debug
 
     $startProcessSplat.FilePath = Join-Path $Paths.AppPath -ChildPath 'lghub.exe'
     if (! $StopOnly ) {
         Start-Process @startProcessSplat
+        _getLGHubProcess | Join-String -sep ', ' | Label 'B] Running' | Write-Debug
     }
-    _get-LGHubProcess | Write-Debug
+    # _getLGHubProcess | Write-Debug | write-Debug
 
     $startProcessSplat.FilePath = Join-Path $Paths.AppPath -ChildPath 'lghub_agent.exe'
     $startProcessSplat.Remove('Verb')
 
+    _getLGHubProcess | Join-String -sep ', ' |  Label 'C] Running' | Write-Debug
+
     if (! $StopOnly ) {
         Start-Process @startProcessSplat
+        _getLGHubProcess | Join-String -sep ', ' | Label 'D] Running' | Write-Debug
     }
-    _get-LGHubProcess | Write-Debug
+    _getLGHubProcess | Write-Debug
 
-    H1 'final check'
-    _get-LGHubProcess | Write-Debug
+    H1 'After Launching'
+    _getLGHubProcess
+    Label 'E] Running'
 }
