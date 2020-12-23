@@ -64,6 +64,8 @@ $public = @(
     'Import-NinModule'
     'Get-Exponentiation'
     'Edit-FunctionSource'
+    'Get-RegexHelp'
+    'Restart-LGHubDriver'
 )
 
 $public_ToRefactorOutside = @(
@@ -94,6 +96,8 @@ $functionsToExport = @(
     'Get-Exponentiation'
     'Get-FunctionDebugInfo'
     'Edit-FunctionSource'
+    'Get-RegexHelp'
+    'Restart-LGHubDriver'
 )
 
 $functionsToExport_ToRefactorOutside = @(
