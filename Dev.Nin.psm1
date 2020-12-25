@@ -66,6 +66,9 @@ $public = @(
     'Edit-FunctionSource'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
+
+    # newest experiments
+    'Edit-DevTodoList'
 )
 
 $public_ToRefactorOutside = @(
@@ -98,6 +101,9 @@ $functionsToExport = @(
     'Edit-FunctionSource'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
+
+    # newest experiments
+    'Edit-DevTodoList'
 )
 
 $functionsToExport_ToRefactorOutside = @(
@@ -115,6 +121,9 @@ $aliasesToExport = @(
     'Pow'
     'Man',
     'nMan'
+
+    # newest experiments
+    'Edit-TodoList'
 )
 Export-ModuleMember -Alias $aliasesToExport
 

@@ -5,7 +5,7 @@
     .description
         a simple multi-item selection for the console without the extra features of 'Out-ConsoleGridView'
     .notes
-        selected items are returned **in-order** that they are selected in FZF
+        selected items are returned **in-order** that they are selected in 'fzf'
     .example
         PS>
     .notes
@@ -34,11 +34,13 @@
     )
 
     begin {
+        $debugMeta = @{}
+
         if ($Help) {
             '<https://github.com/junegunn/fzf#tips> and ''fzf --help'''
             break
         }
-        $binFzf = Get-Command 'fzf' -ErrorAction Stop
+        $binFzf = Get-Command 'fzf' -CommandType Application # -ErrorAction Stop
 
         $inputList = [list[string]]::New()
 
@@ -51,6 +53,8 @@
         if ($MultiSelect) {
             $fzfArgs += '--multi'
         }
+
+        $debugMeta.FzfArgs = $fzfArgs
     }
     process {
 
@@ -74,13 +78,24 @@
 
     }
     end {
-        $inputList
-        | & $binFzf @fzfArgs
 
-        Label 'Final' $inputList.count | Write-Debug
-        Label 'args' $fzfArgs | Write-Debug
+        $Selection = $inputList | & $binFzf @fzfArgs
+        $Selection
 
+        # style 1]
+        # $debugMeta.InputListCount = $inputList.Count
+        # $debugMeta.SelectionCount = $Selection.Count
+        # $debugMeta.Selection = $Selection | Join-String -sep ', ' -SingleQuote | Label 'Selection'
 
+        # style 2]
+        # style wise, this looks cleaner, but throws on duplicate key names
+        $debugMeta += @{
+            InputListCount = $inputList.Count
+            SelectionCount = $Selection.Count
+            Selection      = $Selection | Join-String -sep ', ' -SingleQuote | Label  'Selection'
+
+        }
+        $debugMeta | Format-HashTable -Title '@debugMeta' | Write-Debug
     }
 }
 
@@ -95,4 +110,5 @@ if ($false) {
     Get-ChildItem | Select-Object -First 3
     | Out-Fzf -Debug
 
+    # Get-ChildItem -Name | Out-Fzf -MultiSelect -Debug
 }
