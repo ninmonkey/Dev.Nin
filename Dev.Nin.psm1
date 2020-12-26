@@ -53,8 +53,9 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Get-FunctionDebugInfo'
-    'Invoke-NativeCommand'
     'Dev-GetHelpFromType'
+    'Get-SavedList'
+    'Get-SavedData'
 
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
@@ -89,7 +90,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Dev-GetHelpFromType'
-    'Invoke-NativeCommand'
+
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'
 
@@ -106,6 +107,8 @@ $functionsToExport = @(
 
     # newest experiments
     'Edit-DevTodoList'
+    'Get-SavedList'
+    'Get-SavedData'
 )
 
 $functionsToExport_ToRefactorOutside = @(
