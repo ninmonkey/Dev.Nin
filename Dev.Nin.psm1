@@ -53,8 +53,9 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Get-FunctionDebugInfo'
+    'Invoke-NativeCommand'
     'Dev-GetHelpFromType'
-    'Out-Fzf'
+
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
     'Dev-GetNameFrom'
@@ -88,9 +89,10 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Dev-GetHelpFromType'
+    'Invoke-NativeCommand'
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'
-    'Out-Fzf'
+
     'Dev-GetNameFrom'
     'Dev-GetManPage'
     'Dev-GetNamedPath'
