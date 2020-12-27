@@ -17,7 +17,8 @@ function Edit-FunctionSource {
     # Function Name
     param(
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [Alias('Name')]
+        # [Alias('Name')]
+        # [ValidateNotNullOrEmpty()]
         [string]$FunctionName,
 
         # Return path only
@@ -29,53 +30,18 @@ function Edit-FunctionSource {
         $functionQuery = $FunctionName | ForEach-Object {
             $isAlias = (Get-Command $maybeFunc -ea SilentlyContinue).CommandType -eq 'alias'
             if ($isAlias) {
-                $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeAlias | ForEach-Object ResolvedCommand
+                $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
                 $resolvedAlias
             } else {
                 Get-Command $FunctionName -ea SilentlyContinue
             }
         }
-        <# this wasn't working properly
-
-        $maybeAlias = $FunctionName
-        $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeAlias | ForEach-Object ResolvedCommand | ForEach-Object Name
-
-        $queryForFunc = Get-ChildItem function: | Where-Object {
-            ($_.Name -like $resolvedAlias) -or
-            ($_.Name -like $FunctionName)
-        }
-
-
-        # $items = Get-ChildItem function:$FunctionName
-        # or catch [ItemNotFoundException] {
-        if ($queryForFunc.count -eq 0) {
-
-            'No matches for: "{0}", "{1}"' -f @(
-                $resolvedAlias, $functionName
-            ) | Write-Error
-            return
-
-        }
-        #>
-
-        # $functionQuery
-
-
 
         Label 'Matches' $functionQuery.count | Write-Host
         if (! $functionQuery ) {
             Write-Error "FunctionNotFound: No matches for query: '$FunctionName'"
             return
         }
-
-        # if ($PassThru) {
-        #     $functionQuery
-        #     return
-        # }
-
-        # foreach ($item in $functionQuery) {
-        #     Label 'Open' $item.FullName
-        # }
 
         if ($functionQuery.count -eq 1) {
             $autoOpen = $true
@@ -84,31 +50,18 @@ function Edit-FunctionSource {
             $autoOpen = $false
         }
 
-        # | ForEach-Object ScriptBlock | ForEach-Object Ast
-        # | ForEach-Object Extent | ForEach-Object File | ForEach-Object {
         $functionQuery | ForEach-Object {
             $curCommand = $_
             $Path = $curCommand.ScriptBlock.Ast.Extent.File | Get-Item -ea Continue
             if ($Path) {
-                # Label 'path' $Path
+
                 $Path
             } else {
                 H1 "shouldNeverException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly" | Write-Host
+
             }
-            # $curCommand | ForEach-Object {
-            #     $curPath = $_
-            #     $curPath | Label 'found'
-            # }
-
         }
-        # $functionQuery | Get-Item -ea Continue | ForEach-Object {
-        # code $_
     }
-
-
-    # Get-Item function:'Write-ConsoleNewLine' | ForEach-Object ScriptBlock | ForEach-Object Ast | ForEach-Object Extent | ForEach-Object File
-
-
 }
 
 # Edit-FunctionSource 'Write-Conso'
@@ -128,4 +81,7 @@ if ($TempDebugTest) {
     # $res[0]
     # Edit-FunctionSource 'Write-ConsoleLabefl'
     # Edit-FunctionSource 'hr'
+    'Write-ConsoleLabel' | Edit-FunctionSource -PassThru
+    'Label' | Edit-FunctionSource -PassThru
+    'label', 'fm', 'goto' | Edit-FunctionSource -PassThru
 }
