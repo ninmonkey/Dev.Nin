@@ -71,6 +71,7 @@ $public = @(
 
     # newest experiments
     'Edit-DevTodoList'
+    'Find-VerbPrefix'
 )
 
 $public_ToRefactorOutside = @(
@@ -109,6 +110,7 @@ $functionsToExport = @(
     'Edit-DevTodoList'
     'Get-SavedList'
     'Get-SavedData'
+    'Find-VerbPrefix'
 )
 
 $functionsToExport_ToRefactorOutside = @(
