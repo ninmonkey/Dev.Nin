@@ -3,15 +3,15 @@ function Edit-FunctionSource {
     <#
     .synopsis
         open script that declares funnction
+    .description
+        currently only opens .ps1 scripts.
+        see [Indented] for automatically viewing assemblies
     .notes
-        - [ ] needs to be tested on binary imports
-        - [ ] default to require confirm / should process
-
-        - [ ] allow pipe from 'Get-Command'
-        - [ ] and 'Alias'
-
-            PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
-            PS> Alias 'Br' | Edit-FunctionSource
+        .
+    .example
+        PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
+        PS> Alias 'Br' | Edit-FunctionSource
+        PS> 'Br', 'ls' | Edit-FunctionSource
     #>
 
     # Function Name
@@ -43,7 +43,8 @@ function Edit-FunctionSource {
             return
         }
 
-        if ($functionQuery.count -eq 1) {
+        $numResults = $functionQuery.count
+        if ($numResults -le 3) {
             $autoOpen = $true
         }
         if ($PassThru) {
@@ -54,13 +55,25 @@ function Edit-FunctionSource {
             $curCommand = $_
             $Path = $curCommand.ScriptBlock.Ast.Extent.File | Get-Item -ea Continue
             if ($Path) {
+                if ($PassThru) {
+                    $Path
+                    return
+                }
 
-                $Path
+                if ($autoOpen) {
+                    Write-Debug "code '$Path'"
+                    code $Path
+                } else {
+                    '<', $Path, '>' -join ''
+                }
             } else {
                 H1 "shouldNeverException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly" | Write-Host
 
             }
         }
+    }
+    end {
+        'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
     }
 }
 
