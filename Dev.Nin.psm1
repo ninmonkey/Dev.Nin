@@ -72,6 +72,8 @@ $public = @(
     # newest experiments
     'Edit-DevTodoList'
     'Find-VerbPrefix'
+    'Dev-InvokeFdFind'
+    'Out-ConsoleHighlight'
 )
 
 $public_ToRefactorOutside = @(
@@ -111,6 +113,8 @@ $functionsToExport = @(
     'Get-SavedList'
     'Get-SavedData'
     'Find-VerbPrefix'
+    'Dev-InvokeFdFind'
+    'Out-ConsoleHighlight'
 )
 
 $functionsToExport_ToRefactorOutside = @(
@@ -131,6 +135,8 @@ $aliasesToExport = @(
 
     # newest experiments
     'Edit-TodoList'
+    'Hi'
+    'LsFd'
 )
 Export-ModuleMember -Alias $aliasesToExport
 
