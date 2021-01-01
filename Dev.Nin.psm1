@@ -53,7 +53,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     'Get-FunctionDebugInfo'
-    'Dev-GetHelpFromType'
+    'Get-HelpFromType'
     'Get-SavedList'
     'Get-SavedData'
 
@@ -92,7 +92,7 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
-    'Dev-GetHelpFromType'
+    'Get-HelpFromType'
 
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'

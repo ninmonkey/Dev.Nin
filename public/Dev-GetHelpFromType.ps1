@@ -1,14 +1,6 @@
-﻿function Format-Template {
-    <#
-    .synopsis
-        hashtable template
-    .notes
-        use a better verb?
-    #>
-}
+﻿
 
-
-function Dev-GetHelpFromType {
+function _wrapperDev-GetHelpFromType {
     [Alias('TypeHelp')]
     <#
     .synopsis
@@ -108,7 +100,21 @@ function Dev-GetHelpFromType {
 
 # 'afds' | Dev-GetHelpFromType -PassThru
 
-if ($false -and $DevTest) {
+if ($true -and $DebugTestMode) {
+    $typeList = Get-ChildItem | Get-Unique -OnType | ForEach-Object GetType | Format-TypeName
+    $typeList -join ', '
+
+    H1 'all'
+    $typeList | Dev-GetHelpFromType -PassThru
+
+    H1 'dirinfo'
+
+    $result = 'IO.DirectoryInfo' | TypeHelp -PassThru
+    $result
+    # Get-ChildItem | Get-Unique -OnType | ForEach-Object GetType | Format-TypeName | Select-Object -First 1 | TypeHelp -PassThru
+}
+
+if ($false -and $DebugTestMode) {
 
     $Sample = @{ 'a' = 'b' }
     # 20, $Sample | Dev-GetHelpFromType -Debug
