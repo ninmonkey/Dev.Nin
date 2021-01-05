@@ -2,11 +2,16 @@
     <#
     .synopsis
         shortcut to read and 'grep' man pages
+
     .example
         # show entire man page, highlight flags
         PS> nman rg
 
+    .example
+        PS> # search for 2 flags, one as a regex
+        PS> nman fzf 'm.*', 'layout'
 
+    .example
         PS> nman code -FlagName 's', 'v'
         PS> nman pwsh -FlagName 'i', 'I'
 

@@ -56,6 +56,7 @@ $public = @(
     'Get-HelpFromType'
     'Get-SavedList'
     'Get-SavedData'
+    'Get-DevInspectObject'
 
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
@@ -93,6 +94,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     'Get-HelpFromType'
+    'Get-DevInspectObject'
 
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'
@@ -127,10 +129,12 @@ Export-ModuleMember -Function $functionsToExport
 # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
 $aliasesToExport = @(
     'TypeHelp'
+    'Inspect'
+    'HelpFromType'
     'NameFrom'
     'Table'
     'Pow'
-    'Man',
+    'Man'
     'nMan'
 
     # newest experiments
