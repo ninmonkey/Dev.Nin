@@ -26,5 +26,3 @@ $info = [ordered]@{
 }
 
 $info | Format-Table
-
-Function

@@ -52,7 +52,6 @@ if ($DebugTestMode) {
     Get-ChildItem 'c:\' | Get-Unique  -OnType | inspect
     H1 'test case: without child'
     'a' | Inspect
-}
 hr
 'a' | Inspect
 
@@ -62,6 +61,4 @@ $l.Add((Get-Date))
 hr
 , $l | Inspect
 hr
-
-Get-DevInspectObject.ps1
-Dev-GetObjectInspect.ps1
+}
