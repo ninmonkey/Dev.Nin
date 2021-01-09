@@ -16,13 +16,34 @@ function Get-SavedList {
         .
     #>
     param (
+        # Name. future: dynamic completer
+        [Parameter(Position = 0)]
+        [string]$ListName,
 
+        # open in VS Code?
+        [Parameter()][switch]$Edit
     )
     begin {}
     process {
-        $Filepath = Join-Path $_Config_SavedList.BasePath -chil 'Recent-Files-List.json'
-        Get-Content -ea stop $Filepath
-        | ConvertFrom-Json
+
+        if ([string]::IsNullOrEmpty($ListName)) {
+            Get-ChildItem -Path $_Config_SavedList.BasePath -Filter *.json | Sort-Object Name
+            | ForEach-Object Name
+            Write-Debug "empty name, listing the lists"
+            return
+        }
+
+        Write-Debug "Read: $Filepath"
+        if (! $Edit ) {
+            $Filepath = Join-Path $_Config_SavedList.BasePath -Chi $ListName
+            $Filepath | Get-Item -ea stop | Get-Content -ea stop
+            return
+        }
+
+        $Filepath = Join-Path $_Config_SavedList.BasePath -Chi $ListName
+        $Filepath | Get-Item -ea stop | ForEach-Object { code $_ }
+        return
+
     }
     end {}
 }
