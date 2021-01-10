@@ -1,10 +1,4 @@
-﻿function Sort-ObjectProperty {
-    <#
-    .synopsis
-        sort objects using properties in-order of selection in 'Out-Fzf'
-    #>
-
-}
+﻿
 function Select-ObjectProperty {
     <#
     .synopsis
@@ -25,12 +19,12 @@ function Select-ObjectProperty {
             $isFirstRun = $false
 
             $PropList = $InputObject.psobject.properties.Name
-            if(
+            if (
                 (! $PropList ) -or ($PropList.count -le 0)
             ) {
                 throw "NoPropertiesException: [$($inputObject.GetType().FullName)] $($InputObject) found no properties."
             }
-            $SelectedProps = $PropList | Out-Fzf -MultiSelect
+            $SelectedProps = $PropList | Out-Fzf -MultiSelect -PromptText 'Select Properties'
         }
         $SelectedProps | Join-String -sep ', ' -SingleQuote | Write-Debug
 
@@ -41,12 +35,13 @@ function Select-ObjectProperty {
     }
 }
 
-if($DebugRunTests) {
+if ($DebugRunTests) {
     { 4 | Select-ObjectProperty }
     | Should -Throw -Because 'no psobject.properties on [int]'
+    hr
+    '4' | Select-ObjectProperty
 }
 
-'4' | Select-ObjectProperty
 # Get-ChildItem . | Select-Object -First 1 | Select-ObjectProperty
 # @() | Select-ObjectProperty
 # @(3) | Select-ObjectProperty

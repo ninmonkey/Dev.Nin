@@ -71,10 +71,13 @@ $public = @(
     'Restart-LGHubDriver'
 
     # newest experiments
+    'Sort-NinObject'
     'Edit-DevTodoList'
     'Find-VerbPrefix'
     'Dev-InvokeFdFind'
     'Out-ConsoleHighlight'
+    'import-Dev-Unicode'
+    'Format-TemplateString'
 )
 
 $public_ToRefactorOutside = @(
@@ -111,12 +114,17 @@ $functionsToExport = @(
     'Restart-LGHubDriver'
 
     # newest experiments
+    'Sort-NinObject'
     'Edit-DevTodoList'
     'Get-SavedList'
     'Get-SavedData'
     'Find-VerbPrefix'
     'Dev-InvokeFdFind'
     'Out-ConsoleHighlight'
+    'Format-TemplateString'
+
+    # very temp funcs, to be removed
+    '_get-UnicodeHelp'
 )
 
 $functionsToExport_ToRefactorOutside = @(
