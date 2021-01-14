@@ -57,6 +57,7 @@ $public = @(
     'Get-SavedList'
     'Get-SavedData'
     'Get-DevInspectObject'
+    'Get-DevParameterInfo'
 
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
@@ -125,6 +126,7 @@ $functionsToExport = @(
 
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
+    'Get-DevParameterInfo'
 )
 
 $functionsToExport_ToRefactorOutside = @(
@@ -144,6 +146,7 @@ $aliasesToExport = @(
     'Pow'
     'Man'
     'nMan'
+    'ParamInfo'
 
     # newest experiments
     'Edit-TodoList'

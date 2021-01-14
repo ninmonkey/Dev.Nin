@@ -134,8 +134,11 @@
 
 if ($DevTesting) {
     # Import-Module dev.nin -Force
-    nman rg -FlagName 'I'
-    nman fd  'i', 'I' -Debug
-    nman pwsh 'c', 'C', 'c.*'
-    nman pwsh -Debug | Select-Object -First 40
+    nMan rg -FlagName 'I'
+    nMan fd  'i', 'I' -Debug
+    nMan pwsh 'c', 'C', 'c.*'
+    nMan pwsh -Debug | Select-Object -First 40
 }
+
+# help curl
+Get-Command help -All -ListImported | Format-List

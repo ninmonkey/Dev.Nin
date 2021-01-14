@@ -41,9 +41,12 @@ function _runSortTest {
     # $PropList.GetEnumerator() | Join-String { $_.Key } -Separator ' '
     # $PropList | Format-HashTable
     H1 'Sort Test:'
-    $PropList.GetEnumerator() | ForEach-Object {
-        @{ $_.expression = ($_.Descending) ? 'Desc' : 'Asc' }
-    } | Format-HashTable
+    # $PropList.GetEnumerator() | ForEach-Object {
+    #     @{ $_.expression = ($_.Descending) ? 'Desc' : 'Asc' }
+    # } | Format-HashTable
+
+    Format-HashTableList $PropList  | Label 'sort hash' -fg magenta
+
     $exampleList | Sort-Object -Property $PropList | Format-Table
     # hr
 
@@ -54,6 +57,15 @@ function Sort-NinObject {
     <#
     .synopsis
         wrapper for Sort-Object. sort objects using properties in-order of selection in 'Out-Fzf'
+    .notes
+    to question:
+        1] Do I *not* want a process block? (Then I don't have to collect?)
+            $InputObject | Sort-Object @myArgs
+        2]
+            [list[object]]::new()
+            or
+            [list[psobject]]::new()
+
     #>
     param(
         # Object
@@ -78,16 +90,18 @@ function Sort-NinObject {
             SortBy    = $SortByProperty | Join-String -Separator ', ' -SingleQuote
             UsingDesc = $DescendingProperty | Join-String -sep ', ' -SingleQuote
         }
+        $objectList = [list[object]]::new()
 
 
-        [object[]]$FinalSortList = $NameList | ForEach-Object {
+        [object[]]$GeneratedSortList = $NameList | ForEach-Object {
             @{
                 Expression = $_
                 Descending = $false
             }
         }
 
-        $meta.FinalSortList = $FinalSortList
+        $meta.FinalSortList = $GeneratedSortList
+        Format-HashTableList $meta.FinalSortList  | Label 'FinalSortList'
 
         $meta | Format-HashTable -Title 'Args' | Write-Information
 
@@ -99,14 +113,27 @@ function Sort-NinObject {
 
     }
     process {
-        $InputObject | Sort-Object -Prop $FinalSortList
+        $objectList.Add( $InputObject )
+        # $InputObject | Sort-Object -Prop $GeneratedSortList
     }
     end {
-
+        $objectList | Sort-Object -Property $GeneratedSortList
     }
 }
 
+try {
+    $exampleList | Sort-NinObject 'Guid', 'Id'
+} catch {
+    Write-Warning 'Sort-NinObject NYI'
+}
 
+if ($FinalPesterTest) {
+    # test for non-existing properties
+    $exampleList | Sort-NinObject 'Guid', 'Id', 'NonExisting' -DescendingProperty 'id', 'guid', 'other'
+
+    # test for non-existing sort order
+    $exampleList | Sort-NinObject 'Guid', 'Id'  -DescendingProperty 'id', 'guid', 'NonExisting'
+} Write-Warning 'dont forget pester'
 if ($DebugTestMode) {
     H1 'Sort-NinObject' -fg red
 
