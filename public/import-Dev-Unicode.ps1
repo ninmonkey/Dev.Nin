@@ -9,6 +9,15 @@ if (! $_namedColors) {
 
 $_namedColors.BlueNice = '38aaee'
 
+
+function _filterByType_GetEmoji {
+    $RegexAscii = '[\u0000-\u00ff]'
+    $RegexAscii = '[\x00-0xff]'
+
+    $InputObject -match $RegexAscii, ''
+}
+
+
 function Dev-Get-UnicodeDistinctRune {
 
     <#
@@ -120,5 +129,5 @@ if ($DebugTestMode) {
     Get-Rune -Codepoint 128018 # Alias -cp
 
 }
-H1 'wip:'
+# write-warning 'wip:'
 _get-UnicodeHelp
