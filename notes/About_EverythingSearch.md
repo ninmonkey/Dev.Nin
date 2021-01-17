@@ -5,4 +5,5 @@
 1. as a url `ES:` (check in options)
 filetypes]
     - `EFU` Everything File List
-    - 
+
+2. as `cli` 

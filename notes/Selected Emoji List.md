@@ -56,8 +56,7 @@ $sourceWithGrapheme = $source
 ⌨️ Keyboard
 🖊️ Pen
 🖥️ Desktop Computer
-🖱️ Computer Mouse
-🧰 Toolbox
+🖱️ Computer Mouse3
 🎚️
 🐛
 🐜
