@@ -52,6 +52,7 @@ foreach ($file in $completer) {
 Export-ModuleMember -Function $completer
 
 $public = @(
+    'Compare-StrictEqual'
     'Get-FunctionDebugInfo'
     'Get-HelpFromType'
     'Get-SavedList'
@@ -97,6 +98,7 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    'Compare-StrictEqual'
     'Get-HelpFromType'
     'Get-DevInspectObject'
 

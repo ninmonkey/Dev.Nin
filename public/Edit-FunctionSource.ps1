@@ -1,4 +1,4 @@
-
+Write-Warning "Edit-FunctionSource() : cleanup me -> nin.console"
 function Edit-FunctionSource {
     <#
     .synopsis
@@ -16,12 +16,12 @@ function Edit-FunctionSource {
 
     # Function Name
     param(
+
+        # Function or Alias name
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        # [Alias('Name')]
-        # [ValidateNotNullOrEmpty()]
         [string]$FunctionName,
 
-        # Return path only
+        # Return paths only
         [Parameter()][switch]$PassThru
     )
 
