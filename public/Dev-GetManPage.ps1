@@ -7,6 +7,11 @@
         # show entire man page, highlight flags
         PS> nman rg
 
+    rg.example
+        # equivalent
+        PS> nman ls o,h,i
+        PS> nman ls 'o', 'h', 'i'
+
     .example
         PS> # search for 2 flags, one as a regex
         PS> nman fzf 'm.*', 'layout'
@@ -29,7 +34,15 @@
         # app name, hard coded for test
         [Parameter(Mandatory, Position = 0)]
         [Alias('Name')]
-        [ValidateSet('fd', 'code', 'less', 'grep', 'git', 'gh', 'fzf', 'rg', 'python', 'pwsh', 'bat', 'powershell')]
+        # [ValidateSet()]
+        [ArgumentCompleter( {
+                param($Command, $Parameter, $WordToComplete, $CommandAst, $FakeBoundParams)
+                $ValidValues = (
+                    'fd', 'code', 'less', 'grep', 'git', 'gh', 'fzf', 'rg', 'python', 'pwsh', 'bat', 'powershell'
+                )
+                return $ValidValues -like "$WordToComplete*"
+            }
+        )]
         [string]$CommandName,
 
         # search for specific flag names
@@ -73,11 +86,16 @@
                 "($_)"
             } | Join-String -Separator '|'  -OutputPrefix '(' -OutputSuffix ')'
 
+
             $FullRegex = $regex.ShortFlag_Part1, $Inner, $Regex.ShortFlag_Part2 -join ''
+            # h1 'stuff'
+            break
         }
         { $false } {
             # works for single flag
             $FullRegex = $regex.ShortFlag_Part1, $FlagName, $Regex.ShortFlag_Part2 -join ''
+            # h1 'stuff' -fg green
+            break
         }
         default { throw "ShouldNever: $FlagName" }
     }
@@ -89,7 +107,8 @@
     }
 
     $manPage = Join-Path $Paths.manPage -ChildPath "$CommandName.man.txt"
-    $cmdBin = Get-Command $CommandName -ea Continue
+    # $cmdBin = Get-Command $CommandName -ea Continue
+    $cmdBin = Get-NativeCommand $CommandName -ea Stop
 
     $isSkipCache = (!(Test-Path $manPage)) -or (! $skipCache)
 
@@ -141,4 +160,6 @@ if ($DevTesting) {
 }
 
 # help curl
-Get-Command help -All -ListImported | Format-List
+# Get-Command help -All -ListImported | Format-List
+nMan rg t, T
+Write-Warning 'next: enumerate so spacing between mult flags?'
