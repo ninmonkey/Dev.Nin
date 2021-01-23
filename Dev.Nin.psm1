@@ -1,15 +1,23 @@
-﻿$formatData = @(
+﻿$__Config = @{
+    Enable_FormatData = $true
+}
+$formatData = @(
+    'nin_FileListing'
 )
 
-# foreach ($typeName in $formatData) {
-#     $FileName = ("{0}\public\FormatData\nin-{1}.ps1xml" -f $psscriptroot, $typeName)
-#     if (Test-Path $FileName ) {
-#         Update-FormatData -PrependPath $FileName
-#         Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-#     } else {
-#         Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
-#     }
-# }
+# Update-FormatData -PrependPath "$PSScriptRoot/format_data/nin_FileListing.format.ps1xml"
+
+if ($__Config.Enable_FormatData) {
+    foreach ($typeName in $formatData) {
+        $FileName = ("{0}\public\FormatData\{1}.format.ps1xml" -f $psscriptroot, $typeName)
+        if (Test-Path $FileName ) {
+            Update-FormatData -PrependPath $FileName
+            Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
+        } else {
+            Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
+        }
+    }
+}
 
 $private = @(
 
@@ -80,6 +88,7 @@ $public = @(
     'Out-ConsoleHighlight'
     'import-Dev-Unicode'
     'Format-TemplateString'
+    'Dev-ExportFormatData'
 )
 
 $public_ToRefactorOutside = @(
@@ -125,6 +134,7 @@ $functionsToExport = @(
     'Dev-InvokeFdFind'
     'Out-ConsoleHighlight'
     'Format-TemplateString'
+    'Dev-ExportFormatData'
 
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
