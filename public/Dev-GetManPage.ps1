@@ -26,6 +26,8 @@
         # find '-u' in 'bat'
         PS> man bat u
     .notes
+        todo:
+        - [ ] rewrite
         - [ ] Add syntax highlighting or at least regex-based syntax highlighting of flags
         - [ ] if piping to LESS, pass search argument so user can hit 'next'/'prev' without doing anything
     #>

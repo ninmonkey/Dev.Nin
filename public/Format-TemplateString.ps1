@@ -76,6 +76,7 @@ function _findRequiredKeys {
     Write-Warning 'Format-TemplateString: WIP'
 }
 
+Write-Warning 'next: Format-TemplateString'
 if ($false -and $DebugTestMode) {
 
     H1 'Template'

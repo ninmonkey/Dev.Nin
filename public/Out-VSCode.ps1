@@ -10,6 +10,7 @@
         Start-Process 'code' -WindowStyle Hidden -ArgumentList @('"C:\Users\cppmo_000\Documents\2020\todo\todo ⇽ 2020-12.md"')
 #>
 
+Write-Warning 'see: seeminglySci: Out-VS Code <Invoke-VSCode https://github.com/SeeminglyScience/dotfiles/blob/c4fa75ceddbdb5d9b6d16b90428969cc1c37fbe7/PowerShell/Utility.psm1#L119>'
 function Out-VSCode {
     <#
     .synopsis
@@ -19,6 +20,16 @@ function Out-VSCode {
 
             PS > Get-ChildItem . -File | ForEach-Object { code $_ }
     .notes
+
+    todo: Features
+        - [ ] pipe a file or folder list
+        - [ ] `confirm` when filelist > 4
+        - [ ] sametab vs new-window
+        - [ ] diff file1 file2>
+
+    autopipe to temp, but arg -Dump will save to
+}
+
 
     .example
         PS>

@@ -121,64 +121,67 @@ function Sort-NinObject {
     }
 }
 
-try {
-    $exampleList | Sort-NinObject 'Guid', 'Id'
-} catch {
-    Write-Warning 'Sort-NinObject NYI'
-}
-
-if ($FinalPesterTest) {
-    # test for non-existing properties
-    $exampleList | Sort-NinObject 'Guid', 'Id', 'NonExisting' -DescendingProperty 'id', 'guid', 'other'
-
-    # test for non-existing sort order
-    $exampleList | Sort-NinObject 'Guid', 'Id'  -DescendingProperty 'id', 'guid', 'NonExisting'
-} Write-Warning 'dont forget pester'
-if ($DebugTestMode) {
-    H1 'Sort-NinObject' -fg red
-
-    $sortSplat = @{
-        InformationAction = 'Continue'
-        Debug             = $false
-        SortByProperty    = @(
-            'Cat'
-        )
-    }
-    # $exampleList | Sort-NinObject -InformationAction Continue -SortByProperty Name -Debug
-    $exampleList | Sort-NinObject @sortSplat
-    hr
-    $exampleList | Sort-NinObject @sortSplat -SortByProperty Name
-}
-# $t.GetEnumerator() | ForEach-Object {
-#     @{ $_.expression = $_.Descending }
-# } | Format-HashTable
-# | Join-string -sep ', ' -DoubleQuote {
-#     $_.Expression, $_.Descending -join ''
-# }
-
-# $t.GetEnumerator() | ForEach-Object {
-#     @{a = $_.key; b = $_.Value }
-#     $x = 3
-# }
-#| Join-String { $_.Key, $_.Value -join ':' } -Separator ' '
-
-
-if ($DebugTestMode) {
-    hr
-    H1 'Manual Sort' -fg red
-    $exampleList
-    _runSortTest $Manual.Name_DESC_Id_DESC
-    _runSortTest $Manual.Name_DESC
-    _runSortTest $Manual.Name_ASC_Id_DESC
-}
-
 if ($false) {
-    $files = Get-ChildItem | Sort-Object Name
+    try {
+        $exampleList | Sort-NinObject 'Guid', 'Id'
+    } catch {
+        Write-Warning 'Sort-NinObject NYI'
+    }
 
-    $files
-    | Format-Table Name, Length, LastWriteTime
+    if ($FinalPesterTest) {
+        # test for non-existing properties
+        $exampleList | Sort-NinObject 'Guid', 'Id', 'NonExisting' -DescendingProperty 'id', 'guid', 'other'
 
-    $files
-    | Sort-Object Length
-    | Format-Table Name, Length, LastWriteTime
+        # test for non-existing sort order
+        $exampleList | Sort-NinObject 'Guid', 'Id'  -DescendingProperty 'id', 'guid', 'NonExisting'
+    } Write-Warning 'dont forget pester'
+    if ($DebugTestMode) {
+        H1 'Sort-NinObject' -fg red
+
+        $sortSplat = @{
+            InformationAction = 'Continue'
+            Debug             = $false
+            SortByProperty    = @(
+                'Cat'
+            )
+        }
+        # $exampleList | Sort-NinObject -InformationAction Continue -SortByProperty Name -Debug
+        $exampleList | Sort-NinObject @sortSplat
+        hr
+        $exampleList | Sort-NinObject @sortSplat -SortByProperty Name
+    }
+    # $t.GetEnumerator() | ForEach-Object {
+    #     @{ $_.expression = $_.Descending }
+    # } | Format-HashTable
+    # | Join-string -sep ', ' -DoubleQuote {
+    #     $_.Expression, $_.Descending -join ''
+    # }
+
+    # $t.GetEnumerator() | ForEach-Object {
+    #     @{a = $_.key; b = $_.Value }
+    #     $x = 3
+    # }
+    #| Join-String { $_.Key, $_.Value -join ':' } -Separator ' '
+
+
+    if ($DebugTestMode) {
+        hr
+        H1 'Manual Sort' -fg red
+        $exampleList
+        _runSortTest $Manual.Name_DESC_Id_DESC
+        _runSortTest $Manual.Name_DESC
+        _runSortTest $Manual.Name_ASC_Id_DESC
+    }
+
+    if ($false) {
+        $files = Get-ChildItem | Sort-Object Name
+
+        $files
+        | Format-Table Name, Length, LastWriteTime
+
+        $files
+        | Sort-Object Length
+        | Format-Table Name, Length, LastWriteTime
+    }
+
 }
