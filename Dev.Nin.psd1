@@ -67,8 +67,8 @@
     # Format files (.ps1xml) to be loaded when importing this module
     # FormatsToProcess  = '*'
     FormatsToProcess  = @(
+        # '*'
         # "$PSScriptRoot/format_data/SeeminglySci_FileListing.format.ps1xml"
-        # 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Dev.Nin\format_data\SeeminglySci_FileListing.format.ps1xml'
     )
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess

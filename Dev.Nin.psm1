@@ -1,21 +1,19 @@
 ﻿$__Config = @{
-    Enable_FormatData = $true
+    Enable_FormatData         = $true
+    Enable_FormatData_BuiltIn = $true # toggles overriting builtin type's formatdata
 }
 $formatData = @(
-    'nin_FileListing'
 )
 
-# Update-FormatData -PrependPath "$PSScriptRoot/format_data/nin_FileListing.format.ps1xml"
+$formatData_BuiltIn = @(
+    'FileListing'
+)
 
-if ($__Config.Enable_FormatData) {
-    foreach ($typeName in $formatData) {
-        $FileName = ("{0}\public\FormatData\{1}.format.ps1xml" -f $psscriptroot, $typeName)
-        if (Test-Path $FileName ) {
-            Update-FormatData -PrependPath $FileName
-            Write-Verbose "Imported: FormatData: [$TypeName] $FileName"
-        } else {
-            Write-Error "Import: failed: FormatData: [$TypeName]  $FileName"
-        }
+if ($__Config.Enable_FormatData_BuiltIn) {
+    foreach ($typeName in $formatData_BuiltIn) {
+        $FileName = ("{0}\public\FormatData\builtin_types\{1}.format.ps1xml" -f $PSScriptRoot, $typeName) | Get-Item -ea stop
+        Write-Verbose "Loading NativeFormatData: <$FileName>"
+        Update-FormatData -PrependPath $FileName
     }
 }
 

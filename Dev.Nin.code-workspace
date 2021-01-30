@@ -1,13 +1,13 @@
 {
     "folders": [
         {
-            "name": "SeeminglyScience/Sketch",
-            "path": "..\\..\\Nin Lib Experiment\\import_SeeminglyScience_sketch"
-        },
-        {
             "name": "Dev.Nin",
             "path": "."
         },
+        // {
+        //     "name": "SeeminglyScience/Sketch",
+        //     "path": "..\\..\\Nin Lib Experiment\\import_SeeminglyScience_sketch"
+        // },
     ],
     "settings": {}
 }
