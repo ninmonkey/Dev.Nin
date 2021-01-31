@@ -23,7 +23,6 @@ function Capture-DebugStream {
         $_ -replace $regex.trace, ''
     }
 
-    Write-Warning 'This is an example, to be converted to arbitrary pipe? or just an example function?'
 }
 
 if ($true -or $RunDebugTest) {
@@ -47,4 +46,8 @@ if ($true -or $RunDebugTest) {
 
     Capture-DebugStream
     | pygmentize.exe -l ps1
+
+    HR
+
+    Write-Warning 'This is an example, to be converted to arbitrary pipe? or just an example function?'
 }

@@ -87,6 +87,8 @@ $public = @(
     'import-Dev-Unicode'
     'Format-TemplateString'
     'Dev-ExportFormatData'
+
+    'Dev-GetDotnetPwshVersion'
 )
 
 $public_ToRefactorOutside = @(
@@ -137,6 +139,8 @@ $functionsToExport = @(
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
     'Get-DevParameterInfo'
+
+    'Dev-GetDotnetPwshVersion'
 )
 
 $functionsToExport_ToRefactorOutside = @(

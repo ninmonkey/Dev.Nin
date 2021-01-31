@@ -31,4 +31,5 @@ function Get-RegexHelp {
         #     Tags = 'reference', 'toc', 'docs'
         # },
     )
+    $urls
 }

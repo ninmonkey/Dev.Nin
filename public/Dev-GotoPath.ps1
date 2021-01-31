@@ -18,6 +18,7 @@ function Dev-Get-Fd {
         [Alias('d')]
         [int]$Depth = 1
     )
+    Write-Warning "Using 'Dev-Get-Fd()' or <Dev-Invoke-FdFind>"
 }
 
 # function Dev-SelectPath {
@@ -29,4 +30,6 @@ function Dev-GotoPath {
     .synopsis
         search for stuff, then FZF, then goto single path?
     #>
+
+    Write-Warning "Using 'Dev-Get-Fd()' or <Dev-Invoke-FdFind>"
 }
