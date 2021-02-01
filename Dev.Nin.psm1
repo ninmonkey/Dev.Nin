@@ -78,6 +78,7 @@ $public = @(
     'Start-DevTimer'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
+    'Get-DevFunctionInfo'
 
     # newest experiments
     'Sort-NinObject'
@@ -127,6 +128,7 @@ $functionsToExport = @(
     'Edit-FunctionSource'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
+    'Get-DevFunctionInfo'
 
     # newest experiments
     'Sort-NinObject'

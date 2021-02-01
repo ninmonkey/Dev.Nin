@@ -1,11 +1,23 @@
 using namespace PoshCode.Pansies
 
 $dev_colors = @{
-    Yellow = [RgbColor]::FromRgb(235, 203, 139)
-    Red    = [RgbColor]::FromRgb(196, 107, 108)
-}
+    Yellow      = [RgbColor]::FromRgb(235, 203, 139)
+    Yellow2     = [RgbColor]'#E0F543'
+    Red         = [RgbColor]::FromRgb(196, 107, 108)
+    Green       = [RgbColor]::FromRgb(15, 232, 49)
+    Green2      = [RgbColor]'#6A9955'
+    GreenBright = [RgbColor]::FromRgb(131, 246, 46)
+    LightBlue   = [RgbColor]'#9CDCFE'
+    Blue        = [RgbColor]'#418AFF'
+    Blue2       = [RgbColor]'#569CD0'
+    DimYellow   = [RgbColor]'#DCDCAA'
+    Tan         = [RgbColor]'#DCDCAA'
+    Purple      = [RgbColor]'#C586C0'
+} | Sort-Hashtable -SortBy Value
+#| ForEach-Object GetEnumerator | Sort-Object Key
+
 function Get-DevSavedColor {
-    <#
+    <#X
     .SYNOPSIS
     colors
 
@@ -84,7 +96,7 @@ function Get-DevSavedColor {
 }
 
 
-if ($False) {
+if ($false) {
     Get-DevSavedColor -All
     hr
     Get-DevSavedColor -Name 'yellfow', 'red'
