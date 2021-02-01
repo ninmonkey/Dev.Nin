@@ -1,3 +1,9 @@
+
+# Warning: Moved to: <https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets>
+
+[Moved to: https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets](https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets)
+
+
 # Windows paths and /w Env Vars
 
 ## Snippets:

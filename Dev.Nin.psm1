@@ -75,6 +75,7 @@ $public = @(
     'Import-NinModule'
     'Get-Exponentiation'
     'Edit-FunctionSource'
+    'Start-DevTimer'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
 
@@ -87,6 +88,7 @@ $public = @(
     'import-Dev-Unicode'
     'Format-TemplateString'
     'Dev-ExportFormatData'
+    'Get-DevSavedColor'
 
     'Dev-GetDotnetPwshVersion'
 )
@@ -135,6 +137,8 @@ $functionsToExport = @(
     'Out-ConsoleHighlight'
     'Format-TemplateString'
     'Dev-ExportFormatData'
+    'Start-DevTimer'
+    'Get-DevSavedColor'
 
     # very temp funcs, to be removed
     '_get-UnicodeHelp'

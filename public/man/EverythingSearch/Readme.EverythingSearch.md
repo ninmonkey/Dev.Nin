@@ -1,11 +1,19 @@
+# Warning: Moved to: <https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets>
+
+[Moved to: https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets](https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets)
+
+
+- [Warning: Moved to: <https://github.com/ninmonkey/Ninmonkey.Cheat-Sheets>](#warning-moved-to-httpsgithubcomninmonkeyninmonkeycheat-sheets)
 - [Config file Locations](#config-file-locations)
 - [About: Notes on Everything.Exe Search](#about-notes-on-everythingexe-search)
-  - [Debug Mode | Hotkeys](#debug-mode--hotkeys)
+  - [Hotkeys](#hotkeys)
   - [Dynamic docs lookup:](#dynamic-docs-lookup)
     - [Find `CLI` argument named `service_pipe_name`](#find-cli-argument-named-service_pipe_name)
     - [Find `.ini` option named `service_pipe_name`](#find-ini-option-named-service_pipe_name)
 - [Must have settings](#must-have-settings)
 - [Search Bar Commands](#search-bar-commands)
+  - [Main commands](#main-commands)
+  - [All Commands](#all-commands)
 - [Documentation](#documentation)
   - [SDK: Docs and Libs](#sdk-docs-and-libs)
   - [File Lists `*.EFU`](#file-lists-efu)
@@ -33,6 +41,13 @@
     - [EFU File List Queries](#efu-file-list-queries)
   - [Managing Everything `Service` on the CLI](#managing-everything-service-on-the-cli)
 - [External Apps / File Manager](#external-apps--file-manager)
+- [Search Examples](#search-examples)
+  - [`*Content:` is slow, use it last](#content-is-slow-use-it-last)
+  - [ID3v1 Mp3 tags](#id3v1-mp3-tags)
+  - [image metadata](#image-metadata)
+  - [duplicates](#duplicates)
+  - [more examples](#more-examples)
+- [Reference: `shell:<name>` `KNOWNFOLDERID`](#reference-shellname-knownfolderid)
 
 # Config file Locations
 
@@ -54,10 +69,17 @@
 - [Command Line Args for Everything.exe](https://www.voidtools.com/support/everything/command_line_options/)
 - [What's New: Notes](https://www.voidtools.com/support/everything/whats_new/)
 - [Multi-File Renaming](https://www.voidtools.com/support/everything/results/#multi-file_renaming)
+- Keyboard Hotkeys
+  - [Search Hotkeys](https://www.voidtools.com/support/everything/keyboard_shortcuts/#search_edit_shortcuts)
+  - [Global Hokeys](https://www.voidtools.com/support/everything/keyboard_shortcuts/#global_keyboard_shortcuts)
+  - [Result List Hotkeys](https://www.voidtools.com/support/everything/keyboard_shortcuts/#result_list_shortcuts)
  
-## Debug Mode | Hotkeys
+## Hotkeys
 
-Toggle debug: `Control + Backtick` <kbd>Ctrl + \`></kbd>
+| Key                                        | Description |
+| ------------------------------------------ | ----------- |
+| `Control + Backtick` <kbd>Ctrl + \`></kbd> | Debug Mode  |
+| `Alt + Home`                               | Home search |
 
 
 ## Dynamic docs lookup:
@@ -83,6 +105,10 @@ Toggle debug: `Control + Backtick` <kbd>Ctrl + \`></kbd>
 
 # Search Bar Commands
 
+[Docs: Search Bar Commands](https://www.voidtools.com/support/everything/searching/#search_commands)
+
+## Main commands
+
 | Command                  | Description                              |
 | ------------------------ | ---------------------------------------- |
 | `about:ini`              | Open `Everything.ini` config             |
@@ -90,6 +116,40 @@ Toggle debug: `Control + Backtick` <kbd>Ctrl + \`></kbd>
 | `/config_load`           | Import options                           |
 | `/<option_name>`         | Show value of `option_name` on statusbar |
 | `/<option_name>=<value>` | Set value of `option_name` to `value`    |
+
+## All Commands
+
+| Command                                 | Description                                                                                                                   |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `about:ini`                             | Open `Everything.ini` config                                                                                                  |
+| `/config_save`                          | Export options                                                                                                                |
+| `/config_load`                          | Import options                                                                                                                |
+| `/<option_name>`                        | Show value of `option_name` on statusbar                                                                                      |
+| `/<option_name>=<value>`                | Set value of `option_name` to `value`                                                                                         |
+| `about:`                                | About                                                                                                                         |
+| `about:config`                          | `Everything.ini`                                                                                                              |
+| `about:home`                            | Home search                                                                                                                   |
+| `about:options`<br/>`about:preferences` | Options                                                                                                                       |
+| `/close`                                | Close **this** window                                                                                                         |
+| `/closeall`                             | Close **all** windows                                                                                                         |
+| `/command <id>`                         | run [Command ID in the SDK](https://www.voidtools.com/support/everything/sdk/)                                                |
+| `/config_save`                          | Export options                                                                                                                |
+| `/config_save <filepath>`               | Export options                                                                                                                |
+| `/config_load`                          | Import options                                                                                                                |
+| `/config_load <filepath>`               | Import options                                                                                                                |
+| `/debug` <br> `/console`                | Debug mode                                                                                                                    |
+| `/debug_log`                            | start `debug` and start logging                                                                                               |
+| `/help`                                 | Help window                                                                                                                   |
+| `/monitor_pause`                        | Stops NTFS, ReFS, file lists and folder monitors. Monitors are not started again until<br/> specified with `/monitor_resume`. |
+| `/monitor_resume`                       | Starts NTFS, ReFS, file lists and folder monitors.                                                                            |
+| `/quit`, `/exit`                        | exit                                                                                                                          |
+| `/rebuild`, `/reindex`                  | rebuild                                                                                                                       |
+| `/restart`                              | restart                                                                                                                       |
+| `/verbose`                              | verbose debugging                                                                                                             |
+| `/update`                               | **Update all** folder `indexes`                                                                                               |
+| `/update <filepath>`                    | Update the specifed **folder index** by path now.                                                                             |
+| `/<name>`                               | Display current value of `<name>` from `Everything.ini` **Supports <TAB> comletion**                                          |
+| `/<name>=<value>`                       | Sets `<name>` = `<value>` in `Everything.ini`                                                                                 |
 
 # Documentation
 
@@ -295,6 +355,7 @@ Modify functions or regular search if `prefixed` by modifier
 | `T`       | Temporary           |
 | `V`       | Device              |
 
+
 # Format Strings
 
 ## `time_format`
@@ -377,6 +438,8 @@ taskbar_notification_title_format=$t$i?{ ($i)}
 | `$s?{$s - }My Search` | apples      | apples - My Search |
 | `$s?{$s - }My Search` |             | My Search          |
 
+
+
 # Command Line Arguments | Everything.Exe: 
 
 [`Everything.exe` CLI args](https://www.voidtools.com/support/everything/command_line_options/)
@@ -442,3 +505,194 @@ Everything.exe -stop-service
 - [External File Manager](https://www.voidtools.com/support/everything/customizing/#external_file_manager)
 
 replace `$exec("C:\Program Files $(x86$)\ExternalFileManager\ExternalFileManager.exe" "%1")`
+
+# Search Examples
+
+## `*Content:` is slow, use it last
+
+`*.eml dm:thisweek content:banana`
+
+## ID3v1 Mp3 tags
+
+```
+year:2002..2005
+genre:electronic
+regex:album:^[a-n]
+wildcards:title:red*
+track:>10
+year:>=2000
+```
+
+## image metadata
+
+```
+width:>2560
+width:800..1920
+height:600..1080
+dimensions:800x600..1920x1080
+```
+
+## duplicates
+
+```
+dupe: .mp4
+size:>1gb sizedupe:
+```
+
+## more examples
+
+```bash
+# Search for ABC and 123:
+ABC 123
+
+# Search for ABC or 123:
+ABC|123
+
+# Search for everything except ABC:
+!ABC
+
+# Search for uppercase ABC
+case:ABC
+
+# Search for mp3 files:
+*.mp3
+
+# Search for mp3 files on the D: or E: drive:
+d:|e: *.mp3
+
+# Search for jpg or png files on the D: drive:
+d: *.jpg|*.png
+
+# Search for files or folders with no extension:
+!.
+
+# Search for files only:
+file:
+
+# Search for folders only:
+folder:
+
+# Limit the search to a single folder:
+parent:c:\windows
+
+# Find files larger than 1MB:
+size:>1mb
+
+# Instantly find files that have changed today:
+dm:today
+
+# Find files and folders modified this week:
+dm:thisweek
+
+# Find files and folders modified from the 1st August 2014 to 31st August 2014:
+# Depending on your locale settings.
+dm:1/8/2014-31/8/2014
+# or:
+dm:8/1/2014-8/31/2014
+
+# Find folders in D:\music that do not contain an mp3 file:
+d:\music\ !child:mp3
+
+
+# Find filenames with non-ASCII characters:
+regex:[^\x00-\x7f]
+```
+
+# Reference: `shell:<name>` `KNOWNFOLDERID`
+
+| Name                        | Availability                | Path                                                                                                    |
+| --------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------- |
+| AccountPictures             | Windows 8, 10               | C:\Users\User\AppData\Roaming\Microsoft\Windows\AccountPictures                                         |
+| Administrative Tools        | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Administrative Tools                |
+| AppData                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming                                                                           |
+| Application Shortcuts       | Windows 8, 10               | C:\Users\User\AppData\Local\Microsoft\Windows\Application Shortcuts                                     |
+| Cache                       | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Local\Microsoft\Windows\Temporary Internet Files\Content.IE5\XXXXXXXX             |
+| Camera Roll                 | Windows 8, 10               | C:\Users\User\Pictures\Camera Roll                                                                      |
+| CD Burning                  | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Local\Microsoft\Windows\Burn\Burn                                                 |
+| Common Administrative Tools | Windows XP, Vista, 7, 8, 10 | C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Administrative Tools                               |
+| Common AppData              | Windows XP, Vista, 7, 8, 10 | C:\ProgramData                                                                                          |
+| Common Desktop              | Windows XP, Vista, 7, 8, 10 | C:\Users\Public\Desktop                                                                                 |
+| Common Documents            | Windows XP, Vista, 7, 8, 10 | C:\Users\Public\Documents                                                                               |
+| Common Programs             | Windows XP, Vista, 7, 8, 10 | C:\ProgramData\Microsoft\Windows\Start Menu\Programs                                                    |
+| Common Start Menu           | Windows XP, Vista, 7, 8, 10 | C:\ProgramData\Microsoft\Windows\Start Menu                                                             |
+| Common Start Menu Places    | Windows 10                  | C:\ProgramData\Microsoft\Windows\Start Menu Places                                                      |
+| Common Startup              | Windows XP, Vista, 7, 8, 10 | C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup                                            |
+| Common Templates            | Windows XP, Vista, 7, 8, 10 | C:\ProgramData\Microsoft\Windows\Templates                                                              |
+| CommonDownloads             | Windows Vista, 7, 8, 10     | C:\Users\Public\Downloads                                                                               |
+| CommonMusic                 | Windows Vista, 7, 8, 10     | C:\Users\Public\Music                                                                                   |
+| CommonPictures              | Windows XP, Vista, 7, 8, 10 | C:\Users\Public\Pictures                                                                                |
+| CommonRingtones             | Windows 7, 8, 10            | C:\ProgramData\Microsoft\Windows\Ringtones                                                              |
+| CommonVideo                 | Windows XP, Vista, 7, 8, 10 | C:\Users\Public\Videos                                                                                  |
+| Contacts                    | Windows Vista, 7, 8, 10     | C:\Users\User\Contacts                                                                                  |
+| Cookies                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Cookies                                                 |
+| CredentialManager           | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Roaming\Microsoft\Credentials                                                     |
+| CryptoKeys                  | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Roaming\Microsoft\Crypto                                                          |
+| Default Gadgets             | Windows Vista, 7            | C:\Program Files (x86)\Windows Sidebar\Gadgets                                                          |
+| Desktop                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Desktop                                                                                   |
+| Device Metadata Store       | Windows 7, 8, 10            | C:\ProgramData\Microsoft\Windows\DeviceMetadataStore                                                    |
+| DocumentsLibrary            | Windows 7, 8, 10            | Libraries\Documents                                                                                     |
+| Downloads                   | Windows Vista, 7, 8, 10     | C:\Users\User\Downloads                                                                                 |
+| DpapiKeys                   | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Roaming\Microsoft\Protect                                                         |
+| Favorites                   | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Favorites                                                                                 |
+| Fonts                       | Windows XP, Vista, 7, 8, 10 | C:\Windows\Fonts                                                                                        |
+| Gadgets                     | Windows Vista, 7            | C:\Users\User\AppData\Local\Microsoft\Windows Sidebar\Gadgets                                           |
+| GameTasks                   | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Local\Microsoft\Windows\GameExplorer                                              |
+| History                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Local\Microsoft\Windows\History                                                   |
+| ImplicitAppShortcuts        | Windows 7, 8, 10            | C:\Users\User\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned\ImplicitAppShortcuts |
+| Links                       | Windows Vista, 7, 8, 10     | C:\Users\User\Links                                                                                     |
+| Local AppData               | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Local                                                                             |
+| Local Documents             | Windows 10                  | C:\Users\User\Documents                                                                                 |
+| Local Downloads             | Windows 10                  | C:\Users\User\Downloads                                                                                 |
+| Local Music                 | Windows 10                  | C:\Users\User\Music                                                                                     |
+| Local Pictures              | Windows 10                  | C:\Users\User\Pictures                                                                                  |
+| Local Videos                | Windows 10                  | C:\Users\User\Videos                                                                                    |
+| LocalAppDataLow             | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\LocalLow                                                                          |
+| LocalizedResourcesDir       | Windows XP, Vista           | C:\Windows\Resources\<LanguageID>                                                                       |
+| My Music                    | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Music                                                                                     |
+| My Pictures                 | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Pictures                                                                                  |
+| My Video                    | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Videos                                                                                    |
+| NetHood                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Network Shortcuts                                       |
+| OneDrive                    | Windows 8, 10               | C:\Users\User\OneDrive                                                                                  |
+| Personal                    | Windows XP, Vista, 7, 8, 10 | C:\Users\User\Documents                                                                                 |
+| PrintHood                   | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Printer Shortcuts                                       |
+| Profile                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User                                                                                           |
+| ProgramFiles                | Windows XP, Vista, 7, 8, 10 | C:\Program Files                                                                                        |
+| ProgramFilesCommon          | Windows Vista, 7, 8, 10     | C:\Program Files\Common Files                                                                           |
+| ProgramFilesCommonX64       | Windows 10                  | C:\Program Files\Common Files                                                                           |
+| ProgramFilesCommonX86       | Windows Vista, 7, 8, 10     | C:\Program Files (x86)\Common Files                                                                     |
+| ProgramFilesX64             | Windows 10                  | C:\Program Files                                                                                        |
+| ProgramFilesX86             | Windows Vista, 7, 8, 10     | C:\Program Files (x86)                                                                                  |
+| Programs                    | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs                                     |
+| Public                      | Windows Vista, 7, 8, 10     | C:\Users\Public                                                                                         |
+| PublicAccountPictures       | Windows 8, 10               | C:\Users\Public\AccountPictures                                                                         |
+| PublicGameTasks             | Windows Vista, 7, 8, 10     | C:\ProgramData\Microsoft\Windows\GameExplorer                                                           |
+| PublicLibraries             | Windows 8, 10               | C:\Users\Public\Libraries                                                                               |
+| Quick Launch                | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch                                  |
+| Recent                      | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Recent                                                  |
+| ResourceDir                 | Windows XP, Vista, 7, 8, 10 | C:\Windows\Resources                                                                                    |
+| Ringtones                   | Windows 7, 8, 10            | C:\Users\User\AppData\Local\Microsoft\Windows\Ringtones                                                 |
+| Roaming Tiles               | Windows 8, 10               | C:\Users\User\AppData\Local\Microsoft\Windows\RoamingTiles                                              |
+| SampleMusic                 | Windows Vista, 7            | C:\Users\Public\Music\Sample Music                                                                      |
+| SamplePictures              | Windows Vista, 7            | C:\Users\Public\Pictures\Sample Pictures                                                                |
+| SampleVideos                | Windows Vista, 7            | C:\Users\Public\Videos\Sample Videos                                                                    |
+| SavedGames                  | Windows Vista, 7, 8, 10     | C:\Users\User\Saved Games                                                                               |
+| SavedPictures               | Windows 10                  | C:\Users\User\Pictures\Saved Pictures                                                                   |
+| Searches                    | Windows Vista, 7, 8, 10     | C:\Users\User\Searches                                                                                  |
+| SendTo                      | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\SendTo                                                  |
+| SkyDriveCameraRoll          | Windows 8                   | C:\Users\User\SkyDrive\Pictures\Camera Roll                                                             |
+| SkyDriveDocuments           | Windows 8                   | C:\Users\User\SkyDrive\Documents                                                                        |
+| SkyDriveMusic               | Windows 8                   | C:\Users\User\SkyDrive\Music                                                                            |
+| SkyDrivePictures            | Windows 8                   | C:\Users\User\SkyDrive\Pictures                                                                         |
+| Start Menu                  | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Start Menu                                              |
+| Startup                     | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup                             |
+| System                      | Windows XP, Vista, 7, 8, 10 | C:\Windows\System32                                                                                     |
+| SystemCertificates          | Windows Vista, 7, 8, 10     | C:\Users\User\AppData\Roaming\Microsoft\SystemCertificates                                              |
+| SystemX86                   | Windows XP, Vista, 7, 8, 10 | C:\Windows\SysWOW64                                                                                     |
+| Templates                   | Windows XP, Vista, 7, 8, 10 | C:\Users\User\AppData\Roaming\Microsoft\Windows\Templates                                               |
+| ThisDeviceFolder            | Windows 8, 10               | C:\Users\Public                                                                                         |
+| User Pinned                 | Windows 7, 8, 10            | C:\Users\User\AppData\Roaming\Microsoft\Internet Explorer\Quick Launch\User Pinned                      |
+| UserProfiles                | Windows Vista, 7, 8, 10     | C:\Users                                                                                                |
+| UserProgramFiles            | Windows 7, 8, 10            | C:\Users\User\AppData\Local\Programs                                                                    |
+| UserProgramFilesCommon      | Windows 7, 8, 10            | C:\Users\User\AppData\Local\Programs\Common                                                             |
+| UsersFilesFolder            | Windows Vista, 7, 8, 10     | C:\Users\User                                                                                           |
+| Windows                     | Windows XP, Vista, 7, 8, 10 | C:\Windows                                                                                              |
