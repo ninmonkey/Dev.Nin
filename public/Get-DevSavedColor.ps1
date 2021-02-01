@@ -20,6 +20,8 @@ function Get-DevSavedColor {
     .NOTES
     future:
         - [ ] fromRGB
+        - [ ] preview not needed, just create [Color.Format-Wide.Format.ps1xml]
+            (inspect pansi/ClassExplorer) for types
     #>
     [cmdletbinding(DefaultParameterSetName = 'fromName')]
     param(
@@ -51,15 +53,6 @@ function Get-DevSavedColor {
                 $filteredColors = $dev_colors.GetEnumerator() | Where-Object {
                     $_.Key -match $Regex.AllColors
                 }
-                # $dev_colors.GetEnumerator() | Where-Object {
-                #     $ColorName | ForEach-Object {
-                #         $curColor = $_
-                #         if ($_.Key -match $curColor) {
-                #             return $true ; return
-                #         }
-                #     }
-                # }
-                break
             }
 
             default {
@@ -71,24 +64,52 @@ function Get-DevSavedColor {
             $filteredColors = $dev_colors
         }
 
-        $filteredColors
+        if ($PassThru) {
+            $filteredColors
+            return
+        }
+
+
+        $filteredColors | ForEach-Object {
+            $curColor = $_
+            $Name = $curColor.Key
+            @(
+                New-Text $Name -fg $curColor.Value | ForEach-Object tostring
+                New-Text $Name -bg $curColor.Value | ForEach-Object tostring
+            ) -join ' '
+        }
+
     }
 
 }
 
-Get-DevSavedColor -All
-hr
-Get-DevSavedColor -Name 'yellfow', 'red'
-hr
-Get-DevSavedColor -All | ForEach-Object GetEnumerator | ForEach-Object {
-    $Name = $_.Key
-    New-Text $Name -fg $_.Value
-} #| Format-Table
 
-Get-DevSavedColor -All | ForEach-Object GetEnumerator | ForEach-Object {
-    $Name = $_.Key
-    @(
-        New-Text $Name -fg $_.Value | ForEach-Object tostring
-        New-Text $Name -bg $_.Value | ForEach-Object tostring
-    ) -join ' '
+if ($False) {
+    Get-DevSavedColor -All
+    hr
+    Get-DevSavedColor -Name 'yellfow', 'red'
+    hr
+    Get-DevSavedColor -All | ForEach-Object GetEnumerator | ForEach-Object {
+        $Name = $_.Key
+        New-Text $Name -fg $_.Value
+    } #| Format-Table
+
+    Get-DevSavedColor -All | ForEach-Object GetEnumerator | ForEach-Object {
+        $Name = $_.Key
+        @(
+            New-Text $Name -fg $_.Value | ForEach-Object tostring
+            New-Text $Name -bg $_.Value | ForEach-Object tostring
+        ) -join ' '
+    }
+
+    Get-DevSavedColor -Name 'yellfow', 'red'
+    # | Format-DevColor RenderTest
+
+    hr 4
+    $dev_colors.GetEnumerator() | ForEach-Object Value
+
+    HR
+    $dev_colors.Red | Format-DevColor -PassThru
+    hr
+    $dev_colors.Red | Format-DevColor RenderTest
 }

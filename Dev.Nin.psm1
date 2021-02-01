@@ -89,6 +89,7 @@ $public = @(
     'Format-TemplateString'
     'Dev-ExportFormatData'
     'Get-DevSavedColor'
+    'Format-DevColor'
 
     'Dev-GetDotnetPwshVersion'
 )
@@ -139,6 +140,7 @@ $functionsToExport = @(
     'Dev-ExportFormatData'
     'Start-DevTimer'
     'Get-DevSavedColor'
+    'Format-DevColor'
 
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
