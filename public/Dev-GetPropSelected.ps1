@@ -17,26 +17,29 @@ function Dev-GetPropSelected {
     # $_SavedListMetadata
     # throw "nyi: Add-SavedList"
 }
-$source = Get-ChildItem . | Select-Object -First 1
-# $selected = $Null
-if (! $selected ) {
-    $propList = $source | ForEach-Object { $_.psobject.properties.name }
-    $selected = $propList | Out-Fzf -MultiSelect
-    $selected -join ', '
-}
 
-$source | Select-Object -prop $selected
+# if ($true) {
+#     $source = Get-ChildItem . | Select-Object -First 1
+#     # $selected = $Null
+#     if ($true) {
+#         # if (! $selected ) {
+#         $propList = $source | ForEach-Object { $_.psobject.properties.name }
+#         $selected = $propList | Out-Fzf -MultiSelect
+#         $selected -join ', '
+#     }
 
-H1 'show selected'
-foreach ($p in $selected) {
-    $maybeValue = $source.$p ?? ( "`u{0}" | Format-ControlChar )
-    $valIsNull = $null -eq $maybeValue
+#     $source | Select-Object -prop $selected
 
-    [pscustomobject]@{
-        Name  = $P
-        Value = $maybeValue
-        Type  = ($valIsNull) ? $valIsNull : $maybeValue.GetType().FullName
-    }
-    hr
+#     H1 'show selected'
+#     foreach ($p in $selected) {
+#         $maybeValue = $source.$p ?? ( "`u{0}" | Format-ControlChar )
+#         $valIsNull = $null -eq $maybeValue
 
-}
+#         [pscustomobject]@{
+#             Name  = $P
+#             Value = $maybeValue
+#             Type  = ($valIsNull) ? $valIsNull : $maybeValue.GetType().FullName
+#         }
+#         hr
+#     }
+# }

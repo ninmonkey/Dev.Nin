@@ -18,6 +18,7 @@ if ($__Config.Enable_FormatData_BuiltIn) {
 }
 
 $private = @(
+    '_format_color'
 
 )
 
@@ -111,6 +112,11 @@ foreach ($file in $public) {
 }
 
 $functionsToExport = @(
+    ## temp imports, to be removed
+    '_format_RgbColorString'
+    '_format_HslColorString'
+
+    ## main
     'Compare-StrictEqual'
     'Get-HelpFromType'
     'Get-DevInspectObject'
@@ -191,7 +197,7 @@ if ($False) {
     if ($true -or $ShowExportMapping) {
         Label 'Exported Aliases' '(WIP Debug screen)' -fg red
         | Write-Informationpow
-        "to add: 'formatdata', 'private', 'public_nativeWrapper', 'completer', 'public', 'functionsToExport', 'aliasesToExport'"
+        "to add: 'formatdata', '4te', 'public_nativeWrapper', 'completer', 'public', 'functionsToExport', 'aliasesToExport'"
         | Write-Information
         $aliasesToExport | ForEach-Object {
             $curAlias = $_
