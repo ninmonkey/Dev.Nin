@@ -82,6 +82,7 @@ $public = @(
     'Get-DevFunctionInfo'
 
     # newest experiments
+    'Invoke-EverythingSearch'
     'Sort-NinObject'
     'Edit-DevTodoList'
     'Find-VerbPrefix'
@@ -92,6 +93,8 @@ $public = @(
     'Dev-ExportFormatData'
     'Get-DevSavedColor'
     'Format-DevColor'
+
+    'Get-DevRandNumericWord'
 
     'Dev-GetDotnetPwshVersion'
 )
@@ -137,6 +140,7 @@ $functionsToExport = @(
     'Get-DevFunctionInfo'
 
     # newest experiments
+    'Invoke-EverythingSearch'
     'Sort-NinObject'
     'Edit-DevTodoList'
     'Get-SavedList'
@@ -149,6 +153,7 @@ $functionsToExport = @(
     'Start-DevTimer'
     'Get-DevSavedColor'
     'Format-DevColor'
+    'Get-DevRandNumericWord'
 
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
@@ -166,6 +171,10 @@ Export-ModuleMember -Function $functionsToExport
 
 # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
 $aliasesToExport = @(
+    # temporary aliases
+    '_randWord'
+
+    # main
     'TypeHelp'
     'Inspect'
     'HelpFromType'
@@ -177,9 +186,12 @@ $aliasesToExport = @(
     'ParamInfo'
 
     # newest experiments
+    'SearchEvery'
     'Edit-TodoList'
     'Hi'
     'LsFd'
+
+
 )
 Export-ModuleMember -Alias $aliasesToExport
 

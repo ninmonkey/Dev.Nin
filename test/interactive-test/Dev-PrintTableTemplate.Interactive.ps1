@@ -33,7 +33,7 @@ function Interactive_NoRender {
         $Extension = [string]::IsNullOrWhiteSpace( $_.Extension ) ? 'N/A' : $_.Extension
         $Vals = $_.Name, $Extension, $_.LastWriteTimeString
         $Vals
-        $rowMax = $Vals | Measure-Object -Maximum -Property Length | ForEach-Object Maximum
+        $rowMax = $Vals | Measure-Object -Macximum -Property Length | ForEach-Object Maximum
         $Vals -join ', ' | Write-Debug
         Write-Debug "Row max: $rowMax"
         $MinCellWidth = $MinCellWidth, $rowMax | Measure-Object -Maximum | ForEach-Object Maximum

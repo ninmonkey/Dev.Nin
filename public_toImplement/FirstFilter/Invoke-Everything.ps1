@@ -1,4 +1,0 @@
-
-function _invoke-Everything {
-
-}
