@@ -23,6 +23,7 @@ $private = @(
 
     # quick experiments
     '_mini_experiment'
+    '_test_encodedecode'
 )
 
 foreach ($file in $private) {
@@ -35,6 +36,8 @@ foreach ($file in $private) {
 
 $public_QuickExperiment = @(
     '_get_commandMine'
+    'testEncode'
+    'testDecode'
 )
 Export-ModuleMember -Function $public_QuickExperiment
 
