@@ -1,4 +1,4 @@
-Write-Warning "Edit-FunctionSource() : cleanup me -> nin.console"
+# future: todo: "Edit-FunctionSource() : cleanup me -> nin.console"
 function Edit-FunctionSource {
     <#
     .synopsis
@@ -73,7 +73,7 @@ function Edit-FunctionSource {
         }
     }
     end {
-        'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
+        Write-Verbose 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
     }
 }
 

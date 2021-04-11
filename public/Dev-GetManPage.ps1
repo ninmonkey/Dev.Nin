@@ -99,7 +99,9 @@
             # h1 'stuff' -fg green
             break
         }
-        default { throw "ShouldNever: $FlagName" }
+        default {
+            throw "ShouldNever: $FlagName" 
+        }
     }
 
 
@@ -153,7 +155,7 @@
     $metaDebug | Format-HashTable -Title 'stuff' | Join-String -sep "`n" | Write-Debug
 }
 
-if ($DevTesting) {
+if ($DevTesting -and $false) {
     # Import-Module dev.nin -Force
     nMan rg -FlagName 'I'
     nMan fd  'i', 'I' -Debug
@@ -161,7 +163,9 @@ if ($DevTesting) {
     nMan pwsh -Debug | Select-Object -First 40
 }
 
-# help curl
-# Get-Command help -All -ListImported | Format-List
-nMan rg t, T
-Write-Warning 'next: enumerate so spacing between mult flags?'
+if ($false) {
+    # help curl
+    # Get-Command help -All -ListImported | Format-List
+    nMan rg t, T
+    Write-Warning 'next: enumerate so spacing between multi flags?'
+}

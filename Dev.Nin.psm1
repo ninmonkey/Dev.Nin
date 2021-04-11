@@ -18,8 +18,11 @@ if ($__Config.Enable_FormatData_BuiltIn) {
 }
 
 $private = @(
+    # actually private
     '_format_color'
 
+    # quick experiments
+    '_mini_experiment'
 )
 
 foreach ($file in $private) {
@@ -29,6 +32,12 @@ foreach ($file in $private) {
     }
     . ("{0}\private\{1}.ps1" -f $psscriptroot, $file)
 }
+
+$public_QuickExperiment = @(
+    '_get_commandMine'
+)
+Export-ModuleMember -Function $public_QuickExperiment
+
 
 $public_NativeWrapper = @(
 
@@ -66,6 +75,7 @@ $public = @(
     'Get-SavedData'
     'Get-DevInspectObject'
     'Get-DevParameterInfo'
+    'Format-DevParameterInfo'
 
     'Dev-PrintTableTemplate'
     'Dev-GetManPage'
@@ -158,6 +168,7 @@ $functionsToExport = @(
     # very temp funcs, to be removed
     '_get-UnicodeHelp'
     'Get-DevParameterInfo'
+    'Format-DevParameterInfo'
 
     'Dev-GetDotnetPwshVersion'
 )
