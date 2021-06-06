@@ -25,10 +25,11 @@ num
 {validWord3}
 '@
 
+
 function Format-TemplateString {
     [Alias('Template, Format-Template')]
     param()
-
+    throw "NYI: public\Format-TemplateString.ps1"
     Write-Warning "Format-TemplateString: WIP"
     H1 'Should there be?
         "New-TemplateString"
@@ -73,10 +74,9 @@ function _findRequiredKeys {
     $debugMeta | Format-HashTable | Write-Debug
 
     $RequiredKeys
-    Write-Warning 'Format-TemplateString: WIP'
+    # future: todo: 'Format-TemplateString: WIP'
 }
 
-Write-Warning 'next: Format-TemplateString'
 if ($false -and $DebugTestMode) {
 
     H1 'Template'

@@ -32,12 +32,15 @@ function Edit-FunctionSource {
             if ($isAlias) {
                 $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
                 $resolvedAlias
-            } else {
+            }
+            else {
                 Get-Command $FunctionName -ea SilentlyContinue
             }
         }
 
-        Label 'Matches' $functionQuery.count | Write-Host
+        # $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
+        Write-ConsoleLabel 'Matches: ' $functionQuery.count | Write-Information
+
         if (! $functionQuery ) {
             Write-Error "FunctionNotFound: No matches for query: '$FunctionName'"
             return
@@ -63,10 +66,12 @@ function Edit-FunctionSource {
                 if ($autoOpen) {
                     Write-Debug "code '$Path'"
                     code $Path
-                } else {
+                }
+                else {
                     '<', $Path, '>' -join ''
                 }
-            } else {
+            }
+            else {
                 H1 "shouldNeverException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly" | Write-Host
 
             }
@@ -78,7 +83,7 @@ function Edit-FunctionSource {
 }
 
 # Edit-FunctionSource 'Write-Conso'
-if ($TempDebugTest) {
+if ($false -and $TempDebugTest) {
     # Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes'
 
     H1 'test1: as param'

@@ -90,7 +90,8 @@ function _Get-NinCommandMultiple {
 
 
 function Get-Rune {
-    Write-Warning "nyi"
+    # throw "nyi"
+    Write-Warning "NYI: public\import-Dev-Unicode.ps1"
 }
 
 function _get-UnicodeHelp {

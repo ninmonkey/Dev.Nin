@@ -12,6 +12,7 @@ function _format_HslColorString {
             # output is colored
             HSL(129, 87.9%, 48.4%) HSL(129, 87.9%, 48.4%)
 
+    .example
         🐒> $hsl_color | _format_HslColorString -NoColor
 
             HSL(129, 87.9%, 48.4%)
@@ -130,6 +131,7 @@ function _format_RgbColorString {
     )
 
     process {
+        write-error 'wip: debug me'
         if (! $NoColor) {
             $text = _format_RgbColorString -RGBObject $RGBObject -NoColor
             @(
@@ -139,9 +141,21 @@ function _format_RgbColorString {
             return
         }
 
+        $join_Rgb = @{
+            Separator    = ', '
+            FormatString = '{0,3:n0}'
+            OutputPrefix = 'RGB('
+            OutputSuffix = ')'
+        }
+
         $FinalText = $rgb_color.Ordinals
-        | Join-String -sep ', ' -FormatString '{0,3:n0}' -op 'RGB(' -os ')'
+        | Join-String @join_Rgb
         $finalText
     }
 
+}
+
+if($false) {
+Hr
+Get-ChildItem fg: | Get-Random | _format_RgbColorString -NoColor
 }

@@ -11,7 +11,7 @@ $formatData_BuiltIn = @(
 
 if ($__Config.Enable_FormatData_BuiltIn) {
     foreach ($typeName in $formatData_BuiltIn) {
-        $FileName = ("{0}\public\FormatData\builtin_types\{1}.format.ps1xml" -f $PSScriptRoot, $typeName) | Get-Item -ea stop
+        $FileName = ('{0}\public\FormatData\builtin_types\{1}.format.ps1xml' -f $PSScriptRoot, $typeName) | Get-Item -ea stop
         Write-Verbose "Loading NativeFormatData: <$FileName>"
         Update-FormatData -PrependPath $FileName
     }
@@ -24,20 +24,25 @@ $private = @(
     # quick experiments
     '_mini_experiment'
     '_test_encodedecode'
+    '_Lsd'
+    '_JoinStr'
 )
 
 foreach ($file in $private) {
-    if (Test-Path ("{0}\private\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: private: $File"
     }
-    . ("{0}\private\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
 }
 
 $public_QuickExperiment = @(
     '_get_commandMine'
     'testEncode'
     'testDecode'
+    'Lsd'
+    'JoinStr'
 )
 Export-ModuleMember -Function $public_QuickExperiment
 
@@ -46,11 +51,12 @@ $public_NativeWrapper = @(
 
 )
 foreach ($file in $public_NativeWrapper) {
-    if (Test-Path ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
-    . ("{0}\public\native_wrapper\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
 
 }
 
@@ -61,11 +67,12 @@ $completer = @(
 )
 
 foreach ($file in $completer) {
-    if (Test-Path ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)) {
-    } else {
+    if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
+    }
+    else {
         Write-Error "Import: failed: completer: $File"
     }
-    . ("{0}\public\completer\{1}.ps1" -f $psscriptroot, $file)
+    . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
 }
 
 Export-ModuleMember -Function $completer
@@ -119,9 +126,10 @@ $public_ToRefactorOutside = @(
 $functionsToExport += $public_ToRefactorOutside
 
 foreach ($file in $public) {
-    $ExpectedPath = Get-Item -ea stop ("{0}\public\{1}.ps1" -f $psscriptroot, $file)
+    $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
     if (Test-Path $ExpectedPath) {
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public: $File"
     }
     . $ExpectedPath
