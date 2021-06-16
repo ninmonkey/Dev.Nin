@@ -50,11 +50,13 @@ function Get-FavCommand {
 
     # [pscustomobject]$commandList
     $commandList
+    throw 'obsolete?'
 }
 
 
-
-Get-FavCommand -ov 'fav'
+if ($false) {
+    Get-FavCommand -ov 'fav'
+}
 # Get-ChildItem "$env:ProgramFiles" -ea stop -File -Filter 'firefox.exe' -Depth 1
 # hr
 # if ($true) {

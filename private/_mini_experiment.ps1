@@ -1,4 +1,5 @@
-﻿function _get_commandMine {
+﻿
+function _get_commandMine {
     <#
     .synopsis
         filter Get-Command -module * to mine
