@@ -16,7 +16,12 @@ function Get-FavCommand {
     #>
     [OutputType([System.Collections.Hashtable])]
     [CmdletBinding()]
-    param()
+    param(
+        # filter
+        [Alias('Type')]
+        [Parameter(Position = 0)]
+        [System.Management.Automation.CommandTypes]$CommandType
+    )
 
     $commandList = @{
 
@@ -49,19 +54,23 @@ function Get-FavCommand {
 
 
     # [pscustomobject]$commandList
+
     $commandList
-    throw 'obsolete?'
+    return
+
 }
 
 
 if ($false) {
-    Get-FavCommand -ov 'fav'
+    # Get-FavCommand -ov
+
+    Get-ChildItem "$env:ProgramFiles" -ea stop -File -Filter 'firefox.exe' -Depth 1
+    Hr
+    H1 'last block'
+    if ($true) {
+        $PossibleSources = Get-ChildItem env: | Where-Object Value -Match ([regex]::Escape(':\Program Files\'))
+        $PossibleSources | Join-String -sep "`n" -op (H1 'PossibleSources' -After 1 | Join-String -Separator '') | Join-String -sep '' -os "`n" {
+            ($_.Key).padright(30), '=', ($_.Value[0..40] -join '') | Join-String -sep ' '
+        }
+    }
 }
-# Get-ChildItem "$env:ProgramFiles" -ea stop -File -Filter 'firefox.exe' -Depth 1
-# hr
-# if ($true) {
-#     $PossibleSources = Get-ChildItem env: | Where-Object Value -Match ([regex]::Escape(':\Program Files\'))
-#     $PossibleSources | Join-String -sep "`n" -op (h1 'PossibleSources' -After 1 | Join-String -Separator '') | Join-String -sep '' -os "`n" {
-#         ($_.Key).padright(30), '=', ($_.Value[0..40] -join '') | Join-String -sep ' '
-#     }
-# }

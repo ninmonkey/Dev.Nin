@@ -1,5 +1,80 @@
 using namespace System.Collections.Generic
 
+function _maybePath {
+    <#
+    .synopsis
+        without errors: tries to return Get-Item, otherwise original
+    .outputs
+        [System.IO.FileSystemInfo] else [System.String]
+    #>
+    param(
+        # Parameter help description
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Path
+    )
+    process {
+        (Get-Item $Path -ea Ignore) ?? $Path
+    }
+}
+
+function New-EverythingSearchTerm {
+    <#
+    .synopsis
+        Generates single items for the full query 'Invoke-EverythingSearch'
+    .description
+        currently allows invalid filepaths on purpose
+    .link
+        Invoke-EverythingSearch
+
+    #>
+    [CmdletBinding()]
+    param (
+        # SearchType: Enum
+        <#
+            todo: create enum
+
+        whenEnumType = datemodified|datecreated
+        timeEnum = Enum = today/this/year/day/etc
+
+        #>
+        [Alias('Type')]
+        [Parameter(Mandatory, Position = 0)]
+        [ValidateSet('Path', 'Path:ww')] # tooltip 'path:ww:stuff'
+        $TermType,
+
+        # Value
+        [Parameter()]
+        [string]$Path
+    )
+
+    begin {
+        $TermTemplate = @{
+            'Path:ww' = @'
+path:ww:"{0}"
+'@
+            'Path'    = @'
+path:"{0}"
+'@
+        }
+    }
+
+    process {
+        switch ($TermType) {
+            'FullPath' {
+                $TermTemplate.'Path:ww' -f (_maybePath $Path)
+                break
+            }
+            Default {
+                throw "UnhandledType: '$TermType'"
+            }
+        }
+    }
+
+    end {
+
+    }
+}
+
 function Invoke-EverythingSearch {
     <#
     .synopsis
@@ -13,8 +88,11 @@ function Invoke-EverythingSearch {
         SearchEvery -dm last3weeks path:ww:c:\
         PS> SearchEvery -WhatIf -InformationAction Continue -dm last3weeks -Extension 'ps1', 'md'
         PS> SearchEvery -dm last3weeks -Extension 'ps1', 'md'
+    .link
+        New-EverythingSearchTerm
     #>
-    [alias('SearchEvery')]
+    [alias('SearchEvery', 'eSearch')]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # Extension
         [Parameter()]
@@ -35,9 +113,14 @@ function Invoke-EverythingSearch {
         [switch]$Today,
 
         # DateModified : Future: [object] so actual [datetime] can be passed, too
-        [Parameter(Position)]
+        [Parameter()]
         [Alias('dm')]
         [string]$DateModified,
+
+        # Path
+        [Parameter()]
+        [Alias('Path')]
+        [string]$WholePath,
 
         # RemainingArgs
         [Parameter(ValueFromRemainingArguments)]
@@ -98,6 +181,12 @@ function Invoke-EverythingSearch {
 
         }
 
+        if ($WholePath) {
+            $query_path_ww = 'path:ww:"{0}"' -f (
+                _maybePath $WholePath
+            ) | ForEach-Object ToString
+            $queryTerms.Add( $query_path_ww )
+        }
 
 
 
@@ -111,7 +200,7 @@ function Invoke-EverythingSearch {
 
 
 
-        Label 'Final Query' $joinedQuery | Write-Information
+        Label 'Final Query' -e Ignore $joinedQuery | Write-Information
         function _validateUri {
             param( [string]$Uri )
             if ($joinedQuery -notmatch '^es:') {

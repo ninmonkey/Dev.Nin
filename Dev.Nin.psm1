@@ -22,6 +22,7 @@ $private = @(
     '_format_color'
 
     # quick experiments
+    '_dig'
     '_mini_experiment'
     '_test_encodedecode'
     '_Lsd'
@@ -30,11 +31,11 @@ $private = @(
 
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
+        . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
     }
     else {
         Write-Error "Import: failed: private: $File"
     }
-    . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
 }
 
 $public_QuickExperiment = @(
@@ -43,6 +44,7 @@ $public_QuickExperiment = @(
     'testDecode'
     'Lsd'
     'JoinStr'
+    'Find-DevItem'
 )
 Export-ModuleMember -Function $public_QuickExperiment
 
@@ -52,11 +54,11 @@ $public_NativeWrapper = @(
 )
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
+        . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
     }
     else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
-    . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
 
 }
 
@@ -68,16 +70,21 @@ $completer = @(
 
 foreach ($file in $completer) {
     if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
+        . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
     }
     else {
         Write-Error "Import: failed: completer: $File"
     }
-    . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
 }
 
 Export-ModuleMember -Function $completer
 
 $public = @(
+    # new
+    'Resolve-FullTypeName'
+    'ConvertFrom-GistList'
+
+    # ...
     'Compare-StrictEqual'
     'Get-FunctionDebugInfo'
     'Get-HelpFromType'
@@ -128,14 +135,18 @@ $functionsToExport += $public_ToRefactorOutside
 foreach ($file in $public) {
     $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
     if (Test-Path $ExpectedPath) {
+        . $ExpectedPath
     }
     else {
         Write-Error "Import: failed: public: $File"
     }
-    . $ExpectedPath
 }
 
 $functionsToExport = @(
+    ##  newer
+    'Resolve-FullTypeName'
+    'ConvertFrom-GistList'
+
     ## temp imports, to be removed
     '_format_RgbColorString'
     '_format_HslColorString'
@@ -162,12 +173,16 @@ $functionsToExport = @(
 
     # newest experiments
     'Invoke-EverythingSearch'
+    'New-EverythingSearchTerm'
     'Sort-NinObject'
+
+    # more
+
     'Edit-DevTodoList'
+    'Dev-InvokeFdFind'
     'Get-SavedList'
     'Get-SavedData'
     'Find-VerbPrefix'
-    'Dev-InvokeFdFind'
     'Out-ConsoleHighlight'
     'Format-TemplateString'
     'Dev-ExportFormatData'
@@ -196,11 +211,24 @@ $aliasesToExport = @(
     # temporary aliases
     '_randWord'
 
-    # main
+
+    # Find-DevItem
+    'Dig'
+    'Find-Item'
+
+    # Everything Search
+    'SearchEvery'
+    'eSearch'
+
+
+    ## Section:" Types"
+    'FullName' # Resolve-FullTypeName
     'TypeHelp'
     'Inspect'
     'HelpFromType'
     'NameFrom'
+
+    ## Other
     'Table'
     'Pow'
     'Man'
@@ -208,7 +236,6 @@ $aliasesToExport = @(
     'ParamInfo'
 
     # newest experiments
-    'SearchEvery'
     'Edit-TodoList'
     'Hi'
     'LsFd'

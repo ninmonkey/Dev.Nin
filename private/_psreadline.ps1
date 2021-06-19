@@ -10,25 +10,18 @@ function Dev-ExportPSReadlineTheme {
     .notes
         .
     #>
-    param (
-        
-    )
-    begin {        
-        $PropertyColorList = Get-PSReadLineOption | prop | % Name | ? { $_ -match 'color' } | sort -Unique
-    }
-    process {
-        $ThemeSettings = $PropertyColorList | % { 
-            $ColorName = $_
-            $ColorValue = (Get-PSReadLineOption).$ColorName
-            [pscustomobject]@{
-                'Name' = $ColorName 
-                'Value' = $ColorValue
-            }
+    param ()
+    $PropertyColorList = Get-PSReadLineOption | prop | ForEach-Object Name | Where-Object { $_ -match 'color' } | Sort-Object -Unique
+    $ThemeSettings = $PropertyColorList | ForEach-Object {
+        $ColorName = $_
+        $ColorValue = (Get-PSReadLineOption).$ColorName
+        [pscustomobject]@{
+            'Name'  = $ColorName
+            'Value' = $ColorValue
         }
-        $ThemeSettings
-        | ConvertTo-Json -depth 3
     }
-    end {}
+    $ThemeSettings
+    | ConvertTo-Json -Depth 3
 }
 
-Dev-ExportPSReadlineTheme
+# Dev-ExportPSReadlineTheme

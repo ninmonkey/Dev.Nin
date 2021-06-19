@@ -11,6 +11,8 @@ function ConvertFrom-GistList {
     <#
     .synopsis
         splits gitub result to structured record
+    .description
+        todo verify it runs on piped
     .example
         PS>
             $myGistRaw = gh gist list --limit 100

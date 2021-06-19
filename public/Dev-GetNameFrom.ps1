@@ -7,6 +7,8 @@ function Dev-GetNameFrom {
     .description
         temporary function to get full namespaces (to add missing imports in dev)
         saves to clipboard
+    .link
+        see: Ninmonkey.Console\Resolve-FullTypeName
 
     #>
     param (
