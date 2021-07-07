@@ -109,6 +109,7 @@ $public = @(
     'Get-DevFunctionInfo'
 
     # newest experiments
+    'New-RegexToggleSensitive'
     'Invoke-EverythingSearch'
     'Sort-NinObject'
     'Edit-DevTodoList'
@@ -172,6 +173,7 @@ $functionsToExport = @(
     'Get-DevFunctionInfo'
 
     # newest experiments
+    'New-RegexToggleSensitive'
     'Invoke-EverythingSearch'
     'New-EverythingSearchTerm'
     'Sort-NinObject'
@@ -211,6 +213,9 @@ $aliasesToExport = @(
     # temporary aliases
     '_randWord'
 
+    ## Section: Regex
+    # New-RegexToggleSensitive
+    'RegexSensitive'
 
     # Find-DevItem
     'Dig'
@@ -221,7 +226,7 @@ $aliasesToExport = @(
     'eSearch'
 
 
-    ## Section:" Types"
+    ## Section: Types
     'FullName' # Resolve-FullTypeName
     'TypeHelp'
     'Inspect'

@@ -13,6 +13,7 @@ Describe "Compare-StrictEqual" {
         $splat = @{
             A = [double]5
             B = [int]'5'
+
         }
         Compare-StrictEqual @splat | Should -Be $false
     }
@@ -20,6 +21,7 @@ Describe "Compare-StrictEqual" {
         $splat = @{
             A = [int64]5
             B = [int32]5
+
         }
         Compare-StrictEqual @splat | Should -Be $false
     }

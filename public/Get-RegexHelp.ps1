@@ -31,5 +31,5 @@ function Get-RegexHelp {
         #     Tags = 'reference', 'toc', 'docs'
         # },
     )
-    $urls
+    $urls | ForEach-Object { [pscustomobject]$_ }
 }

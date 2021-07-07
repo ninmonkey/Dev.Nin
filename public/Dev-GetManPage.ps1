@@ -27,7 +27,7 @@
         PS> man bat u
     .notes
         todo:
-        - [ ] rewrite
+
         - [ ] Add syntax highlighting or at least regex-based syntax highlighting of flags
         - [ ] if piping to LESS, pass search argument so user can hit 'next'/'prev' without doing anything
     #>
@@ -53,6 +53,7 @@
         [string[]]$FlagName,
 
 
+
         # Skip cached local man page
         [Parameter()][switch]$NoCache
     )
@@ -70,65 +71,43 @@
         \s*\-{1,2}'
     $Regex.ShortFlag_Part2 = '\b'
 
-    # function regexTemplate {
-    #     [Parameter()]
-    #     [object]$List
-
-    # }
-
     switch ($FlagName) {
         { $true } {
-            Write-Debug 'wip: Multi-flag filtering.
-                use own coloring instead of ''grep'''
-            # works for single flag
-            # $Inner = $FlagName -join '|'
-
-            # or condition user flags
             $Inner = $FlagName | ForEach-Object {
                 "($_)"
             } | Join-String -Separator '|'  -OutputPrefix '(' -OutputSuffix ')'
 
-
             $FullRegex = $regex.ShortFlag_Part1, $Inner, $Regex.ShortFlag_Part2 -join ''
-            # h1 'stuff'
             break
         }
         { $false } {
-            # works for single flag
             $FullRegex = $regex.ShortFlag_Part1, $FlagName, $Regex.ShortFlag_Part2 -join ''
-            # h1 'stuff' -fg green
             break
         }
         default {
-            throw "ShouldNever: $FlagName" 
+            throw "ShouldNeverReach: $FlagName"
         }
     }
-
-
     $Paths = @{
-        'config'  = Get-Item -ea stop 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\manpage.json'
-        'manPage' = Get-Item -ea stop 'C:\Users\cppmo_000\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\'
+        'config'  = Get-Item -ea silentlycontinue "$Env:USERPROFILE\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\manpage.json"
+        'manPage' = Get-Item -ea silentlycontinue "$Env:USERPROFILE\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\"
     }
 
     $manPage = Join-Path $Paths.manPage -ChildPath "$CommandName.man.txt"
-    # $cmdBin = Get-Command $CommandName -ea Continue
+    $cmdBin = Get-Command $CommandName -ea Continue -CommandType Application
     $cmdBin = Get-NativeCommand $CommandName -ea Stop
-
     $isSkipCache = (!(Test-Path $manPage)) -or (! $skipCache)
+    # $metaDebug = @{
+    #     'skipCache'         = $skipCache
+    #     'regexFlag'         = $FullRegex
+    #     'regexAllFlags'     = $regex.BaseFlagRegex
+    #     'manPage'           = $manPage
+    #     'cmdBin'            = $cmdBin
+    #     'ParameterSetName'  = $PSCmdlet.ParameterSetName
+    #     'PSBoundParameters' = $PSBoundParameters | Format-HashTable SingleLine
+    # }
 
-    $metaDebug = @{
-        'skipCache'         = $skipCache
-        'regexFlag'         = $FullRegex
-        'regexAllFlags'     = $regex.BaseFlagRegex
-        'manPage'           = $manPage
-        'cmdBin'            = $cmdBin
-        'ParameterSetName'  = $PSCmdlet.ParameterSetName
-        'PSBoundParameters' = $PSBoundParameters | Format-HashTable SingleLine
-
-    }
-
-
-    # refactor so all conditions both work, but also use pipeline
+    # to refactor: so all conditions both work, but also use pipeline
     if ( [string]::IsNullOrWhiteSpace($FlagName) ) {
         $metaDebug['codePath0'] = 'null flag'
         if ( $isSkipCache ) {
@@ -143,7 +122,6 @@
         return
     }
 
-
     if ( $isSkipCache ) {
         # & $cmdBin --help  | rg -i $FullRegex -C 2
         & $cmdBin --help
@@ -151,21 +129,16 @@
         return
     }
     Get-Content $manPage | rg -i $FullRegex -C 2
-
-    $metaDebug | Format-HashTable -Title 'stuff' | Join-String -sep "`n" | Write-Debug
+    # $metaDebug | Format-HashTable -Title 'stuff' | Join-String -sep "`n" | Write-Debug
 }
 
-if ($DevTesting -and $false) {
+if ($false) {
     # Import-Module dev.nin -Force
     nMan rg -FlagName 'I'
     nMan fd  'i', 'I' -Debug
     nMan pwsh 'c', 'C', 'c.*'
     nMan pwsh -Debug | Select-Object -First 40
-}
-
-if ($false) {
     # help curl
     # Get-Command help -All -ListImported | Format-List
-    nMan rg t, T
-    Write-Warning 'next: enumerate so spacing between multi flags?'
+    # nMan rg t, T
 }

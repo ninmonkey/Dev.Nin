@@ -7,7 +7,9 @@ function Get-DevFunctionInfo {
     .SYNOPSIS
         Get an instance of FunctionInfo.
     .DESCRIPTION
-        from: <https://gist.github.com/indented-automation/ecfc58f61d4e382b5ed3947c226028f5>
+        check if [Chris](https://github.com/indented-automation) has an updated functions
+
+        This was from: <https://gist.github.com/indented-automation/ecfc58f61d4e382b5ed3947c226028f5>
 
         FunctionInfo does not present a public constructor. This function calls an internal / private constructor on FunctionInfo to create a description of a function from a script block or file containing one or more functions.
     .PARAMETER IncludeNested
@@ -62,7 +64,8 @@ function Get-DevFunctionInfo {
         if ($pscmdlet.ParameterSetName -eq 'FromPath') {
             try {
                 $scriptBlock = [ScriptBlock]::Create((Get-Content $Path -Raw))
-            } catch {
+            }
+            catch {
                 $ErrorRecord = @{
                     Exception = $_.Exception.InnerException
                     ErrorId   = 'InvalidScriptBlock'
@@ -82,7 +85,8 @@ function Get-DevFunctionInfo {
             ) | ForEach-Object {
                 try {
                     $internalScriptBlock = $_.Body.GetScriptBlock()
-                } catch {
+                }
+                catch {
                     Write-Debug $_.Exception.Message
                 }
                 if ($internalScriptBlock) {
