@@ -3,6 +3,8 @@ function Select-ObjectProperty {
     <#
     .synopsis
         select properties of an object using 'Out-Fzf'
+    .link
+        Where-FzfSelectObject
     #>
     param(
         # Object

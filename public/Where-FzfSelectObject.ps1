@@ -1,3 +1,4 @@
+using namespace system.collections.generic
 
 function Where-FzfSelectObject {
     <#
@@ -5,6 +6,9 @@ function Where-FzfSelectObject {
     a 'Where-Object' the user selects on run time
 
     .DESCRIPTION
+    The difference from 'Select-NinProperty' is that Where doesn't modify the value.
+    'Select-NinProperty' returns a new selection
+
     Like piping to Out-GridView, saving the selection, then applying the filter on the original pipeline
 
     .EXAMPLE
@@ -15,6 +19,8 @@ function Where-FzfSelectObject {
             - [ ] multiple re-runs of the command only prompt on the first run
 
         - [ ] DynamicCompleter for 'ProperyName'
+    .link
+        Select-NinProperty
     #>
 
     param(
@@ -29,11 +35,36 @@ function Where-FzfSelectObject {
 
     begin {
         $listObjects = [list[object]]::new()
+        Write-Warning 'not finished'
     }
     process {
-        $listObjects.Add( $InputObject )
+        if ($InputObject) {
+            $listObjects.Add( $InputObject )
+        }
     }
-    end {}
+    end {
+        $SelectedProps = $listObjects | ForEach-Object $PropertyName | Sort-Object -Unique
+        if (! $SelectedProps ) {
+            Write-Error 'nothing found'
+            return
+        }
+        if (! $SelectedProps.count -eq 0) {
+            Write-Error 'nothing found'
+            return
+        }
+
+        $SelectedProps | Out-Fzf -MultiSelect "Property: $PropertyName"
+
+        $listObjects | Where-Object {
+            $_.$PropertyName -in $SelectedProps
+        }
+    }
+}
+
+if ($false) {
+    $gcm ??= Get-Command 'hist'
+    $gcm | Where-FzfSelectObject Source #-ErrorAction break
+    'done'
 }
 
 if ($false -and 'filterGcm by Source') {
@@ -43,5 +74,5 @@ if ($false -and 'filterGcm by Source') {
     $ovGcm | Sort-Object Source -Unique | ForEach-Object Source | Sort-Object
     | Out-Fzf -ov 'ovFzf'
 
-    $fzf -join ', '  | Label 'Selection' -bef 1
+    ovFzf -join ', ' | Label 'Selection' -bef 1
 }

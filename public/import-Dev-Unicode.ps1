@@ -91,7 +91,7 @@ function _Get-NinCommandMultiple {
 
 function Get-Rune {
     # throw "nyi"
-    Write-Warning "NYI: public\import-Dev-Unicode.ps1"
+    Write-Warning 'NYI: public\import-Dev-Unicode.ps1'
 }
 
 function _get-UnicodeHelp {
@@ -106,8 +106,7 @@ Wip
 '@ | Label '' -sep '' -fg2 $_namedColors.BlueNice
 }
 
-$DebugTestMode = $true
-if ($DebugTestMode) {
+if ($false -and $DebugTestMode) {
 
     H1 'CommandMulti'
     _Get-NinCommandMultiple
@@ -131,4 +130,4 @@ if ($DebugTestMode) {
 
 }
 # write-warning 'wip:'
-_get-UnicodeHelp
+# _get-UnicodeHelp
