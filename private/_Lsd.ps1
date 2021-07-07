@@ -21,6 +21,7 @@
         [Parameter(Position = 0)]
         [string]$Path
     )
+
     # Get-process {
     # $x = 3
     # }
@@ -39,4 +40,4 @@
     }
 }
 
-Lsd ~
+# Lsd ~

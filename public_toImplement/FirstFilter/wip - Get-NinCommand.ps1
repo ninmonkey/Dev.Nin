@@ -181,7 +181,7 @@ function Get-NinCommand {
     }
 
     process {
-        throw "WIP"
+        throw 'WIP'
         $CommandInfo = Get-Command $Name
         | Sort-Object Name
 

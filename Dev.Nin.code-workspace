@@ -9,5 +9,7 @@
         //     "path": "..\\..\\Nin Lib Experiment\\import_SeeminglyScience_sketch"
         // },
     ],
-    "settings": {}
+    "settings": {
+        "snippets.viewer.sortSnippetsByName": true
+    }
 }
