@@ -1,26 +1,11 @@
-function New-RegexToggleSensitive {
-    [alias('RegexSensitive')]
-    <#
-    .synopsis
-        Temporarily enable case sensitivity, then remove it
+BeforeAll {
+    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+}
+Describe 'New-RegexToggleSensitive' {
 
-
-        '(?-i)SMB(?i)'
-    #>
-    param (
-        # Inner Regex
-        [Parameter(Position = 0, ValueFromPipeline)]
-        [string]$Pattern,
-
-        # As a literal
-        [Parameter()]
-        [switch]$WithEscapeRegex
-    )
-
-    process {
-        if ($WithEscapeRegex) {
-            $Pattern = [regex]::Escape( $Pattern )
-        }
-        "(?-i)$Pattern(?i)"
+    It 'Returns <expected> (<pattern>)' -ForEach @(
+        @{ pattern = 'FooBar'; expected = '(?-i)FooBar(?i)' }
+    ) {
+        New-RegexToggleSensitive -Pattern $pattern | Should -Be $expected
     }
 }

@@ -83,6 +83,7 @@ $public = @(
     # new
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
+    'ConvertFrom-LiteralPath'
 
     # ...
     'Compare-StrictEqual'
@@ -147,6 +148,7 @@ $functionsToExport = @(
     ##  newer
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
+    'ConvertFrom-LiteralPath'
 
     ## temp imports, to be removed
     '_format_RgbColorString'
@@ -239,6 +241,8 @@ $aliasesToExport = @(
     'Man'
     'nMan'
     'ParamInfo'
+    'SelectProp' # Select-ObjectProperty
+    'PathTovars'  # ConvertFrom-LiteralPath
 
     # newest experiments
     'Edit-TodoList'

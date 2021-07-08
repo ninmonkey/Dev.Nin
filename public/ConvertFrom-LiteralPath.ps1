@@ -15,6 +15,8 @@ function ConvertFrom-LiteralPath {
     .notes
         .
     #>
+    [Alias('PathToVars')]
+    [cmdletbinding()]
     param (
         # input LiteralPath to convert
         [Alias('Text')]
@@ -29,6 +31,11 @@ function ConvertFrom-LiteralPath {
             Pattern     = '^' + [regex]::Escape( $Env:UserProfile )
             Replacement = '$Env:UserProfile'
         }
+
+        # Find Env-var paths that are a directory.
+        # sort by length, to get the best env var possible
+        $PossibleVars = Get-ChildItem env: | Sort-Object { $_.Value.length } -Descending | Where-Object { Test-Path $_.value -PathType Container }
+        $PossibleVars | Format-Table | Out-String | Write-Debug
 
     }
     process {

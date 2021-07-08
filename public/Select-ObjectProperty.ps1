@@ -6,6 +6,8 @@ function Select-ObjectProperty {
     .link
         Where-FzfSelectObject
     #>
+    [Alias('SelectProp')]
+    [cmdletbinding()]
     param(
         # Object
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -13,34 +15,28 @@ function Select-ObjectProperty {
         [object]$InputObject
     )
 
-    begin {
-        $isFirstRun = $true
-    }
+    begin {}
     process {
-        if ($isFirstRun) {
-            $isFirstRun = $false
 
-            $PropList = $InputObject.psobject.properties.Name
-            if (
-                (! $PropList ) -or ($PropList.count -le 0)
-            ) {
-                throw "NoPropertiesException: [$($inputObject.GetType().FullName)] $($InputObject) found no properties."
-            }
-            $SelectedProps = $PropList | Out-Fzf -MultiSelect -PromptText 'Select Properties'
+        $PropList = $InputObject.psobject.properties.Name
+        if (
+            (! $PropList ) -or ($PropList.count -le 0)
+        ) {
+            throw "NoPropertiesException: [$($inputObject.GetType().FullName)] $($InputObject) found no properties."
         }
+        $SelectedProps = $PropList | Out-Fzf -MultiSelect -PromptText 'Select Properties'
+
         $SelectedProps | Join-String -sep ', ' -SingleQuote | Write-Debug
 
         $InputObject | Select-Object -Property $SelectedProps
     }
-    end {
-
-    }
+    end { }
 }
 
 if ($DebugRunTests) {
     { 4 | Select-ObjectProperty }
     | Should -Throw -Because 'no psobject.properties on [int]'
-    hr
+    Hr
     '4' | Select-ObjectProperty
 }
 

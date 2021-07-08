@@ -1,5 +1,6 @@
 BeforeAll {
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+    # . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
+    Import-Module Dev.Nin -Force
 }
 
 Describe 'ConvertFrom-LiteralPath' {
@@ -12,7 +13,7 @@ Describe 'ConvertFrom-LiteralPath' {
     }
 
     It 'RandomInput' {
-        { 'sfa3vqfsdf23' | ConvertFrom-LiteralPath }
+        { 'sfa3vqfsdf23' | ConvertFrom-LiteralPath -ea stop }
         | Should -Throw -Because 'Invalid Path'
     }
 }
