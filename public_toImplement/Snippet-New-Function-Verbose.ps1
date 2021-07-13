@@ -1,3 +1,10 @@
+enum ETermFilterDate {
+    datemodified = 1
+    dm = 1
+    dateccreated = 2
+    dc = 2
+}
+
 function New-EverythingQueryTerm {
     <#
     .synopsis

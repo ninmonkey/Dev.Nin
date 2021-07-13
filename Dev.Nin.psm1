@@ -27,6 +27,8 @@ $private = @(
     '_test_encodedecode'
     '_Lsd'
     '_JoinStr'
+    '_toastTimer'
+    '_getSpecialAndEnv'
 )
 
 foreach ($file in $private) {
@@ -39,12 +41,17 @@ foreach ($file in $private) {
 }
 
 $public_QuickExperiment = @(
+    '_toastTimer'
     '_get_commandMine'
     'testEncode'
     'testDecode'
     'Lsd'
     'JoinStr'
     'Find-DevItem'
+    # special folders?
+    'Get-NinEnvInfo'
+    'Get-SpecialEnv'
+    'Get-SpecialFolder'
 )
 Export-ModuleMember -Function $public_QuickExperiment
 
@@ -108,6 +115,8 @@ $public = @(
     'Get-RegexHelp'
     'Restart-LGHubDriver'
     'Get-DevFunctionInfo'
+
+
 
     # newest experiments
     'New-RegexToggleSensitive'
@@ -243,6 +252,7 @@ $aliasesToExport = @(
     'ParamInfo'
     'SelectProp' # Select-ObjectProperty
     'PathTovars'  # ConvertFrom-LiteralPath
+    'Alarm' # _toastTimer
 
     # newest experiments
     'Edit-TodoList'
