@@ -64,9 +64,19 @@ function Edit-FunctionSource {
                     return
                 }
 
-                if ($autoOpen) {
-                    Write-Debug "code '$Path'"
-                    code (Get-Item -ea stop $Path)
+                if ($autoOpen -and (Test-Path $Path)) {
+                    Write-Debug "found: '$Path'"
+                    $codeArgs = @(
+                        '-g'
+                        "'{0}:{1}:{2}'" -f @(
+                            $Path
+                            $Meta.StartLineNumber
+                            $Meta.StartColumnNumber
+                        )
+                    )
+                    $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
+
+                    code @codeArgs
                 }
                 else {
                     '<', $Path, '>' -join ''
@@ -83,6 +93,9 @@ function Edit-FunctionSource {
 
     }
 }
+
+# Edit-FunctionSource goto -Verbose -Debug -InformationAction continue
+if ($false) {
 
 if ($TempDebugTest) {
     $q = Edit-FunctionSource lsFd -InformationAction continue -ea break
@@ -105,4 +118,6 @@ if ($TempDebugTest) {
     'Write-ConsoleLabel' | Edit-FunctionSource -PassThru
     'Label' | Edit-FunctionSource -PassThru
     'label', 'fm', 'goto' | Edit-FunctionSource -PassThru
+}
+
 }
