@@ -18,6 +18,33 @@
     )
     begin {}
     process {
+        $result = @{}
+        [Environment+SpecialFolderOption] | EnumInfo | SelectProp Name -PassThru | Join-String -Separator ', ' -op '[Environment+SpecialFolderOption] values = '
+        | Write-Verbose
+
+        <#
+    enums:
+        Environment+SpecialFolder
+        Environment+SpecialFolderOption
+
+    GetFolderPath(System.Environment+SpecialFolder folder)
+    GetFolderPath(System.Environment+SpecialFolder folder, System.Environment+SpecialFolderOption option)
+
+    #>
+
+        $names = [Microsoft.VisualBasic.FileIO.SpecialDirectories] | Fm -MemberType Property | ForEach-Object Name
+        $result['VBSpecialDirectories'] = $names
+
+        $result['SpecialFolder'] = [Environment+SpecialFolder] | Get-EnumInfo | ForEach-Object {
+            [pscustomobject]@{
+                Name    = $_.Name
+                Numeric = $_.Value
+                Value   = [System.Environment]::GetFolderPath( $_.Name )
+                #  [specialfold]
+            }
+        }
+
+        [pscustomobject]$result
 
 
     }
@@ -33,15 +60,6 @@
 function Get-SpecialEnv {
 
 
-
-    [Environment+SpecialFolder] | Get-EnumInfo | ForEach-Object {
-        [pscustomobject]@{
-            Name    = $_.Name
-            Numeric = $_.Value
-            #  [specialfold]
-        }
-    }
-
     Write-Warning 'NYI: this will
         1]
             read all env vars using Env:
@@ -50,10 +68,30 @@ function Get-SpecialEnv {
 
 }
 
+
+if ($TempDebugTest) {
+    Get-SpecialFolder
+    Hr 4
+    Import-Module Dev.Nin -Force
+    $res = Get-SpecialFolder
+    Hr
+    $res
+}
+
 function Get-NinEnvInfo {
-    Write-Warning 'NYI: this will make it quick to regex Env: provider names'
+    Write-Warning 'NYI: this will make it quick to regex Env: provider names
+
+        🐒> [System.Environment]::GetEnvironmentVariables
+
+
+        OverloadDefinitions
+        -------------------
+        static System.Collections.IDictionary GetEnvironmentVariables(System.EnvironmentVariableTarget target)
+        static System.Collections.IDictionary GetEnvironmentVariables()
+
+    '
 }
 # [Environment+SpecialFolder] | Get-EnumInfo | ForEach-Object …
-Find-Type -FullName *special*folder* -Force
-| ForEach-Object FullName
+# Find-Type -FullName *special*folder* -Force
+# | ForEach-Object FullName
 # Get-ParameterInfo -Parameter [Environment+SpecialFolder]

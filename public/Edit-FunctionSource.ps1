@@ -1,4 +1,3 @@
-# future: todo: "Edit-FunctionSource() : cleanup me -> nin.console"
 function Edit-FunctionSource {
     <#
     .synopsis
@@ -6,17 +5,18 @@ function Edit-FunctionSource {
     .description
         currently only opens .ps1 scripts.
         see [Indented] for automatically viewing assemblies
-    .notes
-        .
+    .outputs
+        [InternalScriptExtent] or none
     .example
         PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
         PS> Alias 'Br' | Edit-FunctionSource
         PS> 'Br', 'ls' | Edit-FunctionSource
+    .notes
+        . # 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
     #>
 
     # Function Name
     param(
-
         # Function or Alias name
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$FunctionName,
@@ -37,8 +37,6 @@ function Edit-FunctionSource {
                 Get-Command $FunctionName -ea SilentlyContinue
             }
         }
-
-        # $PSDefaultParameterValues['Write-ConsoleLabel:fg'] = '7FB2C1'
         Write-ConsoleLabel 'Matches: ' $functionQuery.count | Write-Information
 
         if (! $functionQuery ) {
@@ -56,34 +54,39 @@ function Edit-FunctionSource {
 
         $functionQuery | ForEach-Object {
             $curCommand = $_
-            $Path = $curCommand.ScriptBlock.Ast.Extent.File | Get-Item -ea Continue
+            $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
+            $Path = $meta.File | Get-Item -ea continue
             if ($Path) {
+                $meta | ConvertTo-Json | Write-Debug
                 if ($PassThru) {
-                    $Path
+                    "From: '$Path'" | Write-Debug
+                    $Meta
                     return
                 }
 
                 if ($autoOpen) {
                     Write-Debug "code '$Path'"
-                    code $Path
+                    code (Get-Item -ea stop $Path)
                 }
                 else {
                     '<', $Path, '>' -join ''
                 }
             }
             else {
-                H1 "shouldNeverException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly" | Write-Host
+                Write-Error "shouldNeverReachException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly"
+                return # continues
 
             }
         }
     }
     end {
-        Write-Verbose 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
+
     }
 }
 
-# Edit-FunctionSource 'Write-Conso'
-if ($false -and $TempDebugTest) {
+if ($TempDebugTest) {
+    $q = Edit-FunctionSource lsFd -InformationAction continue -ea break
+
     # Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes'
 
     H1 'test1: as param'

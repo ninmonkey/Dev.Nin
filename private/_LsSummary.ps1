@@ -59,4 +59,4 @@ function LsSummary {
     }
 }
 
-Lsd2 '../..'
+Export-ModuleMember -Alias 'Lsd2'

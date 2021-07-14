@@ -25,7 +25,7 @@ function Resolve-FullTypeName {
         'ConsoleColor' | FullName
     #>
 
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding( SupportsShouldProcess, PositionalBinding = $false)]
     [Alias('Fullname')]
     [OutputType([String])]
 
@@ -33,7 +33,11 @@ function Resolve-FullTypeName {
         # you pass an object, name as text, a type instance, or even type name as a wildcard , name, string, instance
         # or even strings with wildcards
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # Copy to clipboard
+        [alias('Clip')]
+        [Parameter()][switch]$SetClipboard
 
         # also check first element?
         # [Parameter()]
@@ -42,9 +46,17 @@ function Resolve-FullTypeName {
 
     )
 
-    begin {}
+    begin {
+        function _maybeExport {
+            param()
+            if ($SetClipboard) {
+                $InputObject.GetType().Fullname | Set-Clipboard
+            }
+        }
+    }
 
     process {
+
         # type of type isn't useful here, so use typeinfo [RuntimeType] ?
         if ($InputObject -is 'type') {
             $InputObject.GetTypeInfo().Fullname
