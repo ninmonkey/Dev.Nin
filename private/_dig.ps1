@@ -1,12 +1,12 @@
 ﻿#Requires -Version 7.0.0
 #Requires -Module Ninmonkey.Console
 
-Import-Module Ninmonkey.Console -Force
+# Import-Module Ninmonkey.Console -Force
 $PSDefaultParameterValues['Find-DevItem:InformationAction'] = $true
 function Find-DevItem {
     <#
     .synopsis
-
+        I forget
     .description
         .
     .example
