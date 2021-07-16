@@ -22,7 +22,9 @@ function Edit-FunctionSource {
         [string]$FunctionName,
 
         # Return paths only
-        [Parameter()][switch]$PassThru
+        [Parameter()][switch]$PassThru,
+        # Return paths only
+        [Parameter()][switch]$SkipLineNumber = $true # until I can get the native args passing
     )
 
     Process {
@@ -66,7 +68,14 @@ function Edit-FunctionSource {
 
                 if ($autoOpen -and (Test-Path $Path)) {
                     Write-Debug "found: '$Path'"
+
+                    if ($SkipLineNumber) {
+                        code (Get-Item $Path -ea stop)
+                        return
+                    }
+
                     $codeArgs = @(
+                        '-r'
                         '-g'
                         "'{0}:{1}:{2}'" -f @(
                             $Path
@@ -76,7 +85,7 @@ function Edit-FunctionSource {
                     )
                     $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
 
-                    code @codeArgs
+                    & code @codeArgs
                 }
                 else {
                     '<', $Path, '>' -join ''
@@ -94,10 +103,12 @@ function Edit-FunctionSource {
     }
 }
 
-# Edit-FunctionSource goto -Verbose -Debug -InformationAction continue
-if ($false) {
-
 if ($TempDebugTest) {
+    # Edit-FunctionSource goto
+}
+# Edit-FunctionSource goto -Verbose -Debug -InformationAction continue
+
+if ($false) {
     $q = Edit-FunctionSource lsFd -InformationAction continue -ea break
 
     # Edit-FunctionSource 'Write-ConsoleLabel' -ov 'FuncSourceRes'
@@ -118,6 +129,4 @@ if ($TempDebugTest) {
     'Write-ConsoleLabel' | Edit-FunctionSource -PassThru
     'Label' | Edit-FunctionSource -PassThru
     'label', 'fm', 'goto' | Edit-FunctionSource -PassThru
-}
-
 }

@@ -36,6 +36,7 @@ function Get-DevFunctionInfo {
             28/10/2015 - Chris Dent - Created.
     #>
 
+    [Alias('GetFuncInfo')]
     [CmdletBinding(DefaultParameterSetName = 'FromPath')]
     [OutputType([System.Management.Automation.FunctionInfo])]
     param (

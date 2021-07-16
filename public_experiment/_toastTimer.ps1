@@ -1,4 +1,8 @@
 
+$experimentToExport.function += '_toastTimer'
+$experimentToExport.alias += 'Alarm'
+
+
 function _toastTimer {
     <#
   .synopsis

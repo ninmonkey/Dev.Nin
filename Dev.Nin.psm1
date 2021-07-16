@@ -1,6 +1,7 @@
 ﻿$__Config = @{
-    Enable_FormatData         = $true
-    Enable_FormatData_BuiltIn = $true # toggles overriting builtin type's formatdata
+    Enable_FormatData                  = $true
+    Enable_FormatData_BuiltIn          = $true # toggles overriting builtin type's formatdata
+    Enable_Import_PublicExperiment_Dir = $True
 }
 $formatData = @(
 )
@@ -27,7 +28,7 @@ $private = @(
     '_test_encodedecode'
     '_Lsd'
     '_JoinStr'
-    '_toastTimer'
+    # '_toastTimer'
     '_getSpecialAndEnv'
 )
 
@@ -41,7 +42,7 @@ foreach ($file in $private) {
 }
 
 $public_QuickExperiment = @(
-    '_toastTimer'
+    # '_toastTimer'
     '_get_commandMine'
     'testEncode'
     'testDecode'
@@ -54,6 +55,8 @@ $public_QuickExperiment = @(
     'Get-SpecialFolder'
 )
 Export-ModuleMember -Function $public_QuickExperiment
+
+
 
 
 $public_NativeWrapper = @(
@@ -91,6 +94,7 @@ $public = @(
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
     'ConvertFrom-LiteralPath'
+
 
     # ...
     'Compare-StrictEqual'
@@ -158,6 +162,7 @@ $functionsToExport = @(
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
     'ConvertFrom-LiteralPath'
+    'GetFunctionInfo'
 
     ## temp imports, to be removed
     '_format_RgbColorString'
@@ -223,6 +228,7 @@ Export-ModuleMember -Function $functionsToExport
 $aliasesToExport = @(
     # temporary aliases
     '_randWord'
+    'GetFuncInfo'
 
     ## Section: Regex
     # New-RegexToggleSensitive
@@ -252,7 +258,7 @@ $aliasesToExport = @(
     'ParamInfo'
     'SelectProp' # Select-ObjectProperty
     'PathTovars'  # ConvertFrom-LiteralPath
-    'Alarm' # _toastTimer
+    # 'Alarm' # _toastTimer
 
     # newest experiments
     'Edit-TodoList'
@@ -263,6 +269,11 @@ $aliasesToExport = @(
 )
 Export-ModuleMember -Alias $aliasesToExport
 
+
+
+if ($__Config.Enable_Import_PublicExperiment_Dir) {
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\main_import_experimental.ps1'))
+}
 <#
 Sketch: Detect imports
 if ($False) {
