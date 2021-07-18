@@ -18,31 +18,44 @@ function Find-Dotfile_Experiment {
         # TopLevelDir
         [Parameter()][switch]$DirectoryAtBase,
 
-        [Parameter()][switch]$Recurse
+        # Everything that's a child of a '.folder' dot prefixed dir
+        [Parameter()][switch]$ChildItems
     )
 
     begin {
         $Regex = @{}
         $Regex.DotPrefix = '^\..+'
-        $results = [list[object]]::new()
     }
 
     process {
+        $rootDirs = Get-ChildItem ~ -Directory -Force
+        | Where-Object { $_.BaseName -match $Regex.DotPrefix }
+        | Sort-Object Name
+
         if ($FileAtBase) {
             Get-ChildItem ~ -File -Force
             | Where-Object { $_.BaseName -match $Regex.DotPrefix }
             | Sort-Object Name
-            | %{ $results.add }
         }
         if ($DirectoryAtBase) {
-            Get-ChildItem ~ -Directory -Force
-            | Where-Object { $_.BaseName -match $Regex.DotPrefix }
-            | Sort-Object Name
+            $rootDirs
         }
-            | Where-Object { $_.BaseName -match $Regex.DotPrefix }
-        if($Recurse) {
-            ls ~
+        if ($ChildItems) {
+            Get-ChildItem -Path $rootDirs -Force -Recurse
         }
     }
 }
-$results.add
+
+
+IF ($FALSE) {
+    # try to get total file counts of parents, this broke.
+    $results ??= $parents | ForEach-Object {
+
+        $curP = @{ 'Path' = Get-Item $curP }
+        $curP['Children'] = Get-ChildItem -Path $curP -Force -Recurse
+        $curP['TotalCount'] = ($curP['Children']).count
+        $curP['TotalSize'] = $curP.Length | Measure-Object -Sum | ForEach-Object { $_.Sum / 1mb }
+        "Path: $curP" | New-Text -fg green | ForEach-Object tostring | Write-Host
+        $curP
+    }
+}

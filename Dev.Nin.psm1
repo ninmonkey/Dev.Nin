@@ -112,7 +112,7 @@ $public = @(
     'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
     'Dev-GetNewestItem'
-    'Import-NinModule'
+
     'Get-Exponentiation'
     'Edit-FunctionSource'
     'Start-DevTimer'
@@ -180,7 +180,7 @@ $functionsToExport = @(
     'Dev-GetManPage'
     'Dev-GetNamedPath'
     'Dev-FormatTabExpansionResult'
-    'Import-NinModule'
+
     'Get-Exponentiation'
     'Get-FunctionDebugInfo'
     'Edit-FunctionSource'

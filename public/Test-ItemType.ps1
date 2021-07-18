@@ -41,15 +41,18 @@ function Test-ItemType {
 }
 
 
-Test-ItemType (Get-Item 'c:\nin')
+if ($false -and $TestDebugMode) {
+    Test-ItemType (Get-Item 'c:\nin')
 
-$file = Get-ChildItem . | Select-Object -First 1
-@(
-    $File.GetType()
-    $File.GetType().GetType()
-    $file
-    # $null
-    ''
-    'foo'
+    $file = Get-ChildItem . | Select-Object -First 1
+    @(
+        $File.GetType()
+        $File.GetType().GetType()
+        $file
+        # $null
+        ''
+        'foo'
 
-) | Test-ItemType
+    ) | Test-ItemType
+
+}
