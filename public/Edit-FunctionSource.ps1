@@ -70,7 +70,7 @@ function Edit-FunctionSource {
                     Write-Debug "found: '$Path'"
 
                     if ($SkipLineNumber) {
-                        code (Get-Item $Path -ea stop)
+                        code-insiders (Get-Item $Path -ea stop)
                         return
                     }
 
@@ -85,7 +85,7 @@ function Edit-FunctionSource {
                     )
                     $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
 
-                    & code @codeArgs
+                    & code-insiders @codeArgs
                 }
                 else {
                     '<', $Path, '>' -join ''

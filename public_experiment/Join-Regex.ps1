@@ -42,7 +42,10 @@ function Join-Regex {
 
     )
 
-    begin {}
+    begin {
+        throw "this is not the right function, versions shouldn't have any switch"
+        
+    }
     process {
         $splat_JoinLiteral = @{
             Separator = '|'

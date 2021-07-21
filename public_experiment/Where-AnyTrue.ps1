@@ -1,3 +1,3 @@
 function Where-AnyTrue {
-    throw "NYI"
+    throw 'NYI'
 }

@@ -13,6 +13,11 @@ Describe "$__PesterFunctionName" -Tag Unit {
         $Expected = '"`u{1f412}`u{3e}`u{20}`u{24}`u{7b}`u{200d}`u{7d}`u{20}`u{2d}`u{65}`u{71}`u{20}`u{24}`u{7b}`u{200d}`u{200d}`u{7d}"'
         $Sample | ConvertTo-PwshLiteral
         | Should -Be $Expected -Because 'That is the Correct Pwsh Literal string'
-
+    }
+    it 'Preserves Ascii non-control group chars' {
+        $Sample = "Hi`tWorld"
+        $Expected = "Hi`u{9}World"
+        $Sample | ConvertTo-PwshLiteral
+        | Should -Be $Expected -Because 'Non control chars are kept intact.'
     }
 }
