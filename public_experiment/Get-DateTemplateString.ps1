@@ -1,5 +1,5 @@
 $experimentToExport.function += 'Get-FormatStringTemplate'
-# $experimentToExport.alias += ''
+$experimentToExport.alias += 'TemplateDates'
 
 function Get-FormatStringTemplate {
     <#
@@ -10,6 +10,7 @@ function Get-FormatStringTemplate {
     .example
         _Get-FormatStringTemplate
     #>
+    [Alias('TemplateDates')]
     [CmdletBinding()]
     param()
 

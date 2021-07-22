@@ -8,18 +8,54 @@ function Find-BadlyNamedCommand {
     .description
         .
     .example
-        PS>
+        #Find conflicts
+
+        (Get-Command * -All -ListImported) | Group Name | ?  count -gt 1
+
     .notes
         .
     #>
     param (
+        # Docstring
+        [Parameter()][switch]$OnlyImported,
 
+        # Hide conflicts?
+
+        [Parameter()][switch]$IgnoreConflict
     )
-    begin {}
-    process {
+    begin {
+        $getCommandSplat = @{
+            ListImported = ! $OnlyImported
+            All          = ! $IgnoreConflict
+        }
 
-        'done'
+        $GcmQuery = Get-Command @getCommandSplat
+        $BadList = [list[object]]::new()
+    }
+    process {
+        $GcmQuery | Where-Object {
+            $cur = $_
+            # any test is true
+            $test_PrefixUnder = $Cur.Name -match '^_'
+
+            @(
+                $true -eq @(
+                    $PrefixUnder
+                )
+            ).count -gt 0
+
+        } | ForEach-Object {
+            $BadList.Add( )
+        }
 
     }
-    end {}
+    end {
+
+        $BadList
+    }
+}
+
+
+function Get-DownloadFromGit {
+
 }
