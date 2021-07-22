@@ -16,6 +16,8 @@ function Edit-FunctionSource {
     #>
 
     # Function Name
+    [Alias('EditFunc')]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # Function or Alias name
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -24,7 +26,7 @@ function Edit-FunctionSource {
         # Return paths only
         [Parameter()][switch]$PassThru,
         # Return paths only
-        [Parameter()][switch]$SkipLineNumber = $true # until I can get the native args passing
+        [Parameter()][switch]$SkipPositionArgs = $false # until I can get the native args passing
     )
 
     Process {
@@ -69,7 +71,7 @@ function Edit-FunctionSource {
                 if ($autoOpen -and (Test-Path $Path)) {
                     Write-Debug "found: '$Path'"
 
-                    if ($SkipLineNumber) {
+                    if ($SkipPositionArgs) {
                         code-insiders (Get-Item $Path -ea stop)
                         return
                     }
@@ -77,13 +79,19 @@ function Edit-FunctionSource {
                     $codeArgs = @(
                         '-r'
                         '-g'
-                        "'{0}:{1}:{2}'" -f @(
+                        '""{0}:{1}:{2}""' -f @(
                             $Path
                             $Meta.StartLineNumber
                             $Meta.StartColumnNumber
                         )
                     )
                     $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
+                    <#
+                    worked:
+                    code -r -g 'C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Measure-ChildItem.ps1:5:5'
+
+                    from: "$codeArgs | Join-String -se ' '
+                    #>
 
                     & code-insiders @codeArgs
                 }

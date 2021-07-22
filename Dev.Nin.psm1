@@ -251,6 +251,7 @@ $aliasesToExport = @(
     'NameFrom'
 
     ## Other
+    'EditFunc' # Edit-FunctionSource
     'Table'
     'Pow'
     'Man'
