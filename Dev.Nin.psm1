@@ -118,13 +118,13 @@ $public = @(
     'Start-DevTimer'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
-    'Get-DevFunctionInfo'
+
 
 
 
     # newest experiments
     'New-RegexToggleSensitive'
-    'Invoke-EverythingSearch'
+
     'Sort-NinObject'
     'Edit-DevTodoList'
     'Find-VerbPrefix'
@@ -162,7 +162,7 @@ $functionsToExport = @(
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
     'ConvertFrom-LiteralPath'
-    'GetFunctionInfo'
+
 
     ## temp imports, to be removed
     '_format_RgbColorString'
@@ -186,11 +186,11 @@ $functionsToExport = @(
     'Edit-FunctionSource'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
-    'Get-DevFunctionInfo'
+
 
     # newest experiments
     'New-RegexToggleSensitive'
-    'Invoke-EverythingSearch'
+
     'New-EverythingSearchTerm'
     'Sort-NinObject'
 
@@ -228,7 +228,7 @@ Export-ModuleMember -Function $functionsToExport
 $aliasesToExport = @(
     # temporary aliases
     '_randWord'
-    'GetFuncInfo'
+
 
     ## Section: Regex
     # New-RegexToggleSensitive

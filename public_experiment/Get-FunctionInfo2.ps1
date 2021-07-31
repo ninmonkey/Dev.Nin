@@ -2,7 +2,15 @@ using namespace System.Management.Automation
 using namespace System.Management.Automation.Language
 using namespace System.Reflection
 
-function Get-DevFunctionInfo {
+$experimentToExport.function += @(
+    'Get-DevFunctionInfo'
+)
+$experimentToExport.alias += @(
+    # 'GetFuncInfo'
+)
+
+
+function Get-FunctionInfo {
     <#
     .SYNOPSIS
         Get an instance of FunctionInfo.

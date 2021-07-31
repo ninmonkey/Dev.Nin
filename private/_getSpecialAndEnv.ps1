@@ -57,29 +57,30 @@
     }
 }
 
-function Get-SpecialEnv {
+if ($false) {
+    function Get-SpecialEnv {
 
 
-    Write-Warning 'NYI: this will
+        Write-Warning 'NYI: this will
         1]
             read all env vars using Env:
         2]
             read all env vars using the global scope'
 
-}
+    }
 
 
-if ($TempDebugTest) {
-    Get-SpecialFolder
-    Hr 4
-    Import-Module Dev.Nin -Force
-    $res = Get-SpecialFolder
-    Hr
-    $res
-}
+    if ($TempDebugTest) {
+        Get-SpecialFolder
+        Hr 4
+        Import-Module Dev.Nin -Force
+        $res = Get-SpecialFolder
+        Hr
+        $res
+    }
 
-function Get-NinEnvInfo {
-    Write-Warning 'NYI: this will make it quick to regex Env: provider names
+    function Get-NinEnvInfo {
+        Write-Warning 'NYI: this will make it quick to regex Env: provider names
 
         🐒> [System.Environment]::GetEnvironmentVariables
 
@@ -90,8 +91,10 @@ function Get-NinEnvInfo {
         static System.Collections.IDictionary GetEnvironmentVariables()
 
     '
+    }
+    # [Environment+SpecialFolder] | Get-EnumInfo | ForEach-Object …
+    # Find-Type -FullName *special*folder* -Force
+    # | ForEach-Object FullName
+    # Get-ParameterInfo -Parameter [Environment+SpecialFolder]
+
 }
-# [Environment+SpecialFolder] | Get-EnumInfo | ForEach-Object …
-# Find-Type -FullName *special*folder* -Force
-# | ForEach-Object FullName
-# Get-ParameterInfo -Parameter [Environment+SpecialFolder]

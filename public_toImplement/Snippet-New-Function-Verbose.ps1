@@ -20,9 +20,8 @@ function New-EverythingQueryTerm {
         DefaultParameterSetName = 'setNin', PositionalBinding = $false)]
     param (
         # Name
-        [Parameter(Mandatory = $True, ValueFromPipeline)]
-        [ParameterType]
-        $ParameterName
+        [Parameter(Mandatory = $True, ValueFromPipeline, ParameterSetName = 'setNin')]
+        [string]$ParameterName
     )
 
     begin {

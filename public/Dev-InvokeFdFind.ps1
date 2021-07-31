@@ -8,6 +8,13 @@ $ENV:FZF_DEFAULT_COMMAND = 'fd --type f'
 '@
 
 function Dev-InvokeFdFind {
+    <#
+    .link
+        Find-DevFdFind
+    .link
+        Invoke-FdFind
+
+    #>
     [Alias('dev-Fd', 'LsFd')]
     param(
         # Docstring
@@ -20,7 +27,7 @@ function Dev-InvokeFdFind {
 
     if ($Help) {
         nMan fd
-        hr 2
+        Hr 2
 
         $HelpText
         return

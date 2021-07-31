@@ -1,4 +1,13 @@
-function GetFunctionInfo {
+
+$experimentToExport.function += @(
+    'Get-IndentedFunctionInfo'
+)
+$experimentToExport.alias += @(
+    'Get-FuncInfo', 'FindFunc'
+)
+
+
+function Get-IndentedFunctionInfo {
     <#
     .SYNOPSIS
         [from chris's old profile, this is not his latest version IIRC] Get an instance of FunctionInfo.
@@ -13,29 +22,25 @@ function GetFunctionInfo {
 
         Get all functions declared in all ps1 files in C:\Scripts.
     #>
-    [Alias('FindFunc')]
-    [CmdletBinding(DefaultParameterSetName = 'FromPath')]
+
+    [CmdletBinding(DefaultParameterSetName = 'Get-Func Info', 'FindFunc')]
     [OutputType([System.Management.Automation.FunctionInfo])]
     param (
         # The path to a file containing one or more functions.
         [Parameter(Position = 1, ValueFromPipelineByPropertyName, ParameterSetName = 'FromPath')]
         [Alias('FullName')]
-        [String]
-        $Path,
+        [String]$Path,
 
         # A script block containing one or more functions.
         [Parameter(ParameterSetName = 'FromScriptBlock')]
-        [ScriptBlock]
-        $ScriptBlock,
+        [ScriptBlock]$ScriptBlock,
 
         # A string containing one or more functions.
         [Parameter(ParameterSetName = 'FromString')]
-        [String]
-        $String,
+        [String]$String,
 
         # By default functions nested inside other functions are ignored. Setting this parameter will allow nested functions to be discovered.
-        [Switch]
-        $IncludeNested
+        [Switch]$IncludeNested
     )
 
     begin {
