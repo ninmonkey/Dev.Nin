@@ -1,3 +1,3 @@
 function Test-AllTrue {
-    throw 'NYI'
+    Write-Error 'nyi'
 }

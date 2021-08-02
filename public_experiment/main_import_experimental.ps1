@@ -1,6 +1,25 @@
 ﻿
+function Write-NinLog {
+    <#
+    .synopsis
+        temp logging, easy
+    .description
+        temp logging, easy
+    .example
+        PS>
+    .notes
+        .
+    #>
+    param (
+
+    )
+    begin {}
+    process {}
+    end {}
+}
+
 # eaiser to manage and filter, especially a dynamic set, in one place
-[hashtable]$experimentToExport = @{
+[hashtable]$script:experimentToExport = @{
     'function' = @()
     'alias'    = @()
     'cmdlet'   = @()
@@ -14,9 +33,14 @@
     # Don't dot tests, don't call self.
     Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
     | Where-Object { $_.Name -ne 'main_import_experimental.ps1' }
-    | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
-    | ForEach-Object -ea stop {
-        Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
+    | Where-Object {
+        # are these safe? or will it alter where-object?
+        # Write-Debug "removing test: '$($_.Name)'"
+        $_.Name -notmatch '\.tests\.ps1$'
+    }
+    | ForEach-Object {
+        # are these safe? or will it alter where-object?
+        # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
         . $_
     }
 

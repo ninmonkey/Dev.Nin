@@ -1,3 +1,3 @@
 function Where-AnyTrue {
-    throw 'NYI'
+    Write-Error 'nyi'
 }

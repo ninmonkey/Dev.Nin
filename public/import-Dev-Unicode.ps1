@@ -63,6 +63,7 @@ function Get-NamedEmoji {
     $sb = [System.Text.StringBuilder]::new()
 
     #>
+    Write-Error 'NotImplemented()'
 }
 
 function _Get-NinCommandSingle {
@@ -120,10 +121,10 @@ if ($false -and $DebugTestMode) {
     Get-NamedEmoji 'cat'
 
     H1 'Distinct Rune'
-    'a = ✔️' |  Dev-Get-UnicodeDistinctRune
+    'a = ✔️' | Dev-Get-UnicodeDistinctRune
 
     H1 'Ninmonkey.Console\Get-UnicodeInfo'
-    'a = ✔️' |  Get-UnicodeInfo | Format-Table
+    'a = ✔️' | Get-UnicodeInfo | Format-Table
 
     H1 'Get-Rune'
     Get-Rune -Codepoint 128018 # Alias -cp

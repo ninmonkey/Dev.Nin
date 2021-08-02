@@ -10,6 +10,14 @@ function Search-PropertyRegex {
         .
     .example
         PS>
+# Example on Commandline
+@'
+# Diff Properties, Diff Regex
+$allpackages | Where-Object {
+    $_.PackageFullName -match 'windowsterminal|wt' -or
+    $_.InstallLocation -match 'WindowsApps\\Microsoft\.WindowsTerm'
+}
+'@
     .notes
         .
     #>
@@ -22,12 +30,3 @@ function Search-PropertyRegex {
     process {}
     end {}
 }
-
-# Example on Commandline
-@'
-# Diff Properties, Diff Regex
-$allpackages | Where-Object {
-    $_.PackageFullName -match 'windowsterminal|wt' -or
-    $_.InstallLocation -match 'WindowsApps\\Microsoft\.WindowsTerm'
-}
-'@

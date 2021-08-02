@@ -2,7 +2,8 @@
     <#
     .synopsis
         shortcut to read and 'grep' man pages
-
+    .description
+        nice highlighting and finding of args, but needs a rewrite / clean pass
     .example
         # show entire man page, highlight flags
         PS> nman rg
@@ -31,6 +32,7 @@
         - [ ] Add syntax highlighting or at least regex-based syntax highlighting of flags
         - [ ] if piping to LESS, pass search argument so user can hit 'next'/'prev' without doing anything
     #>
+    [cmdletbinding(PositionalBinding = $false)]
     [Alias('Man', 'nMan')]
     param (
         # app name, hard coded for test
@@ -89,14 +91,19 @@
         }
     }
     $Paths = @{
-        'config'  = Get-Item -ea silentlycontinue "$Env:USERPROFILE\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\manpage.json"
-        'manPage' = Get-Item -ea silentlycontinue "$Env:USERPROFILE\Documents\2020\powershell\MyModules_Github\Dev.Nin\public\man\"
+        'ModulePath' = (Get-Module Dev.Nin | ForEach-Object Path | Split-Path)
+        'config'     = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\Documents\2021\Powershell\My_Github\Dev.Nin\public\man\manpage.json"
+        'manPage'    = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\Documents\2021\Powershell\My_Github\Dev.Nin\public\man"
+        # 'manPage'    = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\2021\Powershell\My_Github\Dev.Nin\public\man\"
     }
 
+    # Bug, it
     $manPage = Join-Path $Paths.manPage -ChildPath "$CommandName.man.txt"
     $cmdBin = Get-Command $CommandName -ea Continue -CommandType Application
     $cmdBin = Get-NativeCommand $CommandName -ea Stop
-    $isSkipCache = (!(Test-Path $manPage)) -or (! $skipCache)
+    $isSkipCache = (!(Test-Path $manPage -ea ignore)) -or (! $skipCache)
+    <#
+    #>
     # $metaDebug = @{
     #     'skipCache'         = $skipCache
     #     'regexFlag'         = $FullRegex
