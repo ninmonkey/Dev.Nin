@@ -115,16 +115,22 @@
     # }
 
     # to refactor: so all conditions both work, but also use pipeline
+
+    @(
+        '$FlagName -eq null?:'
+        [string]::IsNullOrWhiteSpace($FlagName)
+    ) | Join-String -sep ' ' | Write-Debug
+
+    "skip cache?: $isSkipCache" | Write-Debug
+
     if ( [string]::IsNullOrWhiteSpace($FlagName) ) {
-        $metaDebug['codePath0'] = 'null flag'
         if ( $isSkipCache ) {
-            $metaDebug['codePath1'] = 'skipCache = $true'
+
             & $cmdBin --help
             | rg "$($Regex.BaseFlagRegex)|`$"
             | rg -i "$($Regex.BaseFlagRegex)" --color=always
             return
         }
-        $metaDebug['codePath1'] = 'skipCache = $false'
         Get-Content $manPage
         return
     }

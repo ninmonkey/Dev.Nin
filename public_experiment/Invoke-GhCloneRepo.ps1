@@ -34,7 +34,14 @@ function Invoke-GHCloneRepo {
 
     begin {}
     process {
-        throw 'WIP'
+        $gh_args = @(
+            'repo'
+            'clone'
+            "$OwnerName/$RepoName"
+            "$OwnerName/$RepoName"
+        )
+        "gh '$path"
+        Write-Host 'double check'
     }
     end {}
 }

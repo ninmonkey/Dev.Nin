@@ -4,7 +4,8 @@ $ENV:FZF_DEFAULT_COMMAND = 'fd --type f'
 
     fd --type f
     fd --type d
-
+    fd --glob *.gif
+    fd -d  2 --color=always | sort
 '@
 
 function Dev-InvokeFdFind {

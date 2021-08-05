@@ -13,13 +13,16 @@ function Edit-FunctionSource {
         PS> 'Br', 'ls' | Edit-FunctionSource
     .notes
         . # 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
+    .link
+        Edit-ModuleSource
     #>
 
     # Function Name
     [Alias('EditFunc')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
-        # Function or Alias name
+        # Function or Alias name1
+        # future: autocomplete FUnc
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$FunctionName,
 

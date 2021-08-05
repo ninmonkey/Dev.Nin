@@ -9,7 +9,7 @@ function _get_moduleFromType {
     # $cmd = Get-Module -Name $tinfo.Namespace
     # $cmd | Select-Object -ExpandProperty ProjectUri
 
-    $splat = @{ ModuleName = "Pansies"; ModuleVersion = "1.0.0.0" }
+    $splat = @{ ModuleName = 'Pansies'; ModuleVersion = '1.0.0.0' }
     $modSpec = [Microsoft.PowerShell.Commands.ModuleSpecification]::new( $splat )
     Get-Module -FullyQualifiedName $modSpec | ForEach-Object ProjectUri
 }
@@ -30,7 +30,8 @@ function _test-ValidHelpUrl {
     try {
         Invoke-WebRequest $uri -ov response | Out-Null
 
-    } catch {
+    }
+    catch {
         if ( $_.Exception.Response.StatusCode -eq [System.Net.HttpStatusCode]::NotFound ) {
             return $false
         }
@@ -42,8 +43,12 @@ function Get-HelpFromType {
     <#
     .synopsis
         open Powershell docs from a type name
+    .example
+            .example
+        PS> (Get-Command ls) | HelpFromType
+        # Loads docs on [AliasInfo]
+        # <https://docs.microsoft.com/en-us/dotnet/api/System.Management.Automation.AliasInfo?view=powershellsdk-7.0.0>
     .notes
-
     future:
         - [ ] get 3rd party module's help urls from type name
         - [ ]  automatically wrap typename in a list to call
@@ -67,13 +72,16 @@ function Get-HelpFromType {
             if ($null -eq $typeInstance) {
                 Write-Debug "String, was not a type name: '$InputObject'"
                 $typeName = 'System.String'
-            } else {
+            }
+            else {
                 $typeName = $typeInstance.FullName
             }
             # $typeName = $InputObject
-        } elseif ( $InputObject -is [type] ) {
+        }
+        elseif ( $InputObject -is [type] ) {
             $typeName = $InputObject.FullName
-        } else {
+        }
+        else {
             $typeName = $InputObject.GetType().FullName
         }
         $url = 'https://docs.microsoft.com/en-us/dotnet/api/{0}' -f $typeName

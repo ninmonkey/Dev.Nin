@@ -1,6 +1,8 @@
 ﻿
 
-$experimentToExport.function += 'Import-DevNinModule'
+$experimentToExport.function += @(
+    'Import-DevNinModule'
+)
 # $experimentToExport.alias += 'AllTrue'
 function Import-DevNinModule {
     [CmdletBinding()]

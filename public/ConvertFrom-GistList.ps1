@@ -33,7 +33,6 @@ function ConvertFrom-GistList {
         FileCount = $parts[2]
         Visible   = $parts[3]
         Date      = [datetime]$parts[4]
-
     }
 }
 

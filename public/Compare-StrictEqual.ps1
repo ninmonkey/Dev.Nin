@@ -5,6 +5,8 @@ function Compare-StrictEqual {
     .notes
         this might be similar to:
             $A.Equals($B)
+
+        todo: move to test module
     #>
     param(
         # First Object
