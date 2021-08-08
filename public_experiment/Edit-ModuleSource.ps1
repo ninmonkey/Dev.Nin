@@ -64,8 +64,32 @@ function Edit-ModuleSource {
 
         if ($PassThru) {
             $selected.Path
+            return
         }
-        $selected.Path | Ninmonkey.Console\Set-NinLocation
+
+        $codeArgs = @(
+            '-r'
+            '-g'
+            '""{0}""' -f @(
+                $selected.Path
+            )
+            # '""{0}:{1}:{2}""' -f @(
+            #     $Path
+            #     $Meta.StartLineNumber
+            #     $Meta.StartColumnNumber
+            # )
+        )
+        $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
+        <#
+                    worked:
+                    code -r -g 'C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Measure-ChildItem.ps1:5:5'
+
+                    from: "$codeArgs | Join-String -se ' '
+                    #>
+
+        & code-insiders @codeArgs
+        # Edit-FunctionSource $selected.Path
+        # $selected.Path | Ninmonkey.Console\Set-NinLocation
     }
     end {
 

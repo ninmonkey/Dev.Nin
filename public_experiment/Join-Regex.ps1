@@ -15,8 +15,19 @@ function Join-Regex {
                 $Regex = [regex]::escape( $Path )
                 Ls . | ?{ $_.FullName -match $Regex }
 
+        See ./Join-Regex.tests.ps1 for more
+
+    .example
+        PS> ls env: | ?{ $_.Value -match (Join-Regex -LiteralText $Env:USERPROFILE) }
+
+    .example
+        PS> Get-ChildItem env: | Where-Object {
+            $_.Value -match ( Join-Regex -LiteralText $Env:USERPROFILE  )
+        } | rg -i $(Join-Regex -LiteralText $Env:USERPROFILE, '$')
+
     .notes
         future:
+
             - [ ] can I simplify a way to say regex anchor plus literal, easier?
                 Like
                     $PathAsLiteral = [regex]::escape( $Path )
@@ -31,20 +42,21 @@ function Join-Regex {
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # list of literal text to OR
-        [Parameter(Mandatory)]
+        [alias('LiteralText')]
+        [Parameter()]
         [string[]]$Text,
 
         # list of regex's to OR
-        [Parameter()][switch]$Regex,
-
-        # otherwise also colorize match
-        [Parameter()][switch]$PassThru
-
+        [Parameter()]
+        [string[]]$Regex
     )
 
     begin {
-        throw "this is not the right function, versions shouldn't have any switch"
-        
+        # maybe related Exception names: 'ArgumentException', 'ParameterBindingException', 'PositionalParameterNotFound', 'PSArgumentException', 'ArgumentException'
+        if ([string]::IsNullOrWhiteSpace($Text) -and [string]::IsNullOrWhiteSpace($Regex)) {
+            $e = [System.ArgumentException]::new('Requires at least -TextLiteral or -Regex parameters')
+            $PSCmdlet.ThrowTerminatingError($e)
+        }
     }
     process {
         $splat_JoinLiteral = @{
@@ -55,28 +67,48 @@ function Join-Regex {
             Separator = '|'
             Property  = { '({0})' -f $_ }
         }
+        $splat_FinalJoin = @{
+            Separator = '|'
+            Property  = { '{0}' -f $_ }
+        }
 
         $Regex_MergedLiteral = $Text | Join-String @splat_JoinLiteral
-        $Regex_MergedRegex = $Text | Join-String @splat_JoinRegex
+        $Regex_MergedRegex = $Regex | Join-String @splat_JoinRegex
 
         # if($Regex_MergedLiteral -and $Regex_MergedRegex) {
-        $Regex_Final = @(
-            $Regex_MergedLiteral
-            $Regex_MergedRegex
-        ) | Join-String $splat_JoinRegex
+        $finalItems = @(
+            if (! [string]::IsNullOrWhiteSpace($Text)) {
+                $Regex_MergedLiteral
+            }
+            if (! [string]::IsNullOrWhiteSpace($Regex)) {
+                $Regex_MergedRegex
+            }
+        )
+        $Regex_Final = $finalItems | Join-String @splat_FinalJoin
 
         Write-Debug "Regex: Merged literals: $Regex_MergedLiteral"
         Write-Debug "Regex: Merged Regex: $Regex_MergedRegex"
         Write-Debug "Regex: Merged all: $Regex_Final"
         Write-Debug "`$Regex = $Regex_Final"
 
-        $query = Get-ChildItem env: | Where-Object Value -Match $Regex_Final
+        # $Regex_Final = $finalItems
+        # Write-Debug "Regex: Merged all: $Regex_Final"
+        # if ($finalItems.count -gt 1) {
+        #     Write-Debug "Regex: Merged all: $Regex_Final"
+        # }
+        # ) | Join-String @splat_FinalJoin
+        # ) | Join-String @splat_JoinRegex # Do I want final outer parens? No for now.
+
+        # $query = Get-ChildItem env: | Where-Object Value -Match $Regex_Final
+        Write-Information $Regex_Final
         if ($PassThru) {
-            $query
+            $Regex_Final
             return
         }
-
-        $query | rg -i $Regex_Final
+        $Regex_Final
+        # $query | rg -i $Regex_Final
     }
-    end {}
+    end {
+        # 'am end'
+    }
 }
