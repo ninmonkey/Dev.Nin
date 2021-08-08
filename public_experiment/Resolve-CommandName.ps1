@@ -15,7 +15,7 @@ function Resolve-CommandName {
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # command/alias name
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [string[]]$CommandName,
 
         # Error if not exactly one match is found
@@ -30,8 +30,8 @@ function Resolve-CommandName {
             } else {
                 $_
             }
-
         }
+        | Sort-Object -Unique -p { $_.ModuleName, $_.Name } # simple way to remove overlapping results
         if ($OneOrNone) {
             if ($commands.count -ne 1) {
                 "Match count 1 != $($Commands.count)" | Write-Error
