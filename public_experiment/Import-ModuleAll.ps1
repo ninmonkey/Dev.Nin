@@ -2,7 +2,7 @@ $experimentToExport.function += @(
     'Import-ModuleAll'
 )
 $experimentToExport.alias += @(
-    're'
+    'reload'
 )
 
 function Import-ModuleAll {
@@ -22,7 +22,7 @@ function Import-ModuleAll {
     .outputs
 
     #>
-    [alias('re')]
+    [alias('reload')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 

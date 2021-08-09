@@ -1,25 +1,28 @@
 $experimentToExport.function += @(
-    'Get-CommandNameValue'
+    'Get-CommandNameCompleter'
 )
 $experimentToExport.alias += @(
     'ValidArgCommand'
 )
 
-function Get-CommandNameValue {
+function Get-CommandNameCompleter {
     <#
     .synopsis
         get a valid list of functions, for argument completers
     .description
         future: create a real attribute completer so that it's reusable
     .notes
-        currently returns functions that end up as disk drivves
+        future:
+            - [ ] return a completion result kind with tooltip
+
+        currently returns functions that end up as disk drives
 
     see also:
         [System.Management.Automation.CommandTypes]
         Alias, All, Application, Cmdlet, Configuration, ExternalScript, Filter, Function, Script
 
     .outputs
-
+        either [string] or [Management.Automation.CommandInfo] with -passthru
     #>
     [Alias('ValidArgCommand')]
     [CmdletBinding(PositionalBinding = $false)]
@@ -29,10 +32,11 @@ function Get-CommandNameValue {
         [Parameter()][switch]$NoAlias,
 
         # Ignore providers ?
-        [alias('IgnoreAlias')]
-        [Parameter()][switch]$NoProvider
+        [alias('IgnoreProvider')]
+        [Parameter()][switch]$IgnoreDrives,
 
-
+        # If not passthru, then return completer with tooltips, otherwise full command object
+        [Parameter()][switch]$PassThru
     )
 
     begin {}
@@ -46,7 +50,11 @@ function Get-CommandNameValue {
 
 
         if (! $NoAlias) {
-            Get-ChildItem alias:
+            if ($PassThru) {
+                Get-ChildItem alias:
+            } else {
+                Get-ChildItem alias: | ForEach-Object Name
+            }
         }
         $select_funcs = Get-ChildItem function:
         if ($IgnoreDrives) {
@@ -54,10 +62,12 @@ function Get-CommandNameValue {
             $select_funcs = $select_funcs
             | Where-Object name -NotIn $excludeNames
         }
-        $select_funcs
+        if ($PassThru) {
+            $select_funcs
+        } else {
+            $select_funcs.Name
 
-
-
+        }
     }
     end {}
 }
