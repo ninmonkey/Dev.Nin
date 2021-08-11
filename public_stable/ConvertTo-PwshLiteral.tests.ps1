@@ -1,6 +1,10 @@
 #requires -modules @{ModuleName='Pester';RequiredVersion='5.1.1'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
+BeforeAll {
+    Import-Module Dev.Nin
+}
+
 Describe "$__PesterFunctionName" -Tag Unit {
     BeforeAll {
         . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
@@ -14,7 +18,7 @@ Describe "$__PesterFunctionName" -Tag Unit {
         $Sample | ConvertTo-PwshLiteral
         | Should -Be $Expected -Because 'That is the Correct Pwsh Literal string'
     }
-    it 'Preserves Ascii non-control group chars' {
+    It 'Preserves Ascii non-control group chars' {
         $Sample = "Hi`tWorld"
         $Expected = "Hi`u{9}World"
         $Sample | ConvertTo-PwshLiteral

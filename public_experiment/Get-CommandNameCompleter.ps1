@@ -11,6 +11,20 @@ function Get-CommandNameCompleter {
         get a valid list of functions, for argument completers
     .description
         future: create a real attribute completer so that it's reusable
+
+        with -PassThru:
+            returns [ [FunctionInfo] | [AliasInfo] ]
+
+            object instances of commands/function/aliases
+
+        without -PassThru:
+            name of command
+
+            return [string]
+
+    .outputs
+        return [string] or [ [FunctionInfo] | [AliasInfo] | .. ]
+
     .notes
         future:
             - [ ] return a completion result kind with tooltip
@@ -27,6 +41,16 @@ function Get-CommandNameCompleter {
     [Alias('ValidArgCommand')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
+        # Partial Text matching
+        [Parameter(Position = 0)]
+        [string]$Name,
+
+        [Parameter()]
+        [ValidateSet('Provider', 'Get-Command')]
+        [string]$QuerySource,
+
+
+
         # Ignore Aliases
         [alias('IgnoreAlias')]
         [Parameter()][switch]$NoAlias,
@@ -41,6 +65,10 @@ function Get-CommandNameCompleter {
 
     begin {}
     process {
+        if ($QuerySource -eq 'Get-Command') {
+            Write-Error 'ShouldBe $PSCmdlet.ThrowTerminatingError()' ; return;
+            # $PSCmdlet.ThrowTerminatingError()
+        }
         $filesystemNames = Get-PSProvider -PSProvider FileSystem | ForEach-Object Drives
         | ForEach-Object { "${_}:" }
 
@@ -48,23 +76,33 @@ function Get-CommandNameCompleter {
             $filesystemNames
         )
 
-
+        $select_alias = @()
         if (! $NoAlias) {
-            if ($PassThru) {
+            $select_alias = if ($PassThru) {
                 Get-ChildItem alias:
             } else {
                 Get-ChildItem alias: | ForEach-Object Name
             }
         }
         $select_funcs = Get-ChildItem function:
+
+        if (! [string]::IsNullOrWhiteSpace($Name)) {
+            $select_funcs = $select_funcs | Where-Object Name -Like "*$Name*"
+            $select_alias = $select_alias | Where-Object Name -Like "*$Name*"
+        }
         if ($IgnoreDrives) {
             # Testing name for a full match is intended
             $select_funcs = $select_funcs
             | Where-Object name -NotIn $excludeNames
         }
+
+        $select_alias = $select_alias | Sort-Object Name
+        $select_funcs = $select_funcs | Sort-Object Name
         if ($PassThru) {
+            $select_alias
             $select_funcs
         } else {
+            $select_alias.Name
             $select_funcs.Name
 
         }

@@ -1,6 +1,6 @@
 #Requires -Version 7.0.0
-$experimentToExport.function += 'ConvertTo-PwshLiteral'
-# $experimentToExport.alias += 'FindDotfile'
+$stableToExport.function += 'ConvertTo-PwshLiteral'
+# $stableToExport.alias += ''
 
 function ConvertTo-PwshLiteral {
     <#

@@ -25,6 +25,9 @@ function _toastTimer {
         # Message
         [Parameter(Position = 1)][String]$Message,
 
+        # Silent?
+        [Parameter()][switch]$Silent,
+
         # Repeat automatically? (currently until kill)
         [Parameter()][switch]$Repeat
     )
@@ -36,7 +39,18 @@ function _toastTimer {
             while ( (Get-Date) -lt $when ) {
                 Start-Sleep -Seconds 1
             }
-            New-BurntToastNotification -Text "$Message`n🐒" -Sound 'Alarm3'
+
+            $splat_Toast = @{
+                Text  = "$Message`n🐒"
+                Sound = 'Alarm3'
+            }
+            if ($Silent) {
+                $splat_Toast.Remove('Sound')
+                $splat_Toast.Add('Silent', $true)
+            }
+
+
+            New-BurntToastNotification @splat_Toast
         } while ($Repeat)
     }
 }
