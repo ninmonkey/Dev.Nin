@@ -2,6 +2,7 @@
     Enable_FormatData                  = $true
     Enable_FormatData_BuiltIn          = $true # toggles overriting builtin type's formatdata
     Enable_Import_PublicExperiment_Dir = $True
+    Enable_Import_PrivateExperiment_Dir = $True
 }
 $formatData = @(
 )
@@ -35,7 +36,8 @@ $private = @(
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
         . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
-    } else {
+    }
+    else {
         Write-Error "Import: failed: private: $File"
     }
 }
@@ -64,7 +66,8 @@ $public_NativeWrapper = @(
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
         . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
 
@@ -79,7 +82,8 @@ $completer = @(
 foreach ($file in $completer) {
     if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
         . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
-    } else {
+    }
+    else {
         Write-Error "Import: failed: completer: $File"
     }
 }
@@ -148,7 +152,8 @@ foreach ($file in $public) {
     $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
     if (Test-Path $ExpectedPath) {
         . $ExpectedPath
-    } else {
+    }
+    else {
         Write-Error "Import: failed: public: $File"
     }
 }
@@ -271,6 +276,9 @@ Export-ModuleMember -Alias $aliasesToExport
 
 if ($__Config.Enable_Import_PublicExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\main_import_experimental.ps1'))
+}
+if ($__Config.Enable_Import_PrivateExperiment_Dir) {
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\main_import_experimental.ps1'))
 }
 <#
 Sketch: Detect imports
