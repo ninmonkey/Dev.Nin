@@ -8,6 +8,20 @@ function Edit-FunctionSource {
     .outputs
         [InternalScriptExtent] or none
     .example
+    🐒> gcm -Module Dev.Nin | % Name | Out-Fzf -m
+    | EditFunc -PassThru
+    | % file | gi | ft Name, Directory
+
+        Name                     Directory
+        ----                     ---------
+        Edit-DevTodoList.ps1     C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+        Format-RipGrepUrl.ps1    C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment
+        ConvertFrom-GistList.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+        Dev-ExportFormatData.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+    .example
+        # Find and open paths from a query
+        PS> Get-CommandNameCompleter *sys* -PassThru | EditFunc -PassThru
+    .example
         PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
         PS> Alias 'Br' | Edit-FunctionSource
         PS> 'Br', 'ls' | Edit-FunctionSource
@@ -24,7 +38,7 @@ function Edit-FunctionSource {
         # Function or Alias name1
         # future: autocomplete FUnc
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string]$FunctionName,
+        [string[]]$FunctionName,
 
         # Return paths only
         [Parameter()][switch]$PassThru,
@@ -33,79 +47,79 @@ function Edit-FunctionSource {
     )
 
     Process {
-        $maybeFunc = $FunctionName
-        $functionQuery = $FunctionName | ForEach-Object {
-            $isAlias = (Get-Command $maybeFunc -ea SilentlyContinue).CommandType -eq 'alias'
-            if ($isAlias) {
-                $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
-                $resolvedAlias
-            }
-            else {
-                Get-Command $FunctionName -ea SilentlyContinue
-            }
-        }
-        Write-ConsoleLabel 'Matches: ' $functionQuery.count | Write-Information
-
-        if (! $functionQuery ) {
-            Write-Error "FunctionNotFound: No matches for query: '$FunctionName'"
-            return
-        }
-
-        $numResults = $functionQuery.count
-        if ($numResults -le 3) {
-            $autoOpen = $true
-        }
-        if ($PassThru) {
-            $autoOpen = $false
-        }
-
-        $functionQuery | ForEach-Object {
-            $curCommand = $_
-            $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
-            $Path = $meta.File | Get-Item -ea continue
-            if ($Path) {
-                $meta | ConvertTo-Json | Write-Debug
-                if ($PassThru) {
-                    "From: '$Path'" | Write-Debug
-                    $Meta
-                    return
+        $FunctionName | ForEach-Object {
+            $curFuncName = $_
+            $maybeFunc = $curFuncName
+            $functionQuery = $curFuncName | ForEach-Object {
+                $isAlias = (Get-Command $maybeFunc -ea SilentlyContinue).CommandType -eq 'alias'
+                if ($isAlias) {
+                    $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
+                    $resolvedAlias
+                } else {
+                    Get-Command $curFuncName -ea SilentlyContinue
                 }
+            }
+            Write-ConsoleLabel 'Matches: ' $functionQuery.count | Write-Information
 
-                if ($autoOpen -and (Test-Path $Path)) {
-                    Write-Debug "found: '$Path'"
+            if (! $functionQuery ) {
+                Write-Error "FunctionNotFound: No matches for query: '$curFuncName'"
+                return
+            }
 
-                    if ($SkipPositionArgs) {
-                        code-insiders (Get-Item $Path -ea stop)
+            $numResults = $functionQuery.count
+            if ($numResults -le 3) {
+                $autoOpen = $true
+            }
+            if ($PassThru) {
+                $autoOpen = $false
+            }
+
+            $functionQuery | ForEach-Object {
+                $curCommand = $_
+                $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
+                $Path = $meta.File | Get-Item -ea continue
+                if ($Path) {
+                    $meta | ConvertTo-Json | Write-Debug
+                    if ($PassThru) {
+                        "From: '$Path'" | Write-Debug
+                        $Meta
                         return
                     }
 
-                    $codeArgs = @(
-                        '-r'
-                        '-g'
-                        '""{0}:{1}:{2}""' -f @(
-                            $Path
-                            $Meta.StartLineNumber
-                            $Meta.StartColumnNumber
+                    if ($autoOpen -and (Test-Path $Path)) {
+                        Write-Debug "found: '$Path'"
+
+                        if ($SkipPositionArgs) {
+                            code-insiders (Get-Item $Path -ea stop)
+                            return
+                        }
+
+                        $codeArgs = @(
+                            '-r'
+                            '-g'
+                            '""{0}:{1}:{2}""' -f @(
+                                $Path
+                                $Meta.StartLineNumber
+                                $Meta.StartColumnNumber
+                            )
                         )
-                    )
-                    $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
-                    <#
+                        $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
+                        <#
                     worked:
                     code -r -g 'C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Measure-ChildItem.ps1:5:5'
 
                     from: "$codeArgs | Join-String -se ' '
                     #>
 
-                    & code-insiders @codeArgs
-                }
-                else {
-                    '<', $Path, '>' -join ''
-                }
-            }
-            else {
-                Write-Error "shouldNeverReachException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly"
-                return # continues
+                        & code-insiders @codeArgs
+                    } else {
+                        '<', $Path, '>' -join ''
+                    }
+                } else {
+                    Write-Error "shouldNeverReachException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly"
+                    return # continues
 
+                }
             }
         }
     }

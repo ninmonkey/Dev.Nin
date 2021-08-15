@@ -77,13 +77,13 @@ function Get-CommandNameCompleter {
         )
 
         $select_alias = @()
-        if (! $NoAlias) {
-            $select_alias = if ($PassThru) {
-                Get-ChildItem alias:
-            } else {
-                Get-ChildItem alias: | ForEach-Object Name
-            }
-        }
+        # if (! $NoAlias) {
+        #     $select_alias = if ($PassThru) {
+        #         Get-ChildItem alias:
+        #     } else {
+        #         Get-ChildItem alias: | ForEach-Object Name
+        #     }
+        # }
         $select_funcs = Get-ChildItem function:
 
         if (! [string]::IsNullOrWhiteSpace($Name)) {
@@ -98,17 +98,25 @@ function Get-CommandNameCompleter {
 
         $select_alias = $select_alias | Sort-Object Name
         $select_funcs = $select_funcs | Sort-Object Name
+
         if ($PassThru) {
+
             $select_alias
             $select_funcs
-        } else {
-            $select_alias.Name
-            $select_funcs.Name
 
+            return
         }
+
+        $select_alias.Name
+        $select_funcs.Name
     }
+
     end {}
 }
 
+# hr
+# Get-CommandNameCompleter sysinternal -PassThru
 
+# hr
+# Get-CommandNameCompleter sysinternal
 # Get-Module | Where-Object { $_.ExportedCmdlets | ForEach-Object { if ($_.name -match 'nin') { $true } } }

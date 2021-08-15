@@ -2,33 +2,15 @@
 # $experimentToExport.alias += @('favWebSearch', 'favUrl')
 'temp disable, see: <C:\Users\cppmo_000\Documents\2021\Powershell\buffer\2021-08\Invoke-FavUrl-prototype.ps1>'
 
-$script:__savedListStore = @(
-    @{
-        Label       = 'man'
-        Description = 'Search Linux Man Pages'
-        UrlTemplate = 'https://www.mankier.com/1/<<q1>>'
-    }
-    @{
-        Label        = 'PowerQuery'
-        Description  = 'Docs by Function name'
-        UrlTemplate  = 'https://docs.microsoft.com/en-us/powerquery-m/<<q1>>'
-        FormatScript = {
-            param($rawText)
-            $rawText -replace '\.', '-'
-        }
-    }
-) | ForEach-Object { [pscustomobject]$_ }
-
-
 function Get-FavWebItem {
     # Used to complete param1 of 'Invoke-FavUrlQuery'
     [CmdletBinding()]
     param()
-    $script:__savedListStore
+    _Get-ModuleMetadata -Key 'FavUrl'
 }
 
 function Get-ValidFavWebItemName {
-    $script:__savedListStore | ForEach-Object Label
+    _Get-ModuleMetadata -Key 'FavUrl' | ForEach-Object Label
 }
 
 function Invoke-FavUrlQuery {
