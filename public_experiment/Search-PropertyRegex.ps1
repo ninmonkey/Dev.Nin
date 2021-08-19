@@ -1,7 +1,6 @@
-﻿
+﻿$experimentToExport.function += 'Search-PropertyRegex'
+$experimentToExport.alias += 'WhereProperty'
 
-# $experimentToExport.function += 'Test-AllTrue'
-# $experimentToExport.alias += 'AllTrue'
 function Search-PropertyRegex {
     <#
     .synopsis
@@ -21,12 +20,27 @@ $allpackages | Where-Object {
     .notes
         .
     #>
+    [Alias('WhereProperty')]
+    [cmdletbinding(PositionalBinding = $false)]
     param (
         # Docstring
         [Parameter(Mandatory, Position = 0)]
-        [object]$ParameterName
+        [string]$ParameterName
     )
-    begin {}
-    process {}
+    begin {
+        @'
+example:
+
+    # Diff Properties, Diff Regex
+    $allpackages | Where-Object {
+        $_.PackageFullName -match 'windowsterminal|wt' -or
+        $_.InstallLocation -match 'WindowsApps\\Microsoft\.WindowsTerm'
+    }
+'@
+
+    }
+    process {
+
+    }
     end {}
 }

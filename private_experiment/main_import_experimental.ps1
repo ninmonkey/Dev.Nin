@@ -6,35 +6,10 @@
     # 'formatData' = @()
 }
 
-function _Get-ModuleMetada {
+function Get-ModuleMetadata {
     <#
     .synopsis
-        internal private metadata
-    .description
-        Desc
-    .outputs
-        type any
-    #>
-    [CmdletBinding(PositionalBinding = $false)]
-    param(
-        # Keyname
-        [Alias('Name')]
-        [Parameter(Mandatory, Position = 0)]
-        [string]$KeyName
-    )
-
-    if (! $script:__metaPrivateExperimental.Metadata.ContainsKey( $KeyName ) ) {
-        # Throw [KeyNotFoundException]
-        # Write-Error "Key: '$KeyName' does not exist!"
-        Throw "Key: '$KeyName' does not exist!"
-    }
-
-    $script:__metaPrivateExperimental.Metadata.Item($KeyName)
-}
-function _Set-ModuleMetada {
-    <#
-    .synopsis
-        internal private metadata
+        internal private metadata [todo] move to its own tiny module
     .description
         Desc
     .outputs
@@ -46,6 +21,45 @@ function _Set-ModuleMetada {
         [Alias('Name')]
         [Parameter(Mandatory, Position = 0)]
         [string]$KeyName,
+
+        [Parameter()]
+        [switch]$List
+
+
+    )
+    if ($List) {
+        $script:__metaPrivateExperimental.Metadata.keys
+        return
+    }
+
+    if (! $script:__metaPrivateExperimental.Metadata.ContainsKey( $KeyName ) ) {
+        # Throw [KeyNotFoundException]
+        # Write-Error "Key: '$KeyName' does not exist!"
+        Write-Error "Key: '$KeyName' does not exist!" # todo: exception throw
+
+    }
+
+    # any reason to use?: $script:__metaPrivateExperimental.Metadata.Item($KeyName)
+    $script:__metaPrivateExperimental.Metadata[ $KeyName ]
+}
+function Set-ModuleMetada {
+    <#
+    .synopsis
+        internal private metadata [todo] move to its own tiny module
+    .description
+        Desc
+    .outputs
+        type any
+    #>
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        # Keyname
+        [Alias('Name')]
+        [Parameter(Mandatory, Position = 0)]
+        [string]$KeyName,
+
+        # [allowemptystring()]
+        # [Parameter()][string]$Namespace,
 
         # Value
         [Alias('Value')]

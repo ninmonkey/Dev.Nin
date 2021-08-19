@@ -90,7 +90,8 @@ function Edit-FunctionSource {
                         Write-Debug "found: '$Path'"
 
                         if ($SkipPositionArgs) {
-                            code-insiders (Get-Item $Path -ea stop)
+                            # code-insiders (Get-Item $Path -ea stop)
+                            code (Get-Item $Path -ea stop)
                             return
                         }
 
@@ -111,7 +112,8 @@ function Edit-FunctionSource {
                     from: "$codeArgs | Join-String -se ' '
                     #>
 
-                        & code-insiders @codeArgs
+                        # & code-insiders @codeArgs
+                        & code @codeArgs
                     } else {
                         '<', $Path, '>' -join ''
                     }

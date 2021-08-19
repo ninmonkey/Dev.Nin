@@ -18,12 +18,11 @@ function Get-OptionalPath {
     param(
         [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline)]
         [Alias('PSPath')]
-        [string]$Path,
+        [string]$Path
 
         # If I'm going to auto-create it, then make sure it's a directory
-        [Parameter(AttributeValues)]
-        [ParameterType]
-        $ParameterName
+        # [Parameter(AttributeValues)]
+        # [switch]$IsDirectory
     )
 
     begin {}

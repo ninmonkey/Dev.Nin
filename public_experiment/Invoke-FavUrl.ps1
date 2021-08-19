@@ -1,16 +1,16 @@
-# $experimentToExport.function += 'Invoke-FavUrlQuery'
-# $experimentToExport.alias += @('favWebSearch', 'favUrl')
-'temp disable, see: <C:\Users\cppmo_000\Documents\2021\Powershell\buffer\2021-08\Invoke-FavUrl-prototype.ps1>'
+$experimentToExport.function += 'Invoke-FavUrlQuery'
+$experimentToExport.alias += @('favWebSearch', 'favUrl')
+
 
 function Get-FavWebItem {
     # Used to complete param1 of 'Invoke-FavUrlQuery'
     [CmdletBinding()]
     param()
-    _Get-ModuleMetadata -Key 'FavUrl'
+    Get-ModuleMetadatata -Key 'FavUrl'
 }
 
 function Get-ValidFavWebItemName {
-    _Get-ModuleMetadata -Key 'FavUrl' | ForEach-Object Label
+    Get-ModuleMetadatata -Key 'FavUrl' | ForEach-Object Label
 }
 
 function Invoke-FavUrlQuery {
@@ -50,8 +50,8 @@ function Invoke-FavUrlQuery {
 
     begin {
         $SavedList = $script:__savedListStore
-
-
+        Write-Warning '
+Not finished. Cleanup: <C:\Users\cppmo_000\Documents\2021\Powershell\buffer\2021-08\Invoke-FavUrl-prototype.ps1>'
     }
     process {
         function _logIt {

@@ -10,7 +10,7 @@ function ConvertTo-RegexLiteral {
     .outputs
 
     #>
-    [alias('Re')]
+    [alias('Re', 'ReLit')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Text to convert to a literal

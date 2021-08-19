@@ -22,7 +22,7 @@ function Get-SysinternalCommand {
     begin {
     }
     process {
-        $Metadata = _Get-ModuleMetada -key 'Sysinternal'
+        $Metadata = Get-ModuleMetadata -key 'Sysinternal'
         $Metadata
     }
     end {}
