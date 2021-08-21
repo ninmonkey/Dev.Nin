@@ -1,9 +1,12 @@
 using namespace System.Collections.Generic
-$experimentToExport.function += 'Find-Dotfile_Experiment'
+$experimentToExport.function += 'Find-Dotfile'
 $experimentToExport.alias += 'FindDotfile'
 
-
-function Find-Dotfile_Experiment {
+# enum DotfileItemType {
+#     Directory
+#     File
+# }
+function Find-Dotfile {
     <#
   .synopsis
    try to find dotfiles
@@ -11,7 +14,7 @@ function Find-Dotfile_Experiment {
        _toastTimer 30m
   #>
     [alias('FindDotfile')]
-    [cmdletbinding()]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # TopLevelFile
         [Parameter()][switch]$FileAtBase,
@@ -49,13 +52,14 @@ function Find-Dotfile_Experiment {
 
 IF ($FALSE) {
     # try to get total file counts of parents, this broke.
-    $results ??= $parents | ForEach-Object {
-
-        $curP = @{ 'Path' = Get-Item $curP }
-        $curP['Children'] = Get-ChildItem -Path $curP -Force -Recurse
-        $curP['TotalCount'] = ($curP['Children']).count
-        $curP['TotalSize'] = $curP.Length | Measure-Object -Sum | ForEach-Object { $_.Sum / 1mb }
-        "Path: $curP" | New-Text -fg green | ForEach-Object tostring | Write-Host
-        $curP
-    }
+    # $parents = gi . -Directory
+    # $results ??= $parents | ForEach-Object {
+    #     $curP = $_
+    #     $curP = @{ 'Path' = Get-Item $curP }
+    #     $curP['Children'] = Get-ChildItem -Path $curP -Force -Recurse
+    #     $curP['TotalCount'] = ($curP['Children']).count
+    #     $curP['TotalSize'] = $curP.Length | Measure-Object -Sum | ForEach-Object { $_.Sum / 1mb }
+    #     "Path: $curP" | New-Text -fg green | ForEach-Object tostring | Write-Host
+    #     $curP
+    # }
 }

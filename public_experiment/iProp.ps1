@@ -76,6 +76,6 @@ function iProp {
 
 # ((gcm ls).Parameters).psobject.properties | ft
 
-iProp (Get-Command ls).Parameters -infa Continue -ov 'x'
+# iProp (Get-Command ls).Parameters -infa Continue -ov 'x'
 # $x = iProp (Get-Command ls).Parameters -infa Continue
 # $x

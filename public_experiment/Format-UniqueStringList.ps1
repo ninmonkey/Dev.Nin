@@ -1,21 +1,21 @@
-$experimentToExport.function += 'Format-UniqueStringList'
-$experimentToExport.alias += 'strDistinct'
+$experimentToExport.function += 'Format-ClipboardUniqueList'
+# $experimentToExport.alias += ''
 
-function Format-UniqueStringList {
+function Format-ClipboardUniqueList {
     <#
     .synopsis
-        reads clipboard, distinct sort, writes to clipboard
+        reads clipboard, distinct sort, writes back to clipboard
     .description
         When you have a list of text, you need to make sure it's sorted and distinct
     .example
         PS>
 
         copyh:
-        Format-UniqueStringList
+        Format-ClipboardUniqueList
     .notes
         .
     #>
-    [Alias('StrDistinct')]
+    # [Alias('')]
     [CmdletBinding(PositionalBinding = $false)]
     # DefaultParameterSetName='Source_Clipboard')]
     param (

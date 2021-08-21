@@ -33,8 +33,8 @@ $Metadata = @(
         Uri            = 'https://docs.microsoft.com/en-us/sysinternals/downloads/handle'
         # HelpCommand    = Invoke-NativeCommand 'handle' -ArgumentList @('--help')
         ExampleCommand = @(
-            'handle -p code'
-            'handle windows\system'
+            # 'handle -p code'
+            # 'handle windows\system'
         )
     }
     @{
@@ -42,8 +42,8 @@ $Metadata = @(
         Uri            = 'https://docs.microsoft.com/en-us/sysinternals/downloads/listdlls'
         # HelpCommand    = Invoke-NativeCommand 'listdlls64' -ArgumentList @('--help')
         ExampleCommand = @(
-            'Listdlls64.exe 7172'
-            'Listdlls64.exe spotify'
+            # 'Listdlls64.exe 7172'
+            # 'Listdlls64.exe spotify'
         )
     }
     @{
@@ -60,7 +60,7 @@ $Metadata = @(
         ExampleCommand = @(
             # 'Autoruns64'
             # 'Autorunssc64'
-            'Procmon64'
+            # 'Procmon64'
         )
     }
     #

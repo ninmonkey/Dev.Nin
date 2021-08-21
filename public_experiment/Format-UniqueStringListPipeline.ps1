@@ -1,12 +1,12 @@
 $experimentToExport.function += 'Format-UniqueStringListPipeline'
 $experimentToExport.alias += 'strDistinctFromPipe'
-$experimentToExport.meta += @{
-    Enable                            = $false
-    Tags                              = 'WIP', 'Todo'
-    'Format-UniqueStringListPipeline' = 'WIP'
-    Filename                          = $myinvocation.MyCommand.Name.split('.')[0]
-    Obj                               = $myinvocation
-}
+# $experimentToExport.meta += @{
+#     Enable                            = $false
+#     Tags                              = 'WIP', 'Todo'
+#     'Format-UniqueStringListPipeline' = 'WIP'
+#     Filename                          = $myinvocation.MyCommand.Name.split('.')[0]
+#     Obj                               = $myinvocation
+# }
 
 # $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
@@ -26,7 +26,7 @@ function Format-UniqueStringListPipeline {
     #>
     [Alias('StrDistinct')]
     [CmdletBinding(
-        PositionalBinding = $false
+        PositionalBinding = $false, DefaultParameterSetName = 'Source_Pipe'
     )]
     # DefaultParameterSetName='Source_Clipboard')]
     param (
@@ -49,16 +49,19 @@ function Format-UniqueStringListPipeline {
         # [AllowNullAttribute()]
         [alias('Text')]
         [Parameter(
-            Mandatory, ParameterSetName = 'Source_Pipe',
-            Position = 0, ValueFromPipeline)]
+            Mandatory,
+            ParameterSetName = 'Source_Pipe',
+            ValueFromPipeline
+        )]
         [string[]]$InputText,
 
         # PassThru: Writes to console instead
-        [Parameter()][switch]$PassThru
+        [Alias()]
+        [Parameter()][switch]$Clipboard
     )
     begin {
         $TextFromParam = [list[string]]::new()
-        Write-Warning 'NYI'
+        Write-Warning 'NYI, refactor to sort unique properties separate from clipbaord command'
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {

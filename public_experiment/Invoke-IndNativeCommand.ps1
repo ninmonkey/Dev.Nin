@@ -21,6 +21,10 @@ function Invoke-IndentedNativeCommand {
         Invoke-NativeCommand git clone repo-uri -ErrorAction Stop
 
         Run the git command to clone repo-uri. Raise a terminating error if the command fails.
+    .link
+        Invoke-NativeCommand
+    .link
+        Get-NativeCommand
     #>
 
     [alias('NativeCommand')]

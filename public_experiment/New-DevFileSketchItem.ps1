@@ -21,7 +21,7 @@ function New-DevFileSketchItem {
         .
     #>
     [Alias('NewBufferItem')]
-    [cmdletbinding(PositionalBinding = $false)]
+    [cmdletbinding(PositionalBinding = $false, SupportsShouldProcess)]
     param (
         # Name
         [Alias('Name')]
