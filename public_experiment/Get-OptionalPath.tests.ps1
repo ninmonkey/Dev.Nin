@@ -1,4 +1,4 @@
-#requires -modules @{ModuleName='Pester';RequiredVersion='5.0.0'}
+#requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
 Describe "$__PesterFunctionName" -Tag Unit {

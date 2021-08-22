@@ -87,7 +87,8 @@ function Edit-ModuleSource {
                     from: "$codeArgs | Join-String -se ' '
                     #>
 
-        & code-insiders @codeArgs
+        & code @codeArgs
+        # & code-insiders @codeArgs
         # Edit-FunctionSource $selected.Path
         # $selected.Path | Ninmonkey.Console\Set-NinLocation
     }

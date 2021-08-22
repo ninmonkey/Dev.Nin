@@ -3,12 +3,11 @@ $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
 Describe "$__PesterFunctionName" -Tag Unit {
     BeforeAll {
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
+        . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
-        # $ErrorActionPreference = 'stop'
+        $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {
-        # . $__PesterFunctionName
-        findEnvPattern 'jake', 'cpp' -PassThru
+        . $__PesterFunctionName 'stuff'
     }
 }
