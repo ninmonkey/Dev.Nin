@@ -5,17 +5,42 @@ $experimentToExport.alias += @(
     # 'GetFuncInfo'
 )
 
+$experimentToExport.update_typeDataScriptBlock += @(
+    {
+        Update-TypeData -TypeName 'Nin.iProp' -DefaultDisplayPropertySet 'Name', 'TypeNameStr', 'ValueStr' -Force
+    }
+)
 
 function iProp {
     <#
     .synopsis
         summary type test
     .description
+        .
+    .notes
+        - [ ] needs wider columns, 'ft' truncates even short ones.
+        - [ ] move 'trimLonglines' to format-data
        .
     .example
-          .
+          🐒> ls . | iProp | ? ValueStr -Match "`u{2400}"
+
+            Name     TypeNameStr ValueStr
+            ----     ----------- --------
+            Target   [␀]         [␀]
+            LinkType [␀]         [␀]
+            Target   [␀]         [␀]
+            LinkType [␀]         [␀]
+
+            🐒> ls . | iProp | ?{ $null -eq $_.Value } | ft *
+
+             PSTypeNamesStr                                               TypeNameStr Value Name     ValueStr
+             --------------                                               ----------- ----- ----     --------
+            [Object], [PSCodeProperty], [PSMemberInfo], [PSPropertyInfo] [␀]               Target   [␀]
+            [Object], [PSCodeProperty], [PSMemberInfo], [PSPropertyInfo] [␀]               LinkType [␀]
+
+
     .outputs
-          [string | None]
+          [string]
 
     #>
     [CmdletBinding(PositionalBinding = $false)]
@@ -51,8 +76,6 @@ function iProp {
                 # TypeName     = $Type ?? $nullStr
             }
 
-
-
             $maxWidth = 60
             if ($TrimLongLines ) {
                 $SamStr = 'a fjea eifjj'
@@ -71,7 +94,9 @@ function iProp {
         # $Ij.psobject.properties | ForEach-Object { "`n"; ($_.value)?.GetType() | Format-TypeName -Brackets }
 
     }
-    end {}
+    end {
+
+    }
 }
 
 # ((gcm ls).Parameters).psobject.properties | ft

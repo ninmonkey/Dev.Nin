@@ -1,12 +1,13 @@
-﻿
+﻿# rename self to __init__.ps1 for my brain?
 
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:experimentToExport = @{
-    'function' = @()
-    'alias'    = @()
-    'cmdlet'   = @()
-    'variable' = @()
-    'meta'     = @()
+    'function'                   = @()
+    'alias'                      = @()
+    'cmdlet'                     = @()
+    'variable'                   = @()
+    'meta'                       = @()
+    'update_typeDataScriptBlock' = @()
     # 'formatData' = @()
 }
 
@@ -41,7 +42,13 @@ if ($experimentToExport['variable']) {
     Export-ModuleMember -Variable $experimentToExport['variable']
 }
 
-$meta | Write-Information
+$experimentToExport.update_typeDataScriptBlock | ForEach-Object {
+    Write-Verbose 'Loading TypeData'
+    . $_
+
+}
+
+$experimentToExport.meta | Write-Information
 
 # }
 #

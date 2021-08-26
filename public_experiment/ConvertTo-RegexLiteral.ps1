@@ -1,5 +1,5 @@
 $experimentToExport.function += 'ConvertTo-RegexLiteral'
-$experimentToExport.alias += 'Re', 'ReLiteral'
+$experimentToExport.alias += 'ReLit', 'ReLiteral'
 
 function ConvertTo-RegexLiteral {
     <#
@@ -31,7 +31,7 @@ function ConvertTo-RegexLiteral {
     .outputs
 
     #>
-    [alias('Re', 'ReLit')]
+    [alias('ReLit', 'ReLiteral')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Text to convert to a literal

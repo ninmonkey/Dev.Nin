@@ -41,6 +41,11 @@ function Edit-ModuleSource {
         )]
         [string]$FunctionName,
 
+        # Open the psd1., otherwise the default opens the directory
+        [Alias('SingleFile')]
+        [Parameter()]
+        [switch]$AsPsd1,
+
         # Return path[s] only
         [Parameter()][switch]$PassThru
     )
@@ -54,7 +59,9 @@ function Edit-ModuleSource {
             $ModuleName = Resolve-CommandName -Name $FunctionName
         }
 
-        $selected = Get-Module -Name $ModuleName
+        $selected = Get-Module -Name $ModuleName -ListAvailable
+        | Sort-Object Version -Descending
+        | Select-Object -First 1
         $selected | Join-String -p Name -sep ', ' -op 'Found: ' -os '.' | Write-Information
 
         if (! $selected ) {
@@ -62,8 +69,15 @@ function Edit-ModuleSource {
             return
         }
 
-        if ($PassThru) {
+        $TargetPath = if ($AsPsd1) {
             $selected.Path
+        }
+        else {
+            $Selected.ModuleBase
+        }
+        # note: Indented uses ModuleBase
+        if ($PassThru) {
+            $TargetPath
             return
         }
 
@@ -71,7 +85,7 @@ function Edit-ModuleSource {
             '-r'
             '-g'
             '""{0}""' -f @(
-                $selected.Path
+                $TargetPath
             )
             # '""{0}:{1}:{2}""' -f @(
             #     $Path
@@ -89,8 +103,8 @@ function Edit-ModuleSource {
 
         & code @codeArgs
         # & code-insiders @codeArgs
-        # Edit-FunctionSource $selected.Path
-        # $selected.Path | Ninmonkey.Console\Set-NinLocation
+        # Edit-FunctionSource $TargetPath
+        # $TargetPath | Ninmonkey.Console\Set-NinLocation
     }
     end {
 

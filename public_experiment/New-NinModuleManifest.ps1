@@ -14,7 +14,7 @@ function New-NinModuleManifest {
     .outputs
 
     #>
-    [alias('Re', 'ReLit')]
+    # [alias('')]
     [CmdletBinding(PositionalBinding = $false, SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
         # Text to convert to a literal
@@ -35,7 +35,8 @@ function New-NinModuleManifest {
         [Parameter()]
         [string[]]$Tags = @('')
     )
-    begin {}
+    begin {
+    }
     process {
 
         $UserBasePath = Get-Item $BasePath
@@ -110,13 +111,15 @@ function New-NinModuleManifest {
         # $newModuleManifestSplat | Format-Table
 
         if ($PSCmdlet.ShouldProcess("'$ManifestPath_FullName'", 'Write New Manifest?')) {
-            # New-ModuleManifest @newModuleManifestSplat
+            New-ModuleManifest @newModuleManifestSplat
             # New-Item -Path $RootModulePath_FullName -ItemType File
         }
 
         Get-ChildItem . -Recurse
 
         New-Text -fg orange 'NYI: Initialize git repo' | Join-String
+        Read-Host 'Ready? '
+        Test-ModuleManifest -Path $ManifestName
 
     }
     end {}
