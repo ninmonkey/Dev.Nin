@@ -7,7 +7,7 @@ $experimentToExport.alias += @(
 
 $experimentToExport.update_typeDataScriptBlock += @(
     {
-        Update-TypeData -TypeName 'Nin.iProp' -DefaultDisplayPropertySet 'Name', 'TypeNameStr', 'ValueStr' -Force
+        Update-TypeData -TypeName 'Nin.iProp' -DefaultDisplayPropertySet 'TypeNameStr', 'Name', 'ValueStr' -Force
     }
 )
 
@@ -20,7 +20,7 @@ function iProp {
     .notes
         - [ ] needs wider columns, 'ft' truncates even short ones.
         - [ ] move 'trimLonglines' to format-data
-       .
+        - [ ] if object is a container, drop table header?
     .example
           🐒> ls . | iProp | ? ValueStr -Match "`u{2400}"
 
@@ -55,8 +55,12 @@ function iProp {
     begin {
         $nullStr = "[`u{2400}]"
 
+
+
     }
     process {
+
+        Write-Information
         $InputObject.Psobject.Properties | ForEach-Object {
             $curProp = $_
             $Type = ($curProp.value)?.GetType()
@@ -64,15 +68,18 @@ function iProp {
 
             $ValueStr = ($curProp)?.Value ?? $nullStr
             $meta = @{
-                PSTypeName       = 'Nin.iProp'
+                PSTypeName          = 'Nin.iProp'
+                OwnerTypeStr        = $inputObject.GetType() | Format-TypeName -WithBrackets
+                OwnerPsTypeNamesStr = $inputObject.PSTypeNames | ForEach-Object { $_ -as 'type' }
+                | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
                 # the '-as type' is a quick hack to work around format-typename not working in an edge case. it needs to be rewritten anyway
-                PSTypeNamesStr   = $curProp.PSTypeNames | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
-                ValuePSTypeNames = $curProp.'Value'.'pstypenames' | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
-                Name             = $curProp.Name
-                Value            = $curProp.Value
-                ValueStr         = $curProp.Value ?? $nullStr
-                Type             = $Type
-                TypeNameStr      = $typeNameStr ?? $nullStr
+                PSTypeNamesStr      = $curProp.PSTypeNames | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
+                ValuePSTypeNames    = $curProp.'Value'.'pstypenames' | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
+                Name                = $curProp.Name
+                Value               = $curProp.Value
+                ValueStr            = $curProp.Value ?? $nullStr
+                Type                = $Type
+                TypeNameStr         = $typeNameStr ?? $nullStr
                 # TypeName     = $Type ?? $nullStr
             }
 

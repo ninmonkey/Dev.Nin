@@ -36,7 +36,7 @@ function ConvertTo-RegexLiteral {
     param(
         # Text to convert to a literal
         [Alias('InputObject')]
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [Parameter( Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$Text,
 
         # Use Regex literal format for ripgrep (ie: Rust Lang)

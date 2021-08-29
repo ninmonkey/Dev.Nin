@@ -1,6 +1,6 @@
 if (! $DebugInlineToggle ) {
     $experimentToExport.function += 'Find-ExampleModuleManifest'
-    $experimentToExport.alias += 'ModuleMetadata'
+    $experimentToExport.alias += 'ModuleMetadata', 'CheatSheet-ModuleManifest'
 }
 
 function Find-ExampleModuleManifest {
@@ -18,7 +18,7 @@ function Find-ExampleModuleManifest {
     .outputs
 
     #>
-    [alias('ModuleMetadata')]
+    [alias('ModuleMetadata', 'CheatSheet-ModuleManifest')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # # Text to convert to a literal
@@ -58,7 +58,7 @@ function Find-ExampleModuleManifest {
                 }
                 if (! $PassThru ) {
                     $cur | Select-Object -Prop $wantedProps | Format-List
-                    hr
+                    Hr
                 }
             }
         }

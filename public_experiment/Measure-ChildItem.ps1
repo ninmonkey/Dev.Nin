@@ -1,5 +1,5 @@
 ﻿$experimentToExport.function += 'Measure-ChildItem'
-$experimentToExport.alias += 'LsSize'
+# $experimentToExport.alias += 'LsSize'
 
 
 function Measure-ChildItem {
@@ -35,7 +35,7 @@ function Measure-ChildItem {
         Return the size of all items in a share.
     #>
 
-    [Alias('LsSize')]
+    [Alias('Indented.LsSize')]
     [CmdletBinding()]
     param (
         # The path to measure the size of. Accepts pipeline input. By default the size of the current working directory is measured.
