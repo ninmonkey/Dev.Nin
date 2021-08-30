@@ -65,52 +65,62 @@ function Get-RandomPerSession {
 
     .example
         PS> Get-RandomPerSession -key 'BGColor'
+    .example
+        # Create a single random color
+        🐒> Get-RandomPerSession 'color.fg' { ls fg: }
+    .example
+        # Create a list of 8 colors
+        🐒> Get-RandomPerSession 'colorList.fg' -Count 8 { ls fg: }
+
+    .example
+
     .outputs
         [object]
     #>
-    [CmdletBinding(PositionalBinding = $false,
+    [CmdletBinding(
+        PositionalBinding = $false,
         DefaultParameterSetName = 'SetOrGetKey'
     )]
     param(
         # Keyname of value to forget
-        [Alias('Name')]
+        [Alias('Label')]
         [Parameter(
             ParameterSetName = 'SetOrGetKey',
             Mandatory, Position = 0)]
-        [string]$KeyName,
+        [string]$Name,
+
+        # Random count
+        [Alias('Number')]
+        [Parameter(
+            ParameterSetName = 'SetOrGetKey')]
+        [ValidateScript( { $_ -gt 0 })]
+        [int]$Count = 1,
 
         # Only invoke once, if value already exists
         [ValidateNotNull()]
         [Parameter(
             ParameterSetName = 'SetOrGetKey',
-            Mandatory)]
+            Mandatory, Position = 1)]
         [ScriptBlock]$ScriptBlock,
-
-        # Random count
-        [Alias('Number')]
-        [Parameter(
-            ParameterSetName = 'SetOrGetKey'
-            # Position = 1
-        )]
-        [ValidateScript( { $_ -gt 0 })]
-        [int]$Count = 1,
 
         # list stored key names
         [Alias('Keys')]
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'ListAllKeys')]
-        [switch]$ListKeyName,
+        [switch]$ListKeys,
 
         # list stored Pairs
-        [Alias('Pairs')]
+        [Alias('Pairs', 'All')]
         [Parameter(
             Mandatory = $true,
             ParameterSetName = 'ListAllKeyValuePairs')]
-        [switch]$AllValues
+        [switch]$ListPairs
     )
+
     end {
         try {
+
             switch ($PSCmdlet.ParameterSetName) {
                 'ListAllKeyValuePairs' {
                     $__randPerSession.GetEnumerator()
@@ -132,22 +142,39 @@ function Get-RandomPerSession {
                 $__randPerSession.Keys
                 return
             }
-            if ($__randPerSession.ContainsKey($KeyName)) {
-                Write-Debug "Using Cached Key '$KeyName'"
-                $__randPerSession[$KeyName]
+            if ($__randPerSession.ContainsKey($Name)) {
+                Write-Debug "Using Cached Key '$Name'"
+                $__randPerSession[$Name]
                 return
             }
             Write-Warning 'todo: test if exception in SB is safe'
             $lazyTimer = Get-Date
-            Write-Debug "Evalating new Cached Key '$KeyName'"
-
-            $__randPerSession[$KeyName] = & $ScriptBlock
-            | Get-Random -Count $Count
-
+            Write-Debug "Evalating new Cached Key '$Name'"
             $now = (Get-Date)
-            "Evaluated Key '$KeyName', Count: $Count in {0:n2} seconds" -f @(
+
+            $NewValue = & $ScriptBlock | Get-Random -Count $Count
+            "Evaluated Key '$Name', Count: $Count in {0:n2} seconds" -f @(
                 $now - $lazyTimer
             ).TotalSeconds | Write-Debug
+
+            if ($null -eq $NewValue) {
+                Write-Debug 'Evaluated as null'
+                $exception = [System.ArgumentNullException]::new(
+                    <# paramName: #> 'ScriptBlock',
+                    <# message: #> 'Evaluated to null')
+
+                $errorRecord = [errorRecord]::new(
+                    <# exception: #> $exception,
+                    <# errorId: #> 'InvalidResultNullScriptBlock',
+                    <# errorCategory: #> [System.Management.Automation.ErrorCategory]::InvalidResult,
+                    <# targetObject: #> $ScriptBlock)
+                $PSCmdlet.WriteError( $errorRecord )
+                return
+            }
+            $__randPerSession[$Name] = $NewValue
+            # We need to return the value, even on first-set
+            $newValue
+
         }
         catch {
             $PSCmdlet.WriteError( $_ )
