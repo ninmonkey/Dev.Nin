@@ -1,10 +1,10 @@
 $experimentToExport.function += 'Test-ConsoleSpecialFont'
-# $experimentToExport.alias += 'findEnvPattern'
+# $experimentToExport.alias += ''
 
 function Test-ConsoleSpecialFont {
     <#
     .synopsis
-        Prints example special characters, to test if ie: powerline or others are working
+        Prints test page for  special characters, to test if ie: powerline or others are working
     .description
         .
     #>
@@ -13,7 +13,44 @@ function Test-ConsoleSpecialFont {
         # Abbr, print a shorter test
         [Parameter()][switch]$ShortExample
     )
-    $TemplateShortParam = @'
+    $TemplatePowerline = @'
+    # Powerline
+
+          
+'@
+    $TemplateShort = @'
+
+    # Context-aware alignment
+
+    fii fjj
+    a*b a*A B*b A*B *a *A a* A*
+    a-b a-A B-b A-B -a -A a- A-
+    a+b a+A B+b A+B +a +A a+ A+
+    a:b a:A B:b A:B :a :A a: A:
+
+    # Powerline
+
+          
+
+    # Stylistic sets
+
+    r 0 123456789 & && $ <$ <$> $> @ <= >=
+
+    \n  \\  /* */  /// //
+    </ <!--  </>  --> />
+    0xF www Fl Tl Il fi fj
+
+    ;; :: ::: !! ?? %% &&
+    || .. ... ..< .? ?.
+    -- --- ++ +++ ** ***
+
+    =~ !~ ~- -~ ~@
+    ^= ?= /= /==
+    -| _|_ |- ||- |= ||=
+    #! #= ## ### ####
+    #{ #[ ]# #( #? #_ #_(
+'@
+    $TemplateAll = @'
 
       .= .- ..= := ::= =:= __
      == != === !== =/= =!=
@@ -91,6 +128,7 @@ r 0 123456789 & && $ <$ <$> $> @ <= >=
 '@
 
     if ($ShortExample) {
+        $TemplateShort
         return
     }
 

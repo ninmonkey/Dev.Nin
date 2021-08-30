@@ -1,36 +1,55 @@
+using namespace Management.Automation
+
 $experimentToExport.function += @(
     'ShortenString'
 )
 $experimentToExport.alias += @(
-    'AbbrStr'
+    'AbbrStr', 'TruncateString'
 )
 function ShortenString {
     <#
     .synopsis
-        shorten string .. only if needed. optionally keep ends
-    .notes
-        todo: Validate whether .substring() is utf8 safe
-        Or maybe enumerate codepoints, even though that's slow
-        or try the grapheme data type
+        shorten strings, if needed.
     #>
-    [Alias('AbbrStr')]
+    [cmdletbinding(
+        DefaultParameterSetName = 'StringFromPipe', PositionalBinding = $false)]
+    [Alias('AbbrStr, TruncateString')]
     param(
         # Input text
-        [Parameter(Mandatory, Position = 0)]
-        [string]$Text,
+        [Alias('Text', 'String')]
+        [Parameter(
+            Mandatory, ParameterSetName = 'StringFromPipe',
+            ValueFromPipeline)]
+        [Parameter(
+            Mandatory, ParameterSetName = 'StringFromParam',
+            Position = 0)]
+        [string]$InputText,
 
         # Max number of chars
-        [Parameter(Position = 1)]
-        [int]$MaxLength = 60
+        [Parameter(
+            ParameterSetName = 'StringFromPipe',
+            Position = 0)]
+        # [ValidateRange('NonNegative')]
+        # [ValidateRange( ([Management.Automation.ValidateRangeKind]'nonnegative') ]
+        [Parameter(
+            ParameterSetName = 'StringFromParam',
+            Position = 1)]
+        [uint] # post, why exactly does the enum fail on parapset2 but not paramset 1?
+        $MaxLength = 80
     )
-    process {
-        $actualLen = $Text.Length
-        if ($actualLen -le $MaxLength) {
-            $Text
+
+    Process {
+        $actualLen = $InputText.Length
+        if ( [string]::IsNullOrWhiteSpace( $InputText ) ) {
+            $InputText
             return
         }
-
-        $MaxLengthInBounds = [math]::min( $MaxLength, $ActualLen - 1 )
-        $Text.Substring(0, $MaxLengthInBounds )
+        if ( $actualLen -le $MaxLength ) {
+            $InputText
+            return
+        }
+        else {
+            $InputText.Substring(0, ( $MaxLength ) )
+        }
     }
 }

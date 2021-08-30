@@ -8,15 +8,22 @@ Describe "$__PesterFunctionName" -Tag Unit {
         Import-Module dev.nin -Force
         $ErrorActionPreference = 'Stop'
     }
-    # It 'Runs without error' {
-    # . $__PesterFunctionName
-    # }
+    It 'Runs without error' {
+        . $__PesterFunctionName 'test'
+    }
+    Describe 'Basic Hardcoded' {
+        It 'As Pipeline' {
+            'abc' | ShortenString 2 | Should -Be 'ab'
+        }
+        It 'As Param' {
+            ShortenString 'abc' 2 | Should -Be 'ab'
+        }
+    }
     Describe 'Basic Ascii Strings' {
         It 'Sample: "<Sample>" Should Be: "<Expected>" When MaxLength <MaxLength>' -ForEach @(
             @{ Sample = 'asdfdsf'; Expected = 'asdf'; MaxLength = 4 }
             @{ Sample = 'asdfdsf'; Expected = 'asdfdsf'; MaxLength = 15 }
             @{ Sample = 'asdfdsf'; Expected = 'asdfdsf'; MaxLength = 'asdfdsf'.length }
-
         ) {
 
             # $Sample = 'asdfjaieajfsadfjffdsjajfjeafj'
