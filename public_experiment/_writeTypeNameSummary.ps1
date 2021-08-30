@@ -93,5 +93,9 @@ ChildTypes  = {0}
 }
 
 if ( $badInlineDebug) {
-    $null | Format-typename
+    # $null | Format-typename
+    $now = Get-Date
+    'first try: $now | _writeTypeNameSummary'
+    $now | _write-TypeNameSummary
+    'first try: _writeTypeNameSummary $now'
 }
