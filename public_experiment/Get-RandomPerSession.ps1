@@ -15,7 +15,11 @@ function Reset-RandomPerSession {
     .notes
         future: reset automatically after a certain time has passed
     .example
-        PS> Reset-RandomPerSession -key 'BGColor'
+        PS> Reset-RandomPerSession -Name 'colorList.fg'
+    .example
+        PS> Reset-RandomPerSession -All
+    .link
+        Get-RandomPerSession
     #>
     [CmdletBinding(PositionalBinding = $false,
         DefaultParameterSetName = 'ClearSingle')]
@@ -25,7 +29,7 @@ function Reset-RandomPerSession {
         [Parameter(
             ParameterSetName = 'ClearSingle',
             Mandatory, Position = 0)]
-        [string]$KeyName,
+        [string[]]$KeyName,
 
         # reset everything
         [Alias('All')]
@@ -33,21 +37,24 @@ function Reset-RandomPerSession {
         [switch]$ResetAll
     )
     end {
+        $KeyName | ForEach-Object {
+            $curKey = $_
 
-        switch ($PSCmdlet.ParameterSetName) {
-            'ClearAll' {
-                $__randPerSession.Clear()
-                Write-Debug 'Cleared All Values'
-                break
-            }
-            'ClearSingle' {
-                if (! $__randPerSession.ContainsKey($KeyName) ) {
-                    return
+            switch ($PSCmdlet.ParameterSetName) {
+                'ClearAll' {
+                    $__randPerSession.Clear()
+                    Write-Debug 'Cleared All Values'
+                    break
                 }
-                $__randPerSession.Remove($KeyName)
-                Write-Debug "Removed Key '$KeyName'"
+                'ClearSingle' {
+                    if (! $__randPerSession.ContainsKey($curKey) ) {
+                        return
+                    }
+                    $__randPerSession.Remove($curKey)
+                    Write-Debug "Removed Key '$curKey'"
+                }
+                default {}
             }
-            default {}
         }
     }
 }
@@ -72,8 +79,8 @@ function Get-RandomPerSession {
         # Create a list of 8 colors
         🐒> Get-RandomPerSession 'colorList.fg' -Count 8 { ls fg: }
 
-    .example
-
+    .link
+        Reset-RandomPerSession
     .outputs
         [object]
     #>
