@@ -51,7 +51,7 @@ function Join-NinString {
     )
     begin {
         $textList = [list[string]]::new()
-        Write-Warning 'mostly NYI'
+        Write-Warning 'NYI'
     }
     process {
         $InputObject | ForEach-Object {
@@ -59,26 +59,6 @@ function Join-NinString {
         }
     }
     end {
-        # I think null values enumerated will work?
-        $textList | Join-String -sep $JoinText
-        # $textList | Where-Object {
-        #     $curLine = $_
-        #     Write-Debug "match regex '$MatchPattern' on line '$curLine'"
-        #     if ($curLine -match $MatchPattern) {
-        #         $curLine
-        #     }
-        # }
-    }
-}
-            return
-        }
-        $textObj
-        $Name | ForEach-Object {
-            $NameList.Add( $_ )
-        }
-    }
 
-    end {
-        $NameList
     }
 }

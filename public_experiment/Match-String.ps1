@@ -26,6 +26,9 @@ function Match-String {
                 it makes less sense because this only filters objects, not mutate or multi-line regex
     .example
         🐒> ls ~ -Force
+        🐒> gi fg:\red | iprop $c | % Name | ?str -not 'ps' -begin
+    .example
+        🐒> ls ~ -Force
         | ?str 'vscode'
 
             Directory:C:\Users\cppmo_000

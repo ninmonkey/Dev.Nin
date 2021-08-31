@@ -111,15 +111,7 @@ function iProp {
                 TypeNameStr         = $typeNameStr ?? $nullStr
                 # TypeName     = $Type ?? $nullStr
             }
-
-
-
-            if ($TrimLongLines ) {
-                Write-Warning 'left off here... use shortenString'
-            }
             [pscustomobject]$meta
-
-
         }
         # $Ij.psobject.properties | ForEach-Object { "`n"; ($_.value)?.GetType() | Format-TypeName -Brackets }
 

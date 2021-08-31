@@ -28,7 +28,7 @@ $private = @(
     '_mini_experiment'
     '_test_encodedecode'
     '_Lsd'
-    '_JoinStr'
+
     # '_toastTimer'
     '_getSpecialAndEnv'
 )
@@ -48,7 +48,7 @@ $public_QuickExperiment = @(
     'testEncode'
     'testDecode'
     'Lsd'
-    'JoinStr'
+
     'Find-DevItem'
     # special folders?
     'Get-NinEnvInfo'
