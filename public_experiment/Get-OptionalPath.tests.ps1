@@ -8,7 +8,8 @@ Describe "$__PesterFunctionName" -Tag Unit {
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
         $ErrorActionPreference = 'Stop'
     }
-    It 'Runs without error' {
-        . $__PesterFunctionName
+    It 'Default Can run' {
+        $false | Should -Be $True -Because 'Tests not yet written'
+        # . $__PesterFunctionName
     }
 }
