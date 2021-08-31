@@ -70,3 +70,15 @@ function Join-NinString {
         # }
     }
 }
+            return
+        }
+        $textObj
+        $Name | ForEach-Object {
+            $NameList.Add( $_ )
+        }
+    }
+
+    end {
+        $NameList
+    }
+}

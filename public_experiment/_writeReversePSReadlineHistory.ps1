@@ -1,4 +1,4 @@
-# $experimentToExport.function += 'Measure-ChildItem'
+$experimentToExport.function += '_writeReverseHistory'
 # $experimentToExport.alias += 'LsSize'
 # tags: experiment, test
 
@@ -15,8 +15,15 @@ function _writeReverseHistory {
             ExportPath        = Join-Path (Get-Item -ea stop 'c:\nin_temp') 'PSReadlineHistory_Ordered'
         }
 
+
     }
     process {
-
+        Write-Error 'NotYetImplemented' -Category NotImplemented
+        # [System.Management.Automation.ErrorRecord]::new(
+        #     <# exception: #> $null,
+        #     <# errorId: #> 'NotYetImplemented',
+        #     <# errorCategory: #> ([System.Management.Automation.ErrorCategory]::NotImplemented),
+        #     <# targetObject: #> $null)
+        # # write-warning 'no-op: wip'
     }
 }

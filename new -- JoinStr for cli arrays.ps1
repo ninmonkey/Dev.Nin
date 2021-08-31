@@ -13,12 +13,14 @@ function JoinStr {
         $all_list = @()
         $colorSep1 = [RgbColor]'#5F6C85'
         $colorSep2 = [RgbColor]'#373E4C'  # '#7E90B1'
+
     }
+
     process {
         $all_list += $InputObject
     }
     end {
-        $colorSep = New-Text ' ' -bg $colorSep2  | ForEach-Object tostring
+        $colorSep = New-Text ' ' -bg $colorSep2 | ForEach-Object tostring
         #    $all_list | Join-String -sep ' ' -FormatString '{0,-3}'
         #     $all_list | Join-String -sep $colorSep -FormatString '{0,-3}'
 
@@ -26,4 +28,3 @@ function JoinStr {
         $all_list | Join-String -sep ' ' -FormatString '{0,-3}'
     }
 }
-
