@@ -123,6 +123,14 @@ function Match-String {
         # if($ParseMode -eq 'FirstCollectAll') {
         #     $textList = [list[string]]::new()
         # }
+        if ($FullMatch) {
+            $MatchPattern = @(
+                '^', $MatchPattern, '$'
+            ) | Join-String
+        }
+        "FullMatch? '$FullMatch'" | Write-Debug
+        # $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Debug
+        $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
     }
     process {
         # if($ParseMode -eq 'FirstCollectAll') {
@@ -133,13 +141,8 @@ function Match-String {
         # }
         # else-per-line
         try {
-            if ($FullMatch) {
-                $MatchPattern = @(
-                    '^', $MatchPattern, '$'
-                ) | Join-String
-            }
+
             # "Regex: '$MatchPattern'" | Write-Debug
-            $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Debug
 
             $InputObject
             | Where-Object {
