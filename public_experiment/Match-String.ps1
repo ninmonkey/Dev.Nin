@@ -18,13 +18,14 @@ function Match-String {
 
        or
 
-       ... | ?{ $_.Property -match $regex } | ...
+       ... | ?{ $_.Name -match $regex } | ...
 
     .notes
         should have the option to silently pipe nulls. ( Get-Content split enumerates some null values on extra newlines)
 
         todo:
-            - [ ] Should it write-error when input is not a string?
+            - [ ] future toggle may collect all strings at first, for multiline matching
+                it makes less sense because this only filters objects, not mutate or multi-line regex
     .example
           .
     .outputs
@@ -50,7 +51,7 @@ function Match-String {
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
-        [string[]]$InputText,
+        [object]$InputObject,
 
         # Match regex
         [Alias('Regex', 'Pattern')]
@@ -65,21 +66,49 @@ function Match-String {
         [string]$Property
     )
     begin {
-        $textList = [list[string]]::new()
+        # $ParseMode = 'SingleLine'
+        # if($ParseMode -eq 'FirstCollectAll') {
+        #     $textList = [list[string]]::new()
+        # }
     }
     process {
-        $InputText | ForEach-Object {
-            $textList.Add( $_ )
+        # if($ParseMode -eq 'FirstCollectAll') {
+        #     $InputText | ForEach-Object {
+        #         $textList.Add( $_ )
+        #     }
+        #     return
+        # }
+        # else-per-line
+        switch ($PSCmdlet.ParameterSetName) {
+            'MatchOnProperty' {
+                # if( [string]::IsNullOrWhiteSpace( $Property )) {
+                if ($InputObject.$Property -match $MatchPattern) {
+                    $true
+                    return
+                }
+                else {
+                    $false
+                    return
+                }
+            }
+
+
+            default {
+                if ($InputObject -match $MatchPattern) {
+                    $true
+                    return
+                }
+                else {
+                    $false
+                    return
+                }
+            }
         }
+
+
     }
     end {
         # I think null values enumerated will work?
-        $textList | Where-Object {
-            $curLine = $_
-            Write-Debug "match regex '$MatchPattern' on line '$curLine'"
-            if($curLine -match $MatchPattern) {
-                $curLine
-            }
-        }
+
     }
 }

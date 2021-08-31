@@ -27,7 +27,7 @@
     CompanyName       = 'Jake Bolton'
 
     # Copyright statement for this module
-    Copyright         = '(c) Jake Bolton 2020'
+    Copyright         = '(c) Jake Bolton 2020-2021'
 
     # Description of the functionality provided by this module
     Description       = 'Internal dev tools, they are not pretty'
