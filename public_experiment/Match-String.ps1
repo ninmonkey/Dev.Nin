@@ -36,10 +36,50 @@ function Match-String {
             ----        ------------- ------ ----
             📁   11/21/2019   8:26 PM        .vscode
             📁   11/21/2020   9:46 AM        .vscode-insiders
+    .example
+        # This time only on a specific property, the name.
 
+        🐒> ls $Env:APPDATA
+        | ?Str code Name
+
+            Directory:C:\Users\cppmo_000\AppData\Roaming
+
+
+            Mode        LastWriteTime Length Name
+            ----        ------------- ------ ----
+            📁    8/30/2021   2:58 PM        Code
+            📁    8/30/2021   7:44 PM        Code - Insiders
+            📁   12/14/2020   5:14 PM        ICSharpCode
+            📁    2/16/2019   4:46 PM        Visual Studio Code
+            📁   12/12/2020   6:27 PM        vscode-mssql
+
+    .example
+        # full match still allows wildcards
+
+        🐒> ls $Env:APPDATA | ?Str code.* Name -FullMatch
+
+            Directory:C:\Users\cppmo_000\AppData\Roaming
+
+
+            Mode        LastWriteTime Length Name
+            ----        ------------- ------ ----
+            📁    8/30/2021   2:58 PM        Code
+            📁    8/30/2021   7:44 PM        Code - Insiders
+    .example
+        # Now only find fullmatches
+
+            C: ▸ Users ▸ cppmo_000 ▸ Documents ▸ 2021 ▸ Powershell
+            🐒> ls $Env:APPDATA | ?Str code Name -FullMatch
+
+                    Directory:C:\Users\cppmo_000\AppData\Roaming
+
+
+            Mode        LastWriteTime Length Name
+            ----        ------------- ------ ----
+            📁    8/30/2021   2:58 PM        Code
 
     .outputs
-          [string]
+          [object] as passed in
 
     #>
     [alias( '?Str', 'MatchStr', 'Where-String')]
@@ -76,8 +116,7 @@ function Match-String {
         [string]$Property,
 
         # switch to requiring a full match
-        [Parameter(Mandatory, Position = 0)]
-        [string]$FullMatch
+        [Parameter()][switch]$FullMatch
     )
     begin {
         # $ParseMode = 'SingleLine'
