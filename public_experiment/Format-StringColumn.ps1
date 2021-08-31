@@ -1,14 +1,24 @@
-function JoinStr {
+using namespace Management.Automation
+
+$experimentToExport.function += @(
+    'Format-StringColumn'
+)
+# $experimentToExport.alias += @(
+#     ''
+# )
+function Format-StringColumn {
+
+
     <#
     .synopsis
         temp dev command to simplify pretty print
     .example
-        PS> 3..102 | JoinStr
+        PS> 3..102 | Format-StringColumnAlign
 
-        PS> 0..2000 | Get-Random -Count 20  | JoinStr -width -8
-        PS> 0..2000 | Get-Random -Count 20  | JoinStr -width 8
+        PS> 0..2000 | Get-Random -Count 20  | Format-StringColumnAlign -width -8
+        PS> 0..2000 | Get-Random -Count 20  | Format-StringColumnAlign -width 8
     #>
-    [alias('Csv')] # will be smart alias
+
     param(
         # input list
         [Parameter(ValueFromPipeline, Mandatory)]
@@ -36,7 +46,7 @@ function JoinStr {
         $colorSep2 = [RgbColor]'#373E4C'  # '#7E90B1'
     }
     process {
-        $all_list += $InputObject
+        $all_list += $InputObject # 😢
     }
     end {
         $joinStrDefaults_splat = @{
@@ -54,7 +64,7 @@ function JoinStr {
                 $defSep = $joinStrDefaults_splat['Separator']
                 $formatStr = '{0,-3}'
                 H1 '1'
-                $colorSep = New-Text $defSep -bg $colorSep2  | ForEach-Object tostring
+                $colorSep = New-Text $defSep -bg $colorSep2 | ForEach-Object tostring
                 $all_list | Join-String -sep $colorSep -FormatString $formatStr
 
                 H1 2
@@ -81,19 +91,19 @@ function JoinStr {
 }
 if ($false) {
     'a'..'z' + 'A'..'Z' + 0..9 | Get-Random -Count 30
-    | JoinStr -Mode experiment -Verbose -ea break
+    | Format-StringColumnAlign -Mode experiment -Verbose -ea break
 
-    'a'..'f' | JoinStr -Verbose -ea break -Width 15
-    'a'..'f' | JoinStr -Verbose -ea break -Width -15
+    'a'..'f' | Format-StringColumnAlign -Verbose -ea break -Width 15
+    'a'..'f' | Format-StringColumnAlign -Verbose -ea break -Width -15
 
-    0..34 | JoinStr -Verbose -ea break
+    0..34 | Format-StringColumnAlign -Verbose -ea break
 
 
-    h1 'sep ", "'
-    43..31 | JoinStr -sep ', ' -Width 6
-    43..31 | JoinStr -sep ', ' -Width -6
+    H1 'sep ", "'
+    43..31 | Format-StringColumnAlign -sep ', ' -Width 6
+    43..31 | Format-StringColumnAlign -sep ', ' -Width -6
 
     H1 'sep " "'
-    43..31 | JoinStr -sep ' ' -Width 6
-    43..31 | JoinStr -sep ' ' -Width -6
+    43..31 | Format-StringColumnAlign -sep ' ' -Width 6
+    43..31 | Format-StringColumnAlign -sep ' ' -Width -6
 }

@@ -1,5 +1,3 @@
-# $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
-
 $experimentToExport.function += @(
     'Match-String'
 )
