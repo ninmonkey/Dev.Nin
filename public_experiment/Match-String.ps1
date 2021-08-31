@@ -1,19 +1,25 @@
-using namespace Management.Automation
+# $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
 
 $experimentToExport.function += @(
     'Match-String'
 )
 $experimentToExport.alias += @(
-    'Match-String'
+
+    '?Str', 'MatchStr', 'Where-String'
 )
 function Match-String {
     <#
     .synopsis
-        simplify 'inline grepping'
+        simplify matching regex in the pipeline
     .description
        This is for cases where you had to use
 
        ... | ?{ $_ -match $regex } | ...
+
+       or
+
+       ... | ?{ $_.Property -match $regex } | ...
+
     .notes
         should have the option to silently pipe nulls. ( Get-Content split enumerates some null values on extra newlines)
 
@@ -25,7 +31,7 @@ function Match-String {
           [string]
 
     #>
-    [alias('Match-String')]
+    [alias( '?Str', 'MatchStr', 'Where-String')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Parametertype: Use a [object] so it can write warnings when a non-string type maybe accidentally was used?
@@ -38,7 +44,9 @@ function Match-String {
             'gc' without -raw or '-split' on newlines
         #>
         [alias('Text', 'Lines')]
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(
+            # ParameterSetName = 'MatchRawString',
+            Mandatory, ValueFromPipeline)]
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
@@ -46,14 +54,21 @@ function Match-String {
 
         # Match regex
         [Alias('Regex', 'Pattern')]
-        [Parameter(Mandatory, Position = 0)]
-        [string]$MatchPattern
+        [AllowEmptyString()]
+        [Parameter(
+            # ParameterSetName = 'MatchRawString',
+            Mandatory, Position = 0)]
+        [string]$MatchPattern,
+
+        # Filter on properties instead of raw string
+        [Parameter(Mandatory, ParameterSetName = 'MatchOnProperty')]
+        [string]$Property
     )
     begin {
         $textList = [list[string]]::new()
     }
     process {
-        $InputObject | ForEach-Object {
+        $InputText | ForEach-Object {
             $textList.Add( $_ )
         }
     }
