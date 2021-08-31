@@ -25,7 +25,15 @@ function Match-String {
             - [ ] future toggle may collect all strings at first, for multiline matching
                 it makes less sense because this only filters objects, not mutate or multi-line regex
     .example
-        🐒> ls ~ -Force
+        # Regex is simple because
+        # using -starts which is more natural
+        # using property 'Name' instead of 'FullName'
+        🐒> ls ~ -Directory -Depth 2 # normally returns 2,033 files
+        | ?str .vscode -Starts Name
+
+    .example
+        🐒> ls ~ | ?str json -Ends
+    .example
         🐒> gi fg:\red | iprop $c | % Name | ?str -not 'ps' -begin
     .example
         🐒> ls ~ -Force
@@ -116,35 +124,34 @@ function Match-String {
         [Parameter(Mandatory, ParameterSetName = 'MatchOnProperty', Position = 1)]
         [string]$Property,
 
-        # switch to requiring a full match
-        [Parameter()][switch]$FullMatch
+        # Both ends must match. This is equivalent to using both -Begins and -Ends
+        [Parameter()][switch]$FullMatch,
+
+        # Pattern beginning must match. It adds '^' to the start of the pattern
+        [alias('Starts')]
+        [Parameter()][switch]$Begins,
+
+        # Pattern ending must match. It adds '$' to the end of the pattern
+        # You can still use patterns like 'dog.*' -Ends
+        # to get 'dog.*$'
+        [Alias('Stops')]
+        [Parameter()][switch]$Ends
     )
     begin {
-        # $ParseMode = 'SingleLine'
-        # if($ParseMode -eq 'FirstCollectAll') {
-        #     $textList = [list[string]]::new()
-        # }
-        if ($FullMatch) {
-            $MatchPattern = @(
-                '^', $MatchPattern, '$'
-            ) | Join-String
-        }
-        "FullMatch? '$FullMatch'" | Write-Debug
+        $MatchPattern = @(
+            ($Begins -or $FullMatch) ? '^' : $null
+            $MatchPattern
+            ($Ends -or $FullMatch) ? '$' : $null
+        ) | Join-String
+
+        $PSBoundParameters | Format-Table | Out-String | Write-Verbose
+
+        # "FullMatch? '$FullMatch'" | Write-Debug
         # $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Debug
         $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
     }
     process {
-        # if($ParseMode -eq 'FirstCollectAll') {
-        #     $InputText | ForEach-Object {
-        #         $textList.Add( $_ )
-        #     }
-        #     return
-        # }
-        # else-per-line
         try {
-
-            # "Regex: '$MatchPattern'" | Write-Debug
-
             $InputObject
             | Where-Object {
                 switch ($PSCmdlet.ParameterSetName) {
