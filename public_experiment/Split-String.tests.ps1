@@ -9,9 +9,35 @@ Describe "$__PesterFunctionName" -Tag Unit {
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
         # $ErrorActionPreference = 'Stop'
     }
+    Describe 'ParameterSet' {
+        BeforeAll {
+            $Sample = 'a,b,,c'
+            $Expected = 'a,b,c'
+
+            $Sample2 = "a`nb`nc"
+            $Expected2 = 'a', 'b', 'c'
+
+            $Sample3 = "a`n`n`nb`nc`n`ne"
+            $Expected3 = 'a', 'b', 'c', 'e'
+
+        }
+
+        It 'Pipeline with regex' {
+            $Sample | Split-String -match ',' | Should -Be $Expected
+        }
+        It 'Param with regex' {
+            Split-String -InputObject $Sample -match ',' | Should -Be $Expected
+        }
+        It 'Pipeline with Type' {
+            $Sample2 | Split-String -Type Newline | Should -Be $Expected2
+        }
+        # It 'Param with regex' {
+        #     $Sample | Split-String -match ',' | Should -Be $Expected
+        # }
+    }
+
     It 'Runs without error' {
-        { 'a1b' | . $__PesterFunctionName '\d+' }
-        | Should -Not -Throw
+        { 'a1b' | . $__PesterFunctionName '\d+' } | Should -Not -Throw
         # Split-String
         # $false | Should -Be $True -Because 'Write Split-String'
     }
