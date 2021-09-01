@@ -9,8 +9,8 @@ Describe "$__PesterFunctionName" -Tag Unit {
         $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {
-
-        . $__PesterFunctionName 'stuff'
+        { . $__PesterFunctionName 'stuff' 'other' }
+        | Should -Not Throw
     }
     Describe 'Verify Patterns for Dotnet are still valid' {
 
