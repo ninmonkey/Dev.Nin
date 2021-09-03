@@ -20,7 +20,7 @@
 example 1 returns files
 Dev-FormatTabExpansionResult 'ls . -f' 1
 #>
-if ($False) {
+if ($false -and $false) {
     0..3 | ForEach-Object {
         $CurColumn = $_
         $result = Dev-FormatTabExpansionResult 'ls . -f' -CursorColumn $CurColumn

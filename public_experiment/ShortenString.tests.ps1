@@ -19,6 +19,31 @@ Describe "$__PesterFunctionName" -Tag Unit {
             ShortenString 'abc' 2 | Should -Be 'ab'
         }
     }
+    Describe 'Runs Without Error' {
+        # $ErrorActionPreference = 'break;'
+        It 'Single Null and Empty Strings' {
+
+            # $ErrorActionPreference = 'break;'
+
+            $splatNotThrow = @{
+                Not     = $true
+                Throw   = $True
+                Because = 'It should silently allow nulls or empty strings to pass'
+            }
+            { '' | ShortenString } | Should -Not -Throw
+            { $null | ShortenString } | Should @splatNotThrow
+            { $null, $Null | ShortenString } | Should @splatNotThrow
+            { ShortenString '' } | Should @splatNotThrow
+            { ShortenString $null } | Should @splatNotThrow
+
+        }
+        It 'Lists with  Null and Empty Strings' {
+            # position 0 is not an array type, so 'mandatory' wait for user input
+            { ShortenString '', '' } | Should @splatNotThrow -throw:$true
+            { ShortenString $null, $null } | Should @splatNotThrow
+            { '', '' | ShortenString } | Should @splatNotThrow
+        }
+    }
     Describe 'Basic Ascii Strings' {
         It 'Sample: "<Sample>" Should Be: "<Expected>" When MaxLength <MaxLength>' -ForEach @(
             @{ Sample = 'asdfdsf'; Expected = 'asdf'; MaxLength = 4 }

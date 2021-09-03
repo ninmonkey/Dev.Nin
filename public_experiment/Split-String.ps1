@@ -64,7 +64,10 @@ function Split-String {
         [Alias('Regex', 'Pattern')]
         [AllowEmptyString()]
         [Parameter(
-            Mandatory, Position = 0)]
+            Mandatory,
+            ParameterSetName = '__AllParameterSets',
+            Position = 0
+        )]
         [string]$SplitPattern
     )
     begin {

@@ -141,3 +141,4 @@ function Test-IsBasicDatatype {
 #         , @(324, 3.14)
 #     ) | Test-IsBasicDatatype -Verbose -Debug -ea break
 # }
+# ls .

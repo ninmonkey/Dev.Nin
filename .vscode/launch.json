@@ -29,10 +29,18 @@
             "cwd": "${file}"
         },
         {
-            "name": "cur: visualTest",
+            "name": "cur: visualTest 🐛🎨",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/test/public/visual_test/_format_RgbColorStringy.visual_tests.ps1",
+            // "cwd": "${file}"
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "name": "cur: Module Test🐛",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/test/private/_import_error_test.ps1",
             // "cwd": "${file}"
             "cwd": "${workspaceFolder}",
         },

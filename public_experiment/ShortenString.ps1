@@ -15,14 +15,28 @@ function ShortenString {
         DefaultParameterSetName = 'StringFromPipe', PositionalBinding = $false)]
     [Alias('AbbrStr, TruncateString')]
     param(
+
+        <# (copied 'Format-ControlChar')
+        Why did I use: these?
+            [AllowEmptyString], [AllowEmptyCollection], [AllowNull]
+
+
+        Null is allowed for the user's conveinence.
+        allowing null makes it easier for the user to pipe, like:
+            'gc' without -raw or '-split' on newlines
+            will normally pipe empty or empty-whitespace
+        #>
         # Input text
-        [Alias('Text', 'String')]
+        [Alias('Text', 'String', 'Line')]
         [Parameter(
             Mandatory, ParameterSetName = 'StringFromPipe',
             ValueFromPipeline)]
         [Parameter(
             Mandatory, ParameterSetName = 'StringFromParam',
             Position = 0)]
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
         [string]$InputText,
 
         # Max number of chars
