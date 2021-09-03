@@ -113,7 +113,8 @@ function Edit-FunctionSource {
                     #>
 
                         # & code-insiders @codeArgs
-                        & code @codeArgs
+                        # $__v
+                        & code-insiders @codeArgs
                     } else {
                         '<', $Path, '>' -join ''
                     }

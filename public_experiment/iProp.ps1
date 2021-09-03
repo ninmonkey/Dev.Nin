@@ -18,9 +18,12 @@ function iProp {
     .description
         .
     .notes
-        - [ ] needs wider columns, 'ft' truncates even short ones.
-        - [ ] move 'trimLonglines' to format-data
-        - [ ] if object is a container, drop table header?
+        future:
+            - [ ] needs wider columns, 'ft' truncates even short ones.
+            - [ ] move 'trimLonglines' to format-data
+            - [ ] if object is a container, drop table header?
+            - [ ] MemberInfo: <https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodinfo?view=net-5.0>
+
     .example
           🐒> ls . | iProp | ? ValueStr -Match "`u{2400}"
 

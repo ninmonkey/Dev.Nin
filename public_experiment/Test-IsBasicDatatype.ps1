@@ -126,17 +126,18 @@ function Test-IsBasicDatatype {
     end {}
 }
 
-if (! $__ninConfig.IsFirstLoad) {
-    'sdf'
+# todo: next:
+# if (! $__ninConfig.IsFirstLoad) {
+#     'sdf'
 
 
-    324, 3.14, '324' | Test-IsBasicDatatype -ea break
-    Hr
-    @(
-        $cat = [pscustomobject]@{ name = 'Fred' }
-        $cat
-        [ordered]@{a = 4 }
-        @{ species = 'ant' }
-        , @(324, 3.14)
-    ) | Test-IsBasicDatatype -Verbose -Debug -ea break
-}
+#     324, 3.14, '324' | Test-IsBasicDatatype -ea break
+#     Hr
+#     @(
+#         $cat = [pscustomobject]@{ name = 'Fred' }
+#         $cat
+#         [ordered]@{a = 4 }
+#         @{ species = 'ant' }
+#         , @(324, 3.14)
+#     ) | Test-IsBasicDatatype -Verbose -Debug -ea break
+# }
