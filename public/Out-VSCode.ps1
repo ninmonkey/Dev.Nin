@@ -10,7 +10,13 @@
         Start-Process 'code' -WindowStyle Hidden -ArgumentList @('"C:\Users\cppmo_000\Documents\2020\todo\todo ⇽ 2020-12.md"')
 #>
 
-Write-Warning 'see: seeminglySci: Out-VS Code <Invoke-VSCode https://github.com/SeeminglyScience/dotfiles/blob/c4fa75ceddbdb5d9b6d16b90428969cc1c37fbe7/PowerShell/Utility.psm1#L119>'
+Write-Warning 'see: seeminglySci: Out-VS Code <Invoke-VSCode https://github.com/SeeminglyScience/dotfiles/blob/c4fa75ceddbdb5d9b6d16b90428969cc1c37fbe7/PowerShell/Utility.psm1#L119>
+
+    and indented (last write 2years)
+
+    - <https://github.com/indented-automation/Indented.Profile/blob/7e593e871db6800ba5d757ecd9bcb1b124d205cf/Indented.Profile/public/Get-CommandInfo.ps1>
+    - <https://github.com/indented-automation/Indented.Profile/blob/7e593e871db6800ba5d757ecd9bcb1b124d205cf/Indented.Profile/public/Get-CommandSource.ps1>
+'
 function Out-VSCode {
     <#
     .synopsis
@@ -67,7 +73,7 @@ function Out-VSCode {
         $inputList = [list[string]]::New()
 
         if ( ! [String]::IsNullOrWhiteSpace(  $PromptText  ) ) {
-            $fzfArgs += ("--prompt={0}" -f $PromptText)
+            $fzfArgs += ('--prompt={0}' -f $PromptText)
         }
 
         if ($MultiSelect) {
@@ -81,7 +87,7 @@ function Out-VSCode {
             $inputList.add( $Line )
         }
     }
-    hr 1;
+    Hr 1;
     Label 'ParameterSetName' 'SingleQuote'
     Label 'ParameterName' 'OutputPrefix'
 

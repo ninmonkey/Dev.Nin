@@ -1,3 +1,6 @@
+$experimentToExport.function += 'Test-IsBasicDatatype'
+# $experimentToExport.alias += 'LsSize'
+
 
 
 function Test-IsBasicDatatype {
@@ -103,7 +106,7 @@ function Test-IsBasicDatatype {
                     IsType        = $IsType
                     Type          = $type
                     TypeData      = $typeData
-                    PSTypeNames   = $curObj.PSTypeNames
+                    TypePSTypeNames   = $curObj.PSTypeNames
                     HasPsBase     = $null -ne $curObj.psbase
                     Count         = $curObj.Count
                     Length        = ($curObj)?.Length
