@@ -44,14 +44,20 @@ function Test-DidErrorOccur {
         try {
             $globalError = $global:Error
             $script:__moduleMetaData_DidError_PrevCount ??= 0 # Gross, but module itself is
-            $Template = @'
+            $script:__moduleMetaData_TurnsSinceLastError ??= 0 # Gross, but module itself is
 
-errors: {0}, new {1}
-'@
             # forced to be in user scope to access $error, I think.
             $curCount = $globalError.count
             $delta = $curCount - $script:__moduleMetaData_DidError_PrevCount
             $script:__moduleMetaData_DidError_PrevCount = $curCount
+
+            if ($Delta -gt 0) {
+                $script:__moduleMetaData_TurnsSinceLastError = 0
+            }
+            else {
+                $script:__moduleMetaData_TurnsSinceLastError++
+            }
+            $turnsSinceLastCount = $script:__moduleMetaData_TurnsSinceLastError
 
 
             $c = @{
@@ -91,58 +97,29 @@ errors: {0}, new {1}
                 $curIndex++
             } | Join-String -sep "`n"
 
-            $exceptionText | New-Text -fg $c.errorFg -bg $c.errorBg | Join-String
+            if ($turnsSinceLastCount -lt 3 ) {
+                $exceptionText | New-Text -fg $c.errorFg -bg $c.errorBg | Join-String
+            }
+
+            $Template = @'
+
+errors: {0}, new {1}, {2}
+'@
+
             $Template -f @(
                 $curCount
                 $delta
+                $turnsSinceLastCount
             )
             # "Did $i"
             # $global:err = $global:error
 
             if ( $AlwaysClear) {
-                $globalError.clear()
+                $globalError.clear() # Forgive me 😿
             }
         }
         catch {
             $PSCmdlet.WriteError( $_ )
         }
     }
-}
-
-
-if ($false) {
-    function _origTest-DidErrorOccur {
-        <#
-    .synopsis
-        shortcut for the cli: list error counts, first error, and autoclear
-    .description
-        .
-
-    #>
-        [Alias('Err?')]
-        [CmdletBinding(PositionalBinding = $false)]
-        param(
-            # DoNotClear error variable
-            # [Parameter()][switch]$DoNotClearErrorVar,
-            [Parameter(Position = 0)][int]$Limit = 1
-
-        )
-
-        Write-Warning 'this doesn'' seem to have access to profile''s error scope'
-        $curCount = $script:error.count
-        $delta = $curCount - $__moduleMetaData_DidError_PrevCount
-        $__moduleMetaData_DidError_PrevCount = $curCount
-
-        $script:error | Select-Object -First $Limit
-        'errors: {0}, new {1}' -f @(
-            $curCount
-            $delta
-        )
-        # $global:err = $global:error
-
-        # if(! $DoNotClearErrorVar) {
-        #     $global:error.clear()
-        # }
-    }
-
 }
