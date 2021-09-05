@@ -89,28 +89,75 @@ function Test-DidErrorOccur {
             #     | New-Text -fg $c.errorFg -bg $c.errorBg | ForEach-Object tostring
             # } | Select-Object -First $Limit
 
-            $exceptionText = $globalError | Select-Object -First $Limit | ForEach-Object { $curIndex = 0 } {
+            $ExceptionOutputFormat = '' # delta
+            switch ($ExceptionOutputFormat) {
+                'delta' {
+                    $FirstN = $Limit - $delta
+                    $FirstN = [math]::min(
+                        ($Limit - $delta),
+                        $limit
+                    )
+                    $FirstN = $delta - $Limit
+                }
+                # 'fixed'
+                default {
+                    $FirstN = $Limit
+                }
+            }
+
+            $FirstN
+            if ($Delta -le 3) {
+                # $FirstN = [math]::max($Delta, $FirstN)
+                $FirstN = [math]::min($Delta, $FirstN)
+            }
+            else {
+                $FirstN = 0
+            }
+
+            # "First: $FirstN, Limit: $Limit, D: $delta, L-D: $($limit - $delta)"
+            # | Write-Host -ForegroundColor magenta
+
+            $exceptionText = $globalError | Select-Object -First $FirstN | ForEach-Object { $curIndex = 0 } {
                 $indexLabel = '{0,-2} ' -f $curIndex
                 [string]$_ | ShortenString
                 | Join-String -op $indexLabel
 
                 $curIndex++
-            } | Join-String -sep "`n"
+            } | Join-String -sep "`n" -op "`n"
 
             if ($turnsSinceLastCount -lt 3 ) {
                 $exceptionText | New-Text -fg $c.errorFg -bg $c.errorBg | Join-String
             }
 
-            $Template = @'
+            $OutputFormatMode = 'default'
+            if ($OutputFormatMode -eq 'classic') {
+
+                $Template = @'
 
 errors: {0}, new {1}, {2}
 '@
+                $Template -f @(
+                    $curCount
+                    $delta
+                    $turnsSinceLastCount
+                )
+            }
+            elseif ($OutputFormatMode -eq 'default') {
+                "`n"
+                @(
+                    '[E]: {0} ' -f @($curCount)
+                    | New-Text -fg '#AB7D88'
+                    if ($turnsSinceLastCount -gt 3) {
+                        'Last: {0}' -f @($turnsSinceLastCount)
+                        | New-Text -fg '#3AB81C' #'#AB7D88'
+                    }
+                    else {
+                        'New: +{0}' -f @($delta)
+                        | New-Text -fg yellow
+                    }
+                ) | Join-String
 
-            $Template -f @(
-                $curCount
-                $delta
-                $turnsSinceLastCount
-            )
+            }
             # "Did $i"
             # $global:err = $global:error
 
