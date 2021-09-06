@@ -29,6 +29,10 @@ function _format_HslColorString {
     [string]
 
     #>
+    # [Alias()]
+    #// (PositionalBinding=$false)]
+    [ALias('ColorTool🎨-_format_colorHsl')]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
         # Color object
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -120,7 +124,11 @@ function _format_RgbColorString {
     [string]
 
     #>
+    [ALias('ColorTool🎨-_format_colorRgb')]
+    [cmdletbinding(PositionalBinding = $false)]
     param(
+
+
         # COlor
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [RGBColor]$RGBObject,
@@ -131,7 +139,7 @@ function _format_RgbColorString {
     )
 
     process {
-        write-error 'wip: debug me'
+        Write-Error 'wip: debug me'
         if (! $NoColor) {
             $text = _format_RgbColorString -RGBObject $RGBObject -NoColor
             @(
@@ -155,7 +163,7 @@ function _format_RgbColorString {
 
 }
 
-if($false) {
-Hr
-Get-ChildItem fg: | Get-Random | _format_RgbColorString -NoColor
+if ($false) {
+    Hr
+    Get-ChildItem fg: | Get-Random | _format_RgbColorString -NoColor
 }

@@ -2,7 +2,7 @@ $experimentToExport.function += @(
     'iProp'
 )
 $experimentToExport.alias += @(
-    # 'GetFuncInfo'
+    'DevTool💻-iProp'
 )
 
 $experimentToExport.update_typeDataScriptBlock += @(
@@ -66,6 +66,7 @@ function iProp {
           [nin.iProp]
 
     #>
+    [Alias('DevTool💻-iProp')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Object to inspect

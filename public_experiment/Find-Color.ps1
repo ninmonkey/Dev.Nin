@@ -2,6 +2,7 @@ using namespace Management.Automation
 
 $experimentToExport.function += @(
     'Find-Color'
+    'ColorTool🎨-FindColor'
 )
 # $experimentToExport.alias += @(
 #     'joinStr'
@@ -25,6 +26,7 @@ function Find-Color {
           [string | None]
 
     #>
+    [Alias('ColorTool🎨-FindColor')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Regex patterns

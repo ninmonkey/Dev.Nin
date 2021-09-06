@@ -1,5 +1,8 @@
 $experimentToExport.function += 'Get-ArgumentCompleter'
-$experimentToExport.alias += 'getCompleterDent'
+$experimentToExport.alias += @(
+    'getCompleterDent'
+    'DevTool💻-GetArgumentCompleter'
+)
 
 function Get-ArgumentCompleter {
     <#
@@ -24,7 +27,7 @@ function Get-ArgumentCompleter {
         Get all of the argument completers for native commands in the current session.
     #>
 
-    [alias('getCompleterDent')]
+    [alias('getCompleterDent', 'DevTool💻-GetArgumentCompleter')]
     [CmdletBinding(DefaultParameterSetName = 'PSCommand')]
     param (
         # Filter results by command name.

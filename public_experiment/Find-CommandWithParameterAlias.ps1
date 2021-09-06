@@ -1,5 +1,8 @@
 $experimentToExport.function += 'Find-CommandWithParameterAlias'
-# $experimentToExport.alias += 'RegexEitherOrder'
+$experimentToExport.alias += @(
+    'RegexEitherOrder'
+    'DevTool💻-Params-FindCommandWithParameterAlias'
+)
 
 function Find-CommandWithParameterAlias {
     <#
@@ -7,11 +10,15 @@ function Find-CommandWithParameterAlias {
         filter commands that do not have at least one alias
     .description
         .
-    .example
-        PS> Get-NinCommand | Get-ParameterInfo | ? Aliases | Ft
     .notes
         .
+    .example
+        PS> Get-NinCommand | Get-ParameterInfo | ? Aliases | Ft
+    .example
+        PS> gcm -Module (_enumerateMyModule) | Find-CommandWithParameterAlias | ft -AutoSize
     #>
+    [ALias('DevTool💻-Params-FindCommandWithParameterAlias')]
+    [cmdletbinding(PositionalBinding = $false)]
     param (
         #
         [Parameter(Position = 0, ValueFromPipeline)]
