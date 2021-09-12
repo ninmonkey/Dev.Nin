@@ -26,13 +26,18 @@ function ShortenStringJoin {
         [string[]]$InputLine,
 
         [parameter(Position = 1)]
-        [int]$MaxLength = 120,
+        [int]$MaxLength, # = 120,
 
         # CollapseSpace
         [Alias('Minify')]
         [Parameter()][switch]$CollapseWhiteSpace
     )
     begin {
+        $MaxLength = if ($MaxLength -eq 0) {
+            [console]::WindowWidth - 1
+        }
+        else { $maxLength
+        }
         $Str = @{
             JoinNewline = ' ◁ ' | New-Text -fg 'gray60' | ForEach-Object tostring            # '… …◁'
         }
@@ -96,8 +101,14 @@ function ShortenString {
             ParameterSetName = 'StringFromParam',
             Position = 1)]
         [uint] # post, why exactly does the enum fail on parapset2 but not paramset 1?
-        $MaxLength = 80
+        $MaxLength # = 120 80
     )
+    begin {
+        $MaxLength = if ($MaxLength -eq 0) {
+            [console]::WindowWidth - 1
+        }
+        else { $maxLength }
+    }
 
     Process {
         $actualLen = $InputText.Length
