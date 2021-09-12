@@ -36,6 +36,9 @@ function Test-DidErrorOccur {
     end {
         <#
         # todo: refactor:
+            split
+                [1] -> one func tests for errors
+                [2] -> one func writes prompt visual
             separate formatting from this test function
                 then prompt invokes this and formats
 
@@ -105,26 +108,31 @@ function Test-DidErrorOccur {
                 }
             }
 
-            $FirstN
+            # $FirstN
             if ($Delta -le 3) {
                 # $FirstN = [math]::max($Delta, $FirstN)
                 $FirstN = [math]::min($Delta, $FirstN)
             }
             else {
-                $FirstN = 0
+                $FirstN = [math]::max(1, $FirstN) # 0
             }
 
             # "First: $FirstN, Limit: $Limit, D: $delta, L-D: $($limit - $delta)"
             # | Write-Host -ForegroundColor magenta
-
-            $exceptionText = $globalError | Select-Object -First $FirstN | ForEach-Object { $curIndex = 0 } {
+            # hr -fg green
+            if ($FirstN -lt 1) {
+                return
+            }
+            $exceptionText = $globalError
+            | Select-Object -First $FirstN
+            | ForEach-Object -beg { $curIndex = 0 } -proc {
                 $indexLabel = '{0,-2} ' -f $curIndex
                 [string]$_ | ShortenString
                 | Join-String -op $indexLabel
-
-                $curIndex++
+                # hr 1 -fg magenta
+                $curIndex++ | Out-Null
             } | Join-String -sep "`n" -op "`n"
-
+            # hr -ForegroundColor red
             if ($turnsSinceLastCount -lt 3 ) {
                 $exceptionText | New-Text -fg $c.errorFg -bg $c.errorBg | Join-String
             }

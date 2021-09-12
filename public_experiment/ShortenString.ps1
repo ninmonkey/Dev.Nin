@@ -2,14 +2,61 @@ using namespace Management.Automation
 
 $experimentToExport.function += @(
     'ShortenString'
+    'ShortenStringJoin'
 )
 $experimentToExport.alias += @(
-    'AbbrStr', 'TruncateString'
+    'AbbrStr'
+    'TruncateString'
 )
+
+function ShortenStringJoin {
+    <#
+    .synopsis
+        like ShortenString, except collapses newlines into one line
+    .example
+        $someExteption.ToString() | SHortenStringJoin -CollapseWhiteSpace
+    .link
+        ShortenString
+    #>
+    [cmdletbinding(PositionalBinding = $false)]
+    param(
+        # Docstring
+        [alias('Text')]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string[]]$InputLine,
+
+        [parameter(Position = 1)]
+        [int]$MaxLength = 120,
+
+        # CollapseSpace
+        [Alias('Minify')]
+        [Parameter()][switch]$CollapseWhiteSpace
+    )
+    begin {
+        $Str = @{
+            JoinNewline = ' ◁ ' | New-Text -fg 'gray60' | ForEach-Object tostring            # '… …◁'
+        }
+        $JoinSep ??= $Str.JoinNewline
+    }
+    process {
+
+        $accum = $InputLine -split '\r?\n'
+        | Join-String -sep $JoinSep
+        if ($CollapseWhiteSpace) {
+            $accum = $accum -replace '(\s)+', '$1'
+        }
+
+        $accum = $accum | ShortenString -MaxLength $MaxLength
+        $accum
+    }
+}
+
 function ShortenString {
     <#
     .synopsis
         shorten strings, if needed.
+    .link
+        ShortStringJoin
     #>
     [cmdletbinding(
         DefaultParameterSetName = 'StringFromPipe', PositionalBinding = $false)]

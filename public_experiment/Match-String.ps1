@@ -18,14 +18,22 @@ function Match-String {
 
        ... | ?{ $_.Name -match $regex } | ...
 
+       Function allows you to use raw-text matching on properties, without converting
+        the pipeline to raw text. It leaves the object intact.
+
     .notes
-        should have the option to silently pipe nulls. ( Get-Content split enumerates some null values on extra newlines)
+        - $null inputs are ignored ( Get-Content split enumerates some null values on extra newlines)
 
         todo:
+        future:
+            - [ ] multi-line regex?
             - [ ] future toggle may collect all strings at first, for multiline matching
                 it makes less sense because this only filters objects, not mutate or multi-line regex
     .example
-        # Regex is simple because
+        # This example regex is just 'json'
+        # the regex's are able to be simplified because
+        #   1] Easily opt-in to anchors with -Start/-Ends
+        #   2] You can match properties, like 'extension' or 'name'
         # using -starts which is more natural
         # using property 'Name' instead of 'FullName'
         🐒> ls ~ -Directory -Depth 2 # normally returns 2,033 files
@@ -136,6 +144,10 @@ function Match-String {
         # to get 'dog.*$'
         [Alias('Stops')]
         [Parameter()][switch]$Ends
+
+        # # colorize matches? like using "rg 'a|b|c|$'"
+        # [Parameter()][switch]$ColorizeMatches
+
     )
     begin {
         $MatchPattern = @(
@@ -149,6 +161,7 @@ function Match-String {
         # "FullMatch? '$FullMatch'" | Write-Debug
         # $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Debug
         $MatchPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
+        # Write-warning 'Colorize NYI' -Category NotImplemented
     }
     process {
         try {

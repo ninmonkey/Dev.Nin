@@ -1,5 +1,7 @@
 $experimentToExport.function += 'Test-NinFindArgumentCompleter'
-# $experimentToExport.alias += ''
+$experimentToExport.alias += @(
+    'DevTool💻-GetHiddenArgumentCompleter'
+)
 
 
 function Test-NinFindArgumentCompleter {
@@ -10,6 +12,7 @@ function Test-NinFindArgumentCompleter {
         .
 
     #>
+    [alias('DevTool💻-GetHiddenArgumentCompleter')]
     [CmdletBinding(
         PositionalBinding = $false,
         ConfirmImpact = 'High',

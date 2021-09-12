@@ -29,6 +29,13 @@
             "cwd": "${file}"
         },
         {
+            "name": "cur (temp test)",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/private/temp_cur_test.ps1",
+            "cwd": "${workspaceFolder}"
+        },
+        {
             "name": "cur: visualTest 🐛🎨",
             "type": "PowerShell",
             "request": "launch",
