@@ -9,11 +9,18 @@ Describe "$__PesterFunctionName" -Tag Unit {
         $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {
-        . $__PesterFunctionName
+        { 'foo' | . $__PesterFunctionName -Regex 'o' }
+        | Should -Not -Throw
     }
     Describe 'Basic Static' {
         BeforeAll {
             $Sample1 = 'a', '3', 'eaf'
+        }
+        It 'Supports Null' {
+            $null | Where-String ''
+            $null | Match-String ''
+            $null | Should -Be $Null
+            $null | Where-Object { $_ -match '' }
         }
         It 'Basic Static' {
             $Res1 = $Sample1 | Where-Object { $_ -match '\d+' }
