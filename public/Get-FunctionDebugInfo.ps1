@@ -11,6 +11,8 @@ function Get-FunctionDebugInfo {
         # customize output
         Get-FunctionDebugInfo $PSCmdlet -PassThru | Format-HashTable SingleLine
         Get-FunctionDebugInfo $PSCmdlet -PassThru | Format-HashTable
+    .link
+        Indented.ScriptAnalyzerRules\Get-FunctionInfo
 
     .notes
         todo:

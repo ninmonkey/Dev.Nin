@@ -1,6 +1,8 @@
 if (! $DebugInlineToggle ) {
     $experimentToExport.function += 'Find-ExampleModuleManifest'
-    $experimentToExport.alias += 'ModuleMetadata', 'CheatSheet-ModuleManifest'
+    $experimentToExport.alias += @(
+        'Find-ModuleMetadata', 'Example🔖-ModuleManifest'
+    )
 }
 
 function Find-ExampleModuleManifest {
@@ -18,7 +20,7 @@ function Find-ExampleModuleManifest {
     .outputs
 
     #>
-    [alias('ModuleMetadata', 'CheatSheet-ModuleManifest')]
+    [alias('Find-ModuleMetadata', 'Example🔖-ModuleManifest')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # # Text to convert to a literal

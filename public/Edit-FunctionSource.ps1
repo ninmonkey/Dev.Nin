@@ -76,6 +76,7 @@ function Edit-FunctionSource {
 
             $functionQuery | ForEach-Object {
                 $curCommand = $_
+                # todo: fix: when piping funcinfo from [Get-IndendtedFunctioninfo] $Path is $null
                 $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
                 $Path = $meta.File | Get-Item -ea continue
                 if ($Path) {

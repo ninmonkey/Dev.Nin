@@ -4,10 +4,9 @@
             "name": "Dev.Nin",
             "path": "."
         },
-        // {
-        //     "name": "SeeminglyScience/Sketch",
-        //     "path": "..\\..\\Nin Lib Experiment\\import_SeeminglyScience_sketch"
-        // },
+        {
+            "path": "..\\ModuleData"
+        }
     ],
     "settings": {
         "snippets.viewer.sortSnippetsByName": true
