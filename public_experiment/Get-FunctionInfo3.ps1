@@ -4,14 +4,15 @@ using namespace System.Reflection
 
 
 $experimentToExport.function += @(
-    'Get-IndentedFunctionInfo'
+    # 'Get-IndentedFunctionInfo'
+    'Get-FunctionInfo3'
 )
 $experimentToExport.alias += @(
     # 'Alarm'
 )
 
 
-function Get-FunctionInfo {
+function Get-FunctionInfo3 {
     <#
     .SYNOPSIS
         Get an instance of FunctionInfo.

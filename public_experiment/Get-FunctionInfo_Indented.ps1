@@ -1,13 +1,17 @@
 
 $experimentToExport.function += @(
-    'Get-IndentedFunctionInfo'
+    # 'Get-IndentedFunctionInfo'
+    'Get-FunctionInfo4'
 )
 $experimentToExport.alias += @(
-    'Get-FuncInfo', 'FindFunc'
+    'Get-IndentedFunctionInfo'
+    #     'Get-FuncInfo', 'FindFunc'
 )
 
+New-Alias -ea ignore -Name 'Get-IndentedFunctionInfo' -Value 'Indented.ScriptAnalyzerRules\Get-FunctionInfo'
 
-function Get-IndentedFunctionInfo {
+# function Get-IndentedFunctionInfo {
+function Get-FunctionInfo4 {
     <#
     .SYNOPSIS
         [from chris's old profile, this is not his latest version IIRC] Get an instance of FunctionInfo.

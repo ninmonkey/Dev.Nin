@@ -3,14 +3,15 @@ using namespace System.Management.Automation.Language
 using namespace System.Reflection
 
 $experimentToExport.function += @(
-    'Get-DevFunctionInfo'
+    # 'Get-DevFunctionInfo'
+    'Get-FunctionInfo2'
 )
 $experimentToExport.alias += @(
     # 'GetFuncInfo'
 )
 
 
-function Get-FunctionInfo {
+function Get-FunctionInfo2 {
     <#
     .SYNOPSIS
         Get an instance of FunctionInfo.

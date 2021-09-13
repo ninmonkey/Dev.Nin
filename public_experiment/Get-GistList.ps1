@@ -1,4 +1,4 @@
-if ($false -and 'temp hack') {
+if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
         'Get-GistList'
         'Get-GistFiles'
@@ -135,7 +135,9 @@ function Get-GistList {
     }
 }
 
-Get-GistList | Select-Object -First 1
+if (! $DebugInlineToggle ) {
+    Get-GistList | Select-Object -First 1
+}
 
 # | Get-GistFiles -Verbose -Debug
 

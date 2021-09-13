@@ -16,7 +16,8 @@ function _get-ExtensionsList {
         [String]$Path = '.',
         [int]$Depth = 3
     )
-    $e = Get-ChildItem -Path $Path -File -Depth $Depth -Force | ForEach-Object Extension | Sort-Object -Unique
+    $e = Get-ChildItem -Path $Path -File -Depth $Depth -Force -ea SilentlyContinue
+    | ForEach-Object Extension | Sort-Object -Unique
     $e
     # fd -t f -d 1 | ForEach-Object {
     #     if ($_ -match '(?<rest>)(?<ext>\.[^\.]*?$)') {
@@ -62,7 +63,9 @@ function Find-FileType {
     )
 
     begin {
+
         Write-Warning 'next: use arg completer to populate'
+
     }
     process {
         # _get-ExtensionsList -Path $Path -Depth $MaxDepth
