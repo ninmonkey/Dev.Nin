@@ -3,6 +3,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'SplitStr'
+    'SplitNewline'
 )
 
 function Split-String {
@@ -36,7 +37,7 @@ function Split-String {
           [object] as passed in
 
     #>
-    [alias('SplitStr')]
+    [alias('SplitStr', 'SplitNewline')]
     [CmdletBinding( PositionalBinding = $false, DefaultParameterSetName = '__AllParameterSets')]
     param(
         <# (copied 'Format-ControlChar')
@@ -72,6 +73,16 @@ function Split-String {
     )
     begin {
         try {
+
+            switch ($PSCmdlet.MyInvocation.InvocationName) {
+                'SplitNewline' {
+                    $PSCmdlet.ParameterSetName = 'UsingTemplate'
+                    $Type = 'Newline'
+                }
+                default {}
+            }
+
+
             if ($PSCmdlet.ParameterSetName -eq 'UsingTemplate') {
                 $SplitPattern = switch ($Type) {
                     'Newline' {

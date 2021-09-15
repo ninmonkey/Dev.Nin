@@ -11,6 +11,9 @@ function ConvertFrom-ScriptExtent {
         PS> $Sample = 'System.Management.Automation.Language.InternalScriptExtent'
 
     .notes
+        - [ ] future:
+            support script locations from [ErrorRecord] and [Exception]
+
         maybe related:
 
         [Selected.System.Management.Automation.Language.InternalScriptExtent]

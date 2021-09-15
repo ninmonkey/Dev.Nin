@@ -1,16 +1,16 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
-Describe "$__PesterFunctionName" -Tag Unit {
+Describe 'ConvertTo-RegexLiteral' -Tag Unit {
     BeforeAll {
-        Import-Module Dev.nin -Force
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
+        # Import-Module Dev.nin -Force
+        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "ConvertTo-RegexLiteral.ps1")
         # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
         $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {
-        { . $__PesterFunctionName 'stuff' 'other' }
-        | Should -Not Throw
+        { ConvertTo-RegexLiteral 'stuff', 'other' }
+        | Should -Not -Throw
     }
     Describe 'Verify Patterns for Dotnet are still valid' {
 
@@ -19,7 +19,7 @@ Describe "$__PesterFunctionName" -Tag Unit {
             | Should -Be $True
         }
         It 'Whether Escaped braces match - Convert to Foreach' {
-            # $EscapeBasic = $RawInput | $__PesterFunctionName
+            # $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
             $RawInput = 'sdjf}dfsd'
             $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
             $EscapeVS = $RawInput | ConvertTo-RegexLiteral -AsVSCode

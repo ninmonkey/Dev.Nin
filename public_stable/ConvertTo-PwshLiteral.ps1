@@ -1,6 +1,8 @@
 #Requires -Version 7.0.0
-$stableToExport.function += 'ConvertTo-PwshLiteral'
-# $stableToExport.alias += ''
+if (! $DebugInlineToggle) {
+    $stableToExport.function += 'ConvertTo-PwshLiteral'
+    # $stableToExport.alias += ''
+}
 
 function ConvertTo-PwshLiteral {
     <#
@@ -21,7 +23,10 @@ function ConvertTo-PwshLiteral {
     param(
         # Input as a string
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [String]$InputText
+        [String]$InputText,
+
+        # leave ascii codepoints as literals
+        [switch]$PreserveAscii
     )
 
     begin {
@@ -33,10 +38,57 @@ function ConvertTo-PwshLiteral {
         ) | Join-String
     }
     process {
-
         $InputText.EnumerateRunes() | Join-String {
+            if ($PreserveAscii -and $_.Value -le 127) {
+                $_ ; return
+            }
+
             $Template.SingleRune -f $_.Value
         } -sep '' -op "`"" -os "`""
+
     }
+
+    <#
+        function _codepointToLiteral {
+            param(
+                [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+                $Rune
+                # [Rune]$Rune
+            )
+            process {
+                Join-String {
+                    $Template.SingleRune -f $Rune
+                } -sep '' -op "`"" -os "`""
+            }
+        }
+    }
+    process {
+        $InputText.EnumerateRunes() | ForEach-Object {
+            $cur = $_
+            if ($cur.IsAscii) {
+                $_; return
+            }
+            _codepointToLiteral $_
+        }
+
+        # previous
+        <#
+        $InputText.EnumerateRunes() | Join-String {
+            if ($PreserveAscii -and $_.Value -le 127) {
+                $_ ; return
+            }
+
+            $Template.SingleRune -f $_.Value
+        } -sep '' -op "`"" -os "`""
+
+    }
+    #>
     end {}
+}
+
+if ($DebugInlineToggle) {
+    'a f23jaf23j' | ConvertTo-PwshLiteral -PreserveAscii
+    | Join-String -op '-PreserveAscii: '
+    'a f23jaf23j' | ConvertTo-PwshLiteral
+    | Join-String -op 'default: '
 }

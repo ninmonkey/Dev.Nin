@@ -1,16 +1,13 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+BeforeAll {
+    Import-Module dev.nin -Force
+    # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
+    # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
+    $ErrorActionPreference = 'Stop'
+}
 
 Describe "$__PesterFunctionName" -Tag Unit {
-    BeforeAll {
-        Import-Module dev.nin -Force
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
-        # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
-        $ErrorActionPreference = 'Stop'
-    }
-    It 'Runs without error' {
-        . $__PesterFunctionName 'test'
-    }
     Describe 'Basic Hardcoded' {
         It 'As Pipeline' {
             'abc' | ShortenString 2 | Should -Be 'ab'
@@ -38,8 +35,13 @@ Describe "$__PesterFunctionName" -Tag Unit {
 
         }
         It 'Lists with  Null and Empty Strings' {
+            $splatNotThrow = @{
+                Not     = $true
+                Throw   = $True
+                Because = 'It should silently allow nulls or empty strings to pass'
+            }
             # position 0 is not an array type, so 'mandatory' wait for user input
-            { ShortenString '', '' } | Should @splatNotThrow -throw:$true
+            { ShortenString '', '' } | Should @splatNotThrow
             { ShortenString $null, $null } | Should @splatNotThrow
             { '', '' | ShortenString } | Should @splatNotThrow
         }
