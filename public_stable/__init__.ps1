@@ -14,7 +14,7 @@
 
 # Don't dot tests, don't call self.
 Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
-| Where-Object { $_.Name -ne 'main_import_stable.ps1' }
+| Where-Object { $_.Name -ne '__init__.ps1' }
 | Where-Object {
     # are these safe? or will it alter where-object?
     # Write-Debug "removing test: '$($_.Name)'"

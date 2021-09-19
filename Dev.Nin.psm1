@@ -272,13 +272,13 @@ $aliasesToExport = @(
 Export-ModuleMember -Alias $aliasesToExport
 
 
-. (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_stable\main_import_stable.ps1'))
+. (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_stable\__init__.ps1'))
 
 if ($__Config.Enable_Import_PublicExperiment_Dir) {
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\main_import_experimental.ps1'))
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
 }
 if ($__Config.Enable_Import_PrivateExperiment_Dir) {
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\main_import_experimental.ps1'))
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
 }
 <#
 Sketch: Detect imports
