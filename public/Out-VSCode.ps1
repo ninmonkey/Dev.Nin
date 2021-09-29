@@ -41,7 +41,7 @@ function Out-VSCode {
         PS>
 
     #>
-    [Alias('Out-Code')]
+    [Alias('Out-Code', 'Invoke-VSCode')]
     param (
         # show help
         [Parameter()][switch]$Help,
@@ -86,24 +86,25 @@ function Out-VSCode {
         foreach ($Line in $FileName) {
             $inputList.add( $Line )
         }
-    }
-    Hr 1;
-    Label 'ParameterSetName' 'SingleQuote'
-    Label 'ParameterName' 'OutputPrefix'
 
-    $cinfo.ParameterSets | Where-Object Name -EQ 'singlequote' | Select-Object -exp Parameters
-    | Where-Object Name -Match 'OutputPrefix' -ov filtered
+        Hr 1;
+        Label 'ParameterSetName' 'SingleQuote'
+        Label 'ParameterName' 'OutputPrefix'
 
-    Label '-OutputPrefix' 'ParameterType'
-    $filtered.ParameterType | Format-Table *
+        $cinfo.ParameterSets | Where-Object Name -EQ 'singlequote' | Select-Object -exp Parameters
+        | Where-Object Name -Match 'OutputPrefix' -ov filtered
 
-    # same
-    @($filtered)[0].parametertype | Format-Table *
+        Label '-OutputPrefix' 'ParameterType'
+        $filtered.ParameterType | Format-Table *
 
-    $info = [ordered]@{
-        SetName = 'SingleQuote'
-        Name    = 'OutputPrefix'
-        Type    = 'x.parametertype'
+        # same
+        @($filtered)[0].parametertype | Format-Table *
+
+        $info = [ordered]@{
+            SetName = 'SingleQuote'
+            Name    = 'OutputPrefix'
+            Type    = 'x.parametertype'
+        }
     }
     end {
         # $Selection = $inputList | & $binFzf @fzfArgs
@@ -126,6 +127,7 @@ function Out-VSCode {
     }
 }
 
+
 if ($false) {
     Goto $nin_paths.GithubDownloads
     <# examples
@@ -138,14 +140,9 @@ if ($false) {
     | Out-Fzf -Debug
 
     # Get-ChildItem -Name | Out-Fzf -MultiSelect -Debug
-}
-
-
-if ($true -and $TempDebugTest) {
     Push-Location 'C:\Users\cppmo_000\Documents\2020\todo' -StackName 'debugStack'
-
     Pop-Location -StackName 'debugStack'
 
-    out-vsc
+
 
 }

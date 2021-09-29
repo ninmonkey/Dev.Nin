@@ -31,9 +31,10 @@ function Test-NinFindArgumentCompleter {
             Write-Warning 'ImpliedReflection: Enabled'
             # [object[]]$completerList = $ec._context.CustomArgumentCompleters.GetEnumerator()
             [object[]]$completerList = $ec._context.CustomArgumentCompleters
+            $completerList
         }
 
-        $completerList
+
     }
 
 }

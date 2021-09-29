@@ -37,6 +37,9 @@ function _formatErrorSummarySingleLine {
         # if (!$InputObject) {
         #     $InputObject = $global:error # Do I want global or script?
         # }
+        if ($InputObject) {
+            $errorList.Add( $InputObject )
+        }
         # $errorList.Add( $InputObject )
 
     }
@@ -49,37 +52,6 @@ function _formatErrorSummarySingleLine {
             $_ | ShortenStringJoin -MaxLength ([console]::WindowWidth - 1 )
         } | Join-String -sep (Hr 1)
 
-    }
-}
-
-function Get-Foo {
-    <#
-    .synopsis
-        Stuff
-    .description
-       .
-    .example
-          .
-    .outputs
-          [string | None]
-
-    #>
-    [CmdletBinding(PositionalBinding = $false)]
-    param(
-        [Parameter(Mandatory, Position = 0)]
-        [string]$Name
-    )
-
-    begin {
-
-    }
-    process {
-        $Name | ForEach-Object {
-            $NameList.Add( $_ )
-        }
-    }
-    end {
-        $NameList
     }
 }
 
@@ -111,17 +83,60 @@ function _formatErrorSummary {
             JoinNewline = ' ◁ ' | New-Text -fg 'gray60' | ForEach-Object tostring            # '… …◁'
         }
         function _processException {
-            throw 'left off here'
+            <#
+            .synopsis
+                convert Exception to [dev.nin.ExceptionSummary]
+            #>
+            param(
+                # errorRecord instance
+                [Parameter(Mandatory, Position = 0)]
+                [object]$Exception
+            )
+
+            $cur = $Exception
+
+            $tinfo = $cur.GetType()
+            $meta = @{
+                PSTypeName         = 'dev.nin.ExceptionSummary'
+                # TypeName   = $cur.GetType().FullName | New-TypeInfo | Format-TypeName -Brackets
+                TypeNameStr        = $tinfo | Format-TypeName -Brackets
+                BaseTypeNameStr    = $tinfo.BaseType | Format-TypeName -brack
+                ToStr              = $cur | ShortenStringJoin -MaxLength 220 -CollapseWhiteSpace # this shoudl be formatter's logic
+                Errors_ErrorId     = $cur.Errors.ErrorId
+                Errors_Extent      = $cur.Errors.Extent
+                Errors_Message     = $cur.Errors.Message
+                'Errors[]_ErrorId' = $cur.Errors.ErrorId
+                'Errors[]_Extent'  = $cur.Errors.Extent
+                'Errors[]_Message' = $cur.Errors.Message
+
+            }
+            [pscustomobject]$meta
         }
         function _processErrorRecord {
+            <#
+            .synopsis
+                convert ErrorRecord to [dev.nin.ErrorRecordSummary]
+            #>
+            param(
+                # errorRecord instance
+                [Parameter(Mandatory, Position = 0)]
+                [object]$ErrorRecord
+            )
+            $cur = $ErrorRecord
             throw 'left off here'
+            $meta = @{
+                PSTypeName = 'dev.nin.ErrorRecordSummary'
+
+
+            }
+            [pscustomobject]$meta
         }
     }
     process {
         if ($InputObject -is 'Exception') {
             _processException $InputObject
         }
-        elseif ($InputObject -is 'ErrorRecord') {
+        elseif ($InputObject -is [Management.Automation.ErrorRecord]) {
             _processErrorRecord $InputObject
         }
         else {
@@ -134,8 +149,8 @@ function _formatErrorSummary {
 
 
         # Ensure it's a single line
-        $Meta.String = $_.ToString() -split '\r?\n'
-        | Join-String -sep $str.JoinNewline | ShortenString -MaxLength 120
+        # $Meta.String = $_.ToString() -split '\r?\n' | Join-String -sep $str.JoinNewline | ShortenString -MaxLength 120
+        $Meta.String = $_ | ShortenString | Join-String -sep $str.JoinNewline | ShortenString -MaxLength 120
 
         # refactor func
 
@@ -143,5 +158,8 @@ function _formatErrorSummary {
 
         [pscustomobject]$meta
 
+    }
+    end {
+        Write-Warning "finish me: $PSCommandPath"
     }
 }

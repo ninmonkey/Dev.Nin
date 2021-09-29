@@ -38,7 +38,7 @@ function Split-String {
 
     #>
     [alias('SplitStr', 'SplitNewline')]
-    [CmdletBinding( PositionalBinding = $false, DefaultParameterSetName = '__AllParameterSets')]
+    [CmdletBinding( PositionalBinding = $false, DefaultParameterSetName = 'UsingRegex')]
     param(
         <# (copied 'Format-ControlChar')
         format unicode strings, making them safe.
@@ -55,32 +55,32 @@ function Split-String {
         [string[]]$InputObject,
 
         [Parameter(
-            Mandatory,
-            ParameterSetName = 'UsingTemplate'
+            Mandatory, ParameterSetName = 'UsingTemplate'
         )]
         [ValidateSet('Newline')]
         [string]$Type,
 
         # Split regex
-        [Alias('Regex', 'Pattern')]
+        [Alias('Pattern')]
         [AllowEmptyString()]
+        [ValidateNotNull()]
         [Parameter(
-            Mandatory,
-            ParameterSetName = '__AllParameterSets',
+            Mandatory, ParameterSetName = 'UsingRegex',
             Position = 0
         )]
-        [string]$SplitPattern
+        [string]$Regex
     )
     begin {
         try {
+            # $UsingTemplateMode = ($PSCmdlet.MyInvocation.InvocationName -eq 'UsingTemplate')
 
-            switch ($PSCmdlet.MyInvocation.InvocationName) {
-                'SplitNewline' {
-                    $PSCmdlet.ParameterSetName = 'UsingTemplate'
-                    $Type = 'Newline'
-                }
-                default {}
-            }
+            # switch ($PSCmdlet.MyInvocation.InvocationName) {
+            #     'SplitNewline' {
+            #         # $PSCmdlet.ParameterSetName = 'UsingTemplate'
+            #         # $Type = 'Newline'
+            #     }
+            #     default {}
+            # }
 
 
             if ($PSCmdlet.ParameterSetName -eq 'UsingTemplate') {
@@ -92,6 +92,9 @@ function Split-String {
                         throw "unhandled: `$Type '$Type'"
                     }
                 }
+            }
+            elseif ($PSCmdlet.ParameterSetName -eq 'UsingRegex') {
+                #..
             }
 
             $SplitPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
@@ -109,6 +112,7 @@ function Split-String {
                 "Splitting: '$SplitPattern' with '$curObject'" | Write-Debug
                 $curObject -split $SplitPattern
             }
+
         }
         catch {
             $PSCmdlet.WriteError( $_ )
