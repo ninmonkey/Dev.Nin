@@ -17,7 +17,9 @@ function _slowNetTest {
     # quick 1 off test
     [Alias('PingSlow', 'NetworkTool🌎.SlowNetTest')]
     [CmdletBinding()]
-    param()
+    param(
+        [switch]$Traceroute
+    )
     $isp_dns = @('205.171.2.25', '205.171.3.25')
     $known_dns = @('1.1.1.1', '8.8.8.8')
     $targets = @(
@@ -25,5 +27,5 @@ function _slowNetTest {
         $known_dns
         'google.com', 'reddit.com', 'ninmonkeys.com', 'ninmonkey.com'
     )
-    Test-Connection -TargetName $targets -ResolveDestination
+    Test-Connection -TargetName $targets -ResolveDestination -Traceroute $Traceroute
 }

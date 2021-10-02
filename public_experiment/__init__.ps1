@@ -8,6 +8,7 @@
     'variable'                   = @()
     'meta'                       = @()
     'update_typeDataScriptBlock' = @()
+    'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
 

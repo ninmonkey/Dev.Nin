@@ -1,5 +1,9 @@
-$experimentToExport.function += 'Get-OptionalPath'
-$experimentToExport.alias += 'MaybePath'
+$experimentToExport.function += @(
+    'Get-OptionalPath'
+)
+$experimentToExport.alias += @(
+    'MaybePath'
+)
 
 
 function Get-OptionalPath {

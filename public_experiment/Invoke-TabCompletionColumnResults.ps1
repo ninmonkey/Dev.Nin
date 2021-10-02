@@ -11,17 +11,17 @@ $experimentToExport.alias += @(
 function Invoke-TestTabExpansionResults {
     <#
     .synopsis
-        Stuff
+        Enumerate a string, get TabExpansion results for every substring
     .description
-       Searches X11ColorName of the Fg:\ provider
+        .
     .notes
+        tags: 
+            'DevTool💻, 'Example🔖'
         todo:
-        - [ ] find-color 'alm', 'pink','moun' | _format_RgbColorString
+        - [ ] custom type: nicer output with lists
+
     .example
-        🐒> Find-Color 'alm', 'moun'
-        🐒> Gi RgbColor::Foreground:\yellow
-    .example
-        🐒> Find-Color 'alm', 'pink','moun' | _format_RgbColorString # to be a formatter
+        🐒> Example🔖-TestTabExpansionResults
     .outputs
           [string | None]
 
