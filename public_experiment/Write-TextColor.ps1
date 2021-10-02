@@ -10,29 +10,30 @@ $experimentToExport.alias += @(
     # 'Any'
 )
 
+if ($false) {
 
-function Good {
-    <#
+    function Good {
+        <#
     .synopsis
         example of a smart alias for Write-TextColor
     #>
-    # print value as green -> good;  red -> 'bad'
-    param(
-        [Parameter(Mandatory, position = 0, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
-        [string]$Text
-    )
-    process {
-        Write-TextColor -fg 'Green' -Text $Text
+        # print value as green -> good;  red -> 'bad'
+        param(
+            [Parameter(Mandatory, position = 0, ValueFromPipeline)]
+            [ValidateNotNullOrEmpty()]
+            [string]$Text
+        )
+        process {
+            Write-TextColor -fg 'Green' -Text $Text
+        }
+    }
+    function WriteHeader {
+        # Header with padding
+        param([string]$Text)
+        $Text | Write-TextColor orange
+        | Join-String -op "`n`n### " -os " ###`n"
     }
 }
-function WriteHeader {
-    # Header with padding
-    param([string]$Text)
-    $Text | Write-TextColor orange
-    | Join-String -op "`n`n### " -os " ###`n"
-}
-
 
 function Write-TextColor {
     <#
