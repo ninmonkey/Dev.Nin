@@ -54,10 +54,10 @@ function Write-TextColor {
         )]
         [PoshCode.Pansies.RgbColor]
         $ForegroundColor,
-        
+
         # $Color = [rgbcolor]::new(164, 220, 255),
         # $ForegroundColor = [rgbcolor]::FromRGB((Get-Random -Max 0xFFFFFF)),
-        
+
         # Background [RgbColor]
         [Alias('Bg')]
         [ValidateNotNullOrEmpty()]
@@ -66,6 +66,7 @@ function Write-TextColor {
         [PoshCode.Pansies.RgbColor]
         $BackgroundColor, #= #[rgbcolor]::FromRGB((Get-Random -Max 0xFFFFFF)),
 
+        [Alias('InputObject')]
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [string]$Text
