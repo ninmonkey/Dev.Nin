@@ -1,14 +1,14 @@
 $experimentToExport.function += @(
-    '_VSCode-VEnv'
+    # '_VSCode-VEnv'
 )
 $experimentToExport.alias += @(
-    'VEnv.VSCode'
+    # 'VEnv.VSCode'
 )
 
-function _VSCode-VEnv {
+function _old_VSCode-VEnv_Minimal {
     <#
     .synopsis
-        when you don't need detailed stats, just a quick ping result
+
     .link
         Dev.Nin\NetworkTool🌎.SlowNetTest
     #>
@@ -24,7 +24,7 @@ function _VSCode-VEnv {
     }
 
     $binCodeEye = gi 'J:\vscode_port\VSCode-win32-x64-1.61.0-insider\bin\code-insiders.cmd' -ea stop
-    
+
     if (! $openOnly) {
         $filename = gi -ea stop 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-09\Parallel-Test-Connection'
         $eyeArgs = @('-r', '-a', $filename)
@@ -44,4 +44,3 @@ function _VSCode-VEnv {
 
 
 }
-

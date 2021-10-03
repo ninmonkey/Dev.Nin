@@ -11,26 +11,40 @@
     'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
-
+$ErrorActionPreference = 'break'
 # & {
 
 # Don't dot tests, don't call self.
-Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
 | Where-Object { $_.Name -ne '__init__.ps1' }
 | Where-Object {
     # are these safe? or will it alter where-object?
     # Write-Debug "removing test: '$($_.Name)'"
     $_.Name -notmatch '\.tests\.ps1$'
 }
+$filteredFiles
+| Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+| Write-Debug
+
+$sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.Name } -Descending
+$sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
+| Write-Debug
+
+$sortedFiles
 | ForEach-Object {
+    $curFile
     $curFile = $_
+
+    $curFile | Join-String -op 'CurFile: ' FullName
+    | Write-Debug
     # are these safe? or will it alter where-object?
     # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
     try {
         . $curFile
     }
     catch {
-        Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+        Write-Error -Message 'bad' -ErrorRecord $_
+        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
         #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
         # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile

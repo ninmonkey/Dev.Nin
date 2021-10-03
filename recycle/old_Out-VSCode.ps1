@@ -17,7 +17,7 @@ Write-Warning 'see: seeminglySci: Out-VS Code <Invoke-VSCode https://github.com/
     - <https://github.com/indented-automation/Indented.Profile/blob/7e593e871db6800ba5d757ecd9bcb1b124d205cf/Indented.Profile/public/Get-CommandInfo.ps1>
     - <https://github.com/indented-automation/Indented.Profile/blob/7e593e871db6800ba5d757ecd9bcb1b124d205cf/Indented.Profile/public/Get-CommandSource.ps1>
 '
-function Out-VSCode {
+function old_Out-VSCode {
     <#
     .synopsis
         open files in VS Code with options
@@ -41,7 +41,8 @@ function Out-VSCode {
         PS>
 
     #>
-    [Alias('Out-Code', 'Invoke-VSCode')]
+    # [Alias('Out-Code', 'Invoke-VSCode')]
+    # [Alias('Out-Code', 'Invoke-VSCode')]
     param (
         # show help
         [Parameter()][switch]$Help,

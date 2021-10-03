@@ -71,56 +71,112 @@ function iProp {
     param(
         # Object to inspect
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [object]$InputObject,
+        [object[]]$InputObject,
+
+        # Limit max inputs
+        [Alias('MaxInputs')]
+        [Parameter()]
+        [int]$Limit = 3,
+
+        # Limit using Get-Unique -OnType or position?
+        [Alias('OnTypeName')]
+        [Parameter()][switch]$UniqueOnType,
 
         # TruncateHuge
         [Parameter()][switch]$TrimLongLines,
 
         # global max length of properies
         [Alias('MaxWidth', 'Width')]
-        [Parameter()][uint]$MaxPropertyLength
+        [Parameter()][uint]$MaxPropertyLength,
+
+        [Parameter()]
+        [ArgumentCompletionsAttribute('TypeName', 'PropertyName')]
+        [string]$SortBy
 
     )
     begin {
         $nullStr = "[`u{2400}]"
-        Write-Warning @'
+        Write-Debug @'
     Todo: - [ ] When 'Value' itself is a [type], then 'ValueStr' should 'Format-Typename' to summarize it
     - [ ]  _formatTypeHeaderSummary'
     - [ ] 'prop.ValueStr' should 'left align'
+    - [ ] 'todo: _formatTypeHeaderSummary' | New-Text -fg yellow | ForEach-Object tostring | Write-Information
 '@
-
-
+        $InputList = [list[object]]::new()
+        [hashtable]$SortByProp = @{
+            'TypeName'     = @('TypeNameStr', 'Name')
+            'PropertyName' = @('Name', 'TypeNameStr')
+        }
     }
     process {
-        'todo: _formatTypeHeaderSummary' | New-Text -fg yellow | ForEach-Object tostring | Write-Information
 
-        $InputObject.Psobject.Properties | ForEach-Object {
-            $curProp = $_
-            $Type = ($curProp.value)?.GetType()
-            $TypeNameStr = $Type | Format-TypeName -Brackets
-
-            $ValueStr = ($curProp)?.Value ?? $nullStr
-            $meta = @{
-                PSTypeName          = 'Nin.iProp'
-                OwnerTypeStr        = $inputObject.GetType() | Format-TypeName -WithBrackets
-                OwnerPsTypeNamesStr = $inputObject.PSTypeNames | ForEach-Object { $_ -as 'type' }
-                | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
-                # the '-as type' is a quick hack to work around format-typename not working in an edge case. it needs to be rewritten anyway
-                PSTypeNamesStr      = $curProp.PSTypeNames | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
-                ValuePSTypeNames    = $curProp.'Value'.'pstypenames' | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
-                Name                = $curProp.Name
-                Value               = $curProp.Value
-                ValueStr            = $curProp.Value ?? $nullStr
-                Type                = $Type
-                TypeNameStr         = $typeNameStr ?? $nullStr
-                # TypeName     = $Type ?? $nullStr
-            }
-            [pscustomobject]$meta
+        $InputObject | ForEach-Object {
+            $InputList.Add( $_ )
         }
-        # $Ij.psobject.properties | ForEach-Object { "`n"; ($_.value)?.GetType() | Format-TypeName -Brackets }
-
     }
+
     end {
+        $InputList.Count | Join-String -op 'Initial $InputList.count: ' | Write-Debug
+
+        if ($UniqueOnType) {
+            $filtered = $InputList | Get-Unique -OnType
+            $filtered.Count | Join-String -op 'After filterby -OnType: $InputList.count: ' | Write-Debug
+        }
+        else {
+            $filtered = $InputList
+        }
+
+        # filter counts before enumerating properties
+        $filtered = $filtered | Select-Object -First $Limit
+
+        $filtered
+        | ForEach-Object {
+            $curObject = $_
+            # if it's a type itself
+            # https://docs.microsoft.com/en-us/dotnet/api/System.Reflection.PropertyInfo?view=net-5.0#properties
+            if ($curObject -is 'type') {
+                Write-Error -ea stop 'Enumerate nonobject props'
+                return
+            }
+
+
+            # if props exist
+            <#
+                .properties returns
+                        type:System.Management.Automation.PSMemberInfoCollection`1
+                        baseType: System.Management.Automation.PSMemberInfoIntegratingCollection`1
+
+                    $_ is
+                        type: [PSProperty]
+                        pstypenames: [PSProperty], [PSPropertyInfo], [PSMemberInfo], [Object]
+            #>
+            $curObject.Psobject.Properties | ForEach-Object {
+                $curProp = $_
+                $Type = ($curProp.value)?.GetType()
+                $TypeNameStr = $Type | Format-TypeName -Brackets
+
+                $ValueStr = ($curProp)?.Value ?? $nullStr
+                $meta = @{
+                    PSTypeName          = 'Nin.iProp'
+                    OwnerTypeStr        = $curObject.GetType() | Format-TypeName -WithBrackets
+                    OwnerPsTypeNamesStr = $curObject.PSTypeNames | ForEach-Object { $_ -as 'type' }
+                    | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
+                    # the '-as type' is a quick hack to work around format-typename not working in an edge case. it needs to be rewritten anyway
+                    PSTypeNamesStr      = $curProp.PSTypeNames | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
+                    ValuePSTypeNames    = $curProp.'Value'.'pstypenames' | ForEach-Object { $_ -as 'type' } | Format-TypeName -Brackets | Sort-Object -Unique | Join-String -sep ', '
+                    Name                = $curProp.Name
+                    Value               = $curProp.Value
+                    ValueStr            = $curProp.Value ?? $nullStr
+                    ParentType          = $curObject.GetType()
+                    Type                = $Type
+                    TypeNameStr         = $typeNameStr ?? $nullStr
+                    # TypeName     = $Type ?? $nullStr
+                }
+                [pscustomobject]$meta
+            }
+            # $Ij.psobject.properties | ForEach-Object { "`n"; ($_.value)?.GetType() | Format-TypeName -Brackets }
+        } | Sort-Object -Property $SortByProp.$SortBy
+
 
     }
 }

@@ -8,6 +8,8 @@ function Edit-FunctionSource {
     .outputs
         [InternalScriptExtent] or none
     .example
+    🐒> gcm *vscode* | editfunc -PassThru | % File | Sort -Unique
+    .example
     🐒> gcm -Module Dev.Nin | % Name | Out-Fzf -m
     | EditFunc -PassThru
     | % file | gi | ft Name, Directory
@@ -77,7 +79,8 @@ function Edit-FunctionSource {
             $functionQuery | ForEach-Object {
                 $curCommand = $_
                 # todo: fix: when piping funcinfo from [Get-IndendtedFunctioninfo] $Path is $null
-                $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
+                $Meta = $curCommand.ScriptBlock.Ast.Extent #| Select-Object * -ExcludeProperty Text
+                # $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
                 $Path = $meta.File | Get-Item -ea continue
                 if ($Path) {
                     $meta | ConvertTo-Json | Write-Debug
