@@ -12,6 +12,7 @@ $__moduleMetaData_DidError_PrevCount = 0
 #   $error.count
 # }
 # # errorCount
+Write-Warning 'Test-DidErrorOccur: Needs full rewrite'
 
 function Test-DidErrorOccur {
     <#
@@ -33,7 +34,10 @@ function Test-DidErrorOccur {
         [Parameter(Position = 0)][int]$Limit = 1
 
     )
+    begin {
+    }
     end {
+        return
         <#
         # todo: refactor:
             split

@@ -25,6 +25,9 @@ function iProp {
             - [ ] MemberInfo: <https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodinfo?view=net-5.0>
 
     .example
+          🐒> gi . | iprop -IgnoreNull
+
+    .example
           🐒> ls . | iProp | ? ValueStr -Match "`u{2400}"
 
             Name     TypeNameStr ValueStr
@@ -73,6 +76,10 @@ function iProp {
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [object[]]$InputObject,
 
+        # Only include matching names
+        [Alias('RegexProperty')]
+        [Parameter()][string[]]$IncludeProperty,
+
         # Limit max inputs
         [Alias('MaxInputs')]
         [Parameter()]
@@ -85,13 +92,19 @@ function iProp {
         # TruncateHuge
         [Parameter()][switch]$TrimLongLines,
 
+        # filter null properties
+        [Parameter()][switch]$IgnoreNull,
+
         # global max length of properies
         [Alias('MaxWidth', 'Width')]
         [Parameter()][uint]$MaxPropertyLength,
 
+        # sort by
         [Parameter()]
         [ArgumentCompletionsAttribute('TypeName', 'PropertyName')]
         [string]$SortBy
+
+
 
     )
     begin {
@@ -107,6 +120,7 @@ function iProp {
             'TypeName'     = @('TypeNameStr', 'Name')
             'PropertyName' = @('Name', 'TypeNameStr')
         }
+
     }
     process {
 
@@ -152,6 +166,20 @@ function iProp {
             #>
             $curObject.Psobject.Properties | ForEach-Object {
                 $curProp = $_
+
+                # filter nulls
+                if ($IgnoreNull) {
+                    if ($Null -eq $curProp.Value -or '' -eq $curProp.Value ) {
+                        return
+                    }
+                    if ($curProp.TypeNameStr -match '[␀]' -or $curProp.ValueStr -match '[␀]') {
+                        return
+                    }
+                }
+
+                if ($FilterPropsByInclusion) {
+
+                }
                 $Type = ($curProp.value)?.GetType()
                 $TypeNameStr = $Type | Format-TypeName -Brackets
 
