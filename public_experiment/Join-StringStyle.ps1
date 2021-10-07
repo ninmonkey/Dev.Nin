@@ -92,13 +92,17 @@ function Dev.Join-StringStyle {
             | Join-String -op 'InvocationName: ' | Write-Debug
 
             $smartAlias = $myInvokeName -eq @(
-                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair', $PSCmdlet.MyInvocation.MyCommand.Name
+                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair', $PSCmdlet.MyInvocation.MyCommand.Name.ToString()
 
             )
             $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
             $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
             if (! $SmartAlias) {
-                Write-Warning "Alias not implemented: '$myInvokeName'"
+                if ($myInvokeName -ne $PSCmdlet.MyInvocation.MyCommand.Name) {
+                    Write-Warning "Alias not implemented: '$myInvokeName'"
+                }
+                else {
+                }
             }
 
             # map aliases to default configs, many directly map to a style
@@ -155,7 +159,7 @@ function Dev.Join-StringStyle {
                 }
             }
 
-            $splat_JoinStyle | Format-Table |  Out-String | Write-Debug
+            $splat_JoinStyle | Format-Table | Out-String | Write-Debug
 
         }
         catch {
