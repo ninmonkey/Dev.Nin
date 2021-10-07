@@ -11,7 +11,7 @@
     'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
-$ErrorActionPreference = 'break'
+$ErrorActionPreference = 'stop'
 # & {
 
 # Don't dot tests, don't call self.

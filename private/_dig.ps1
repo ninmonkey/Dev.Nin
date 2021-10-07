@@ -2,7 +2,16 @@
 #Requires -Module Ninmonkey.Console
 
 # Import-Module Ninmonkey.Console -Force
-$PSDefaultParameterValues['Find-DevItem:InformationAction'] = $true
+# allows script to be ran alone, or, as module import
+if (! $DebugInlineToggle -and $experimentToExport.function) {
+    $experimentToExport.function += @(
+        'Find-DevItem'
+    )
+    $experimentToExport.alias += @(
+        # 'Dive23'
+    )
+}
+
 function Find-DevItem {
     <#
     .synopsis
@@ -15,7 +24,7 @@ function Find-DevItem {
         I chose 'dig' rather than 'dive', because
         dig implies you're searching for something
     #>
-    [alias('Dig', 'Find-Item')]
+    [alias('Find-Item')]
     param (
         # root path to search
         [parameter(Position = 0)]

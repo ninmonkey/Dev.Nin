@@ -4,7 +4,9 @@ $experimentToExport.function += @(
     'Measure-ObjectCount'
 )
 $experimentToExport.alias += @(
-    'CountIt', 'Count'
+    'CountIt'
+    'Count'
+    'Len'
 )
 function Measure-ObjectCount {
     <#
@@ -13,12 +15,14 @@ function Measure-ObjectCount {
     .description
        This is for cases where you had to use
        ... | Measure-Object | % Count | ...
+    .notes
+        Future: maybe parameter to measure line vs byte vs enumerate
     .example
         🐒> ls . | Count
     .outputs
           [int]
     #>
-    [alias( 'CountIt', 'Count')]
+    [alias( 'CountIt', 'Count', 'Len')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         #Input from the pipeline

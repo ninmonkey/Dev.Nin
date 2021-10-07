@@ -29,7 +29,7 @@
             "cwd": "${file}"
         },
         {
-            "name": "cur (temp test)",
+            "name": "cur 🐜 (temp_cur_test.ps1)",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/private/temp_cur_test.ps1",

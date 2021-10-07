@@ -4,6 +4,7 @@ if (! $DebugInlineToggle ) {
         'Invoke-FdFind'
     )
     $experimentToExport.alias += @(
+        'Dive'
         'Dig'
     )
 }
@@ -25,7 +26,7 @@ function Invoke-FdFind {
     .outputs
 
     #>
-    [alias('Dive', 'FdFind')]
+    [alias('Dive', 'FdFind', 'Dig')]
     [CmdletBinding(PositionalBinding = $true, SupportsShouldProcess
         # NYI: , SupportsPaging
     )]
@@ -52,7 +53,11 @@ function Invoke-FdFind {
         # Extensions to find?
         [Parameter()] # should type be positional?
         [ArgumentCompletions('code-workspace', 'ps1', 'pq', 'md', 'json')]
-        [string[]]$Extension
+        [string[]]$Extension,
+
+        # go to path ?
+        [alias('Fzf')]
+        [parameter()][switch]$Go
 
         # # test cli arguments
         # [parameter()][switch]$WhatIf
@@ -154,7 +159,18 @@ function Invoke-FdFind {
                     $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color magenta
                 ) | Write-Information
 
-                & $binFd @FdArgs
+                if (! $Go) {
+                    & $binFd @FdArgs
+                    return
+                }
+
+                $Selected = & $binFd @FdArgs
+                | Out-Fzf -PromptText 'Dive'
+
+                $Selected | Join-String -op ' '
+                Goto $Selected
+
+
 
                 # Pop-Location -StackName 'fd.find'
 

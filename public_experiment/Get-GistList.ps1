@@ -135,7 +135,7 @@ function Get-GistList {
     }
 }
 
-if (! $DebugInlineToggle ) {
+if ( $DebugInlineToggle ) {
     Get-GistList | Select-Object -First 1
 }
 
