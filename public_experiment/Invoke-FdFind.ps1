@@ -26,86 +26,151 @@ function Invoke-FdFind {
 
     #>
     [alias('Dive', 'FdFind')]
-    [CmdletBinding(PositionalBinding = $false, SupportsShouldProcess
+    [CmdletBinding(PositionalBinding = $true, SupportsShouldProcess
         # NYI: , SupportsPaging
     )]
     param(
-        #
+        # base path
         [Parameter(Position = 0)]
         [string]$Path,
 
+        # file types
         [Parameter()]
         [validateSet('File', 'Directory')]
         [string[]]$Type = @('File', 'Directory'),
 
+        # optional query for fd-find
         [Alias('Text', 'Query')]
         [AllowNull()]
         [Parameter(Position = 1)] # should type be positional?
         [string]$Pattern,
 
+        # depth to search, the default is to recurse
         [Parameter()]
-        [uint]$Depth
+        [uint]$Depth,
+
+        # Extensions to find?
+        [Parameter()] # should type be positional?
+        [ArgumentCompletions('code-workspace', 'ps1', 'pq', 'md', 'json')]
+        [string[]]$Extension
+
+        # # test cli arguments
+        # [parameter()][switch]$WhatIf
 
     )
 
     begin {}
     process {
-        $BinFd = Get-Command 'fd' -CommandType Application -ea stop
-        $Path ??= '.'
+        try {
+            if ($Type.Count -eq 0) {
+                $Type.Count += @('Directory', 'Text')
+            }
+            $BinFd = Get-Command 'fd' -CommandType Application -ea stop
+            $Path ??= '.'
 
-        if (! (Test-Path $Path)) {
-            Write-Warning "Invalid File path '$Path', using '.'"
-            $Path = Get-Item '.'
-            # Write-Error "Invalid File path '$Path'"
-            # return
-            # $PSCmdlet.ThrowTerminatingError(
-            #     <# errorRecord: #> $errorRecord)
+            if (! (Test-Path $Path)) {
+                Write-Warning "Invalid File path '$Path', using '.'"
+                $Path = Get-Item '.'
+                # Write-Error "Invalid File path '$Path'"
+                # return
+                # $PSCmdlet.ThrowTerminatingError(
+                #     <# errorRecord: #> $errorRecord)
 
-            # # future: todo:
-            # [System.Management.Automation.ErrorRecord]::new(
-            #     <# exception: #> [Exception]::new("Invalid File Path '$Path'"),
-            #     <# errorId: #> $errorId,
-            #     <# errorCategory: #> $errorCategory,
-            #     <# targetObject: #> $targetObject)
+                # # future: todo:
+                # [System.Management.Automation.ErrorRecord]::new(
+                #     <# exception: #> [Exception]::new("Invalid File Path '$Path'"),
+                #     <# errorId: #> $errorId,
+                #     <# errorCategory: #> $errorCategory,
+                #     <# targetObject: #> $targetObject)
 
-        }
+            }
 
-        [string[]]$fdArgs = @()
 
-        if ($Depth) {
+            [string[]]$fdArgs = @()
+
+            if ($Depth) {
+                $fdArgs += @(
+                    '-d'
+                    $Depth
+                )
+            }
+            # todo: this was not outputting correct
+            if ($False) {
+                switch ($Type) {
+                    { 'File' } {
+                        $fdArgs += '-t', 'f'
+                        break
+                    }
+                    { 'Directory' } {
+                        $fdArgs += '-t', 'd'
+                        break
+                    }
+                    default { 'bad' }
+                }
+            }
+            if ($Type -contains 'Directory' -and $Type -contains 'File') {
+                # implicit is all
+            }
+            else {
+                if ($Type -contains 'Directory') {
+                    $fdArgs += @('-t', 'd')
+                }
+                if ($Type -contains 'File') {
+                    $fdArgs += @('-t', 'f')
+                }
+            }
+
+            if ($Extension) {
+                Write-Warning 'Extension partiallly implemented'
+            }
+            # $Extension | ForEach-Object {
+            #     $fdArgs += @(
+            #         '-e'
+            #         "'$Extension'"
+            #     )
+            # }
+
+            $fdArgs += @($Pattern)
             $fdArgs += @(
-                '-d'
-                $Depth
+                '--color=always'
             )
-        }
-        # todo: this was not outputting correct
-        switch ($Type) {
-            { 'File' } {
-                $fdArgs += '-t', 'f'
-                break
-            }
-            { 'Directory' } {
-                $fdArgs += '-t', 'd'
-                break
-            }
-            default { 'bad' }
-        }
 
-        if ($PSCmdlet.ShouldProcess("$kwargs", "'FdFind'")) {
-            $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color magenta
-            & $binFd @FdArgs
+            # if ($PSCmdlet.ShouldProcess("$kwargs", "'FdFind'")) {
+            if ($WhatIf) {
+                @(
+                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: ' | write-color green
+                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color green
+                ) | Join-String
+                return
+
+            }
+            else {
+                if ($Path) {
+                    Push-Location $Path -StackName 'fd.find'
+                }
+
+                @(
+                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: '
+                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color magenta
+                ) | Write-Information
+
+                & $binFd @FdArgs
+
+                # Pop-Location -StackName 'fd.find'
+
+            }
         }
-        else {
-            $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color green
+        catch {
+            $PSCmdlet.WriteError($_)
         }
     }
-
     # todo: always wrap CmdletExceptionWrapper: From Sci
+
 
     end {}
 }
 
-if ( $false -and $DebugInlineToggle ) {
+if ($DebugInlineToggle ) {
     # pester tests
     if ($false -and 'for pester parameter unit testing') {
         Invoke-FdFind -t Directory | Should -Be @('.', '-t', 'd')
@@ -115,8 +180,9 @@ if ( $false -and $DebugInlineToggle ) {
 
 
     # code
+    Invoke-FdFind '.' a  -Type Directory, File
+    Invoke-FdFind . -Type Directory a -infa Continue -e code-workspace, ps1
 }
-Invoke-FdFind 'a' -Type Directory, File -WhatIf
 <#
 
 Other types
