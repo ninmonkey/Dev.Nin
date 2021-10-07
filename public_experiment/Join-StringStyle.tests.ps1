@@ -11,7 +11,7 @@ Describe 'Dev.Join-StringStyle' {
     }
     It 'HardCodedSample' {
         $Expected = 0..3 -join ', '
-        0..3 | Dev.Join-StringStyle Csv -ea Break -Debug -wa Ignore
+        0..3 | Dev.Join-StringStyle Csv -ea Break -Debug -wa Continue
         | Should -Be $Expected
     }
 }

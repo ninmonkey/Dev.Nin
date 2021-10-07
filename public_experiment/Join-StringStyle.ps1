@@ -92,7 +92,8 @@ function Dev.Join-StringStyle {
             | Join-String -op 'InvocationName: ' | Write-Debug
 
             $smartAlias = $myInvokeName -eq @(
-                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair'
+                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair', $PSCmdlet.MyInvocation.MyCommand.Name
+
             )
             $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
             $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
@@ -154,7 +155,7 @@ function Dev.Join-StringStyle {
                 }
             }
 
-            $splat_JoinStyle | Format-Table | Write-Debug | Out-String
+            $splat_JoinStyle | Format-Table |  Out-String | Write-Debug
 
         }
         catch {
