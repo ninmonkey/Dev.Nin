@@ -65,7 +65,13 @@ function Dev.Join-StringStyle {
 
         # Unique values when sorting ?
         [Parameter()] #
-        [Switch]$Unique
+        [Switch]$Unique,
+
+        # output results to another stream, used by smart alias
+        # for quick debug commands
+        [Alias('DbgOutput', 'DbgOut')]
+        [Parameter()] #
+        [Switch]$OutputStreamDebug
 
 
 

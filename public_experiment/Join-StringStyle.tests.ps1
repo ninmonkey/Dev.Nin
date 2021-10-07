@@ -10,6 +10,17 @@ Describe 'Dev.Join-StringStyle' {
     It 'works?' {
         $true | Should -Be $True
     }
+    Context 'ToImplement' {
+        It 'Propertynames' {
+            { Get-ChildItem . | Dev.Join-StringStyle NL 'hi' Name } | Should -Not -Throw -Because 'On TodoList: Property name'
+        }
+        It 'Propertynames' {
+            { Get-ChildItem . | Dev.Join-StringStyle NL 'hi' Name | Write-Debug }
+            | Should -Not -Throw -Because 'Samplecase'
+
+            { Get-ChildItem . | Dev.Join-StringStyle NL 'hi' Name -Dbg | Write-Debug } | Should -Not -Throw -Because 'On TodoList: Property name'
+        }
+    }
     Describe 'Styles Implemented' {
 
         It 'No Styles Throw?' {
