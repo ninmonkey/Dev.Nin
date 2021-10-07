@@ -1,3 +1,4 @@
+
 # allows script to be ran alone, or, as module import
 if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
@@ -49,7 +50,7 @@ function Dev.Join-StringStyle {
 
         # if not validateset, use as the actual join?
         [Parameter(Mandatory, Position = 0)] #
-        [ArgumentCompletions('NL', 'Prefix', 'QuotedList', 'Pair')]
+        [ArgumentCompletions('Csv', 'NL', 'Prefix', 'QuotedList', 'Pair')] # todo: map to completions generator
         # [ArgumentCompletions('Csv', 'NL', 'UList', 'QuotedList')]
         [string[]]$JoinStyle = 'Csv',
 
@@ -74,7 +75,6 @@ function Dev.Join-StringStyle {
     )
 
     begin {
-
         try {
             $InputLines = [list[string]]::new()
             [hashtable]$splat_JoinStyle = @{
@@ -86,19 +86,22 @@ function Dev.Join-StringStyle {
                 # DoubleQuote  = $true
                 # SingleQuote  = $true
             }
+            $myInvokeName = $pscmdlet.MyInvocation.InvocationName
 
-            # $Text_splat = $pscmdlet.MyInvocation.BoundParameters #
-            # $smartAlias = $pscmdlet.MyInvocation.InvocationName -eq @('Pair', 'wH1', 'wHr')
-            $pscmdlet.MyInvocation.InvocationName | Join-String -op 'InvocationName: ' | Write-Debug
+            $myInvokeName
+            | Join-String -op 'InvocationName: ' | Write-Debug
 
-            # $smartAlias = $pscmdlet.MyInvocation.InvocationName -eq @('NL', 'Prefix', 'QuotedList', 'Pair')
-            $smartAlias = $pscmdlet.MyInvocation.InvocationName -eq @(
-                'NL', 'Prefix', 'QuotedList', 'Pair'
+            $smartAlias = $myInvokeName -eq @(
+                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair'
             )
             $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
             $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
+            if (! $SmartAlias) {
+                Write-Warning "Alias not implemented: '$myInvokeName'"
+            }
 
             # map aliases to default configs, many directly map to a style
+            # maybe this switch will always be redundant
             switch ($smartAlias) {
                 'Csv' {
                     # $Fg = 'orange'
@@ -116,9 +119,11 @@ function Dev.Join-StringStyle {
                 'QuotedList' {
                     $JoinStyle = 'QuotedList'
                 }
+                { $false -eq $_ } {
+                    # $JoinStyle = 'Csv'
+                }
                 default {
                     $JoinStyle = 'Csv' # or none or NL ?
-                    Write-Error "Smart alias NYI: '$smartAlias'"
                 }
             }
 
@@ -187,6 +192,9 @@ function Dev.Join-StringStyle {
                 $InputLines | Sort-Object @sort_splat | Join-String @splat_JoinStyle
             }
             else {
+                if ($Unique) {
+                    Write-Warning '-Unique /w -Sort:$False does nothing.'
+                }
                 $InputLines | Join-String @splat_JoinStyle
             }
 
@@ -198,5 +206,6 @@ function Dev.Join-StringStyle {
 }
 
 if ($DebugInlineToggle ) {
-    0..5 | Dev.Join
+
+    # 0..5 | Dev.Join-StringStyle CSv
 }
