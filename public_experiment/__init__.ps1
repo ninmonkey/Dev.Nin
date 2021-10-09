@@ -14,21 +14,26 @@
 $ErrorActionPreference = 'stop'
 # & {
 
-# Don't dot tests, don't call self.
-$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
-| Where-Object { $_.Name -ne '__init__.ps1' }
-| Where-Object {
-    # are these safe? or will it alter where-object?
-    # Write-Debug "removing test: '$($_.Name)'"
-    $_.Name -notmatch '\.tests\.ps1$'
-}
-$filteredFiles
-| Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
-| Write-Debug
+try {
+    # Don't dot tests, don't call self.
+    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+    | Where-Object { $_.Name -ne '__init__.ps1' }
+    | Where-Object {
+        # are these safe? or will it alter where-object?
+        # Write-Debug "removing test: '$($_.Name)'"
+        $_.Name -notmatch '\.tests\.ps1$'
+    }
+    $filteredFiles
+    | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+    | Write-Debug
 
-$sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.Name } -Descending
-$sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
-| Write-Debug
+    $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+    $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
+    | Write-Debug
+}
+catch {
+    $PSCmdlet.ThrowTerminatingError( $_ )
+}
 
 $sortedFiles
 | ForEach-Object {
@@ -51,6 +56,8 @@ $sortedFiles
         # $PSCmdlet.WriteError( $_ )
     }
 }
+
+
 
 $experimentToExport | Join-String -op 'ExperimentToExport' | Write-Debug
 
