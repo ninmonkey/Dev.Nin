@@ -57,37 +57,25 @@ function Dev-Get-UnicodeDistinctRune {
     }
 }
 
-function Get-NamedEmoji {
-    <#
-    .synopsis
-    $sb = [System.Text.StringBuilder]::new()
+# function Get-NamedEmoji {
+#     <#
+#     .synopsis
+#     $sb = [System.Text.StringBuilder]::new()
 
-    #>
-    Write-Error 'NotImplemented()'
-}
+#     #>
+#     Write-Error 'NotImplemented()'
+# }
 
-function _Get-NinCommandSingle {
-    <#
-    .synopsis
-        when Get-NinCommand -Module $scalar
+# function _Get-NinCommandSingle {
+#     <#
+#     .synopsis
+#         when Get-NinCommand -Module $scalar
 
-    then group by verb
-    #>
+#     then group by verb
+#     #>
 
-    Get-Command -Module Ninmonkey.Console | Sort-Object Name, Verb
-}
-
-function _Get-NinCommandMultiple {
-    <#
-    .synopsis
-        when Get-NinCommand -Module 'Dev.Nin', 'Ninmonkey.Console'
-
-    then group by module, maybe manually call _Get-NinCommandSingle
-        otherwise a custom formatter?
-    #>
-
-    Get-Command -Module Ninmonkey.Console | Sort-Object Name, Verb
-}
+#     Get-Command -Module Ninmonkey.Console | Sort-Object Name, Verb
+# }
 
 
 function Get-Rune {

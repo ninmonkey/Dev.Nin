@@ -7,15 +7,18 @@ function Get-DevParameterInfo {
     .example
         # one command
         PS> Get-DevParameterInfo 'Set-PSReadLineOption'
+
+        todo:
+
     .example
         # or many, as a table
         PS> Get-DevParameterInfo 'gi', 'ls' | Ft
     .link
-        Format-DevParameterInfo
-    .link
         ClassExplorer\Get-Parameter
+        DevTool💻 Conversion📏 Style🎨 Format🎨 ArgCompleter🧙‍♂️ NativeApp💻 ExamplesRef📚 TextProcessing📚 Regex🔍 Prompt💻 Cli_Interactive🖐 Experimental🧪 UnderPublic🕵️‍♀️ My🐒 Validation🕵
+
     #>
-    [alias('ParamInfo')]
+    [alias('ParamInfo', 'DevTool💻-Params-GetParameterInfo')]
     param (
         # Text CommandName
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
@@ -58,10 +61,10 @@ function Get-DevParameterInfo {
                 # refactor using formattypes instead of '_Name'
                 $hash_parameter = @{
                     Command           = $cur_command
-                    CommandName       = $cur_command.Name
+                    CommandName       = $cur_command.Name # more to formatter
                     Parameter         = $cur_Key
                     ParameterType     = $cur_Value.ParameterType
-                    ParameterTypeName = $cur_Value.ParameterType.Name
+                    ParameterTypeName = $cur_Value.ParameterType.Name  # todo:Format
                 } | Sort-Hashtable -SortBy Key
 
                 [pscustomobject]$hash_parameter
@@ -84,5 +87,3 @@ function Get-DevParameterInfo {
     }
 
 }
-
-

@@ -1,3 +1,10 @@
+Export-ModuleMember -Alias 'Format🎨'
+
+$ModuleMeta = @{
+    Tags = 'Ancient', 'ToReWrite'
+} | Out-Null
+
+
 function Format-DevParameterInfo {
     <#
     .synopsis
@@ -10,11 +17,15 @@ function Format-DevParameterInfo {
         PS> Format-DevParameterInfo 'Invoke-RestMethod'
     .example
         PS> Format-DevParameterInfo 'Get-Content', 'Get-Clipboard', 'Set-Location', 'ls'
+    .notes
+        tags: to-Rewrite
     .link
         Get-DevParameterInfo
     .link
         ClassExplorer\Get-Parameter
     #>
+    [Alias('Format🎨.Format-DevParameterInfo')]
+    [cmdletbinding()]
     param(
         # Text CommandName
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]

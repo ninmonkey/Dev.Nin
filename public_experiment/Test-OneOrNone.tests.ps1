@@ -1,23 +1,47 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
 $SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')
+$Error.Clear()
 
-# Describe "$__PesterFunctionName" {
 Describe 'Test-OneOrNone' {
     BeforeAll {
-        # . $__PesterFunctionName # dotsource
         Import-Module 'dev.nin' -Force
-        $ErrorActionPreference = 'Stop'
-        $ErrorActionPreference = 'break'
+        $Error.Clear()
+        $ErrorActionPreference = 'stop'
     }
     It 'Runs without error' {
         { 'a' | Test-OneOrNone } | Should -Not -Throw
     }
-    Describe 'ParameterBinding' {
-        It 'FromPipeline' {
-            'a', 'b' | Test-OneOrNone -ea ignore
-            | Should -Be $null
+    Describe 'Mode: default' {
+        $ErrorActionPreference = 'break'
+        'a', 'b' | Test-OneOrNone | Should -Be $false
+        'a' | Test-OneOrNone | Should -Be $true
+        It '$nulls' {
 
-            { 'a', 'b' | Test-OneOrNone -ea stop }
+            $null | Test-OneOrNone | Should -Be $false
+            $null | Test-OneOrNone -DisallowNull | Should -Be $false
+
+            , @($null) | Test-OneOrNone | Should -Be $true
+        }
+    }
+    Describe 'Mode: -PassThru/AsFilter' {
+        # { 'a', 'e' | Test-OneOrNone -PassThru }
+        # | SHould -be $null
+
+        # 'a' | Test-OneOrNone -PassThru
+        'a', 'b' | Test-OneOrNone | Should -Be $false
+        'a' | Test-OneOrNone | Should -Be $true
+
+    }
+    Describe 'ParameterBinding' {
+        BeforeEach {
+            $error.Clear()
+        }
+        It 'FromPipeline' {
+            $error.clear()
+            'a', 'b' | Test-OneOrNone
+            | Should -Be $false
+
+            { 'a', 'b' | Test-OneOrNone -PassThru -ea break }
             | Should -Throw
         }
         It 'FromPipeline -Assert' {

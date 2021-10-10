@@ -1,3 +1,5 @@
+using namespace System.Collections.Generic
+
 $experimentToExport.function += @(
     'iProp'
 )
@@ -77,8 +79,8 @@ function iProp {
         [object[]]$InputObject,
 
         # Only include matching names
-        [Alias('RegexProperty')]
-        [Parameter()][string[]]$IncludeProperty,
+        [Alias('IncludeProperty')]
+        [Parameter()][string[]]$PropertyNamePattern,
 
         # Limit max inputs
         [Alias('MaxInputs')]
@@ -99,6 +101,10 @@ function iProp {
         [Alias('MaxWidth', 'Width')]
         [Parameter()][uint]$MaxPropertyLength,
 
+        #Exclude based on data type
+        [parameter()]
+        [string[]]$ExcludeType,
+
         # sort by
         [Parameter()]
         [ArgumentCompletionsAttribute('TypeName', 'PropertyName')]
@@ -115,7 +121,7 @@ function iProp {
     - [ ] 'prop.ValueStr' should 'left align'
     - [ ] 'todo: _formatTypeHeaderSummary' | New-Text -fg yellow | ForEach-Object tostring | Write-Information
 '@
-        $InputList = [list[object]]::new()
+        $InputList = [List[object]]::new()
         [hashtable]$SortByProp = @{
             'TypeName'     = @('TypeNameStr', 'Name')
             'PropertyName' = @('Name', 'TypeNameStr')
@@ -177,7 +183,9 @@ function iProp {
                     }
                 }
 
-                if ($FilterPropsByInclusion) {
+                if ($PropertyNamePattern) {
+                    'prop pattern NYI' | Write-Warning
+
 
                 }
                 $Type = ($curProp.value)?.GetType()
@@ -204,6 +212,28 @@ function iProp {
             }
             # $Ij.psobject.properties | ForEach-Object { "`n"; ($_.value)?.GetType() | Format-TypeName -Brackets }
         } | Sort-Object -Property $SortByProp.$SortBy
+        | Where-Object {
+            $curProp = $_
+            # step through debug filter logic
+            $curProp.Name | Dev.Join-StringStyle Prefix 'filterByTypeName: ' | Write-Debug
+            $curProp.Name | Prefix 'filterByTypeName: ' | Write-Debug
+
+
+            if ($ExcludeType) {
+                $ExcludeType | ForEach-Object {
+                    $curExcludePattern = $_ # future: this could be a type instance too?
+                    if ($curProp.Type.FullName -match $curExcludePattern) {
+                        $false; return
+                    }
+                    if ($curProp.TypeNameStr -match $curExcludePattern) {
+                        $false; return
+                    }
+
+                    $true
+                }
+            }
+        }
+
 
 
     }

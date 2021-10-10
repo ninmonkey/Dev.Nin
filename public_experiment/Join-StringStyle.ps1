@@ -82,7 +82,7 @@ function Dev.Join-StringStyle {
 
     begin {
         try {
-            $InputLines = [list[string]]::new()
+            $InputLines = [System.Collections.Generic.List[string]]::new()
             [hashtable]$splat_JoinStyle = @{
                 # Separator    = ', '
                 # OutputPrefix = 'x'

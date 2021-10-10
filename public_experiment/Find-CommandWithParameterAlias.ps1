@@ -13,7 +13,11 @@ function Find-CommandWithParameterAlias {
     .notes
         .
     .example
-        PS> Get-NinCommand | Get-ParameterInfo | ? Aliases | Ft
+        PS> Get-NinCommandProxy | Get-ParameterInfo | ? Aliases | Ft
+        PS> gcm * -Module (_enumerateMyModule)
+            |  DevTool💻-Params-FindCommandWithParameterAlias | ft -AutoSize
+
+
     .example
         PS> gcm -Module (_enumerateMyModule) | Find-CommandWithParameterAlias | ft -AutoSize
     #>
