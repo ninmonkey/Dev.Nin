@@ -26,6 +26,20 @@
 
         # find '-u' in 'bat'
         PS> man bat u
+
+    .example
+        🐒> nMan -CommandName code.cmd -FlagName r, g, d
+        # (with highlights)
+
+            Options
+            -d --diff <file> <file>           Compare two files with each other.
+            -a --add <folder>                 Add folder(s) to the last active window.
+            -g --goto <file:line[:character]> Open a file at the path on the specified
+                                                line and character position.
+            -n --new-window                   Force to open a new window.
+            -r --reuse-window                 Force to open a file or folder in an
+                                                already opened window.
+            -w --wait                         Wait for the files to be closed before
     .notes
         todo:
 
@@ -38,6 +52,7 @@
         # app name, hard coded for test
         [Parameter(Mandatory, Position = 0)]
         [Alias('Name')]
+        # todo: replace with dynamic completer?
         # [ValidateSet()]
         [ArgumentCompleter( {
                 param($Command, $Parameter, $WordToComplete, $CommandAst, $FakeBoundParams)
@@ -92,8 +107,8 @@
     }
     $Paths = @{
         'ModulePath' = (Get-Module Dev.Nin | ForEach-Object Path | Split-Path)
-        'config'     = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\Documents\2021\Powershell\My_Github\Dev.Nin\public\man\manpage.json"
-        'manPage'    = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\Documents\2021\Powershell\My_Github\Dev.Nin\public\man"
+        'config'     = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public\man\manpage.json"
+        'manPage'    = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public\man"
         # 'manPage'    = Get-Item -ea SilentlyContinue "$Env:USERPROFILE\2021\Powershell\My_Github\Dev.Nin\public\man\"
     }
 

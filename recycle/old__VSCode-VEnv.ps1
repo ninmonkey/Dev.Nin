@@ -1,9 +1,12 @@
-$experimentToExport.function += @(
-    # '_VSCode-VEnv'
-)
-$experimentToExport.alias += @(
-    # 'VEnv.VSCode'
-)
+
+throw 'ShouldNeverReachException'
+
+# $experimentToExport.function += @(
+#     # '_VSCode-VEnv'
+# )
+# $experimentToExport.alias += @(
+#     # 'VEnv.VSCode'
+# )
 
 function _old_VSCode-VEnv_Minimal {
     <#

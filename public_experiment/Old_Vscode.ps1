@@ -4,12 +4,12 @@ Write-Warning "run --->>>> '$PSCommandPath'"
 | Write-Warning
 if ($experimentToExport) {
     $experimentToExport.function += @(
-        'Invoke-VSCodeVenv'
+        'Old.Invoke-VSCodeVenv'
     )
     $experimentToExport.alias += @(
-        'Code-vEnv'
-        'Out-CodeVEnv'
-        'Out-VSCodeEnv'
+        'Old.Code-vEnv'
+        # 'Out-CodeVEnv'
+        # 'Out-VSCodeEnv'
         # 'Invoke-VSCode'
     )
 }
@@ -17,7 +17,7 @@ if ($experimentToExport) {
 # $OneDrive_VSCode
 # & $OneDrive_VSCode @('-r', '-g', 'telemetryCache.otc')
 # & $OneDrive_VSCode @('-r', '-g', 'telemetryCache.otc')
-function Invoke-VSCodeVenv {
+function Old.Invoke-VSCodeVenv {
     <#
     .synopsis
         quick hack to work around one drive bug
@@ -31,7 +31,8 @@ function Invoke-VSCodeVenv {
             vscode_args: '-r' '-g' 'C:\Users\cppmo_000\SkyDrive\Documents\PowerShell\Microsoft.VSCode_profile.ps1'
             J:\vscode_port\VSCode-win32-x64-1.57.1\Code.exe
     #>
-    [Alias('Code-vEnv', 'Out-CodeVEnv', 'Out-VSCodeEnv')]
+    # [Alias('Code-vEnv', 'Out-CodeVEnv', 'Out-VSCodeEnv')]
+    [Alias('Old.Code-vEnv', 'Old.Out-CodeVEnv', 'Old.Out-VSCodeEnv')]
     [cmdletbinding(PositionalBinding = $false, DefaultParameterSetName = 'OpenFile')]
     param(
         # which venv
