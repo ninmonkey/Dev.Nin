@@ -14,6 +14,33 @@ Import-Module dev.nin -Force
 hr
 
 Dev.New-Sketch PowerShell Style🎨, Cli_Interactive🖐 fast_trace_route -WhatIf
+hr
+'last' | write-color (find-color green | Get-Random -Count 1 )
+$NinProfile_Dotfiles | Format-Dict
+hr
+Format-Dict -InputObject $NinProfile_Dotfiles
+hr
+'options' | write-color orange
+
+$Options = @{
+    Config = @{
+        AlignKeyValuePairs   = $false
+        FormatControlChar    = $true
+        TruncateLongChildren = $True
+    }
+}
+Format-DIct $Options.Config
+
+Format-Dict -InputObject $NinProfile_Dotfiles -Options $Options
+
+hr
+write-color yellow -t 'Show nested details?'
+write-color orange -t '1) $Options'
+Format-Dict $Options
+
+write-color orange -t '2) $Options.Config'
+Format-Dict $Options.Config
+hr
 
 
 return

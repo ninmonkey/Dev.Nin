@@ -34,7 +34,10 @@ if ($false) {
         | Join-String -op "`n`n### " -os " ###`n"
     }
 }
-
+$__colorHistory ??= @()
+function Dev.Get-ColorHistory {
+    $__colorHistory
+}
 function Write-TextColor {
     <#
     .synopsis
@@ -69,10 +72,39 @@ function Write-TextColor {
         [Alias('InputObject')]
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string]$Text
+        [string]$Text,
+
+        # When colors can be close
+        [Parameter()]
+        [switch]$LooseColorName
     )
 
     process {
+        # Instead of crashing on close names, attempt to find something close
+        # It uses the first match, so it may be weird. like 're' returns 'azure' instead of 're'
+        if ($LooseColorName) {
+            $ForegroundColor
+            try {
+                $closeColor = [rgbcolor]$ForegroundColor
+            }
+            catch {
+                $closeColor = Find-color $ForegroundColor | Select-Object -First 1
+            }
+            $foregroundColor = $closeColor
+            $BackgroundColor
+            try {
+                $closeColor = [rgbcolor]$BackgroundColor
+            }
+            catch {
+                $closeColor = Find-color $BackgroundColor | Select-Object -First 1
+            }
+            $BackgroundColor = $closeColor
+        }
+        $__colorHistory += @(
+            $ForegroundColor
+            ($null -ne $BackgroundColor ? $BackgroundColor : $Null )
+        )
+
         New-Text -Object $Text -fg $ForegroundColor -bg $BackgroundColor | ForEach-Object ToString
     }
 }
