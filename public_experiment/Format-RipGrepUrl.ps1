@@ -22,7 +22,7 @@ function Format-RipGrepResult {
         rg -c -tps -i 'ripgrep' -- 2021 | ForEach-Object { $_ -split ':' | Select-Object -SkipLast 1 | Join-String }
 
     #>
-    [cmdletbinding()]
+    [cmdletbinding(PositionalBinding = $false)]
     [alias('Out-ConRipGrepResult')]
     param (
         #
@@ -40,7 +40,7 @@ function Format-RipGrepResult {
     )
     begin {}
     process {
-        $ResultList = $InputObject | ForEach-Object {
+        $ResultList = $InputObject | ForEach-Object -ea continue {
             [hashtable]$Result = @{}
             $Parts = $_ -split ':'
 
