@@ -17,7 +17,10 @@ function Test-IsNotBlank {
     .outputs
         boolean
     #>
-    [Alias('!Blank', 'TextProcessing📚.IsNotBlank', 'Validation🕵.IsNotBlank')]
+    [Alias('!Blank', 'TextProcessing📚.IsNotBlank',
+        'Validation🕵.IsNotBlank',
+        'Assert.IsNotBlank'
+    )]
     [outputtype([bool])]
     [cmdletbinding()]
     param(
