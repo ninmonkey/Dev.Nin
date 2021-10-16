@@ -71,7 +71,9 @@ function Write-TextColor {
 
         [Alias('InputObject')]
         [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
+        [AllowEmptyString()]
+        [ValidateNotNull()]
+        # [ValidateNotNullOrEmpty()]
         [string]$Text,
 
         # When colors can be close
@@ -80,6 +82,9 @@ function Write-TextColor {
     )
 
     process {
+        # if ($null -eq $Text) {
+        #     $text ??= "`u{2400}"
+        # }
         # Instead of crashing on close names, attempt to find something close
         # It uses the first match, so it may be weird. like 're' returns 'azure' instead of 're'
         if ($LooseColorName) {
