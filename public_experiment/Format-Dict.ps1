@@ -41,18 +41,24 @@ function Format-Dict {
 
 
         $Config = @{
-            AlignKeyValuePairs   = $true
-            FormatControlChar    = $true
-            TruncateLongChildren = $True
-            ColorChildType       = $false # not finished
+            AlignKeyValuePairs    = $true
+            FormatControlChar     = $true
+            TruncateLongChildren  = $True
+            ColorChildType        = $false # not finished
+            BackgroundColorValues = $true
+            PrefixLabel           = 'Dict'
         }
         $Config = Join-Hashtable $Config ($Options.Config ?? @{})
+        $Config.JoinOuter = @{
+            OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
+        }
     }
     process {
         [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
         $joinOuter_Splat = @{
             Separator    = "`n"
             OutputPrefix = "`nDict = {`n"
+            # OutputPrefix = $Config.JoinOuter.OutputPrefix
             OutputSuffix = "`n}`n"
         }
 
@@ -74,7 +80,13 @@ function Format-Dict {
                     $_.Value | Format-ControlChar
                 }
                 else {
-                    $_.Value
+                    if (! $Config.BackgroundColorValues ) {
+                        $_.Value
+                    }
+                    else {
+                        $_.Value | write-color black -bg darkpink3
+                        # $_.Value | New-Text -bg 'lightpink'
+                    }
                 }
                 # if($Config.TruncateLongChildren) {
 

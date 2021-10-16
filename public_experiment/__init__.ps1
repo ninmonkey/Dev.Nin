@@ -21,7 +21,8 @@ try {
     | Where-Object {
         # are these safe? or will it alter where-object?
         # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$'
+        $_.Name -notmatch '\.tests\.ps1$' -and
+        $_.Name -match '\.ps1$'
     }
     $filteredFiles
     | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
