@@ -10,6 +10,61 @@ if ($experimentToExport) {
         'Code-vEnv'
     )
 }
+
+function __format_HighlightVenvPath {
+    <#
+    .synopsis
+        colorizes breadcrumb to emphasize version number
+    .example
+        'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
+        | __format_HighlightVenvPath
+        | Format-ControlChar
+        | Should -be 'J:\vscode_port\␛[96mVSCode-win32-x64-1.62.0-insider\␛[39mbin\code-insiders.cmd'
+
+
+    #>
+    param(
+        [Alias('Path')]
+        [parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [string]$InputObject
+    )
+    begin {
+        $Colors = @{
+            Bold = 'cyan'
+            Dim  = 'gray40'
+        }
+        $Regex = @{
+            NumberCrumb          = @'
+(?x)
+(?<Crumb>
+   [^\\]+
+   \d+
+   # [^\\]+
+   .*?
+)
+(?:\\)
+'@
+            NumberCrumbFullLines = @'
+(?x)
+(?<Prefix
+.*)
+(?<Crumb>
+   [^\\]+
+   \d+
+   # [^\\]+
+   .*?
+)
+(?:\\)
+(?<Suffix>.*)
+'@
+
+        }
+    }
+    process {
+        $InputObject -replace $Regex.NumberCrumb, { $_ | Write-Color  -fg $Colors.Bold | Join-String }
+
+    }
+}
 function __findVSCodeBinaryPath {
     <#
     .synopsis
@@ -159,18 +214,22 @@ function Invoke-VSCodeVenv {
                 #>
 
         # [Alias('Path', 'PSPath', 'File')]
+        [Alias('Path')] #, 'PSPath')]
         [Parameter(
-            ParameterSetName = 'OpenItem',
+            # ParameterSetName = 'OpenItem',
             Position = 0,
-            ValueFromPipelineByPropertyName = 'PSPath',
+            ValueFromPipelineByPropertyName,
             ValueFromPipeline
         )]
         [string]$TargetPath = '.',
 
+        [Parameter()]
+        [string]$DataDir = 'J:\vscode_datadir\games',
+
         # which mode, reuse/new
         [alias('Mode')]
         [parameter(
-            ParameterSetName = 'OpenItem',
+            # ParameterSetName = 'OpenItem',
             position = 1
         )]
         [validateSet('ReuseWindow', 'NewWindow')]
@@ -178,14 +237,17 @@ function Invoke-VSCodeVenv {
 
         # Open the app to resume sessions
         [Alias('Start', 'Restart')]
-        [Parameter()][switch]$ResumeSession,
+        [Parameter()]
+        [switch]$ResumeSession,
 
         # info
         # --version and extension info
-        [Parameter()][switch]$Version,
+        [Parameter(ParameterSetName = 'OnlyHelpInfo')]
+        [switch]$Version,
 
         # --help
-        [Parameter()][switch]$Help,
+        [Parameter(ParameterSetName = 'OnlyHelpInfo')]
+        [switch]$Help,
 
         [Alias('ExtraArgs')]
         [Parameter(ValueFromRemainingArguments)]
@@ -201,16 +263,41 @@ function Invoke-VSCodeVenv {
         # [ParameterType]
         # $ParameterName]
     )
-    begin {}
+    begin {
+
+    }
     process {
-        $BinCode = Get-Item -ea continue 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
-        $DataDir = Get-Item -ea continue 'J:\vscode_datadir\games'
-        $target = Get-Item -ea continue $TargetPath
+        $metaInfo = [ordered]@{}
+        $BinCode = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
+        $DataDir = Get-Item -ea stop $DataDir
+        $target = Get-Item -ea stop $TargetPath
         if (Test-IsDirectory $target) {
             'Open a directory?' | write-color 'Magenta'
         }
         'latest manual invoke' | write-color 'blue'
         [string[]]$codeArgs = @()
+
+        # Exit Early functions
+        if ($Version) {
+            & $CodeBin @('--list-extensions')
+            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
+
+            & $CodeBin @('--list-extensions', '--show-versions')
+            | ForEach-Object { $_ -replace '@', ': ' }
+            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
+
+            & $CodeBin @('--version')
+            | Join-String -sep ', ' -op (write-color orange -t 'Version: ')
+
+            return
+        }
+        if ($Help) {
+            & $CodeBin @('--help')
+            return
+        }
+
+
+
         if ($DataDir) {
             $codeArgs += @(
                 '--user-data-dir'
@@ -229,6 +316,13 @@ function Invoke-VSCodeVenv {
                 $CodeArgs += @('--reuse-window')
             }
         }
+        if ($ResumeSession) {
+            if ($PSCmdlet.ShouldProcess("($BinCode, $DataDIr)", 'ResumeSession')) {
+                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden -Verbose -WhatIf
+                return
+            }
+        }
+        ## now more
 
         if (Test-IsDirectory $target) {
             $CodeArgs += @('--add', $Target)
@@ -240,17 +334,35 @@ function Invoke-VSCodeVenv {
 
         if (! [string]::IsNullOrWhiteSpace($RemainingArgs )) {
             $CodeArgs += $RemainingArgs
+        }
 
+        if ($True) {
+            # any non-finished invokes
+            $strTarget = $target
+            $StrOperation = $BinCode, $DataDIr -join ', '
+
+            if (! $Env:NoColor) {
+
+                $StrTarget = $Target | Join-String -sep "`n" -op "`n" -os "`n"
+                $StrOperation = "`nCode = $BinCode", "`nDataDir = $DataDIr"
+                | Join-String -sep "`n" -op "`n" -os "`n"
+                | write-color magenta
+            }
+
+
+            if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
+                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden -Verbose -WhatIf:$false
+            }
         }
 
         if ($ResumeSession) {
-            write-color -t 'ResumeSession' 'green'
+            write-color -t 'ResumeSession' 'green' | Write-Information
         }
         else {
-            write-color -t 'LoadItem: ' 'green'
-            write-color -t $TargetPath 'yellow'
+            write-color -t 'LoadItem: ' 'orange' | Write-Information
+            write-color -t $TargetPath 'yellow' | Write-Information
         }
-        $metaInfo = [ordered]@{
+        $metaInfo += @{
             BinCode       = $BinCode
             DataDir       = $DataDir
             Target        = $Target
@@ -263,49 +375,19 @@ function Invoke-VSCodeVenv {
             PSScriptRoot  = $PSScriptRoot
         }
 
-        # Exit Early functions
-        if ($Version) {
-            & $CodeBin @('--list-extensions')
-            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
 
-            & $CodeBin @('--list-extensions', '--show-versions')
-            | ForEach-Object { $_ -replace '@', ': ' }
-            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
-
-            & $CodeBin @('--version')
-            | Join-String -sep ', ' -op (write-color orange -t 'Version: ')
-            return
-        }
-        if ($Help) {
-            & $CodeBin @('--help')
-            return
-        }
-
-        if ($ResumeSession) {
-            if ($PSCmdlet.ShouldProcess("($BinCode, $DataDIr)", 'ResumeSession')) {
-                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden -Verbose -WhatIf
-                return
-            }
-        }
-        $target
-        hr
-        $Operation = 'open file, re-use window'
-        $DataDir | write-color blue
-        hr
-        $CodeBin.FullName | write-color 'yellow'
-        $codeArgs | Join-String -sep ' ' -op ' $codeArgs: '
+        # $target
+        # hr
+        # $Operation = 'open file, re-use window'
+        # $DataDir | write-color blue
+        # hr
+        # $CodeBin.FullName | write-color 'yellow'
+        # $codeArgs | Join-String -sep ' ' -op ' $codeArgs: '
 
         $metaInfo += @{
             Operation     = $operation
             FinalCodeArgs = $codeArgs
         }
-
-
-        if ($PSCmdlet.ShouldProcess("($BinCode, $DataDir)", "$Target")) {
-
-            Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden -Verbose -WhatIf
-        }
-
         return
     }
 
@@ -325,6 +407,6 @@ function Invoke-VSCodeVenv {
     - [ ] --verbose
 
 '
-        Format-Dict $MetaInf | Write-Information
+        Format-Dict $metaInfo | Write-Information
     }
 }
