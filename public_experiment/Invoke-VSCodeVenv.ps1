@@ -235,7 +235,7 @@ function Invoke-VSCodeVenv {
             position = 1
         )]
         [validateSet('ReuseWindow', 'NewWindow')]
-        [string]$WindowMode,
+        [string]$WindowMode = 'ReuseWindow',
 
         # Open the app to resume sessions
         [Alias('Start', 'Restart')]
@@ -347,11 +347,17 @@ function Invoke-VSCodeVenv {
             ## now more
 
             if (Test-IsDirectory $target) {
-                $CodeArgs += @('--add', $Target)
+                $CodeArgs += @(
+                    '--add'
+                    (Get-Item $Target | Join-String -DoubleQuote)
+                )
             }
             else {
                 # always use goto, even without line numbers. it's more resistant to errors
-                $CodeArgs += @('--goto', $Target)
+                $CodeArgs += @(
+                    '--goto'
+                    (Get-Item $Target | Join-String -DoubleQuote)
+                )
             }
 
             if (! [string]::IsNullOrWhiteSpace($RemainingArgs )) {
@@ -360,7 +366,7 @@ function Invoke-VSCodeVenv {
 
             if ($True) {
                 # any non-finished invokes
-                $strTarget = $target
+                $strTarget = $target | Join-String -sep ' ' -DoubleQuote
                 $StrOperation = $CodeBin, $DataDIr -join ', '
 
                 if (! $Env:NoColor) {
@@ -399,7 +405,7 @@ function Invoke-VSCodeVenv {
             }
             else {
                 write-color -t 'LoadItem: ' 'orange' | Write-Information
-                write-color -t $TargetPath 'yellow' | Write-Information
+                write-color -t $Target 'yellow' | Write-Information
             }
             $metaInfo += @{
                 BinCode       = $CodeBin
