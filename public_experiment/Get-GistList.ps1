@@ -2,10 +2,14 @@ if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
         'Get-GistList'
         'Get-GistFiles'
+        # .
+        'Get-GitCommitHash'
     )
     $experimentToExport.alias += @(
         'GitTool💻-Gist-List'
         'GitTool💻-Gist-Files'
+        # .
+        'GitTool💻-Get-CommitHash'
     )
 
     $script:__devGist_cache = $null # __doc__: replace with MiniModules\LazyCache
@@ -16,6 +20,34 @@ else {
     $script:__devGist_Files_cache ??= @{}
 }
 
+function Get-GitCommitHash {
+    <#
+    .synopsis
+        List files for a given Gist
+    .description
+        caches responses per-hash, unless reset
+        .
+    .notes
+        .
+    .example
+        PS> Get-GitCommitHash
+        ed747661b18bd9a4d4befb15b0e83ea65a61e825
+
+    #>
+    [ALias('GitTool💻-Get-GitCommitHash')]
+    # [cmdletbinding(fromp PositionalBinding = $false, ValueFromPipeline)]
+    [cmdletbinding(PositionalBinding = $false)]
+    param ()
+
+    process {
+        Invoke-NativeCommand 'git' -args @(
+            'log'
+            '--pretty=format:"%H"'
+            '-n'
+            '1'
+        ) | Out-String
+    }
+}
 function Get-GistFiles {
     <#
     .synopsis

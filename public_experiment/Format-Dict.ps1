@@ -9,6 +9,33 @@ $experimentToExport.alias += @(
     # 'New-Sketch'
 )
 # }
+
+function _FormatDictItem_Filepath {
+    <#
+    .synopsis
+        Format-Dict Extension: RelativeFilepaths
+    #>
+    param([string]$Path)
+    process {
+        if (Test-Path $Path) {
+            Format-RelativePath -InputObject $Path
+        }
+        else {
+            $Path
+        }
+    }
+}
+
+$__RegisteredFormatDictExtension = @(
+    @{
+        TypeName = 'System.IO.DirectoryInfo'
+        Function = '_FormatDictItem_Filepath'
+    }
+    @{
+        TypeName = 'System.IO.FileInfo '
+        Function = '_FormatDictItem_Filepath'
+    }
+)
 function Format-Dict {
     <#
     .synopsis

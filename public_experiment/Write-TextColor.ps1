@@ -110,6 +110,7 @@ function Write-TextColor {
             ($null -ne $BackgroundColor ? $BackgroundColor : $Null )
         )
 
-        New-Text -Object $Text -fg $ForegroundColor -bg $BackgroundColor | ForEach-Object ToString
+        New-Text -Object $Text -fg $ForegroundColor -bg $BackgroundColor #-LeaveColor:$false
+        | ForEach-Object ToString
     }
 }

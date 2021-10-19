@@ -24,6 +24,7 @@ function Select-NinString {
 
         #  basic filters
         [parameter(Mandatory, Position = 0)]
+        # [validatescript({ $false })]
         [string]$Pattern,
         # [string[]]$Pairs
 
@@ -51,7 +52,8 @@ function Select-NinStringSingleColor {
     .notes
         - [ ] future: declare using pairs
     #>
-    [Alias('Hi', 'Hi🎨', 'Highlight')]
+
+    [Alias('Highlight_Single')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # pipeline console text

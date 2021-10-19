@@ -369,7 +369,16 @@ function Invoke-VSCodeVenv {
 
                     # bold version number
                     $boldBinCode = __format_HighlightVenvPath $CodeBin
-                    "`nCode = $BoldBinCode", "DataDir = $DataDIr"
+                    @(
+                        "`nCode = "
+                        $BoldBinCode
+                        "`nDataDir = "
+                        $DataDir | write-color cyan
+                        "`n"
+                        $strTarget | Format-RelativePath -BasePath .
+                        "`n"
+                    ) | Join-String
+
                     # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
                     # | Join-String -sep "`n" -op "`n" -os "`n"
 
