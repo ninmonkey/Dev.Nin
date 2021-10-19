@@ -107,7 +107,7 @@ function iProp {
 
         # sort by
         [Parameter()]
-        [ArgumentCompletionsAttribute('TypeName', 'PropertyName')]
+        [ArgumentCompletions('TypeName', 'PropertyName')]
         [string]$SortBy
 
 
@@ -215,10 +215,11 @@ function iProp {
         | Where-Object {
             $curProp = $_
             # step through debug filter logic
-            $curProp.Name | Dev.Join-StringStyle Prefix 'filterByTypeName: ' | Write-Debug
+            $curProp.Name | Join-StringStyle Prefix 'filterByTypeName: ' | Write-Debug
             $curProp.Name | Prefix 'filterByTypeName: ' | Write-Debug
 
 
+            # todo: validate this works
             if ($ExcludeType) {
                 $ExcludeType | ForEach-Object {
                     $curExcludePattern = $_ # future: this could be a type instance too?
