@@ -47,7 +47,7 @@ function Match-String {
         🐒> ls ~ -Force
         | ?str 'vscode'
 
-            Directory:C:\Users\cppmo_000
+            Directory:C:\Users\<user>
 
             Mode        LastWriteTime Length Name
             ----        ------------- ------ ----
@@ -59,7 +59,7 @@ function Match-String {
         🐒> ls $Env:APPDATA
         | ?Str code Name
 
-            Directory:C:\Users\cppmo_000\AppData\Roaming
+            Directory:C:\Users\<user>\AppData\Roaming
 
 
             Mode        LastWriteTime Length Name
@@ -75,7 +75,7 @@ function Match-String {
 
         🐒> ls $Env:APPDATA | ?Str code.* Name -FullMatch
 
-            Directory:C:\Users\cppmo_000\AppData\Roaming
+            Directory:C:\Users\<user>\AppData\Roaming
 
 
             Mode        LastWriteTime Length Name
@@ -85,17 +85,45 @@ function Match-String {
     .example
         # Now only find fullmatches
 
-            C: ▸ Users ▸ cppmo_000 ▸ Documents ▸ 2021 ▸ Powershell
             🐒> ls $Env:APPDATA | ?Str code Name -FullMatch
 
-                    Directory:C:\Users\cppmo_000\AppData\Roaming
+                    Directory:C:\Users\<user>\AppData\Roaming
 
 
             Mode        LastWriteTime Length Name
             ----        ------------- ------ ----
             📁    8/30/2021   2:58 PM        Code
+    .example
+        # EnvIronment variable
+        🐒> ls env: | ?str 'nin' -Starts Key
 
-    .outputs
+            Name             Value
+            ----             -----
+            Nin_Dotfiles     C:\Users\<user>\Documents\2021\dotfiles_git
+            Nin_Home         C:\Users\<user>\Documents\2021
+            Nin_PSModulePath C:\Users\<user>\Documents\2021\Powershell\My_Github
+            NinNow           C:\Users\<user>\Documents\2021
+
+        🐒> ls env: | ?str 'nin' Value
+
+            Name                      Value
+            ----                      -----
+            COMPUTERNAME              NIN8
+            LOGONSERVER               \\NIN8
+            Path                      C:\Program Files\PowerShell\7;C:\Program Files\Ala
+            USERDOMAIN                NIN8
+            USERDOMAIN_ROAMINGPROFILE NIN8
+
+
+        🐒> ls env: | ?str 'nin' Value -Starts
+
+            Name                      Value
+            ----                      -----
+            COMPUTERNAME              NIN8
+            USERDOMAIN                NIN8
+            USERDOMAIN_ROAMINGPROFILE NIN8
+
+        .outputs
           [object] as passed in
 
     #>

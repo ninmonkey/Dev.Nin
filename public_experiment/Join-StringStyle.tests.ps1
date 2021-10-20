@@ -6,7 +6,20 @@ BeforeAll {
 
 Describe 'Join-StringStyle' {
     BeforeAll {
-        # $ErrorActionPreference = 'break'
+        $ErrorActionPreference = 'break'
+        $Listing = @{
+            SmartAliases   = @(
+                'Str', 'JoinStr',
+                'Csv', 'NL',
+                'Prefix', 'Suffix',
+                'QuotedList',
+                'UL', 'Checklist'
+            )
+            JoinStyleParam = @(
+                'Csv', 'NL', 'Prefix', 'QuotedList',
+                'UL', 'Checklist'
+            )
+        }
     }
 
     It 'works?' {
@@ -25,44 +38,61 @@ Describe 'Join-StringStyle' {
     }
     Describe 'Styles Implemented' {
 
-        It 'No Styles Throw?' {
-            # Should be dynamics
-            {
-                'Csv', 'NL', 'Prefix', 'QuotedList', 'Pair'
-                | ForEach-Object {
-                    0..2 | Join-StringStyle -JoinStyle $_ #'testInput'
-                }
-            } | Should -Not -Throw
-        }
-        It 'JoinStyle: "<Style>" does not throw?' -ForEach @(
-            @{ Style = 'Csv' } # ; #Expected = y }
-            @{ Style = 'NL' } # ; #Expected = y }
-            @{ Style = 'QuotedList' } # ; #Expected = y }
-            @{ Style = 'Pair' } # ; #Expected = y }
-        ) {
-            $InputObject = 0..3
-            { $InputObject | Join-StringStyle -JoinStyle $Style }
-            | Should -Not -Throw
-        }
-    }
-    It 'HardCodedSample' {
-        $Expected = 0..3 -join ', '
-        0..3 | Join-StringStyle Csv -ea Break -Debug #-wa Continue
-        | Should -Be $Expected
-    }
-    Describe 'Styles' {
+
         It '<Style> is <Expected>' -ForEach @(
             @{ Style = 'Csv'; Expected = '0, 1, 2, 3' }  # ; #Expected = y }
             @{ Style = 'NL'; Expected = "0`n1`n2`n3" } # ; #Expected = y }
             # @{ Style = 'QuotedList' ; $Expected = "'0', '1', '2', '3'" } # ; #Expected = y }
-            @{ Style = 'Pair'; Expected = ': 0, 1, 2, 3' } # ; #Expected = y }
+            # @{ Style = 'Prefix'; Expected = ': 0, 1, 2, 3' } # ; #Expected = y }
         ) {
             $InputObject = 0..3
             $InputObject | Join-StringStyle -JoinStyle $Style
             | Should -Be $Expected
         }
-        It 'Prefix' {
 
+        It 'Valid Styles <Style>' -ForEach @(
+            @{ Style = 'Csv' }
+            @{ Style = 'NL' }
+            # @{ Style = 'Prefix' } # requires param
+            @{ Style = 'QuotedList' }
+            @{ Style = 'UL' }
+            @{ Style = 'Checklist' }
+        ) {
+            {
+
+                0..2 | Join-StringStyle -JoinStyle $Style #'testInput'
+            }
+        } | Should -Not -Throw
+
+    }
+    # Should be dynamics
+
+    # It 'JoinStyle: "<Style>" does not throw?' -ForEach @(
+    #     @{ Style = 'Csv' } # ; #Expected = y }
+    #     @{ Style = 'NL' } # ; #Expected = y }
+    #     @{ Style = 'QuotedList' } # ; #Expected = y }
+    #     @{ Style = 'Pair' } # ; #Expected = y }
+    # ) {
+    #     $InputObject = 0..3
+    #     { $InputObject | Join-StringStyle -JoinStyle $Style }
+    #     | Should -Not -Throw
+    # }
+
+    It 'HardCodedSample' {
+        $Expected = 0..3 -join ', '
+        0..3 | Join-StringStyle Csv -ea Stop -Debug #-wa Continue
+        | Should -Be $Expected
+    }
+    Describe 'Styles Without SecondaryParams' {
+        It '<Style> is <Expected>' -ForEach @(
+            @{ Style = 'Csv'; Expected = '0, 1, 2, 3' }  # ; #Expected = y }
+            @{ Style = 'NL'; Expected = "0`n1`n2`n3" } # ; #Expected = y }
+            # @{ Style = 'QuotedList' ; $Expected = "'0', '1', '2', '3'" } # ; #Expected = y }
+            # @{ Style = 'Pair'; Expected = ': 0, 1, 2, 3' } # ; #Expected = y }
+        ) {
+            $InputObject = 0..3
+            $InputObject | Join-StringStyle -JoinStyle $Style
+            | Should -Be $Expected
         }
         It 'Chained Prefix' {
             0..4
@@ -82,5 +112,4 @@ Describe 'Join-StringStyle' {
             | Should -Be 'a, e, z'
         }
     }
-
 }

@@ -10,7 +10,7 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
         # 'Join-StringStyle'
         'Join-StyleString'
         # ideas for alias names?
-        'Csv'
+
 
         if ($true) {
             # allow user override/disable for aggressive aliases
@@ -228,6 +228,7 @@ function Join-StringStyle {
                 default {
                     $JoinStyle = 'Csv' # or none or NL ?
                     Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                    Write-Error 'should never reach'
                 }
             }
 
@@ -267,6 +268,7 @@ function Join-StringStyle {
                 default {
                     $splat_JoinStyle.Separator = ', ' # or user's -sep
                     Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                    Write-Error 'should never reach'
                 }
             }
 
