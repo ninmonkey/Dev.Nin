@@ -14,16 +14,13 @@ if (! $DebugInlineToggle -and $experimentToExport) {
     )
 }
 
-
-
-
-
 function _colorizeBits {
     <#.
     .synopsis
         colorize bits for emphasis
     .description
         refactor to colorize a 'Nin.BitString' type
+        ANSI formatting
     .example
         🐒 16 | bits
         | SHould -be '0001.0000'

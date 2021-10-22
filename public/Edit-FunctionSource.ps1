@@ -95,7 +95,7 @@ function Edit-FunctionSource {
 
                         if ($SkipPositionArgs) {
                             # code-insiders (Get-Item $Path -ea stop)
-                            code (Get-Item $Path -ea stop)
+                            code-venv -path (Get-Item $Path -ea stop)
                             return
                         }
 
@@ -109,6 +109,10 @@ function Edit-FunctionSource {
                             )
                         )
                         $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
+                        $CodeArgs | Str
+                        # $codeArgs | prefix 'ArgList: ' -sep ' ' | Write-Debug
+
+                            # code-venv -path (Get-Item $Path -ea stop)
                         <#
                     worked:
                     code -r -g 'C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Measure-ChildItem.ps1:5:5'
@@ -118,12 +122,12 @@ function Edit-FunctionSource {
 
                         # & code-insiders @codeArgs
                         # $__v
-                        & code-insiders @codeArgs
+                        # & code-insiders @codeArgs
                     } else {
                         '<', $Path, '>' -join ''
                     }
                 } else {
-                    Write-Error "shouldNeverReachException: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'`n`Unless it's non-text / assembly"
+                    Write-Error "NonText/Binary: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'"
                     return # continues
 
                 }

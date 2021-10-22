@@ -36,7 +36,7 @@ function Old.Invoke-VSCodeVenv {
     [cmdletbinding(PositionalBinding = $false, DefaultParameterSetName = 'OpenFile')]
     param(
         # which venv
-        [Alias('VEnv')]
+
         [Parameter()]
         # [ValidateSet('J:\vscode_port\VSCode-win32-x64-1.57.1\Code.exe')]
         # [string]$VirtualEnv = 'J:\vscode_port\VSCode-win32-x64-1.57.1\Code.exe',

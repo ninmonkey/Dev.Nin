@@ -17,6 +17,8 @@ function Dev-InvokeFdFind {
         Regex's are Rust: https://docs.rs/regex/1.0.0/regex/#syntax
 
     .link
+        Dev.Nin\Find-FDNewestItem
+    .link
         Find-DevFdFind
     .link
         Invoke-FdFind

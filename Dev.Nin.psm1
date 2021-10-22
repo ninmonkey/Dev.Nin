@@ -100,7 +100,7 @@ $public = @(
     # ...
     'Compare-StrictEqual'
     'Get-FunctionDebugInfo'
-    'Get-HelpFromType'
+
     'Get-SavedList'
     'Get-SavedData'
     'Get-DevInspectObject'
@@ -171,7 +171,7 @@ $functionsToExport = @(
 
     ## main
     'Compare-StrictEqual'
-    'Get-HelpFromType'
+
     'Get-DevInspectObject'
 
     'Dev-PrintTableTemplate'

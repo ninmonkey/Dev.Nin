@@ -5,7 +5,10 @@ BeforeAll {
 
 Describe 'Where-EmptyProperty' {
     BeforeAll {
-        $SampleEmptyAliasList = Get-Alias * | Where-Object { [string]::IsNullOrWhiteSpace( $_.Source  ) }
+        $SampleEmptyAliasList = Get-Alias *
+        | Where-Object {
+            [string]::IsNullOrWhiteSpace( $_.Source  )
+        }
     }
     It 'Hardcode failure to remember status' {
         Get-Alias * | Where-EmptyProperty -property Source

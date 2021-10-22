@@ -85,10 +85,3 @@ function ConvertTo-PwshLiteral {
     #>
     end {}
 }
-
-if ($DebugInlineToggle) {
-    'a f23jaf23j' | ConvertTo-PwshLiteral -PreserveAscii
-    | Join-String -op '-PreserveAscii: '
-    'a f23jaf23j' | ConvertTo-PwshLiteral
-    | Join-String -op 'default: '
-}
