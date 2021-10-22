@@ -3,7 +3,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'SplitStr'
-    'SplitNewline'
+    'SplitNewline' # smart aliases
 )
 
 function Split-String {
@@ -52,7 +52,8 @@ function Split-String {
         [AllowNull()]
         [AllowEmptyCollection()]
         [AllowEmptyString()]
-        [string[]]$InputObject,
+        # [string[]]$InputObject,
+        [string]$InputObject,
 
         [Parameter(
             Mandatory, ParameterSetName = 'UsingTemplate'
@@ -71,52 +72,56 @@ function Split-String {
         [string]$Regex
     )
     begin {
-        try {
-            # $UsingTemplateMode = ($PSCmdlet.MyInvocation.InvocationName -eq 'UsingTemplate')
+        # try {
+        # $UsingTemplateMode = ($PSCmdlet.MyInvocation.InvocationName -eq 'UsingTemplate')
 
-            # switch ($PSCmdlet.MyInvocation.InvocationName) {
-            #     'SplitNewline' {
-            #         # $PSCmdlet.ParameterSetName = 'UsingTemplate'
-            #         # $Type = 'Newline'
-            #     }
-            #     default {}
-            # }
+        # switch ($PSCmdlet.MyInvocation.InvocationName) {
+        #     'SplitNewline' {
+        #         # $PSCmdlet.ParameterSetName = 'UsingTemplate'
+        #         # $Type = 'Newline'
+        #     }
+        #     default {}
+        # }
 
 
-            if ($PSCmdlet.ParameterSetName -eq 'UsingTemplate') {
-                $SplitPattern = switch ($Type) {
-                    'Newline' {
-                        '\r?\n'
-                    }
-                    default {
-                        throw "unhandled: `$Type '$Type'"
-                    }
+        if ($PSCmdlet.ParameterSetName -eq 'UsingTemplate') {
+            $SplitPattern = switch ($Type) {
+                'Newline' {
+                    '\r?\n'
+                }
+                default {
+                    throw "unhandled: `$Type '$Type'"
                 }
             }
-            elseif ($PSCmdlet.ParameterSetName -eq 'UsingRegex') {
-                #..
-            }
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'UsingRegex') {
+            #..
+            $SplitPattern = $Regex
+        }
 
-            $SplitPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
-        }
-        catch {
-            $PSCmdlet.WriteError( $_ )
-        }
+        $SplitPattern | Join-String -SingleQuote -op 'Regex: ' | Write-Verbose
+        # }
+        # catch {
+        #     $PSCmdlet.WriteError( $_ )
+        # }
     }
     process {
-        try {
 
-            $InputObject
-            | ForEach-Object {
-                $curObject = $_
-                "Splitting: '$SplitPattern' with '$curObject'" | Write-Debug
-                $curObject -split $SplitPattern
-            }
+        $InputObject -split $SplitPattern
+        # $InputObject | Join-String -DoubleQuote
+        # try {
 
-        }
-        catch {
-            $PSCmdlet.WriteError( $_ )
-        }
+        # $InputObject
+        # | ForEach-Object {
+        # $curObject = $_
+        # "Splitting: '$SplitPattern' with '$curObject'" | Write-Debug
+        # $curObject -split $SplitPattern
+        # }
+        #
+        # }
+        # catch {
+        #     $PSCmdlet.WriteError( $_ )
+        # }
     }
     end {
     }

@@ -1,5 +1,5 @@
-$experimentToExport.function += 'ConvertTo-RegexLiteral'
-$experimentToExport.alias += 'ReLit', 'ReLiteral'
+# $experimentToExport.function += 'ConvertTo-RegexLiteral'
+# $experimentToExport.alias += 'ReLit', 'ReLiteral'
 
 function ConvertTo-RegexLiteral {
     <#
@@ -12,7 +12,19 @@ function ConvertTo-RegexLiteral {
         $pattern = re 'something' -AsRipGrep
         rg @('-i', $Pattern)
     .notes
-        variants notes verses default [regex]::escape behavior
+        for syntax, see:
+
+        Rust Flavor:
+            https://docs.rs/regex/1.5.4/regex/
+
+        Dotnet Flavor:
+            https://docs.microsoft.com/en-us/dotnet/standard/base-types/details-of-regular-expression-behavior#net-engine-capabilities
+
+        Javascript Flavor:
+            https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+
+    ## variants notes verses default [regex]::escape behavior ##
+
             see more in 'ConvertTo-RegexLiteral.tests.ps1'
 
         powershell
@@ -27,7 +39,6 @@ function ConvertTo-RegexLiteral {
             - do not escape ' '
                 or else escape the '\' before it
 
-
     .outputs
 
     #>
@@ -39,10 +50,10 @@ function ConvertTo-RegexLiteral {
         [Parameter( Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$Text,
 
-        # Use Regex literal format for ripgrep (ie: Rust Lang)
+        # Use Regex literal format for ripgrep (Rust)
         [Parameter()][switch]$AsRipgrepPattern,
 
-        # Use Regex literal format for ripgrep (ie: Rust Lang)
+        # Use Regex literal format for vscode (javascript)
         [Parameter()][switch]$AsVSCode
     )
     begin {}

@@ -1,14 +1,10 @@
-#requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
-$SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
+requires -modules @{ModuleName = 'Pester'; ModuleVersion = '5.0.0' }
 BeforeAll {
     Import-Module Dev.Nin -Force
-    # throw "Write Dev.Nin\'Split-String'"
-    # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "$__PesterFunctionName.ps1")
-    # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
     $ErrorActionPreference = 'Stop'
 }
 
-Describe "$__PesterFunctionName" -Tag Unit {
+Describe Split-String {
     Describe 'ParameterSet' {
         BeforeAll {
             $Sample = 'a,b,,c'
@@ -37,7 +33,7 @@ Describe "$__PesterFunctionName" -Tag Unit {
     }
 
     It 'Runs without error' {
-        { 'a1b' | . $__PesterFunctionName '\d+' } | Should -Not -Throw
+        { 'a1b' | Split-String '\d+' } | Should -Not -Throw
         # Split-String
         # $false | Should -Be $True -Because 'Write Split-String'
     }

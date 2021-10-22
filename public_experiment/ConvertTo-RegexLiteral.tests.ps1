@@ -1,11 +1,8 @@
 #requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
-$SCRIPT:__PesterFunctionName = $myinvocation.MyCommand.Name.split('.')[0]
 
 Describe 'ConvertTo-RegexLiteral' -Tag Unit {
     BeforeAll {
-        # Import-Module Dev.nin -Force
-        # . $(Get-ChildItem -Path $PSScriptRoot/.. -Recurse -Filter "ConvertTo-RegexLiteral.ps1")
-        # $Mocks = Resolve-Path "$PSScriptRoot/Mocks"
+        Import-Module Dev.nin -Force
         $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {

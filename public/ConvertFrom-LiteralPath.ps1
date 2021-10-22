@@ -10,6 +10,8 @@ function ConvertFrom-LiteralPath {
                 $Env:UserProfile\stuff
 
         by testing against 'Env:'
+    .notes
+        do this first
     .example
         PS> ConvertFrom-LiteralPath 'C:\Users\cppmo_000\Documents\2021'
     .notes
