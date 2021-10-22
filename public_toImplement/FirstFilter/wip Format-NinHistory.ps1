@@ -11,3 +11,13 @@
         ) -join ''
     } | pygmentize.exe -l ps1
 }
+@(
+    'starting' | Select-Object *
+    | Sort-Object
+);
+
+Get-History | Join-String -sep (hr 2) {
+    "`nId: ", $_.Id -join ''
+    $formatted = Invoke-Formatter -ScriptDefinition $_.CommandLine
+    'PS> ', $formatted -join ''
+}

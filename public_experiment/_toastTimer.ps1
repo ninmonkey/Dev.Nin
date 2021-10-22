@@ -5,7 +5,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     '_toastTimer'
-    
+
     'Alarm'
     'Alarm-Toast🍞'
 
@@ -22,16 +22,16 @@ function Invoke-ToastAnnoyAlarm {
         future:
             -  [ ] validate $EndTime parameter **before** running either
     .link
-        Alarm    
+        Alarm
 
     #>
     [Alias('Annoy', 'Annoy-Toast🍞')]
-    param (      
+    param (
         [Alias('Start')]
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 0)]
         [string]$FirstTime,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, Position = 1)]
         [string]$EndTime
     )
 
@@ -43,7 +43,7 @@ function Invoke-ToastAnnoyAlarm {
         | Join-String -sep ', ' | write-textcolor 'hotpink2'
         # | Write-Information  # for now, write to be consistant with alarm
         # $FirstTime = '20m', $EndTime = '2m' )
-        Invoke-ToastAlarm -RelativeTimeString $FirstTime -Message "FirstAlarm: '$FirstTime'" -Repeat:$false                
+        Invoke-ToastAlarm -RelativeTimeString $FirstTime -Message "FirstAlarm: '$FirstTime'" -Repeat:$false
         Invoke-ToastAlarm -RelativeTimeString $EndTime -Message "Annoying: per '$EndTime'" -Repeat:$true
     }
 }
@@ -78,7 +78,7 @@ function Invoke-ToastAlarm {
         $delta = RelativeTs $RelativeTimeString
         do {
             $when = (Get-Date) + $delta
-            'Alarm set for: {0}' -f ( $when.ToShortTimeString() ) 
+            'Alarm set for: {0}' -f ( $when.ToShortTimeString() )
             #| write-information
             while ( (Get-Date) -lt $when ) {
                 Start-Sleep -Seconds 1

@@ -48,6 +48,39 @@ $Env:FZF_DEFAULT_COMMAND = 'fd --type file --hidden --exclude .git --color=alway
 $Env:FZF_DEFAULT_OPTS = '--ansi --no-height'
 $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
 
+
+
+To Implement Next:
+
+    [2]
+        -H, --hidden
+            Include hidden directories and files in the
+    [2]
+        --max-results <num>
+    [2]
+        --max-results <num> | --
+    [5]
+        --<min|max>-depth <count <num>
+    [5]
+        --no-ignore
+            Show search results from files and directories that would otherwise be ignored by '.gitignore', '.ignore',
+    [4]
+        --exclude <pattern> (glob only?)
+    [3]
+        --exec <cmd>
+        --exec-batch <cmd>
+
+    [1]
+        --changed-within <date|dur>
+            Filter results based on the file modification time. The argument can be provided as
+            specific point in time (YYYY-MM-DD HH:MM:SS) or as a duration (10h, 1d, 35min).
+            '--change-newer-than' can be used as an alias.
+            Examples:
+                --changed-within 2weeks
+                --change-newer-than '2018-10-27 10:00:00'
+
+
+
     .example
         # no args needed
         🐒> findNewest Code-Workspace💻
@@ -69,7 +102,10 @@ $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
 
     #>
     [Alias('newestCode', 'newestItem🔎', 'findNewest')]
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding(
+        PositionalBinding = $false
+        # SupportsPaging, # using --max;-results,
+    )]
     param(
         # item types to find
         # See
@@ -128,6 +164,7 @@ $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
         $QueryRootDir = Get-Item $BasePath  -ea stop
 
         $ItemType | ForEach-Object {
+            # refactor/extract name to extension
             $curItemType = $_
             switch ($curItemType) {
                 'Code-Workspace💻' {
@@ -142,13 +179,32 @@ $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
                     )
                 }
 
+                'Image🎨' {
+                    $QueryExtension += @(
+                        'jpg', 'jpeg',
+                        'gif', 'mp4',
+                        'svg', 'svgz', # svg/inkscape
+                        'xcf' # gimp
+                    )
+                }
+                'Settings-Vs-Code' {
+                    Write-Warning '"might need 2 queries, files of .json, or, folders of ".vscode"; and vscode snippet type'
+                    $QueryExtension += @(
+                        'json'
+                    )
+                }
+
+                'Pwsh' {
+
+                }
+
                 default {
                     Write-Error "Unhandled ItemType: '$curItem'"
                     return
                 }
             }
-
         }
+
         # $query | format-dict
         $fdArgs = @(
             if ($true) {
@@ -177,7 +233,7 @@ $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
 
             if ($BasePath) {
                 if (!($RegexPattern)) {
-                    # if none, but path does exist, it requiresthis
+                    # if none, but path does exist, 'fd' requires this "pattern"
                     '.'
                 }
                 '--'
