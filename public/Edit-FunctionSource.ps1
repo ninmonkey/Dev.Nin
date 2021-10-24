@@ -57,7 +57,8 @@ function Edit-FunctionSource {
                 if ($isAlias) {
                     $resolvedAlias = Get-Alias -ea SilentlyContinue $maybeFunc | ForEach-Object ResolvedCommand
                     $resolvedAlias
-                } else {
+                }
+                else {
                     Get-Command $curFuncName -ea SilentlyContinue
                 }
             }
@@ -77,17 +78,12 @@ function Edit-FunctionSource {
             }
 
             $functionQuery | Where-Object {
-                if ($true) {
-                    $_ -is 'FunctionInfo'
-                }
+                # 1 / 0
+                Write-Debug 'test: Is [FunctionInfo]?'
+                $_ -is [System.Management.Automation.FunctionInfo]
             }
             | ForEach-Object {
                 $curCommand = $_
-                if (!($curCOmmand -is 'FunctionInfo')) {
-                    # Maybe I should exit loop here, or will there be source for non-functioninfo types?
-                    'Command is  not [FunctionInfo]: {0}, ' -f @($curCommand.GetType())
-                    | Write-Warning
-                }
                 # todo: fix: when piping funcinfo from [Get-IndendtedFunctioninfo] $Path is $null
                 $z = 20
                 $Meta = $curCommand.ScriptBlock.Ast.Extent #| Select-Object * -ExcludeProperty Text
@@ -126,7 +122,7 @@ function Edit-FunctionSource {
                         $CodeArgs | Str
                         # $codeArgs | prefix 'ArgList: ' -sep ' ' | Write-Debug
 
-                            # code-venv -path (Get-Item $Path -ea stop)
+                        # code-venv -path (Get-Item $Path -ea stop)
                         <#
                     worked:
                     code -r -g 'C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\Measure-ChildItem.ps1:5:5'
@@ -137,10 +133,12 @@ function Edit-FunctionSource {
                         # & code-insiders @codeArgs
                         # $__v
                         # & code-insiders @codeArgs
-                    } else {
+                    }
+                    else {
                         '<', $Path, '>' -join ''
                     }
-                } else {
+                }
+                else {
                     Write-Error "NonText/Binary: curCommand = '$($curCommand.ScriptBlock.Ast.Extent.File)'"
                     return # continues
 

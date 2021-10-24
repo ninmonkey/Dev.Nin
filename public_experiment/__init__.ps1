@@ -49,7 +49,7 @@ $sortedFiles
         . $curFile
     }
     catch {
-        Write-Error -Message 'bad' -ErrorRecord $_
+        Write-Error -Message "__init__ module '$CurFile' failed!" -ErrorRecord $_
         # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
         #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
