@@ -5,6 +5,24 @@ $experimentToExport.alias += @(
 
     '?Str', 'MatchStr', 'Where-String'
 )
+function __test-Match {
+    # regex match, or -notmatch wrapper
+    param(
+        # Input object (to auto coerce as string, or not)
+        [Parameter(Mandatory, Position = 0)]
+        [object]$InputObject,
+
+        # Regex
+        [Parameter(Mandatory, Position = 1)]
+        [AllowEmptyString()]
+        [string]$Regex,
+
+        # use -match (or -notmatch)
+        [Parameter()]
+        [switch]$NotMatching
+    )
+
+}
 function Match-String {
     <#
     .synopsis
@@ -22,6 +40,10 @@ function Match-String {
         the pipeline to raw text. It leaves the object intact.
 
     .notes
+        - Should It allow null without opt-ing in?
+            for dealing with piped in raw text, yes, allow should not throw
+        - if compared to an object, then, null should require an opt-in
+
         - $null inputs are ignored ( Get-Content split enumerates some null values on extra newlines)
 
         todo:
@@ -124,7 +146,7 @@ function Match-String {
             USERDOMAIN_ROAMINGPROFILE NIN8
 
         .outputs
-          [object] as passed in
+            [object] as passed in
 
     #>
     [alias( '?Str', 'MatchStr', 'Where-String')]
@@ -163,9 +185,14 @@ function Match-String {
         # Both ends must match. This is equivalent to using both -Begins and -Ends
         [Parameter()][switch]$FullMatch,
 
+        # # Uses -notMatch operator vs -match
+        # [Alias('Not')]
+        # [Parameter()][switch]$NotMatching,
+
         # Pattern beginning must match. It adds '^' to the start of the pattern
         [alias('Starts')]
         [Parameter()][switch]$Begins,
+
 
         # Pattern ending must match. It adds '$' to the end of the pattern
         # You can still use patterns like 'dog.*' -Ends
