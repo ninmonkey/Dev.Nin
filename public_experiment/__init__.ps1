@@ -45,17 +45,17 @@ $sortedFiles
     | Write-Debug
     # are these safe? or will it alter where-object?
     # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-    try {
-        . $curFile
-    }
-    catch {
-        Write-Error -Message "__init__ module '$CurFile' failed!" -ErrorRecord $_
-        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+    # try {
+    . $curFile
+    # }
+    # catch {
+    # Write-Error -Message "__init__ module '$CurFile' failed!" -ErrorRecord $_
+    # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
-        #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # $PSCmdlet.WriteError( $_ )
-    }
+    #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # $PSCmdlet.WriteError( $_ )
+    # }
 }
 
 

@@ -82,15 +82,49 @@ function Format-Dict {
     }
     process {
         [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
+        # todo: UX: make dict render on a single line when empty
         $joinOuter_Splat = @{
             Separator    = "`n"
             OutputPrefix = "`nDict = {`n"
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
             OutputSuffix = "`n}`n"
         }
+        Write-Debug 'Type? '
+        if ($InputObject -is [Collections.IDictionary]) {
+            Write-Color green -t 'Yes'
+            | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
+        }
+        else {
+            Write-Color red -t 'No'
+            | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
+        }
+        if ($InputObject -is [Collections.IEnumerable]) {
+            Write-Color green -t 'Yes'
+            | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
+        }
+        else {
+            Write-Color red -t 'No'
+            | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
+        }
+
+        if ($InputObject -is [Collections.IDictionary]) {
+            $TargetObj = $InputObject
+        }
+        else {
+            # $TargetObj = $InputObject.psobject.properties | ForEach-Object {
+            #     [pscustomobject]@{
+            #         Name  = $_.Name
+            #         Value = $_.Value
+            #     }
+
+            # }
+            # temp disable
+            # $TargetObj = $InputObject.psobject.properties
+            $TargetObj = $InputObject
+        }
 
 
-        $InputObject.GetEnumerator() | ForEach-Object {
+        $TargetObj.GetEnumerator() | ForEach-Object {
             $outPrefix = @(
                 if ($Config.AlignKeyValuePairs) {
                     $paddedKey = (($_.Key) ?? '').padright($LongestName, ' ')
@@ -111,7 +145,7 @@ function Format-Dict {
                         $_.Value
                     }
                     else {
-                        $_.Value | write-color black -bg darkpink3
+                        $_.Value | Write-Color black -bg darkpink3
                         # $_.Value | New-Text -bg 'lightpink'
                     }
                 }

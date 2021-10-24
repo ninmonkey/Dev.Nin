@@ -7,6 +7,8 @@ $experimentToExport.alias += @(
     'newestItem🔎', 'findNewest'
     # 'newestCode' # potential optional smart aliasese?
 )
+[hashtable]$__helpText = @{}
+
 
 enum ColorWhenMode {
     Never
@@ -14,6 +16,20 @@ enum ColorWhenMode {
     Auto
 }
 
+enum FiletypeEnum {
+
+    # -t, --type <filetype>...           Filter by type: file (f), directory (d), symlink (l),
+    #                                    executable (x), empty (e), socket (s), pipe (p)
+}
+
+[object[]]$__helpText.FdFind = @'
+    Regex Flavor: Rust:
+        https://docs.rs/regex/1.0.0/regex/#syntax
+    Docs:
+        https://github.com/sharkdp/fd#how-to-use
+        https://github.com/sharkdp/fd#using-fd-with-fzf
+        https://github.com/junegunn/fzf#tips
+'@
 function Find-FDNewestItem {
     <#
     .synopsis
@@ -23,6 +39,9 @@ function Find-FDNewestItem {
     tags:
         'Cli_Interactive🖐'
     .notes
+
+        Iportant notes:
+
 
         $ENV:FZF_DEFAULT_COMMAND = 'fd --type f'
         fd --type f
@@ -50,7 +69,30 @@ $Env:FZF_CTRL_T_COMMAND = "$Env:FZF_DEFAULT_COMMAND"
 
 
 
+
+
+    working -X
+        fd . -X ls -lhd --color=always
+
+    working {}
+        fd -e jpg -x convert {} {.}.png
+        here, {} is a placeholder for the search result. {.}
+    working ignore
+        For example, we might want to search all hidden files and directories (-H) but exclude all matches from .git directories. We can use the -E (or --exclude) option for this. It takes an arbitrary glob pattern as an argument:
+
+            PS> fd -H -E .git …
+            PS> fd -E '*.bak' … #ignore filetype
+
+    Note: fd also supports .ignore files that are used by other programs such as rg or
+        config: %APPDATA%\fd\ignore | ~/.config/fd/ignore
+
 To Implement Next:
+
+    By default, fd only matches the filename of each file. However,
+        using the --full-path or -p option, you can match against the full path.
+
+For -x/--exec, you can control the number of parallel jobs by using the -j/--threads option. Use --threads=1 for serial execution.
+
 
     [2]
         -H, --hidden
@@ -79,6 +121,11 @@ To Implement Next:
                 --changed-within 2weeks
                 --change-newer-than '2018-10-27 10:00:00'
 
+
+    ...notes
+        You can disable colors by setting:
+            $Env:NO_COLOR
+        Or the color enum
 
 
     .example
@@ -144,12 +191,16 @@ To Implement Next:
         # base path to use, optionally from pipeline, else cwd
         [Alias('PSPath', 'Path')]
         [parameter(Position = 2, ValueFromPipelineByPropertyName)]
-        [string]$BasePath
+        [string]$BasePath,
+
+        # show urls or other misc notes
+        [ALias('--help', 'Manpage')] # todo: future: Link or show markdown docs
+        [Parameter()]
+        [switch]$Help
 
         # [Parameter(
         #     Position = 1)]
         # [string[]]$SortByProp = 'Rgb'
-
         # [parameter]
     )
 
@@ -157,6 +208,11 @@ To Implement Next:
         $binFd = Get-NativeCommand 'fd'
     }
     process {
+        if ($Help) {
+            $__helpText.FdFind
+            return
+        }
+
         [string[]]$QueryExtension = @()
         if (! (Test-Path $BasePath) ) {
             $BasePath = '.'
@@ -204,9 +260,17 @@ To Implement Next:
                 }
             }
         }
+        #SPecial parameters
+        if ($ItemType -contains 'nin.Bookmark.txt📚') {
+            # filename pattern
+            'nin\.Bookmark\.txt'
+        }
 
         # $query | format-dict
         $fdArgs = @(
+            if ($true) {
+                '--hidden'
+            }
             if ($true) {
                 '-d', '5'
             }

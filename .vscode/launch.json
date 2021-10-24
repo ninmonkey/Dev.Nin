@@ -36,7 +36,38 @@
             "cwd": "${workspaceFolder}"
         },
         {
-            "name": "cur: visualTest 🐛🎨",
+            "presentation": {
+                "hidden": false,
+                "group": "VisualTest",
+                // "order": 1
+            },
+            "name": "🐛🎨 cur: Invoke-GithubInfo visualTest ",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/test/public/visual_test/Invoke-GithubInfo.visual_test.ps1",
+            // "cwd": "${file}"
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "presentation": {
+                "hidden": false,
+                "group": "VisualTest",
+                // "order": 1
+            },
+            "name": "🐛🎨 cur: Format-Dict visualTest ",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/test/public/visual_test/Format-Dict.visual_test.ps1",
+            // "cwd": "${file}"
+            "cwd": "${workspaceFolder}",
+        },
+        {
+            "presentation": {
+                "hidden": false,
+                "group": "VisualTest",
+                // "order": 1
+            },
+            "name": "🐛🎨 cur: visualTest ",
             "type": "PowerShell",
             "request": "launch",
             "script": "${workspaceFolder}/test/public/visual_test/_format_RgbColorStringy.visual_tests.ps1",
