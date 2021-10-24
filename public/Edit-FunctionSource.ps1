@@ -76,12 +76,26 @@ function Edit-FunctionSource {
                 $autoOpen = $false
             }
 
-            $functionQuery | ForEach-Object {
+            $functionQuery | Where-Object {
+                if ($true) {
+                    $_ -is 'FunctionInfo'
+                }
+            }
+            | ForEach-Object {
                 $curCommand = $_
+                if (!($curCOmmand -is 'FunctionInfo')) {
+                    # Maybe I should exit loop here, or will there be source for non-functioninfo types?
+                    'Command is  not [FunctionInfo]: {0}, ' -f @($curCommand.GetType())
+                    | Write-Warning
+                }
                 # todo: fix: when piping funcinfo from [Get-IndendtedFunctioninfo] $Path is $null
+                $z = 20
                 $Meta = $curCommand.ScriptBlock.Ast.Extent #| Select-Object * -ExcludeProperty Text
                 # $Meta = $curCommand.ScriptBlock.Ast.Extent | Select-Object * -ExcludeProperty Text
-                $Path = $meta.File | Get-Item -ea continue
+                $Path = $meta.File | Get-Item -ea ignore
+                if (! $Path) {
+                    Write-Error 'Appears to not be a script'
+                }
                 if ($Path) {
                     $meta | ConvertTo-Json | Write-Debug
                     if ($PassThru) {
