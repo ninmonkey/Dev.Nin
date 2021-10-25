@@ -1,25 +1,27 @@
 # allows script to be ran alone, or, as module import
 if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
+
         'Test-IsNotBlank'
     )
     $experimentToExport.alias += @(
-        '!Blank'
         'TextProcessing📚.IsNotBlank'
+        'Assert-IsNotBlank'
     )
 }
-
 
 function Test-IsNotBlank {
     <#
     .synopsis
-
+        asserts, todo: Maybe throw ann error too?
+    .link
+        Where-IsNotBlank
     .outputs
         boolean
     #>
     [Alias('!Blank', 'TextProcessing📚.IsNotBlank',
         'Validation🕵.IsNotBlank',
-        'Assert.IsNotBlank'
+        'Assert-IsNotBlank'
     )]
     [outputtype([bool])]
     [cmdletbinding()]

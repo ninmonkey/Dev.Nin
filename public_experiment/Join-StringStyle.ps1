@@ -151,7 +151,11 @@ function Join-StringStyle {
         # for quick debug commands
         [Alias('DbgOutput', 'DbgOut')]
         [Parameter()] #
-        [Switch]$OutputStreamDebug
+        [Switch]$OutputStreamDebug,
+
+        # DoubleQuotes instead of single quotes, if used in the formatter
+        [Parameter()] #
+        [Switch]$DoubleQuote
 
 
 
@@ -255,7 +259,13 @@ function Join-StringStyle {
                 }
                 'QuotedList' {
                     $splat_JoinStyle.Separator = ', ' # or user's -sep
-                    $splat_JoinStyle.SingleQuote = $true
+
+                    if (! $DoubleQuote) {
+                        $splat_JoinStyle.SingleQuote = $true
+                    }
+                    else {
+                        $splat_JoinStyle.DoubleQuote = $true
+                    }
 
                 }
                 'UL' {

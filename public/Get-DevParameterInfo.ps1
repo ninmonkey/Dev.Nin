@@ -60,8 +60,8 @@ function Get-DevParameterInfo {
 
                 # refactor using formattypes instead of '_Name'
                 $hash_parameter = @{
-                    Command           = $cur_command
-                    CommandName       = $cur_command.Name # more to formatter
+                    # Command           = $cur_command      # todo: ux: basic formatting
+                    # CommandName       = $cur_command.Name # more to formatter
                     Parameter         = $cur_Key
                     ParameterType     = $cur_Value.ParameterType
                     ParameterTypeName = $cur_Value.ParameterType.Name  # todo:Format

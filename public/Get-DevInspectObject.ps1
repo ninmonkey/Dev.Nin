@@ -18,7 +18,7 @@ function Get-DevInspectObject {
     )
 
     process {
-        'Inspect: "{0}"' -f $_.ToString() | H1
+        'Inspect: "{0}"' -f $InputObject.ToString() | H1
         $InputObject | Prop | Format-Table -AutoSize
         # $maybeChild = @($InputObject)[0]
         $maybeChild = $InputObject | Select-Object -First 1
@@ -52,13 +52,13 @@ if ($DebugTestMode) {
     Get-ChildItem 'c:\' | Get-Unique  -OnType | inspect
     H1 'test case: without child'
     'a' | Inspect
-hr
-'a' | Inspect
+    hr
+    'a' | Inspect
 
-$l = [list[object]]::new()
-$l.add(34)
-$l.Add((Get-Date))
-hr
-, $l | Inspect
-hr
+    $l = [list[object]]::new()
+    $l.add(34)
+    $l.Add((Get-Date))
+    hr
+    , $l | Inspect
+    hr
 }

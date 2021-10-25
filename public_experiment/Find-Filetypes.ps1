@@ -36,6 +36,8 @@ function Find-FileType {
         todo:
         - [ ]
     .link
+        Dev.Nin\Find-FDNewestItem
+    .link
         Get-FileType
     .example
         🐒> Find-Filetypes
@@ -97,6 +99,8 @@ function Get-FileType {
     .notes
         todo:
         - [ ]
+    .link
+        Dev.Nin\Find-FDNewestItem
     .link
         Find-FileType
     .example
