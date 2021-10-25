@@ -105,7 +105,8 @@ function Join-StringStyle {
             | str Prefix 'Properties of [datetime]: '
 
             Properties of [datetime]: DisplayHint, DateTime, Date, Day, DayOfWeek, DayOfYear, Hour, Kind, Millisecond, Minute, Month, Second, Ticks, TimeOfDay, Year
-    .
+    .link
+        Dev.Nin\Split-String
     #>
     [alias(
         'Str', 'JoinStr',
@@ -282,43 +283,41 @@ function Join-StringStyle {
     }
 
     process {
-        try {
-            $InputObject | ForEach-Object {
-                if ($null -eq $_) {
-                    $InputLines.Add( '␀' )
-                }
-                else {
-                    $InputLines.Add( $_ )
-                }
-                # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
-                # todo: stringbuffer, and profile performance.
-                # May use internal -join operators for speed
-            }
-
-        }
-        catch {
-            $PSCmdlet.WriteError($_)
-        }
-    }
-    end {
-        try {
-            $sort_splat = @{}
-            if ($Unique) {
-                $sort_splat['Unique'] = $True
-            }
-            if ($sort) {
-                $InputLines | Sort-Object @sort_splat | Join-String @splat_JoinStyle
+        # try {
+        $InputObject | ForEach-Object {
+            if ($null -eq $_) {
+                $InputLines.Add( '␀' )
             }
             else {
-                if ($Unique) {
-                    Write-Warning '-Unique /w -Sort:$False does nothing.'
-                }
-                $InputLines | Join-String @splat_JoinStyle
+                $InputLines.Add( $_ )
             }
+            # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
+            # todo: stringbuffer, and profile performance.
+            # May use internal -join operators for speed
+        }
 
+        # }
+        # catch {
+        #     $PSCmdlet.WriteError($_)
+        # }
+    }
+    end {
+        # try {
+        $sort_splat = @{}
+        if ($Unique) {
+            $sort_splat['Unique'] = $True
+            $Sort = $true
         }
-        catch {
-            $PSCmdlet.WriteError($_)
+        if ($sort) {
+            $InputLines | Sort-Object @sort_splat | Join-String @splat_JoinStyle
         }
+        else {
+            $InputLines | Join-String @splat_JoinStyle
+        }
+
+        # }
+        # catch {
+        # $PSCmdlet.WriteError($_)
+        # }
     }
 }

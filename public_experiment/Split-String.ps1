@@ -15,6 +15,14 @@ function Split-String {
 
        ... | ?{ $_ -Split $regex } | ...
     .notes
+
+        SplitStyle 'ControlChar' does not include: cr, newline, space, tab    '[\x00-\x1f-[\x0a\x20\x0d\x09]]+' but 'ControlCharAll' does
+                    # 0xa  # newline
+                    # 0x20 # space
+                    # 0xd  # cr
+                    # 0x9  # tab
+
+
         - [ ] maybe list of split, to allow
 
                 Split-Str $x '\r?\n', '\d+'
@@ -33,7 +41,9 @@ function Split-String {
 
     .example
        .
-    .outputsj
+    .link
+        Dev.Nin\Join-StringStyle
+    .outputs
           [object] as passed in
 
     #>
@@ -46,7 +56,7 @@ function Split-String {
             allowing null makes it easier for the user to pipe, like:
             'gc' without -raw or '-split' on newlines
         #>
-        [alias('Text', 'Lines')]
+        [alias('Text')]
         [Parameter(
             Mandatory, ValueFromPipeline)]
         [AllowNull()]
@@ -55,11 +65,12 @@ function Split-String {
         # [string[]]$InputObject,
         [string]$InputObject,
 
+        # split styles built-in
+        [Alias('Type', 'Template', 'As')]
         [Parameter(
-            Mandatory, ParameterSetName = 'UsingTemplate'
-        )]
-        [ValidateSet('Newline')]
-        [string]$Type,
+            Mandatory, ParameterSetName = 'UsingTemplate')]
+        [ValidateSet('Newline', 'Csv', 'WhiteSpace', 'Tab', 'Word', 'NonWord', 'ControlChar', 'ControlCharAll')]
+        [string]$SplitStyle,
 
         # Split regex
         [Alias('Pattern')]
@@ -78,19 +89,48 @@ function Split-String {
         # switch ($PSCmdlet.MyInvocation.InvocationName) {
         #     'SplitNewline' {
         #         # $PSCmdlet.ParameterSetName = 'UsingTemplate'
-        #         # $Type = 'Newline'
+        #         # $SplitStyle = 'Newline'
         #     }
         #     default {}
         # }
 
 
         if ($PSCmdlet.ParameterSetName -eq 'UsingTemplate') {
-            $SplitPattern = switch ($Type) {
+            $SplitPattern = switch ($SplitStyle) {
                 'Newline' {
                     '\r?\n'
                 }
+                'Csv' {
+                    ',\s*'
+                }
+                'WhiteSpace' {
+                    # /s+ is equiv to:'[\r\n\t\f\v ]+'
+                    # /w+ is equiv to:'[a-zA-Z0-9_]+'
+                    '\s+'
+                }
+                'Tab' {
+
+                    '[\x09\x0b]+' # vert + horizontal tabs
+                }
+                'Word' {
+                    '\w+'
+                }
+                'NonWord' {
+                    '\W+'
+                }
+                'ControlChar' {
+                    '[\x00-\x1f-[\x0a\x20\x0d\x09]]+'
+                    # 0xa  # newline
+                    # 0x20 # space
+                    # 0xd  # cr
+                    # 0x9  # tab
+                    # 0xb  # vert tab
+                }
+                'ControlCharAll' {
+                    '[\x00-\x1f]+'
+                }
                 default {
-                    throw "unhandled: `$Type '$Type'"
+                    throw "unhandled: `$SplitStyle '$SplitStyle'"
                 }
             }
         }

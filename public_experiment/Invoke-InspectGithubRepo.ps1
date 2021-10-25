@@ -15,10 +15,20 @@ function Invoke-InspectGithubRepo {
     # [Alias('WriteTextColor', 'Write-Color')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
-        # # When colors can be close
-        [alias('Cache')]
+        # empty the cache
+        [alias('ClearCache')]
         [Parameter()]
-        [switch]$ForceCache
+        [switch]$ForceCache,
+
+        [Alias('Owner')]
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [string]$OwnerName
+        # $Color = [rgbcolor]::new(164, 220, 255),
+
+
+
+
         # Foreground [rgbcolor]
         # [Alias('Fg', 'Color')]
         # [ValidateNotNullOrEmpty()]
@@ -50,21 +60,42 @@ function Invoke-InspectGithubRepo {
 
     )
     begin {
+        # $OwnerName ??= 'dfinke'
         $PSBoundParameters | format-dict
-        $binGh = Get-NativeCommand 'gh'
-        $ghArgs = @(
-            'repo'
-            'list'
-            'dfink'
-            "--json='updatedAt,url,nameWithOwner,primaryLanguage,description,forkCount,parent,stargazerCount,watchers,isFork,isPrivate,languages,latestRelease,licenseInfo,mentionableUsers,projects,pushedAt,updatedAt,viewerHasStarred,viewerPermission,viewerSubscription'"
-        )
+        # $binGh = Get-NativeCommand 'gh'
+        # $ghArgs = @(
+        #     'repo'
+        #     'list'
+        #     if ($OwnerName) {
+        #         # $OwnerName
+        #     }
+        #     "--json='url,nameWithOwner,primaryLanguage,description,forkCount,parent,stargazerCount,watchers,isFork,isPrivate,languages,latestRelease,licenseInfo,mentionableUsers,projects,pushedAt,viewerHasStarred,viewerPermission,viewerSubscription'"
+        # )
 
+
+        $ExportPath = 'temp:\lastGH.json'
     }
     process {
+        if ( ! $Cache ) {
 
+            $cmd = @'
+gh repo list dfinke --source -L 3 --json='nameWithOwner,url,description,homepageUrl,name,pullRequests,updatedAt,viewerHasStarred,viewerSubscription,watchers'
+'@
+            & $cmd
+            hr 2
+            & $cmd
+            | Set-Content temp:\lastgt.json
+            'wrote: Temp:\lastgt.json'
+        }
+
+        Get-Content Temp:\lastgt.json
+
+        Get-Content -Path $ExportPath
+        # & $binGh @ghArgs | Set-Content -Path $ExportPath
     }
     end {
 
+        # Write-Warning 'broken'
     }
 }
 

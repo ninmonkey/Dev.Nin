@@ -90,5 +90,7 @@ function Resolve-FullTypeName {
         return
     }
 
-    end {}
+    end {
+        # $Output | Sort-Object -Unique # did not work.
+    }
 }

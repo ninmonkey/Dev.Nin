@@ -15,6 +15,18 @@
             "MD025": {
                 "front_matter_title": ""
             }
-        }
+        },
+        "files.watcherInclude": [],
+
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "echo : can I import module?",
+                "type": "shell",
+                "command": "echo Hello"
+            }
+        ]
     }
 }

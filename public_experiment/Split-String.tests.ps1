@@ -15,6 +15,41 @@ Describe Split-String {
 
             $Sample3 = "a`n`n`nb`nc`n`ne"
             $Expected3 = 'a', 'b', 'c', 'e'
+        }
+
+        Describe 'SplitStyle' {
+            It 'NewLine' {
+                "a`n`n`nb`nc`n`ne" | SplitStr -as Newline
+                | Should -Be 'a', '', '', 'b', 'c', '', 'e' -Because 'Manual case'
+            }
+            It 'Csv' {
+                'a,b,,c' -split ',\s*' | SplitStr -as Csv
+                | Should -Be @('a', 'b', '', 'c')
+            }
+            It 'Whitespace' {
+                # /s+ is equiv to:'[\r\n\t\f\v ]+'
+                # /w+ is equiv to:'[a-zA-Z0-9_]+'
+                "a`n`n`nb`n`tc`r`n`ne" | SplitStr -as WhiteSpace
+                | Should -Be 'a', 'b', 'c', 'e' -Because 'Manual case'
+            }
+            It 'Tab' {
+                "z`t`tyk"
+            }
+            It 'Word' {
+                $true | Should -Be $false -becaause 'test NYI'
+            }
+            It 'NonWord' {
+                $true | Should -Be $false -becaause 'test NYI'
+            }
+            Describe 'ControlChar' {
+                It 'Preserves NL,CR,Tab,Space' {
+                    ("a`tb" | SplitStr -As ControlChar).count
+                    | Should -Be 1 -Because 'Manual case'
+
+                    ("a`tb" | SplitStr -As ControlCharAll).count
+                    | Should -Be 2 -Because 'Manual case'
+                }
+            }
 
         }
 
