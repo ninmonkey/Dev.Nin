@@ -165,130 +165,130 @@ function Join-StringStyle {
     )
 
     begin {
-        try {
-            $InputLines = [System.Collections.Generic.List[string]]::new()
-            [hashtable]$splat_JoinStyle = @{
-                # Separator    = ', '
-                # OutputPrefix = 'x'
-                # OutputSuffix = 'x'
-                # Property     = 'x'
-                # FormatString = '{0}'
-                # DoubleQuote  = $true
-                # SingleQuote  = $true
+        # try {
+        $InputLines = [System.Collections.Generic.List[string]]::new()
+        [hashtable]$splat_JoinStyle = @{
+            # Separator    = ', '
+            # OutputPrefix = 'x'
+            # OutputSuffix = 'x'
+            # Property     = 'x'
+            # FormatString = '{0}'
+            # DoubleQuote  = $true
+            # SingleQuote  = $true
+        }
+        $myInvokeName = $pscmdlet.MyInvocation.InvocationName
+
+        $myInvokeName
+        | Join-String -op 'InvocationName: ' | Write-Debug
+
+
+        # these are global alias names to the command itself
+        $smartAlias = $myInvokeName -eq @(
+            'Str', 'JoinStr',
+            'Csv', 'NL',
+            'Prefix', 'Suffix',
+            'QuotedList', #single/double
+            'UL', 'Checklist'
+            $PSCmdlet.MyInvocation.MyCommand.Name.ToString()
+
+        )
+        $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
+        $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
+        if (! $SmartAlias) {
+            if ($myInvokeName -ne $PSCmdlet.MyInvocation.MyCommand.Name) {
+                Write-Verbose "Alias not implemented: '$myInvokeName'"
             }
-            $myInvokeName = $pscmdlet.MyInvocation.InvocationName
+            else {
+            }
+        }
 
-            $myInvokeName
-            | Join-String -op 'InvocationName: ' | Write-Debug
+        # map aliases to default configs, many directly map to a style
+        # maybe this switch will always be redundant
+        switch ($smartAlias) {
+            'JoinStr' {
+                # .. normal
+            }
+            'Csv' {
+                # $Fg = 'orange'
+                $JoinStyle = 'Csv'
+            }
+            'NL' {
+                $JoinStyle = 'NL'
+            }
+            # 'Pair' {
+            #     $JoinStyle = 'Pair'
+            # }
+            'Prefix' {
+                $JoinStyle = 'Prefix'
+            }
+            'Suffix' {
+                $JoinStyle = 'Suffix'
+            }
+            'QuotedList' {
+                $JoinStyle = 'QuotedList'
+            }
+            { $false -eq $_ } {
+                # $JoinStyle = 'Csv'
+            }
+            default {
+                $JoinStyle = 'Csv' # or none or NL ?
+                Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                # Write-Error 'should never reach'
+            }
+        }
 
+        $JoinStyle | Join-String -op 'JoinStyle (after alias): ' | Write-Debug
 
-            # these are global alias names to the command itself
-            $smartAlias = $myInvokeName -eq @(
-                'Str', 'JoinStr',
-                'Csv', 'NL',
-                'Prefix', 'Suffix',
-                'QuotedList', #single/double
-                'UL', 'Checklist'
-                $PSCmdlet.MyInvocation.MyCommand.Name.ToString()
+        # style based behavior
+        switch ($JoinStyle) {
+            'Csv' {
+                $splat_JoinStyle.Separator = ', '
+            }
+            'NL' {
+                $splat_JoinStyle.Separator = "`n"
+            }
+            # 'Pair' {
+            #     $splat_JoinStyle.Separator = ', '
+            #     $splat_JoinStyle.OutputPrefix = "${Text}: "
+            # }
+            'Prefix' {
+                $splat_JoinStyle.OutputPrefix = "${Text}"
+            }
+            'Suffix' {
+                $splat_JoinStyle.OutputSuffix = "${Text}"
+            }
+            'QuotedList' {
+                $splat_JoinStyle.Separator = ', ' # or user's -sep
 
-            )
-            $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
-            $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
-            if (! $SmartAlias) {
-                if ($myInvokeName -ne $PSCmdlet.MyInvocation.MyCommand.Name) {
-                    Write-Verbose "Alias not implemented: '$myInvokeName'"
+                if (! $DoubleQuote) {
+                    $splat_JoinStyle.SingleQuote = $true
                 }
                 else {
+                    $splat_JoinStyle.DoubleQuote = $true
                 }
+
             }
-
-            # map aliases to default configs, many directly map to a style
-            # maybe this switch will always be redundant
-            switch ($smartAlias) {
-                'JoinStr' {
-                    # .. normal
-                }
-                'Csv' {
-                    # $Fg = 'orange'
-                    $JoinStyle = 'Csv'
-                }
-                'NL' {
-                    $JoinStyle = 'NL'
-                }
-                # 'Pair' {
-                #     $JoinStyle = 'Pair'
-                # }
-                'Prefix' {
-                    $JoinStyle = 'Prefix'
-                }
-                'Suffix' {
-                    $JoinStyle = 'Suffix'
-                }
-                'QuotedList' {
-                    $JoinStyle = 'QuotedList'
-                }
-                { $false -eq $_ } {
-                    # $JoinStyle = 'Csv'
-                }
-                default {
-                    $JoinStyle = 'Csv' # or none or NL ?
-                    Write-Warning "Should not reach, unhandled '$SmartAlias' case"
-                    Write-Error 'should never reach'
-                }
+            'UL' {
+                $splat_JoinStyle.Separator = "`n- "
+                $splat_JoinStyle.OutputPrefix = "`n- "
             }
-
-            $JoinStyle | Join-String -op 'JoinStyle (after alias): ' | Write-Debug
-
-            # style based behavior
-            switch ($JoinStyle) {
-                'Csv' {
-                    $splat_JoinStyle.Separator = ', '
-                }
-                'NL' {
-                    $splat_JoinStyle.Separator = "`n"
-                }
-                # 'Pair' {
-                #     $splat_JoinStyle.Separator = ', '
-                #     $splat_JoinStyle.OutputPrefix = "${Text}: "
-                # }
-                'Prefix' {
-                    $splat_JoinStyle.OutputPrefix = "${Text}"
-                }
-                'Suffix' {
-                    $splat_JoinStyle.OutputSuffix = "${Text}"
-                }
-                'QuotedList' {
-                    $splat_JoinStyle.Separator = ', ' # or user's -sep
-
-                    if (! $DoubleQuote) {
-                        $splat_JoinStyle.SingleQuote = $true
-                    }
-                    else {
-                        $splat_JoinStyle.DoubleQuote = $true
-                    }
-
-                }
-                'UL' {
-                    $splat_JoinStyle.Separator = "`n- "
-                    $splat_JoinStyle.OutputPrefix = "`n- "
-                }
-                'Checklist' {
-                    $splat_JoinStyle.Separator = "`n- [ ] "
-                    $splat_JoinStyle.OutputPrefix = "`n- [ ] "
-                }
-                default {
-                    $splat_JoinStyle.Separator = ', ' # or user's -sep
-                    Write-Warning "Should not reach, unhandled '$SmartAlias' case"
-                    Write-Error 'should never reach'
-                }
+            'Checklist' {
+                $splat_JoinStyle.Separator = "`n- [ ] "
+                $splat_JoinStyle.OutputPrefix = "`n- [ ] "
             }
-
-            $splat_JoinStyle | Format-Table | Out-String | Write-Debug
-
+            default {
+                $splat_JoinStyle.Separator = ', ' # or user's -sep
+                Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                # Write-Error 'should never reach'
+            }
         }
-        catch {
-            $PSCmdlet.WriteError($_)
-        }
+
+        $splat_JoinStyle | Format-Table | Out-String | Write-Debug
+
+        # }
+        # catch {
+        #     $PSCmdlet.WriteError($_)
+        # }
 
     }
 

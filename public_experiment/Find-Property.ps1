@@ -22,6 +22,10 @@ function _enumerateProperty {
         $foo | _enumerateProperty
     .example
         $foo | _enumerateProperty | % Name
+    .example
+        # See also:
+        $x.GetType() | fm | Format-MemberSignature
+        $x[0].GetType() | Format-MemberSignature
     .link
         Dev.Nin\_enumerateProperty
     .link
@@ -53,6 +57,11 @@ function _enumerateProperty {
         $tinfo.ImplementedInterfaces | Format-TypeName -Brackets
         | STR UL -Sort -Unique
         | str Prefix 'ImplementedInterfaces: '
+        | Write-Information
+
+        $tinfo.CustomAttributes
+        | STR UL -Sort -Unique
+        | str Prefix 'CustomAttributes: '
         | Write-Information
 
         if (! $OutGridView ) {

@@ -54,7 +54,7 @@ function Format-Dict {
         [parameter(
             Mandatory, Position = 0,
             ValueFromPipeline
-        )]$InputObject, # instead, whichever type allows most dict types
+        )][object]$InputObject, # instead, whichever type allows most dict types
 
         [Parameter()]
         [hashtable]$Options
@@ -82,6 +82,7 @@ function Format-Dict {
     }
     process {
         [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
+        $disableGetEnumerate = $false
         # todo: UX: make dict render on a single line when empty
         $joinOuter_Splat = @{
             Separator    = "`n"
@@ -110,21 +111,41 @@ function Format-Dict {
         if ($InputObject -is [Collections.IDictionary]) {
             $TargetObj = $InputObject
         }
-        else {
-            # $TargetObj = $InputObject.psobject.properties | ForEach-Object {
-            #     [pscustomobject]@{
-            #         Name  = $_.Name
-            #         Value = $_.Value
-            #     }
-
-            # }
+        elseif ($InputObject -is [PSCustomObject]) {
+            $objAsHash = [ordered]@{}
+            $InputObject.psobject.properties | ForEach-Object {
+                $SafeKey = $_.Name ?? '[null]'
+                $objAsHash[ $SafeKey ] = $_.Value
+            }
+            # $objAsHash
+            # $targetObject = $obj AsHash
             # temp disable
-            # $TargetObj = $InputObject.psobject.properties
+            $TargetObj = $objAsHash
+
+            # $TargetObj = $InputObject
+        }
+        elseif ($InputObject -is [Collections.DictionaryEntry]) {
+            $disableGetEnumerate = $true
+            # $hash = @{}
+            # Get-ChildItem env: | ForEach-Object {
+            #     $hash[$_.key] = $_.Value
+            # }
+            # $TargetObj = $hash
+        }
+        else {
             $TargetObj = $InputObject
         }
 
+        $ToEnumerate = if (!  $disableGetEnumerate ) {
+            $TargetObj.GetEnumerator()
+        }
+        else {
+            $TargetObj
+        }
 
-        $TargetObj.GetEnumerator() | ForEach-Object {
+
+        $ToEnumerate | ForEach-Object {
+            # $TargetObj.GetEnumerator() | ForEach-Object {
             $outPrefix = @(
                 if ($Config.AlignKeyValuePairs) {
                     $paddedKey = (($_.Key) ?? '').padright($LongestName, ' ')

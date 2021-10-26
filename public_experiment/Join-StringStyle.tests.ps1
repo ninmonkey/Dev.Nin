@@ -6,7 +6,7 @@ BeforeAll {
 
 Describe 'Join-StringStyle' {
     BeforeAll {
-        $ErrorActionPreference = 'break'
+        # $ErrorActionPreference = 'break'
         $Listing = @{
             SmartAliases   = @(
                 'Str', 'JoinStr',
@@ -22,9 +22,22 @@ Describe 'Join-StringStyle' {
         }
     }
 
-    It 'works?' {
-        $true | Should -Be $True
+    Describe 'Smart Alias' {
+        BeforeAll {
+            # $ErrorActionPreference = 'Break'
+        }
+        It 'Explicit of "csv"' {
+            # 0..2 | str Csv | str Prefix 'nums: '
+            0..2 | str Csv
+            0..2 | prefix -ea break
+            { } | Should -Not THrow
+        }
+        # It 'smart alias "csv"' {
+
+        # }
+
     }
+
     Context 'ToImplement' -Tag 'nyi' -Skip {
         It 'Propertynames' {
             { Get-ChildItem . | Join-StringStyle NL 'hi' Name } | Should -Not -Throw -Because 'On TodoList: Property name'
@@ -101,6 +114,8 @@ Describe 'Join-StringStyle' {
             | Should -Be 'numbers: 0, 1, 2, 3, 4'
         }
     }
+
+
 
     Describe 'Sorting' {
         It 'Csv' {
