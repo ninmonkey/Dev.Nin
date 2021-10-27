@@ -3,5 +3,5 @@ BeforeAll {
 }
 
 Describe 'Invoke-VSCodeVenv' {
-    Code-vEnv -infa Continue -Version
+    # Code-vEnv -infa Continue -Version
 }

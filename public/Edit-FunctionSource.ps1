@@ -112,14 +112,16 @@ function Edit-FunctionSource {
                         $codeArgs = @(
                             '-r'
                             '-g'
-                            '""{0}:{1}:{2}""' -f @(
+                            '"{0}:{1}:{2}"' -f @(
                                 $Path
                                 $Meta.StartLineNumber
                                 $Meta.StartColumnNumber
                             )
                         )
                         $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
-                        $CodeArgs | Str
+                        # $CodeArgs | Join-String -sep ' '
+                        Code-Venv -path $Path -Line $Meta.StartLineNumber -Column $Meta.StartColumnNumber
+
                         # $codeArgs | prefix 'ArgList: ' -sep ' ' | Write-Debug
 
                         # code-venv -path (Get-Item $Path -ea stop)

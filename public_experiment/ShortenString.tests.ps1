@@ -7,7 +7,7 @@ BeforeAll {
     $ErrorActionPreference = 'Stop'
 }
 
-Describe "$__PesterFunctionName" -Tag Unit {
+Describe 'ShortenString' {
     Describe 'Basic Hardcoded' {
         It 'As Pipeline' {
             'abc' | ShortenString 2 | Should -Be 'ab'

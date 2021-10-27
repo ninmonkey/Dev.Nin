@@ -34,7 +34,7 @@ function __format_HighlightVenvPath {
             Dim  = 'gray40'
         }
         $Regex = @{
-            NumberCrumb          = @'
+            NumberCrumb                       = @'
 (?x)
 (?<Crumb>
    [^\\]+
@@ -44,9 +44,9 @@ function __format_HighlightVenvPath {
 )
 (?:\\)
 '@
-            NumberCrumbFullLines = @'
+            NumberCrumbFullLines              = @'
 (?x)
-(?<Prefix
+(?<Prefix>
 .*)
 (?<Crumb>
    [^\\]+
@@ -56,6 +56,26 @@ function __format_HighlightVenvPath {
 )
 (?:\\)
 (?<Suffix>.*)
+'@
+            LargeRegexAttemptDoesNotFullyWork = @'
+(?x)
+^
+(?<FullName>
+  .+
+)
+# --goto <file:line[:character]> Open a file
+(?<Suffix>
+  \:
+  (?:
+    \:
+    (?<Line>\d+)
+  )?
+  (?:
+    \:
+    (?<Column>\d+)
+  )?
+)
+$
 '@
 
         }
@@ -251,6 +271,16 @@ function Invoke-VSCodeVenv {
         [Parameter(ParameterSetName = 'OnlyHelpInfo')]
         [switch]$Help,
 
+        # what line?
+        [Alias('Line')]
+        [Parameter()]
+        [uint]$LineNumber,
+
+        # what column?
+        [Alias('Col')]
+        [Parameter()]
+        [uint]$ColumnNumber,
+
         [Alias('ExtraArgs')]
         [Parameter(ValueFromRemainingArguments)]
         [string]$RemainingArgs
@@ -271,9 +301,9 @@ function Invoke-VSCodeVenv {
     process {
         try {
             function  __printCodeArgs {
-                "execute: $codeBin" | write-color 'gray40'
+                "execute: $codeBin" | Write-Color 'gray40'
                 | Write-Information
-                $CodeArgs | Join-String -sep ' ' | write-color 'gray40'
+                $CodeArgs | Join-String -sep ' ' | Write-Color 'gray40'
                 | Write-Information
             }
 
@@ -289,10 +319,16 @@ function Invoke-VSCodeVenv {
             }
 
             if (Test-IsDirectory $target) {
-                'Open a directory?' | write-color 'blue'
+                hr
+                'Open 📁 a directory?'
+                | Write-Color 'blue'
+                hr
+
             }
             else {
-                'Open a File?' | write-color 'blue'
+                hr
+                'Open 📄 File?' | Write-Color 'blue'
+                hr
             }
 
             [string[]]$codeArgs = @()
@@ -307,7 +343,7 @@ function Invoke-VSCodeVenv {
                 | Join-String -op (hr 2) -os (hr 2) -sep "`n"
 
                 & $CodeBin @('--version')
-                | Join-String -sep ', ' -op (write-color orange -t 'Version: ')
+                | Join-String -sep ', ' -op (Write-Color orange -t 'Version: ')
 
                 return
             }
@@ -354,10 +390,25 @@ function Invoke-VSCodeVenv {
             }
             else {
                 # always use goto, even without line numbers. it's more resistant to errors
-                $CodeArgs += @(
-                    '--goto'
+                if (! $LineNumber) {
+                    'LineNumber? Y' | Write-Color green | wi
+                    $CodeArgs += @(
+                        '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
-                )
+                    )
+                }
+                else {
+                    'LineNumber? Y' | Write-Color green | wi
+                    $codeArgs += @(
+                        '--goto'
+                        '"{0}:{1}:{2}"' -f @(
+                            # $Path
+                            $Target.FullName
+                            $LineNumber ?? 0
+                            $ColumnNumber ?? 0
+                        )
+                    )
+                }
             }
 
             if (! [string]::IsNullOrWhiteSpace($RemainingArgs )) {
@@ -379,7 +430,7 @@ function Invoke-VSCodeVenv {
                         "`nCode = "
                         $BoldBinCode
                         "`nDataDir = "
-                        $DataDir | write-color cyan
+                        $DataDir | Write-Color cyan
                         "`n"
                         $strTarget | Format-RelativePath -BasePath .
                         "`n"
@@ -394,6 +445,13 @@ function Invoke-VSCodeVenv {
                 }
 
 
+                @(
+                    hr 1
+                    $strTarget | Join-String -op '$strTarget: '
+                    $StrOperation | Join-String -op '$strOperation: '
+                    $codeArgs | Join-String -sep ' ' -op '***args***'
+                    hr 1
+                ) | wi
                 if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
                     __printCodeArgs
                     Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
@@ -401,11 +459,11 @@ function Invoke-VSCodeVenv {
             }
 
             if ($ResumeSession) {
-                write-color -t 'ResumeSession' 'green' | Write-Information
+                Write-Color -t 'ResumeSession' 'green' | Write-Information
             }
             else {
-                write-color -t 'LoadItem: ' 'orange' | Write-Information
-                write-color -t $Target 'yellow' | Write-Information
+                Write-Color -t 'LoadItem: ' 'orange' | Write-Information
+                Write-Color -t $Target 'yellow' | Write-Information
             }
             $metaInfo += @{
                 BinCode       = $CodeBin

@@ -5,6 +5,7 @@
 
 Import-Module 'dev.nin' -Force
 
+
 return
 
 & {
@@ -16,6 +17,7 @@ return
         'Format-Dict'              = $true
         'Format-Dict.Verbose'      = $true
         'Format-Dict.CustomConfig' = $true # 📌 best
+        'RegexTestFilepath'        = $false
     }
 
 
@@ -23,9 +25,9 @@ return
 
         ($PSVersionTable -as 'hashtable' ).GetEnumerator() | ForEach-Object {
             #$_.key, $_.Value
-            $_.Value | write-color 'pink'
+            $_.Value | Write-Color 'pink'
             hr
-            $_.key | write-color 'seagreen2'
+            $_.key | Write-Color 'seagreen2'
             hr
         }
         hr
@@ -34,7 +36,7 @@ return
     if ($RunTest.'New-Test') {
         Dev.New-Sketch PowerShell Style🎨, Cli_Interactive🖐 fast_trace_route -WhatIf
         hr
-        'last' | write-color (find-color green | Get-Random -Count 1 )
+        'last' | Write-Color (find-color green | Get-Random -Count 1 )
     }
 
     if ($RunTest.'Format-Dict.CustomConfig') {
@@ -43,7 +45,7 @@ return
         hr
         Format-Dict -InputObject $NinProfile_Dotfiles
         hr
-        "it 'default alignment'" | write-color orange
+        "it 'default alignment'" | Write-Color orange
         hr
 
         $Options = @{
@@ -58,7 +60,7 @@ return
         Format-Dict -InputObject $NinProfile_Dotfiles -Options $Options
 
         hr
-        "it 'alignment'" | write-color orange
+        "it 'alignment'" | Write-Color orange
         hr
         $Options = @{
             Config = @{
@@ -72,11 +74,11 @@ return
         Format-Dict -InputObject $NinProfile_Dotfiles -Options $Options
 
         hr
-        write-color yellow -t 'Show nested details?'
-        write-color orange -t '1) $Options'
+        Write-Color yellow -t 'Show nested details?'
+        Write-Color orange -t '1) $Options'
         Format-Dict $Options
 
-        write-color orange -t '2) $Options.Config'
+        Write-Color orange -t '2) $Options.Config'
         Format-Dict $Options.Config
         hr
     }
@@ -85,5 +87,60 @@ return
         # $samples3 | _formatErrorSummary | Select-Object -First 3
         $samples3 ??= $error
         $samples3 | _formatErrorSummary | Select-Object -First 3
+    }
+}
+if ($RunTest.RegexTestFilepath) {
+
+
+    $Samples = @{}
+    $Samples.Valid = @(
+        'ormat_color.ps1:3:1',
+        'ormat_color.ps1:33245:133',
+        'foobar.ps1:3:5',
+        'c:\foo  a\foobar.ps1:3',
+        'c:\foo  a\foobar.ps1',
+        'bar.t',
+        'foo:3',
+        '3:fo.ps:3:1'
+    ) | Sort-Object -Unique | ForEach-Object {
+        @{ SamplePath = $_ ; Expected = $True }
+    }
+    $Samples.Invalid = @(
+        'c:\foo  \foobar.ps1:a:3:',
+        'c:\foo  \foobar.ps1:3:',
+        'c:\foo  \foobar.ps1:',
+        'bar:4:6:',
+        'bar:4: 6',
+        'bar:4:6:',
+        ':2:3:'
+    ) | Sort-Object -Unique | ForEach-Object {
+        @{ SamplePath = $_ ; Expected = $False }
+    }
+
+    $re = @'
+(?x)
+^
+(?<FullName>
+  .+
+)
+# --goto <file:line[:character]> Open a file
+(?<Suffix>
+  \:
+  (?:
+    \:
+    (?<Line>\d+)
+  )?
+  (?:
+    \:
+    (?<Column>\d+)
+  )?
+)?
+$
+'@
+
+    $Samples.valid.'SamplePath' | ForEach-Object {
+        $_ | Write-Color pink
+        $_ -match $re | Should -Be $True
+
     }
 }

@@ -17,6 +17,7 @@
             }
         },
         "files.watcherInclude": [],
+        "powershell.codeFormatting.useConstantStrings": true,
 
     },
     "tasks": {
