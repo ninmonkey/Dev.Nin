@@ -74,10 +74,15 @@ function Format-Dict {
             ColorChildType        = $false # not finished
             BackgroundColorValues = $true
             PrefixLabel           = 'Dict'
+            DisplayTypeName       = $true
         }
         $Config = Join-Hashtable $Config ($Options.Config ?? @{})
         $Config.JoinOuter = @{
             OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
+        }
+        $Template = @{
+            OutputPrefix         = "`nDict = {`n"
+            OutputPrefixWithType = "`nDict = {{ {0}`n"
         }
     }
     process {
@@ -85,10 +90,16 @@ function Format-Dict {
         $disableGetEnumerate = $false
         # todo: UX: make dict render on a single line when empty
         $joinOuter_Splat = @{
+
             Separator    = "`n"
-            OutputPrefix = "`nDict = {`n"
+            OutputPrefix = $Template.OutputPrefix # was: "`nDict = {`n"
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
-            OutputSuffix = "`n}`n"
+            OutputSuffix = "`n}" # was: "`n}`n"
+        }
+        if ($Config.DisplayTypeName) {
+            $joinOuter_Splat['OutputPrefix'] = $Template.OutputPrefixWithType -f @(
+                $InputObject.GetType() | Format-TypeName -WithBrackets | write-color gray60
+            )
         }
         Write-Debug 'Type? '
         if ($InputObject -is [Collections.IDictionary]) {

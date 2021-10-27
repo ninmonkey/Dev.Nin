@@ -9,6 +9,6 @@ $query = @(
 
     'hi world'
 
-    [pscustomobject]@{ 'Something' = 3; 'Bar' = (0..4); }
+    [pscustomobject]@{ 'Something' = 3; 'Bar' = (0..4) }
 
 ) | iterProp -infa Continue
