@@ -157,6 +157,20 @@ function Join-StringStyle {
         [Parameter()] #
         [Switch]$DoubleQuote
 
+        # # By Property name, else param: Foreground [rgbcolor]
+        # [Alias('Fg', 'Color', 'ForegroundColor')]
+        # [ValidateNotNullOrEmpty()]
+        # [Parameter(ValueFromPipelineByPropertyName)]
+        # [PoshCode.Pansies.RgbColor]
+        # $ForegroundColor,
+
+        # # By Property name, else param: Foreground [rgbcolor]
+        # [Alias('Bg', 'BackgroundColor')]
+        # [ValidateNotNullOrEmpty()]
+        # [Parameter(ValueFromPipelineByPropertyName)]
+        # [PoshCode.Pansies.RgbColor]
+        # $BackgroundColor
+
 
 
         # future: todo: # property name if not string
