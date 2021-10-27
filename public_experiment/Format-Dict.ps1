@@ -86,6 +86,21 @@ function Format-Dict {
         }
     }
     process {
+        $metaDebug = [ordered]@{
+            FullName = ($InputType)?.GetType().FullName
+            Count    = $InputType.Count
+            # FirstChild =
+        }
+
+        try {
+            # $metaDebug['firstChild'] = ($InputType)?.GetType() ?? '$null'
+            $metaDebug['firstChild'] = @($InputType)[0]?.GetType().FullName ?? '$null'
+        }
+        catch {
+            $metaDebug['firstChild'] = 'failed'
+
+        }
+
         [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
         $disableGetEnumerate = $false
         # todo: UX: make dict render on a single line when empty
@@ -146,6 +161,25 @@ function Format-Dict {
         else {
             $TargetObj = $InputObject
         }
+        # // one final test
+        if (!($InputObject.psobject.Methods['GetEnumerator'])) {
+            $disableGetEnumerate = $true
+            "MissingMethodError: type '{0}' has no '.GetEnumerator'" -f @(
+                $InputObject.GetType().FullName
+            ) | Write-Debug -ea continue
+            # ) | Write-Verbose
+
+            # $hash = @{}
+            # $disableGetEnumerate = $True
+            # $InputObject | iterProp -infa ignore | ForEach-Object {
+            #     $hash[ $_.Name ] = $_.Value
+            # }
+            # $TargetObject = $hash # todo: better to be a hash or a psco ?
+        }
+        $metaDebug['disableGetEnumerate'] = $disableGetEnumerate
+        $metaDebug['TargetObject'] = ($TargetObj)?.GetType() ?? '$Null'
+        $metaDebug | format-dict |  write-information
+        $metaDebug | format-dict |  write-debug
 
         $ToEnumerate = if (!  $disableGetEnumerate ) {
             $TargetObj.GetEnumerator()
