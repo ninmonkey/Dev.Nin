@@ -26,7 +26,8 @@ Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
     . $_
 }
 
-$stableToExport | Join-String -op 'stableToExport' | Write-Debug
+# $stableToExport.Function | Join-String -op 'stableToExport' | Write-Debug
+# $stableToExport | Join-String -op 'stableToExport' | Write-Debug
 
 if ($stableToExport['function']) {
     Export-ModuleMember -Function $stableToExport['function']
@@ -41,7 +42,7 @@ if ($stableToExport['variable']) {
     Export-ModuleMember -Variable $stableToExport['variable']
 }
 
-$meta | Write-Information
+# $meta | Write-Information
 
 # }
 #

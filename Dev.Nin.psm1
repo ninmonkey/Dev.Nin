@@ -7,9 +7,32 @@
 $formatData = @(
 )
 
+function __yell {
+    <#
+    .synopsis
+        quick hack, not for use
+    #>
+    param(
+        [string]$Message
+    )
+    @(
+        "`n---------------------`n"
+        '.' * 120 | Join-String -op '  error'
+        $Message ?? '...'
+        "`n---------------------`n"
+    ) | Join-String -sep "`n" | Write-Error -ea continue
+}
+
+# write-debug ('.' * 120 | Join-string -op '  debug')
+# write-warning ('.' * 120 | Join-string -op '  warn')
+# write-error ('.' * 120 | Join-string -op '  error')
+
+
 $formatData_BuiltIn = @(
     'FileListing'
 )
+
+__yell a
 
 if ($__Config.Enable_FormatData_BuiltIn) {
     foreach ($typeName in $formatData_BuiltIn) {
@@ -18,6 +41,9 @@ if ($__Config.Enable_FormatData_BuiltIn) {
         Update-FormatData -PrependPath $FileName
     }
 }
+
+
+# __yell b
 
 $private = @(
     # actually private
@@ -42,6 +68,9 @@ foreach ($file in $private) {
     }
 }
 
+# __yell C
+
+
 $public_QuickExperiment = @(
     # '_toastTimer'
     '_get_commandMine'
@@ -58,6 +87,7 @@ $public_QuickExperiment = @(
 Export-ModuleMember -Function $public_QuickExperiment
 
 
+# __yell D
 
 
 $public_NativeWrapper = @(
@@ -78,6 +108,7 @@ Export-ModuleMember -Function $public_NativeWrapper
 $completer = @(
 
 )
+# __yell E
 
 foreach ($file in $completer) {
     if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
@@ -119,10 +150,6 @@ $public = @(
     'Start-DevTimer'
     'Get-RegexHelp'
     'Restart-LGHubDriver'
-
-
-
-
     # newest experiments
     'New-RegexToggleSensitive'
 
@@ -131,8 +158,8 @@ $public = @(
     'Find-VerbPrefix'
     'Dev-InvokeFdFind'
     'Out-ConsoleHighlight'
-    'import-Dev-Unicode'
-    'Format-TemplateString'
+
+
     'Dev-ExportFormatData'
     'Get-DevSavedColor'
     'Format-DevColor'
@@ -148,15 +175,18 @@ $public_ToRefactorOutside = @(
 
 $functionsToExport += $public_ToRefactorOutside
 
+__yell G
+
 foreach ($file in $public) {
     $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
     if (Test-Path $ExpectedPath) {
         . $ExpectedPath
     }
     else {
-        Write-Error "Import: failed: public: $File"
+        Write-Error "Import: failed: public: $File" -ea break
     }
 }
+__yell G2
 
 $functionsToExport = @(
     ##  newer
@@ -186,7 +216,6 @@ $functionsToExport = @(
     'Get-FunctionDebugInfo'
     'Edit-FunctionSource'
     'Get-RegexHelp'
-    'Restart-LGHubDriver'
 
 
     # newest experiments
@@ -203,7 +232,7 @@ $functionsToExport = @(
     'Get-SavedData'
     'Find-VerbPrefix'
     'Out-ConsoleHighlight'
-    'Format-TemplateString'
+
     'Dev-ExportFormatData'
     'Start-DevTimer'
     'Get-DevSavedColor'
@@ -225,6 +254,7 @@ $functionsToExport += $functionsToExport_ToRefactorOutside
 Export-ModuleMember -Function $functionsToExport
 
 
+# __yell H
 # New-Alias -ea 'Ignore' 'Docs' -Value 'Get-Docs' -Description 'Jump to docs by language'
 $aliasesToExport = @(
     # temporary aliases
@@ -271,8 +301,9 @@ $aliasesToExport = @(
 )
 Export-ModuleMember -Alias $aliasesToExport
 
-
+# __yell J
 . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_stable\__init__.ps1'))
+
 
 if ($__Config.Enable_Import_PublicExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
@@ -281,6 +312,7 @@ if ($__Config.Enable_Import_PublicExperiment_Dir) {
 if ($__Config.Enable_Import_PrivateExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
 }
+# __yell I
 <#
 Sketch: Detect imports
 if ($False) {

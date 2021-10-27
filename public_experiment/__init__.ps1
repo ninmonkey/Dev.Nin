@@ -29,6 +29,7 @@ try {
     | Write-Debug
 
     $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
 }

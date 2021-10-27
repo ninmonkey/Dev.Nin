@@ -2,6 +2,11 @@
 # Import-Module dev.nin -Force 3>$NULL
 # 'rgbcolor' | New-TypeInfo
 # hest explicit
+
+Import-Module 'dev.nin' -Force
+
+return
+
 & {
     Import-Module dev.nin -Force
     hr
