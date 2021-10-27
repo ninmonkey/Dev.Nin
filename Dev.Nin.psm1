@@ -1,13 +1,4 @@
-﻿$__Config = @{
-    Enable_FormatData                  = $true
-    Enable_FormatData_BuiltIn          = $true # toggles overriting builtin type's formatdata
-    Enable_Import_PublicExperiment_Dir = $True
-    Enable_Import_PrivateExperiment_Dir = $True
-}
-$formatData = @(
-)
-
-function __yell {
+﻿function __yell {
     <#
     .synopsis
         quick hack, not for use
@@ -22,6 +13,19 @@ function __yell {
         "`n---------------------`n"
     ) | Join-String -sep "`n" | Write-Error -ea continue
 }
+
+("`n" * 10) -join '' | Write-Error
+__yell 0
+
+$__Config = @{
+    Enable_FormatData                   = $true
+    Enable_FormatData_BuiltIn           = $true # toggles overriting builtin type's formatdata
+    Enable_Import_PublicExperiment_Dir  = $True
+    Enable_Import_PrivateExperiment_Dir = $True
+}
+$formatData = @(
+)
+
 
 # write-debug ('.' * 120 | Join-string -op '  debug')
 # write-warning ('.' * 120 | Join-string -op '  warn')
@@ -111,7 +115,7 @@ $completer = @(
 # __yell E
 
 foreach ($file in $completer) {
-    if (Test-Path ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)) {
+    if (Test-Path ('{0}\public\completer\{1}.ps1' -f @($psscriptroot, $file))) {
         . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
     }
     else {
@@ -149,7 +153,7 @@ $public = @(
     'Edit-FunctionSource'
     'Start-DevTimer'
     'Get-RegexHelp'
-    'Restart-LGHubDriver'
+
     # newest experiments
     'New-RegexToggleSensitive'
 
@@ -170,7 +174,7 @@ $public = @(
 )
 
 $public_ToRefactorOutside = @(
-    'Restart-LGHubDriver'
+
 )
 
 $functionsToExport += $public_ToRefactorOutside
@@ -178,12 +182,13 @@ $functionsToExport += $public_ToRefactorOutside
 __yell G
 
 foreach ($file in $public) {
-    $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f $psscriptroot, $file)
+    Write-Debug "================================= Trying: '$file'"
+    $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f @($psscriptroot, $file))
     if (Test-Path $ExpectedPath) {
         . $ExpectedPath
     }
     else {
-        Write-Error "Import: failed: public: $File" -ea break
+        Write-Error "Import: failed: public: $File"
     }
 }
 __yell G2
@@ -248,7 +253,7 @@ $functionsToExport = @(
 )
 
 $functionsToExport_ToRefactorOutside = @(
-    'Restart-LGHubDriver'
+
 )
 $functionsToExport += $functionsToExport_ToRefactorOutside
 Export-ModuleMember -Function $functionsToExport

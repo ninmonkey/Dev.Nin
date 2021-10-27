@@ -12,7 +12,7 @@ $__moduleMetaData_DidError_PrevCount = 0
 #   $error.count
 # }
 # # errorCount
-Write-Warning 'Test-DidErrorOccur: Needs full rewrite'
+# Write-Warning 'Test-DidErrorOccur: Needs full rewrite'
 
 function Test-DidErrorOccur {
     <#
@@ -35,6 +35,7 @@ function Test-DidErrorOccur {
 
     )
     begin {
+        Write-Warning 'requires full rewrite'
     }
     end {
         return
