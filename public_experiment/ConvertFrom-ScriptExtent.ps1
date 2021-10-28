@@ -1,5 +1,86 @@
-$experimentToExport.function += 'ConvertFrom-ScriptExtent'
-# $experimentToExport.alias += 'Format-ScriptExtentToVscodeFilepath'
+$experimentToExport.function += @(
+    # 'ConvertFrom-ScriptExtent'
+    'New-VsCodeFilepath'
+)
+$experimentToExport.alias += @(
+    # 'ConvertTo-VsCodeFilepath'
+    # 'Format-ScriptExtentToVscodeFilepath'
+)
+
+
+class VsCodeFilePath {
+    [string]$Path
+    [uint]$Line
+    [uint]$Column
+
+    #  Possible input types;
+    #         gi .\Invoke-BuildGenerateAll.ps1 | % gettype | Fullname
+    #         [System.IO.FileInfo]
+    [string]ToString() {
+
+        # $template_all = @(
+        #     '-r'
+        #     '-g'
+        #     '""{0}:{1}:{2}""' -f @(
+        #         $Path
+        #         $Meta.StartLineNumber
+        #         $Meta.StartColumnNumber
+        #     )
+        # )
+
+        return ('"{0}"' -f $This.Path.ToString())
+    }
+}
+# function ConvertTo-VsCodeFilepath {
+function New-VSCodeFilepath {
+    <#
+    .synopsis
+        jump to line number in a file, assumes it's not a folder
+    .description
+       .
+        code --help synatx:
+            # actual use: --goto <file:line[:character]>
+    .example
+          .
+    .outputs
+          [string | None]
+
+    #>
+    [Alias('VsCodePath'
+        # ,'ConvertTo-VSCodePath'
+    )]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Alias('PSPath', 'Path', 'Name')]
+        [Parameter(
+            Mandatory, Position = 0,
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
+        [object]$InputObject
+    )
+
+    begin {}
+    process {
+        if (Test-IsDirectory $InputObject) {
+            Write-Error "'$InputObject' is a directory"
+            return
+        }
+        $path = Get-Item -Path $InputObject
+        $meta = @{
+            PSTypeName   = 'nin.VSCodeFilepath'
+            PSPath       = $Path.PSPath
+            Path         = $Path
+            HasLocation  = $True # to be script propertyh
+            LineNumber   = $Null
+            ColumnNumber = $null
+        }
+        [pscustomobject]$meta
+
+    }
+    end {}
+}
+
 
 function ConvertFrom-ScriptExtent {
     <#
@@ -25,9 +106,11 @@ function ConvertFrom-ScriptExtent {
 
     #>
     [Alias(
+        'ConvertTo-VsCodeFilepath',
         'Format-ScriptExtentToVscodeFilepath'
 
     )]
+    [OutputType([string])]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # input objects

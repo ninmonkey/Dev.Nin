@@ -12,7 +12,7 @@ Describe 'Test-OneOrNone' {
         { 'a' | Test-OneOrNone } | Should -Not -Throw
     }
     Describe 'Mode: default' {
-        $ErrorActionPreference = 'break'
+        # $ErrorActionPreference = 'break'
         'a', 'b' | Test-OneOrNone | Should -Be $false
         'a' | Test-OneOrNone | Should -Be $true
         It '$nulls' {
