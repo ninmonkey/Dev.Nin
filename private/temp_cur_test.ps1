@@ -6,21 +6,31 @@
 Import-Module 'dev.nin' -Force
 
 
-return
-
 & {
-    Import-Module dev.nin -Force
+
     hr
 
     $RunTest = @{
-        'New-Sketch'               = $true
-        'Format-Dict'              = $true
-        'Format-Dict.Verbose'      = $true
-        'Format-Dict.CustomConfig' = $true # 📌 best
+        'GotoError'                = $True
+        'New-Sketch'               = $false
+        'Format-Dict'              = $false
+        'Format-Dict.Verbose'      = $false
+        'Format-Dict.CustomConfig' = $false # 📌 best
         'RegexTestFilepath'        = $false
     }
 
 
+    if ($RunTest.'GotoError') {
+        if ($savedErr) {
+            $savedErr[0] | _processErrorRecord_AsLocation
+            hr
+
+            $savedErr[0] | gotoError -PassThru
+        }
+        else {
+            Write-Error 'No Saved Errors'
+        }
+    }
     if ($RunTest.'Format-Dict.Verbose') {
 
         ($PSVersionTable -as 'hashtable' ).GetEnumerator() | ForEach-Object {
@@ -88,36 +98,36 @@ return
         $samples3 ??= $error
         $samples3 | _formatErrorSummary | Select-Object -First 3
     }
-}
-if ($RunTest.RegexTestFilepath) {
+
+    if ($RunTest.RegexTestFilepath) {
 
 
-    $Samples = @{}
-    $Samples.Valid = @(
-        'ormat_color.ps1:3:1',
-        'ormat_color.ps1:33245:133',
-        'foobar.ps1:3:5',
-        'c:\foo  a\foobar.ps1:3',
-        'c:\foo  a\foobar.ps1',
-        'bar.t',
-        'foo:3',
-        '3:fo.ps:3:1'
-    ) | Sort-Object -Unique | ForEach-Object {
-        @{ SamplePath = $_ ; Expected = $True }
-    }
-    $Samples.Invalid = @(
-        'c:\foo  \foobar.ps1:a:3:',
-        'c:\foo  \foobar.ps1:3:',
-        'c:\foo  \foobar.ps1:',
-        'bar:4:6:',
-        'bar:4: 6',
-        'bar:4:6:',
-        ':2:3:'
-    ) | Sort-Object -Unique | ForEach-Object {
-        @{ SamplePath = $_ ; Expected = $False }
-    }
+        $Samples = @{}
+        $Samples.Valid = @(
+            'ormat_color.ps1:3:1',
+            'ormat_color.ps1:33245:133',
+            'foobar.ps1:3:5',
+            'c:\foo  a\foobar.ps1:3',
+            'c:\foo  a\foobar.ps1',
+            'bar.t',
+            'foo:3',
+            '3:fo.ps:3:1'
+        ) | Sort-Object -Unique | ForEach-Object {
+            @{ SamplePath = $_ ; Expected = $True }
+        }
+        $Samples.Invalid = @(
+            'c:\foo  \foobar.ps1:a:3:',
+            'c:\foo  \foobar.ps1:3:',
+            'c:\foo  \foobar.ps1:',
+            'bar:4:6:',
+            'bar:4: 6',
+            'bar:4:6:',
+            ':2:3:'
+        ) | Sort-Object -Unique | ForEach-Object {
+            @{ SamplePath = $_ ; Expected = $False }
+        }
 
-    $re = @'
+        $re = @'
 (?x)
 ^
 (?<FullName>
@@ -138,9 +148,10 @@ if ($RunTest.RegexTestFilepath) {
 $
 '@
 
-    $Samples.valid.'SamplePath' | ForEach-Object {
-        $_ | Write-Color pink
-        $_ -match $re | Should -Be $True
+        $Samples.valid.'SamplePath' | ForEach-Object {
+            $_ | Write-Color pink
+            $_ -match $re | Should -Be $True
 
+        }
     }
 }

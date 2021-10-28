@@ -75,6 +75,13 @@ function _processErrorRecord_AsLocation {
         # PositionMessage
         # ScriptLineNumber
         # ScriptName
+        if (!($iinfo.ScriptName)) {
+            $x = 'bad'
+        }
+
+        $maybePath = $iinfo.ScriptName | Get-Item -ea ignore
+        $maybePath ??= $iinfo.ScriptName
+
         $meta = [ordered]@{
             PSTypeName      = 'nin.VSCodeFilepath'
             ColumnNumber    = $iinfo.OffsetInLine
@@ -82,7 +89,7 @@ function _processErrorRecord_AsLocation {
             LineNumber      = $iinfo.ScriptLineNumber
             Path            = $iinfo.ScriptName
             PositionMessage = $iinfo.PositionMessage
-            PSPath          = $iinfo.ScriptName | Get-Item
+            PSPath          = $maybePath
         }
         [pscustomobject]$meta
     }
@@ -125,12 +132,13 @@ function Invoke-VSCodeViewError {
     }
     end {
         $InputList | ForEach-Object {
-            $record = _processErrorRecord_AsLocation
+            $curItem = $_
+            $record = $curItem | _processErrorRecord_AsLocation
             if ($PassThru) {
                 $record
             }
             else {
-                $record
+                code-venv -path $Record.Path -line $Record.LineNumber -Column   $Record.ColumnNumber
             }
         }
     }
