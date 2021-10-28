@@ -178,8 +178,8 @@ function Format-Dict {
         }
         $metaDebug['disableGetEnumerate'] = $disableGetEnumerate
         $metaDebug['TargetObject'] = ($TargetObj)?.GetType() ?? '$Null'
-        $metaDebug | format-dict |  write-information
-        $metaDebug | format-dict |  write-debug
+        $metaDebug | Format-Table | out-string |  write-information
+        $metaDebug | Format-Table | out-string |  write-debug
 
         $ToEnumerate = if (!  $disableGetEnumerate ) {
             $TargetObj.GetEnumerator()
