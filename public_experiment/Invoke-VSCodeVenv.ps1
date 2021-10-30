@@ -384,8 +384,11 @@ function Invoke-VSCodeVenv {
 
             if (Test-IsDirectory $target) {
                 $CodeArgs += @(
-                    '--add'
-                    (Get-Item $Target | Join-String -DoubleQuote)
+                    # '--add' modifier will *always* use an existing window
+                    if ($WindowMode -eq 'ReuseWindow') {
+                        '--add'
+                    }
+                    Get-Item $Target | Join-String -DoubleQuote
                 )
             }
             else {
