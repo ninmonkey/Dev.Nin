@@ -24,6 +24,8 @@ function Get-RuneDetail {
 
     .example
         `tHi`tworld`vthere`nend." | Get-RuneDetail
+    .example
+        🐒> Get-RuneDetail -InputText 'afz🐒>' | ft -AutoSize
 
     #>
     [CmdletBinding(PositionalBinding = $false)]
@@ -40,7 +42,7 @@ function Get-RuneDetail {
         $str = @{
             Null       = '[null]'
             NullSymbol = "`u{2400}"
-            Nyi        = 'Nyi?'
+            # Nyi        = 'Nyi?'
         }
         $Simplify = $true
     }
@@ -48,12 +50,13 @@ function Get-RuneDetail {
         $InputText.EnumerateRunes()
         | ForEach-Object {
             $rune = $_
-            $meta = @{
-                RuneStr     = $Rune | CtrlChar
-                Rune        = $Rune
-                UniCategory = [Rune]::GetUnicodeCategory( $Rune )
-                Name        = $Str.Nyi
+            $meta = [ordered]@{
+                PSTypeName  = 'nin.RuneDetail'
                 CodeHex     = '0x{0:x}' -f $Rune.Value
+                # Name        = $Str.Nyi
+                # Rune        = $Rune # Actual
+                # RuneStr     = $Rune | CtrlChar # Safe value
+                UniCategory = [Rune]::GetUnicodeCategory( $Rune )
             }
             if ($meta.UniCategory -notmatch 'control' ) {
                 $meta['RuneOnRenderTest'] = "Good: '$Rune'"

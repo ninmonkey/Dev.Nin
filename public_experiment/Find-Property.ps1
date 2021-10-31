@@ -1,12 +1,12 @@
 # if ($BadDebugEnabled) {
 
 $experimentToExport.function += @(
-    '_enumerateProperty'
+    'iterProp'
 )
 $experimentToExport.alias += @(
-    'iterProp'
-    'Find-ObjectProperty'
+    '_enumerateProperty'
 
+    # 'Find-ObjectProperty'
     # 'New-Sketch'
 )
 # }
@@ -15,11 +15,11 @@ $experimentToExport.alias += @(
 function _enumerateProperty {
     <#
     .synopsis
-    zero filtering. plain sugar for $x.psobject.properties
+    zero filtering. sugar for $x.psobject.properties.
     .description
         .
     .example
-        $foo | _enumerateProperty
+        [datetime]::Now | iterprop -OutGridView
     .example
         $foo | _enumerateProperty | % Name
     .example
@@ -27,11 +27,13 @@ function _enumerateProperty {
         $x.GetType() | fm | Format-MemberSignature
         $x[0].GetType() | Format-MemberSignature
     .link
-        Dev.Nin\_enumerateProperty
+        # Dev.Nin\_enumerateProperty
     .link
         Dev.Nin\iProp
     #>
-    [Alias('iterProp', 'Find-ObjectProperty')]
+    [Alias('iterProp'
+        #'Find-ObjectProperty' find might be for iprop, not this?
+    )]
     [cmdletbinding()]
     param(
         # any object

@@ -4,7 +4,7 @@
 #     'Get-Codepoint'
 # )
 # $experimentToExport.alias += @(
-    
+
 # )
 # $experimentFuncMetadata += @{
 #     # metadataRecord
@@ -19,10 +19,10 @@ function Get-Codepoint {
     .notes
     reference:
 
-    🐒> ('sfzf'.GetEnumerator() ).GetType() 
+    🐒> ('sfzf'.GetEnumerator() ).GetType()
         returns
             [CharEnumerator] from:
-    
+
     🐒> ('sfzf'.EnumerateRunes() ).GetType()
 
         returns
@@ -34,12 +34,14 @@ function Get-Codepoint {
         [Alias('Text')]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [string]$InputObject
-    ) 
+    )
+
+    # todo: final cleaning pass
     begin {}
     process {
         # if($InputObject.count -eq 1) {
         #     # when a single value, return without label
-        $InputObject.EnumerateRunes() | % { 
+        $InputObject.EnumerateRunes() | % {
             $curRune = $_ # is type: [Text.Rune]
 
             $meta = [PSCustomObject]@{
@@ -50,10 +52,8 @@ function Get-Codepoint {
                 # future: Make .tostring() render as
                 #   U+0x2400 [␀]
             }
-            $meta 
-        }    
+            $meta
+        }
     }
     end {}
 }
-
-

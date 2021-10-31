@@ -299,205 +299,207 @@ function Invoke-VSCodeVenv {
 
     }
     process {
+        # try {
+
+        function  __printCodeArgs {
+            "execute: $codeBin" | Write-Color 'gray40'
+            | Write-Information
+            $CodeArgs | Join-String -sep ' ' | Write-Color 'gray40'
+            | Write-Information
+        }
+
+
+        $metaInfo = [ordered]@{}
         try {
-            function  __printCodeArgs {
-                "execute: $codeBin" | Write-Color 'gray40'
-                | Write-Information
-                $CodeArgs | Join-String -sep ' ' | Write-Color 'gray40'
-                | Write-Information
-            }
-
-
-            $metaInfo = [ordered]@{}
-            try {
-                $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
-                $DataDir = Get-Item -ea stop $DataDir
-                $target = Get-Item -ea ignore $TargetPath
-            }
-            catch {
-                Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
-            }
-
-            if (Test-IsDirectory $target) {
-                hr
-                'Open 📁 a directory?'
-                | Write-Color 'blue'
-                hr
-
-            }
-            else {
-                hr
-                'Open 📄 File?' | Write-Color 'blue'
-                hr
-            }
-
-            [string[]]$codeArgs = @()
-
-            # Exit Early functions
-            if ($Version) {
-                & $CodeBin @('--list-extensions')
-                | Join-String -op (hr 2) -os (hr 2) -sep "`n"
-
-                & $CodeBin @('--list-extensions', '--show-versions')
-                | ForEach-Object { $_ -replace '@', ': ' }
-                | Join-String -op (hr 2) -os (hr 2) -sep "`n"
-
-                & $CodeBin @('--version')
-                | Join-String -sep ', ' -op (Write-Color orange -t 'Version: ')
-
-                return
-            }
-            if ($Help) {
-                & $CodeBin @('--help')
-                return
-            }
-
-
-
-            if ($DataDir) {
-                $codeArgs += @(
-                    '--user-data-dir'
-                    $DataDir | Get-Item -ea stop
-                )
-            }
-
-            switch ($WindowMode) {
-                'NewWindow' {
-                    $CodeArgs += @('--new-window')
-                }
-                'ReuseWindow' {
-                    $CodeArgs += @('--reuse-window')
-                }
-                default {
-                    $CodeArgs += @('--reuse-window')
-                }
-            }
-            if ($ResumeSession) {
-                if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
-
-                    __printCodeArgs
-                    Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
-                    return
-                }
-            }
-            ## now more
-
-            if (Test-IsDirectory $target) {
-                $CodeArgs += @(
-                    # '--add' modifier will *always* use an existing window
-                    if ($WindowMode -eq 'ReuseWindow') {
-                        '--add'
-                    }
-                    Get-Item $Target | Join-String -DoubleQuote
-                )
-            }
-            else {
-                # always use goto, even without line numbers. it's more resistant to errors
-                if (! $LineNumber) {
-                    'LineNumber? Y' | Write-Color green | wi
-                    $CodeArgs += @(
-                        '--goto'
-                    (Get-Item $Target | Join-String -DoubleQuote)
-                    )
-                }
-                else {
-                    'LineNumber? Y' | Write-Color green | wi
-                    $codeArgs += @(
-                        '--goto'
-                        '"{0}:{1}:{2}"' -f @(
-                            # $Path
-                            $Target.FullName
-                            $LineNumber ?? 0
-                            $ColumnNumber ?? 0
-                        )
-                    )
-                }
-            }
-
-            if (! [string]::IsNullOrWhiteSpace($RemainingArgs )) {
-                $CodeArgs += $RemainingArgs
-            }
-
-            if ($True) {
-                # any non-finished invokes
-                $strTarget = $target | Join-String -sep ' ' -DoubleQuote
-                $StrOperation = $CodeBin, $DataDIr -join ', '
-
-                if (! $Env:NoColor) {
-
-                    $StrTarget = $Target | Join-String -sep "`n" -op "`n" -os "`n"
-
-                    # bold version number
-                    $boldBinCode = __format_HighlightVenvPath $CodeBin
-                    @(
-                        "`nCode = "
-                        $BoldBinCode
-                        "`nDataDir = "
-                        $DataDir | Write-Color cyan
-                        "`n"
-                        $strTarget | Format-RelativePath -BasePath .
-                        "`n"
-                    ) | Join-String
-
-                    # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
-                    # | Join-String -sep "`n" -op "`n" -os "`n"
-
-                    # | Join-String -sep "`n" -op "`n" -os "`n"
-                    # | write-color magenta
-                    # | write-color magenta
-                }
-
-
-                @(
-                    hr 1
-                    $strTarget | Join-String -op '$strTarget: '
-                    $StrOperation | Join-String -op '$strOperation: '
-                    $codeArgs | Join-String -sep ' ' -op '***args***'
-                    hr 1
-                ) | wi
-                if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
-                    __printCodeArgs
-                    Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
-                }
-            }
-
-            if ($ResumeSession) {
-                Write-Color -t 'ResumeSession' 'green' | Write-Information
-            }
-            else {
-                Write-Color -t 'LoadItem: ' 'orange' | Write-Information
-                Write-Color -t $Target 'yellow' | Write-Information
-            }
-            $metaInfo += @{
-                BinCode       = $CodeBin
-                DataDir       = $DataDir
-                Target        = $Target
-                codeArgs      = $CodeArgs
-                ResumeSession = $ResumeSession
-                BoundParams   = $PSBoundParameters
-                ParameterSet  = $PSCmdlet.ParameterSetName
-                RemainingArgs = $RemainingArgs
-                PSCommandPath = $PSCommandPath
-                PSScriptRoot  = $PSScriptRoot
-            }
-
-
-            # $target
-            # hr
-            # $Operation = 'open file, re-use window'
-            # $DataDir | write-color blue
-            # hr
-            # $CodeBin.FullName | write-color 'yellow'
-            # $codeArgs | Join-String -sep ' ' -op ' $codeArgs: '
-
-            $metaInfo += @{
-                Operation     = $operation
-                FinalCodeArgs = $codeArgs
-            }
+            $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
+            $DataDir = Get-Item -ea stop $DataDir
+            $target = Get-Item -ea ignore $TargetPath
         }
         catch {
-            $PSCmdlet.WriteError( $_ )
+            Write-Error -ea stop 'Invalid Path'
+            # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
+
+        if (Test-IsDirectory $target) {
+            hr
+            'Open 📁 a directory?'
+            | Write-Color 'blue'
+            hr
+
+        }
+        else {
+            hr
+            'Open 📄 File?' | Write-Color 'blue'
+            hr
+        }
+
+        [string[]]$codeArgs = @()
+
+        # Exit Early functions
+        if ($Version) {
+            & $CodeBin @('--list-extensions')
+            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
+
+            & $CodeBin @('--list-extensions', '--show-versions')
+            | ForEach-Object { $_ -replace '@', ': ' }
+            | Join-String -op (hr 2) -os (hr 2) -sep "`n"
+
+            & $CodeBin @('--version')
+            | Join-String -sep ', ' -op (Write-Color orange -t 'Version: ')
+
+            return
+        }
+        if ($Help) {
+            & $CodeBin @('--help')
+            return
+        }
+
+
+
+        if ($DataDir) {
+            $codeArgs += @(
+                '--user-data-dir'
+                $DataDir | Get-Item -ea stop
+            )
+        }
+
+        switch ($WindowMode) {
+            'NewWindow' {
+                $CodeArgs += @('--new-window')
+            }
+            'ReuseWindow' {
+                $CodeArgs += @('--reuse-window')
+            }
+            default {
+                $CodeArgs += @('--reuse-window')
+            }
+        }
+        if ($ResumeSession) {
+            if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
+
+                __printCodeArgs
+                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
+                return
+            }
+        }
+        ## now more
+
+        if (Test-IsDirectory $target) {
+            $CodeArgs += @(
+                # '--add' modifier will *always* use an existing window
+                if ($WindowMode -eq 'ReuseWindow') {
+                    '--add'
+                }
+                Get-Item $Target | Join-String -DoubleQuote
+            )
+        }
+        else {
+            # always use goto, even without line numbers. it's more resistant to errors
+            if (! $LineNumber) {
+                'LineNumber? Y' | Write-Color green | wi
+                $CodeArgs += @(
+                    '--goto'
+                    (Get-Item $Target | Join-String -DoubleQuote)
+                )
+            }
+            else {
+                'LineNumber? Y' | Write-Color green | wi
+                $codeArgs += @(
+                    '--goto'
+                    '"{0}:{1}:{2}"' -f @(
+                        # $Path
+                        $Target.FullName
+                        $LineNumber ?? 0
+                        $ColumnNumber ?? 0
+                    )
+                )
+            }
+        }
+
+        if (! [string]::IsNullOrWhiteSpace($RemainingArgs )) {
+            $CodeArgs += $RemainingArgs
+        }
+
+        if ($True) {
+            # any non-finished invokes
+            $strTarget = $target | Join-String -sep ' ' -DoubleQuote
+            $StrOperation = $CodeBin, $DataDIr -join ', '
+
+            if (! $Env:NoColor) {
+
+                $StrTarget = $Target | Join-String -sep "`n" -op "`n" -os "`n"
+
+                # bold version number
+                $boldBinCode = __format_HighlightVenvPath $CodeBin
+                @(
+                    "`nCode = "
+                    $BoldBinCode
+                    "`nDataDir = "
+                    $DataDir | Write-Color cyan
+                    "`n"
+                    $strTarget | Format-RelativePath -BasePath .
+                    "`n"
+                ) | Join-String
+
+                # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
+                # | Join-String -sep "`n" -op "`n" -os "`n"
+
+                # | Join-String -sep "`n" -op "`n" -os "`n"
+                # | write-color magenta
+                # | write-color magenta
+            }
+
+
+            @(
+                hr 1
+                $strTarget | Join-String -op '$strTarget: '
+                $StrOperation | Join-String -op '$strOperation: '
+                $codeArgs | Join-String -sep ' ' -op '***args***'
+                hr 1
+            ) | wi
+            if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
+                __printCodeArgs
+                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
+            }
+        }
+
+        if ($ResumeSession) {
+            Write-Color -t 'ResumeSession' 'green' | Write-Information
+        }
+        else {
+            Write-Color -t 'LoadItem: ' 'orange' | Write-Information
+            Write-Color -t $Target 'yellow' | Write-Information
+        }
+        $metaInfo += @{
+            BinCode       = $CodeBin
+            DataDir       = $DataDir
+            Target        = $Target
+            codeArgs      = $CodeArgs
+            ResumeSession = $ResumeSession
+            BoundParams   = $PSBoundParameters
+            ParameterSet  = $PSCmdlet.ParameterSetName
+            RemainingArgs = $RemainingArgs
+            PSCommandPath = $PSCommandPath
+            PSScriptRoot  = $PSScriptRoot
+        }
+
+
+        # $target
+        # hr
+        # $Operation = 'open file, re-use window'
+        # $DataDir | write-color blue
+        # hr
+        # $CodeBin.FullName | write-color 'yellow'
+        # $codeArgs | Join-String -sep ' ' -op ' $codeArgs: '
+
+        $metaInfo += @{
+            Operation     = $operation
+            FinalCodeArgs = $codeArgs
+        }
+
+        # catch {
+        #     $PSCmdlet.WriteError( $_ )
+        # }
     }
 
 
@@ -513,9 +515,7 @@ function Invoke-VSCodeVenv {
     - [ ] --wait
     - [ ] --inspect-brk-extensions <port>
     - [ ] --status
-    - [ ] --verbose
-
-'
+    - [ ] --verbose'
         Format-Dict $metaInfo | Write-Information
     }
 }

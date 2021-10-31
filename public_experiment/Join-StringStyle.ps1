@@ -44,6 +44,7 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
 }
 
 
+
 function Join-StringStyle {
     <#
     .synopsis
@@ -107,6 +108,11 @@ function Join-StringStyle {
             Properties of [datetime]: DisplayHint, DateTime, Date, Day, DayOfWeek, DayOfYear, Hour, Kind, Millisecond, Minute, Month, Second, Ticks, TimeOfDay, Year
     .link
         Dev.Nin\Split-String
+    .link
+        Utility\Join-Before
+    .link
+        Utility\Join-After
+
     #>
     [alias(
         'Str', 'JoinStr',
@@ -206,6 +212,11 @@ function Join-StringStyle {
             $PSCmdlet.MyInvocation.MyCommand.Name.ToString()
 
         )
+        @{
+            InvocationName = $myInvokeName
+            SmartAlias     = $smartAlias
+        } | Format-Table | Out-String | Write-Debug
+
         $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
         $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
         if (! $SmartAlias) {
@@ -278,7 +289,7 @@ function Join-StringStyle {
                     $splat_JoinStyle.SingleQuote = $true
                 }
                 else {
-                    $splat_JoinStyle.DoubleQuote = $true
+
                 }
 
             }
@@ -296,8 +307,14 @@ function Join-StringStyle {
                 # Write-Error 'should never reach'
             }
         }
+        if ($splat_JoinStyle.DoubleQuote) {
+            $splat_JoinStyle.SingleQuote = $false
+        }
 
-        $splat_JoinStyle | Format-Table | Out-String | Write-Debug
+        $splat_JoinStyle | Format-Table
+        | Out-String
+        # | str prefix '-Begin { .. }s final value "$splat_JoinStyle"'
+        | Write-Debug
 
         # }
         # catch {
