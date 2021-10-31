@@ -5,7 +5,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'Dev.Format-Dict'
-    'Ansi.Format-Dict'
+    # 'Ansi.Format-Dict'
     # 'New-Sketch'
 )
 # }
@@ -41,6 +41,10 @@ function Format-Dict {
     .synopsis
         experimental. 'pretty print dict', using Pwsh 7
     .notes
+        tags: console, ANSI, color, formatting
+        - [ ] print to other streams:
+            How can I remove the need to do 'format-dict | out-string | out-debug'
+
         - [ ] future: recurse
         - [ ] sketch. not optimizied at all
         - [ ] doesn't have recursion
@@ -50,12 +54,16 @@ function Format-Dict {
     [cmdletbinding()]
     param(
         # Dict to print
-        [Alias('Dev.Format-Dict', 'Ansi.Format-Dict')]
+        [Alias(
+            'Dev.Format-Dict'
+            # 'Ansi.Format-Dict'
+        )]
         [parameter(
             Mandatory, Position = 0,
             ValueFromPipeline
         )][object]$InputObject, # instead, whichever type allows most dict types
 
+        # extra options
         [Parameter()]
         [hashtable]$Options
     )
@@ -80,10 +88,19 @@ function Format-Dict {
         $Config.JoinOuter = @{
             OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
         }
+
         $Template = @{
-            OutputPrefix         = "`nDict = {`n"
-            OutputPrefixWithType = "`nDict = {{ {0}`n"
+            # todo: replace template with template lib
+            OutputPrefix = "`n$($Config.PrefixLabel) = {`n"
         }
+
+        if ($Config.DisplayTypeName) {
+            $Template.OutputPrefix = "`n$($Config.PrefixLabel) = {{ {0}`n"
+        }
+
+
+        # @{a=3} | Format-dict -Options @{'DisplayTypeName'=$false}
+        # OutputPrefix         = "`nDict = {`n"
     }
     process {
         $metaDebug = [ordered]@{
@@ -102,20 +119,33 @@ function Format-Dict {
         }
 
         [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
-        $disableGetEnumerate = $false
+        [bool]$disableGetEnumerate = $false
         # todo: UX: make dict render on a single line when empty
+        # 1 / 0
+
+        $typeNameStr = if (!($Config.DisplayTypeName)) {
+            ''
+        }
+        else {
+            $InputObject.GetType() | Format-TypeName -WithBrackets | Write-Color gray60
+        }
         $joinOuter_Splat = @{
 
             Separator    = "`n"
-            OutputPrefix = $Template.OutputPrefix # was: "`nDict = {`n"
+            # OutputPrefix = $Template.OutputPrefix # was: "`nDict = {`n"
+            OutputPrefix = $Template.OutputPrefix -f @($typeNameStr)
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
             OutputSuffix = "`n}" # was: "`n}`n"
         }
-        if ($Config.DisplayTypeName) {
-            $joinOuter_Splat['OutputPrefix'] = $Template.OutputPrefixWithType -f @(
-                $InputObject.GetType() | Format-TypeName -WithBrackets | write-color gray60
-            )
+        if ($false) {
+            if ($Config.DisplayTypeName) {
+                $joinOuter_Splat['OutputPrefix'] = $Template.OutputPrefix -f @(
+
+                )
+
+            }
         }
+
         Write-Debug 'Type? '
         if ($InputObject -is [Collections.IDictionary]) {
             Write-Color green -t 'Yes'
@@ -178,8 +208,8 @@ function Format-Dict {
         }
         $metaDebug['disableGetEnumerate'] = $disableGetEnumerate
         $metaDebug['TargetObject'] = ($TargetObj)?.GetType() ?? '$Null'
-        $metaDebug | Format-Table | out-string |  write-information
-        $metaDebug | Format-Table | out-string |  write-debug
+        $metaDebug | Format-Table | Out-String | Write-Information
+        $metaDebug | Format-Table | Out-String | Write-Debug
 
         $ToEnumerate = if (!  $disableGetEnumerate ) {
             $TargetObj.GetEnumerator()
