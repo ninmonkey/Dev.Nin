@@ -19,9 +19,11 @@ function Dev-InvokeFdFind {
     .link
         Dev.Nin\Find-FDNewestItem
     .link
-        Find-DevFdFind
+        Dev.Nin\Peek-NewestItem
     .link
-        Invoke-FdFind
+        Dev.Nin\Find-DevFdFind
+    .link
+        Dev.Nin\Invoke-FdFind
 
     #>
     [Alias('dev-Fd', 'LsFd')]

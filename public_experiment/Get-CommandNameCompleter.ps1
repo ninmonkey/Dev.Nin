@@ -3,14 +3,17 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'ValidArgCommand'
+    'MyGcm🐒'
     'Completer.Command'
+    'Completer.CommandNin🐒'
 )
 
 function Get-CommandNameCompleter {
     <#
     .synopsis
-        get a valid list of functions, for argument completers
+        get a valid list of functions, for argument completers.
     .description
+        returns just the name, unless using -passthru
         future: create a real attribute completer so that it's reusable
 
         with -PassThru:
@@ -23,17 +26,44 @@ function Get-CommandNameCompleter {
 
             return [string]
 
-    .outputs
+
         return [string] or [ [FunctionInfo] | [AliasInfo] | .. ]
 
         also try
+                🐒> MyGcm🐒 * -PassThru | len
+                263
+
                 🐒> gcm * -ListImported | len
                 2570
 
                 🐒> gcm * | len
                 7530
 
-2570
+    .example
+        🐒> MyGcm🐒 *item* | sort source, name | ft -AutoSize
+
+            _FormatDictItem_Filepath
+            Dev-GetNewestItem
+            Find-DevItem
+            Find-EnvVarItem
+            Find-FDNewestItem
+            Format-ChildItemSummary
+
+    .example
+        🐒> MyGcm🐒 *item* -PassThru | sort source, name | ft -AutoSize
+
+
+            CommandType Name                     Version Source
+            ----------- ----                     ------- ------
+            Function    _FormatDictItem_Filepath 0.0.7   dev.nin
+            Function    Dev-GetNewestItem        0.0.7   dev.nin
+            Function    Find-DevItem             0.0.7   dev.nin
+            Function    Find-EnvVarItem          0.0.7   dev.nin
+            Function    Get-NinChildItem         0.1.1   Ninmonkey.Console
+            Function    Measure-NinChildItem     0.1.1   Ninmonkey.Console
+            Function    Get-ItemType             0.0.1   Ninmonkey.Powershell
+
+
 
     .notes
         future:
@@ -44,12 +74,17 @@ function Get-CommandNameCompleter {
     see also:
         [System.Management.Automation.CommandTypes]
         Alias, All, Application, Cmdlet, Configuration, ExternalScript, Filter, Function, Script
-
+    .link
+        Dev.Nin\Get-NinCommand
 
     .outputs
         either [string] or [Management.Automation.CommandInfo] with -passthru
     #>
-    [Alias('ValidArgCommand', 'Completer.Command')]
+    [Alias(
+        'ValidArgCommand', 'Completer.Command',
+        'Completer.CommandNin🐒', # smart alias
+        'MyGcm🐒' # smart alias
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Partial Text matching
@@ -81,6 +116,9 @@ function Get-CommandNameCompleter {
     )
 
     begin {
+        if ($PSCmdlet.MyInvocation.InvocationName -in @('MyGcm🐒', 'Completer.CommandNin🐒')) {
+            $ModuleName += _enumerateMyModule
+        }
     }
     process {
         if ($QuerySource -eq 'Get-Command') {

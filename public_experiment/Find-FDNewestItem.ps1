@@ -5,7 +5,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'newestItem🔎', 'findNewest'
-    # 'newestCode' # potential optional smart aliasese?
+    # 'newestCode' # potential optional smart alias?
 )
 [hashtable]$__helpText = @{}
 

@@ -12,6 +12,8 @@ function Get-OptionalPath {
         Try to get a real [FileInfo]/[DirectoryInfo], else fallback to a raw string
     .notes
        if it does not exist yet, we also need to know if it is a directory or file
+
+       Convert-Path is quicker
     .example
           .
     .outputs

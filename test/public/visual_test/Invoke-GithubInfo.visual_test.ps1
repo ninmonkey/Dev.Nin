@@ -2,6 +2,7 @@ Import-Module dev.nin -Force
 # if ($false) {
 
 
+return
 # }
 # if (! $CacheFileList) {
 #     [hashtable]$CacheFileList = @{}

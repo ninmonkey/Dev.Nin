@@ -56,20 +56,24 @@ Describe 'Format-Dict: Visual Test' -Skip -Tag 'VisualTest', 'ANSIEscape', 'Usin
     It 'Default Options: "<Name>"' -ForEach @(
         @{
             Name = 'stuff'
-            'x'  = @{a = 1 ; b = @('a'..'f') }
+            Obj  = @{a = 1 ; b = @('a'..'f') }
         }
         @{
             Name = 'Profile'
-            'x'  = $Profile
+            Obj  = $Profile
+        }
+        @{
+            Name = 'Profile | Select'
+            Obj  = $Profile | Select-Object *
         }
     ) {
         @(
-            $x | Format-Dict
+            $Obj | Format-Dict -Options @{'PrefixLabel' = "DefaultOpts: '$Name'" }
         ) | Write-Host
     }
-    It 'Solo' {
+    It 'Solo $Profile' {
         @(
-            $Profile | Format-Dict
+            $Profile | Format-Dict -Options @{'PrefixLabel' = '$Profile' }
         ) | Write-Host
     }
 

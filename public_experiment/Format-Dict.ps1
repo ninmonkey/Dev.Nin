@@ -95,7 +95,7 @@ function Format-Dict {
                 # was: `n$($Config.PrefixLabel) = {{ {0}`n"
                 "`n"
                 $Config.PrefixLabel
-                "= {{ {0}`n"
+                " = {{ {0}`n"
             ) -join ''
         }
 

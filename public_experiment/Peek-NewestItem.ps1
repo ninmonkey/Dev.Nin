@@ -1,8 +1,8 @@
 $experimentToExport.function += @(
     'Peek-NewestItem'
-    'Peek'
 )
 $experimentToExport.alias += @(
+    'Peek'
 )
 
 function Peek-NewestItem {
@@ -25,6 +25,7 @@ function Peek-NewestItem {
     #     'UL', 'Checklist'
     # )]
     # [OutputType([String])]
+    [Alias('Peek')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 
@@ -32,13 +33,66 @@ function Peek-NewestItem {
 
     begin {}
     process {
-
+        $OutputMode = 'newest'
+        switch ($OutputMode) {
+            'newest' {
+                _Peek-NewestItem
+            }
+            default {
+                "Unhandled mode: '$outputMode'"
+            }
+        }
     }
     end {}
 }
+function _Peek-NewestItem {
+    <#
+    .synopsis
+        find files, like an EverythingSearch, but also preview them in Bat
+    .description
+       basic idea is
+    .example
+          .
+    .outputs
+          [string | None]
 
 
-function Peek {
+    .notes
+        #$search | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
+    #fd -e ps1 --color=always | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
+    .link
+        Dev.Nin\Find-FDNewestItem
+    .link
+        Dev.Nin\Peek-NewestItem
+    .link
+        Dev.Nin\Find-DevFdFind
+    .link
+        Dev.Nin\Invoke-FdFind
+    #>
+
+    [Alias('peek')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+
+        # [Alias('Text')]
+        # [Parameter(Mandatory, Position = 0)]
+        # [string[]]$InputText
+    )
+    begin {
+    }
+    process {
+        $binFd = Get-NativeCommand 'fd'
+        $binFzf = Get-NativeCommand 'fzf'
+        $batString = 'bat --color=always --style=numbers --line-range=:50 {}' #| Join-String -SingleQuote
+
+        fd -e ps1 --changed-within 2weeks  --color=always | fzf -m --preview "$batString"
+    }
+    end {
+    }
+}
+
+
+function _PeekAfterJoinLinesMaybe {
     <#
     .synopsis
         peek
