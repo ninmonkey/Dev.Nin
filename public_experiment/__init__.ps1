@@ -34,7 +34,7 @@ try {
     | Write-Debug
 }
 catch {
-    $PSCmdlet.ThrowTerminatingError( $_ )
+    $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
 }
 
 $sortedFiles

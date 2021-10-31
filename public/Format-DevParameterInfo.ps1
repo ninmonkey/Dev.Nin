@@ -1,4 +1,4 @@
-Export-ModuleMember -Alias 'Format🎨'
+# Export-ModuleMember -Alias 'Format🎨'
 
 $ModuleMeta = @{
     Tags = 'Ancient', 'ToReWrite'
@@ -96,7 +96,7 @@ if ($false) {
 
         }
     }
-    if ($_devninConfig.RunInlineTests) {
+    if ($false -and $_devninConfig.RunInlineTests) {
         h1 'test C'
         $info = zzGet-DevParameterInfo 'Set-PSReadLineOption'
         $groups = $info | Select-Object Parameter, ParameterType | Group-Object ParameterType

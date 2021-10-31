@@ -3,6 +3,7 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'ValidArgCommand'
+    'Completer.Command'
 )
 
 function Get-CommandNameCompleter {
@@ -25,6 +26,15 @@ function Get-CommandNameCompleter {
     .outputs
         return [string] or [ [FunctionInfo] | [AliasInfo] | .. ]
 
+        also try
+                🐒> gcm * -ListImported | len
+                2570
+
+                🐒> gcm * | len
+                7530
+
+2570
+
     .notes
         future:
             - [ ] return a completion result kind with tooltip
@@ -35,10 +45,11 @@ function Get-CommandNameCompleter {
         [System.Management.Automation.CommandTypes]
         Alias, All, Application, Cmdlet, Configuration, ExternalScript, Filter, Function, Script
 
+
     .outputs
         either [string] or [Management.Automation.CommandInfo] with -passthru
     #>
-    [Alias('ValidArgCommand')]
+    [Alias('ValidArgCommand', 'Completer.Command')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Partial Text matching
@@ -50,6 +61,12 @@ function Get-CommandNameCompleter {
         [string]$QuerySource,
 
 
+
+
+
+        # Match module names
+        # [alias('IgnoreAlias')]
+        [Parameter()][string[]]$ModuleName,
 
         # Ignore Aliases
         [alias('IgnoreAlias')]
@@ -63,7 +80,8 @@ function Get-CommandNameCompleter {
         [Parameter()][switch]$PassThru
     )
 
-    begin {}
+    begin {
+    }
     process {
         if ($QuerySource -eq 'Get-Command') {
             Write-Error 'ShouldBe $PSCmdlet.ThrowTerminatingError()' ; return;
@@ -98,6 +116,15 @@ function Get-CommandNameCompleter {
 
         $select_alias = $select_alias | Sort-Object Name
         $select_funcs = $select_funcs | Sort-Object Name
+
+        if ($ModuleName) {
+            $select_alias = $select_alias | Where-Object {
+                $_.Source -in $ModuleName
+            }
+            $select_funcs = $select_funcs | Where-Object {
+                $_.Source -in $ModuleName
+            }
+        }
 
         if ($PassThru) {
 

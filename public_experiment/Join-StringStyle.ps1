@@ -118,6 +118,7 @@ function Join-StringStyle {
         'Str', 'JoinStr',
         'Csv', 'NL',
         'Prefix', 'Suffix',
+        'Table',
         'QuotedList', #single/double
         'UL', 'Checklist'
     )]
@@ -135,7 +136,8 @@ function Join-StringStyle {
         [Parameter(Position = 0)] #
         [ArgumentCompletions(
             'Csv', 'NL', 'Prefix', 'QuotedList',
-            'UL', 'Checklist'
+            'UL', 'Checklist',
+            'Table'
         )] # todo: map to completions generator
         # [ArgumentCompletions('Csv', 'NL', 'UList', 'QuotedList')]
         [string]$JoinStyle = 'Csv',
@@ -208,7 +210,8 @@ function Join-StringStyle {
             'Csv', 'NL',
             'Prefix', 'Suffix',
             'QuotedList', #single/double
-            'UL', 'Checklist'
+            'UL', 'Checklist',
+            'Table'
             $PSCmdlet.MyInvocation.MyCommand.Name.ToString()
 
         )
@@ -245,6 +248,9 @@ function Join-StringStyle {
             # }
             'Prefix' {
                 $JoinStyle = 'Prefix'
+            }
+            'Table' {
+                $JoinStyle = 'Table'
             }
             'Suffix' {
                 $JoinStyle = 'Suffix'
@@ -293,6 +299,12 @@ function Join-StringStyle {
                 }
 
             }
+            'Table' {
+                # markdown
+                $splat_JoinStyle.Separator = ' | '
+                $splat_JoinStyle.OutputPrefix = '| '
+                $splat_JoinStyle.OutputSuffix = ' |'
+            }
             'UL' {
                 $splat_JoinStyle.Separator = "`n- "
                 $splat_JoinStyle.OutputPrefix = "`n- "
@@ -312,8 +324,7 @@ function Join-StringStyle {
         }
 
         $splat_JoinStyle | Format-Table
-        | Out-String
-        # | str prefix '-Begin { .. }s final value "$splat_JoinStyle"'
+        | Out-String # warning: infintie loop if I had use: # | str prefix '-Begin { .. }s final value "$splat_JoinStyle"'
         | Write-Debug
 
         # }

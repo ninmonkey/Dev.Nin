@@ -1,10 +1,10 @@
 # if ($BadDebugEnabled) {
 
 $experimentToExport.function += @(
-    'iterProp'
+    '_enumerateProperty'
 )
 $experimentToExport.alias += @(
-    '_enumerateProperty'
+    'iterProp'
 
     # 'Find-ObjectProperty'
     # 'New-Sketch'

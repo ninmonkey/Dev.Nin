@@ -15,7 +15,7 @@
 }
 
 ("`n" * 10) -join '' | Write-Error
-__yell 0
+# __yell 0
 
 $__Config = @{
     Enable_FormatData                   = $true
@@ -36,7 +36,7 @@ $formatData_BuiltIn = @(
     'FileListing'
 )
 
-__yell a
+# __yell a
 
 if ($__Config.Enable_FormatData_BuiltIn) {
     foreach ($typeName in $formatData_BuiltIn) {
@@ -179,7 +179,7 @@ $public_ToRefactorOutside = @(
 
 $functionsToExport += $public_ToRefactorOutside
 
-__yell G
+# __yell G
 
 foreach ($file in $public) {
     Write-Debug "================================= Trying: '$file'"
@@ -191,7 +191,7 @@ foreach ($file in $public) {
         Write-Error "Import: failed: public: $File"
     }
 }
-__yell G2
+# __yell G2
 
 $functionsToExport = @(
     ##  newer

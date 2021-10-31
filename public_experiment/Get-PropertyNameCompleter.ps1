@@ -3,9 +3,8 @@ $experimentToExport.function += @(
     'Get-PropertyNameCompleter'
 )
 $experimentToExport.alias += @(
-
+    'Completer.PropName'
 )
-
 
 function Get-PropertyNameCompleter {
     <#
@@ -19,6 +18,7 @@ function Get-PropertyNameCompleter {
           [string | None]
 
     #>
+    [Alias('Completer.PropName')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter( Mandatory, Position = 0, ValueFromPipeline)]
