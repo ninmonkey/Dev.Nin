@@ -8,13 +8,18 @@ BeforeAll {
     }
 }
 
-Describe 'Format-Dict: Visual Test' -Skip -Tag 'VisualTest', 'ANSIEscape', 'UsingWriteHost' {
+Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape', 'UsingWriteHost' {
     <#
     todo:
         does a custom rule fix this? currently test outputs first,
             then Pester test label prints after.
     #>
 
+    It 'MoreTests' -Skip {
+        # 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\test\public\visual_test\Format-Dict.visual_test.ps1'
+        # | str prefix 'check here for tests' | Write-Host
+        Set-ItResult -Because 'not written yet'
+    }
     It '"<Name>"' -ForEach @(
         @{
             Name        = 'stuff'
@@ -38,6 +43,7 @@ Describe 'Format-Dict: Visual Test' -Skip -Tag 'VisualTest', 'ANSIEscape', 'Usin
 
             # $profile | Format-Dict
         ) | Write-Host
+        $true | Should -Be $true
 
     }
 
@@ -52,6 +58,7 @@ Describe 'Format-Dict: Visual Test' -Skip -Tag 'VisualTest', 'ANSIEscape', 'Usin
         # @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $true ;
         #     'PrefixLabel'                                    = 'true';
         # }
+        $true | Should -Be $true
     }
     It 'Default Options: "<Name>"' -ForEach @(
         @{
@@ -70,26 +77,66 @@ Describe 'Format-Dict: Visual Test' -Skip -Tag 'VisualTest', 'ANSIEscape', 'Usin
         @(
             $Obj | Format-Dict -Options @{'PrefixLabel' = "DefaultOpts: '$Name'" }
         ) | Write-Host
+        $true | Should -Be $true
     }
     It 'Solo $Profile' {
         @(
             $Profile | Format-Dict -Options @{'PrefixLabel' = '$Profile' }
         ) | Write-Host
+        $true | Should -Be $true
+    }
+    Context 'Nested Tests' -Pending {
+        It 'todo: nesting' {
+            'Todo: Take the same sample inputs, crossproduct on different options'
+            | Should -Be $false
+        }
+    }
+    It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
+        @{
+            Name = 'stuff'
+            Obj  = @{a = 1 ; b = @('a'..'f') }
+        }
+        @{
+            Name = 'Color Children'
+            Obj  = @{
+                Numbers     = 0..9
+                ColorSingle = ''
+            }
+        }
+        @{
+            Name = 'Color[] Children'
+            Obj  = @{
+                Numbers       = 0..9
+                ColorGradient = Get-Gradient -StartColor '#FF1C14' -EndColor '#BC8F8F'
+            }
+        }
+        @{
+            Name = 'Profile | Select'
+            Obj  = $Profile | Select-Object *
+        }
+    ) {
+        @(
+            $Obj | Format-Dict -Options @{'PrefixLabel' = "DefaultOpts: '$Name'" }
+        ) | Write-Host
+        $true | Should -Be $true
     }
 
-    It 'future' -Skip {
+    It 'future' -Skip -Pending {
 
         if ($false) {
             @{a = 3 } | Format-dict -Options @{
                 'DisplayTypeName' = $false
                 'PrefixLabel'     = '<Label>'
             } -infa Continue -Debug -ea break
+            'need one toggles alignment'
 
-            if ($false) {
-                @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $true ; 'PrefixLabel' = 'true'; } -ea break
-                @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -ea break
-                @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -infa Continue -Debug -ea break
-            }
+            $profile | format-dict -Options @{'ColorChildType' = $true }
+            $profile | format-dict -Options @{'TruncateLongChildren' = $true }
+
+            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $true ; 'PrefixLabel' = 'true'; } -ea break
+            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -ea break
+            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -infa Continue -Debug -ea break
         }
+        $true | Should -Be $true
     }
 }

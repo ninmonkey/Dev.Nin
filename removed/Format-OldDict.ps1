@@ -77,7 +77,7 @@ function Format-Dict {
         }
         $Config = Join-Hashtable $Config ($Options.Config ?? @{})
         $Config.JoinOuter = @{
-            OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
+            OutputPrefix = "`n{0} = {{`n" -f @($ConfigTitle ?? 'Dict')
         }
     }
     process {

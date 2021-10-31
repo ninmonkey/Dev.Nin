@@ -14,7 +14,6 @@
     ) | Join-String -sep "`n" | Write-Error -ea continue
 }
 
-("`n" * 10) -join '' | Write-Error
 # __yell 0
 
 $__Config = @{

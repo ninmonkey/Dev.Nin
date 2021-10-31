@@ -25,6 +25,11 @@ function Format-ChildItemSummary {
     [outputtype('string')]
     [cmdletbinding()]
     param(
+        [parameter(
+            ParameterSetName = 'OnlyConfig'
+        )]
+        [switch()]$GetConfig,
+
         # base path
         [Parameter()]
         [string]$Path = '.',
@@ -48,16 +53,49 @@ function Format-ChildItemSummary {
         [string]$FilterMode,
 
         # hash of extra options
-        [Alias('Options')]
+        [Alias('Config')]
         [Parameter()]
-        [hashtable]$Config
+        [hashtable]$Options
     )
+    begin {
+        # $ColorType = @{
+        #     'KeyName' = 'SkyBlue'
+        # }
+        # $ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
+        $Config = @{
+            Prefix    = $Null
+            DisableHr = $false # todo __doc__ wil make discovery easier
+        }
+        $Config = Join-Hashtable $Config ($Options ?? @{})
+
+        $Template = @{
+            # todo: replace template with template lib
+            OutputPrefix = @(
+                # was: `n$($ConfigTitle) = {{ {0}`n"
+                "`n"
+                $ConfigTitle
+                " = {{ {0}`n"
+            ) -join ''
+        }
+
+        # @{a=3} | Format-dict -Options @{'DisplayTypeName'=$false}
+        # OutputPrefix         = "`nDict = {`n"
+
+        if ($GetConfig) {
+            $Config.Template = $template
+            $config
+            return
+        }
+    }
+
     process {
         if ($null -ne $Config.Prefix) {
             $Config.Prefix
         }
         else {
-            hr
+            if (!($Config.DisableHr)) {
+                hr
+            }
         }
 
         $childSplat = @{
@@ -82,6 +120,10 @@ function Format-ChildItemSummary {
         $newest = Get-ChildItem @childSplat
         | Sort-Object lastWriteTime -desc -Top $MaxItems
 
+        if ($newunt -eq 0) {
+            '∅'
+            return
+        }
         # $newest = Get-ChildItem $Path | Sort-Object lastWriteTime -desc -Top $MaxItems
         $newest
         | Join-String {
@@ -109,6 +151,14 @@ function Format-ChildItemSummary {
         } -sep ', '
         #| write-color 'darkred'
         | str Csv
-        hr
+
+        if ($null -ne $Config.Suffix) {
+            $Config.Prefix
+        }
+        else {
+            if (!($Config.DisableHr)) {
+                hr
+            }
+        }
     }
 }

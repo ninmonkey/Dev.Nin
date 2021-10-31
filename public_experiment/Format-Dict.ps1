@@ -2,18 +2,27 @@
 
 $experimentToExport.function += @(
     'Format-Dict'
+    if ($true) {
+        # export private funcs
+        '_FormatDictItem_ColorList'
+        '_FormatDictItem_ColorSingle'
+        '_FormatDictItem_Filepath'
+        '_FormatDictItem_Filepath'
+    }
 )
 $experimentToExport.alias += @(
-    'Dev.Format-Dict'
+    # 'Dev.Format-Dict'
     # 'Ansi.Format-Dict'
     # 'New-Sketch'
 )
 # }
 
+
 function _FormatDictItem_Filepath {
     <#
     .synopsis
         Format-Dict Extension: RelativeFilepaths
+    .example
     #>
     param([string]$Path)
     process {
@@ -25,14 +34,64 @@ function _FormatDictItem_Filepath {
         }
     }
 }
+function _FormatDictItem_ColorList {
+    <#
+    .synopsis
+        Format-Dict Extension: [rgbcolor[]]
+    .notes
+        when:
+            $x -is [System.Collections.IEnumerable]
+            $x[0] -is [PoshCode.Pansies.RgbColor]
+
+    #>
+    param([string]$Path)
+    process {
+        if (Test-Path $Path) {
+            Format-RelativePath -InputObject $Path
+        }
+        else {
+            $Path
+        }
+    }
+}
+function _FormatDictItem_ColorSingle {
+    <#
+    .synopsis
+        Format-Dict Extension: Single [rgbcolor]
+    .example
+       PS> [rgbcolor]'red'
+        | _FormatDictItem_ColorSingle
+
+        ␛[38;2;255;0;0mHSL(0,100%,50%)␛[39m␠␛[48;2;255;0;0mHSL(0,100%,50%)␛[49m
+    #>
+    [cmdletbinding()]
+    param(
+        #  color instance
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [PoshCode.Pansies.RgbColor]$InputObject
+    )
+    process {
+        $InputObject | _format_HslColorString Compress
+    }
+}
 
 $__RegisteredFormatDictExtension = @(
     @{
-        TypeName = 'System.IO.DirectoryInfo'
+        TypeName = 'PoshCode.Pansies.RgbColor'
+        Function = '_FormatDictItem_ColorSingle'
+    }
+    @{
+        TypeName      = [Collections.IEnumerable]
+        ChildTypeName = 'PoshCode.Pansies.RgbColor'
+
+        Function      = '_FormatDictItem_ColorList'
+    }
+    @{
+        TypeName = 'System.IO.FileInfo'
         Function = '_FormatDictItem_Filepath'
     }
     @{
-        TypeName = 'System.IO.FileInfo '
+        TypeName = 'System.IO.DirectoryInfo'
         Function = '_FormatDictItem_Filepath'
     }
 )
@@ -42,6 +101,9 @@ function Format-Dict {
         experimental. 'pretty print dict', using Pwsh 7
     .notes
         tags: console, ANSI, color, formatting
+        - [ ] todo: passthru to see currrent config
+
+
         - [ ] print to other streams:
             How can I remove the need to do 'format-dict | out-string | out-debug'
 
@@ -55,7 +117,7 @@ function Format-Dict {
     param(
         # Dict to print
         [Alias(
-            'Dev.Format-Dict'
+            # 'Dev.Format-Dict'
             # 'Ansi.Format-Dict'
         )]
         [parameter(
@@ -81,20 +143,20 @@ function Format-Dict {
             TruncateLongChildren  = $True
             ColorChildType        = $false # not finished
             BackgroundColorValues = $true
-            PrefixLabel           = 'Dict'
+            Title                 = 'Dict'
             DisplayTypeName       = $true
         }
         $Config = Join-Hashtable $Config ($Options ?? @{})
         $Config.JoinOuter = @{
-            OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
+            OutputPrefix = "`n{0} = {{`n" -f @($ConfigTitle ?? 'Dict')
         }
 
         $Template = @{
             # todo: replace template with template lib
             OutputPrefix = @(
-                # was: `n$($Config.PrefixLabel) = {{ {0}`n"
+                # was: `n$($ConfigTitle) = {{ {0}`n"
                 "`n"
-                $Config.PrefixLabel
+                $ConfigTitle
                 " = {{ {0}`n"
             ) -join ''
         }
