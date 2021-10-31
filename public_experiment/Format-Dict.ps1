@@ -84,20 +84,20 @@ function Format-Dict {
             PrefixLabel           = 'Dict'
             DisplayTypeName       = $true
         }
-        $Config = Join-Hashtable $Config ($Options.Config ?? @{})
+        $Config = Join-Hashtable $Config ($Options ?? @{})
         $Config.JoinOuter = @{
             OutputPrefix = "`n{0} = {{`n" -f @($Config.PrefixLabel ?? 'Dict')
         }
 
         $Template = @{
             # todo: replace template with template lib
-            OutputPrefix = "`n$($Config.PrefixLabel) = {`n"
+            OutputPrefix = @(
+                # was: `n$($Config.PrefixLabel) = {{ {0}`n"
+                "`n"
+                $Config.PrefixLabel
+                "= {{ {0}`n"
+            ) -join ''
         }
-
-        if ($Config.DisplayTypeName) {
-            $Template.OutputPrefix = "`n$($Config.PrefixLabel) = {{ {0}`n"
-        }
-
 
         # @{a=3} | Format-dict -Options @{'DisplayTypeName'=$false}
         # OutputPrefix         = "`nDict = {`n"
@@ -133,20 +133,23 @@ function Format-Dict {
 
             Separator    = "`n"
             # OutputPrefix = $Template.OutputPrefix # was: "`nDict = {`n"
-            OutputPrefix = $Template.OutputPrefix -f @($typeNameStr)
+            OutputPrefix = $Template.OutputPrefix -f @(
+                $typeNameStr # todo: replace with Invoke-Template
+            )
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
             OutputSuffix = "`n}" # was: "`n}`n"
         }
-        if ($false) {
-            if ($Config.DisplayTypeName) {
-                $joinOuter_Splat['OutputPrefix'] = $Template.OutputPrefix -f @(
+        # if ($false) {
+        #     if ($Config.DisplayTypeName) {
+        #         $joinOuter_Splat['OutputPrefix'] = $Template.OutputPrefix -f @(
 
-                )
+        #         )
 
-            }
-        }
+        #     }
+        # }
 
-        Write-Debug 'Type? '
+        Write-Debug 'TypeInfo? '
+        # throw '/here'
         if ($InputObject -is [Collections.IDictionary]) {
             Write-Color green -t 'Yes'
             | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
@@ -208,7 +211,6 @@ function Format-Dict {
         }
         $metaDebug['disableGetEnumerate'] = $disableGetEnumerate
         $metaDebug['TargetObject'] = ($TargetObj)?.GetType() ?? '$Null'
-        $metaDebug | Format-Table | Out-String | Write-Information
         $metaDebug | Format-Table | Out-String | Write-Debug
 
         $ToEnumerate = if (!  $disableGetEnumerate ) {
