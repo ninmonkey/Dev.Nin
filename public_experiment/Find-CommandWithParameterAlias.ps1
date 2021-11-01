@@ -1,12 +1,12 @@
 $experimentToExport.function += 'Find-CommandWithParameterAlias'
 $experimentToExport.alias += @(
-    'RegexEitherOrder'
     'DevTool💻-Params-FindCommandWithParameterAlias'
 )
 
 function Find-CommandWithParameterAlias {
     <#
     .synopsis
+        Find-Command's that have Parameter-Aliases.  (not command aliases)
         filter commands that do not have at least one alias
     .description
         .
@@ -16,10 +16,12 @@ function Find-CommandWithParameterAlias {
         PS> Get-NinCommandProxy | Get-ParameterInfo | ? Aliases | Ft
         PS> gcm * -Module (_enumerateMyModule)
             |  DevTool💻-Params-FindCommandWithParameterAlias | ft -AutoSize
-
-
     .example
         PS> gcm -Module (_enumerateMyModule) | Find-CommandWithParameterAlias | ft -AutoSize
+    .link
+        Dev.Nin\Find-CommandWithParameterAlias
+    .link
+        Ninmonkey.Console\Get-NinAlias
     #>
     [ALias('DevTool💻-Params-FindCommandWithParameterAlias')]
     [cmdletbinding(PositionalBinding = $false)]
