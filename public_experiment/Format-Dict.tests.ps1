@@ -91,7 +91,9 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             | Should -Be $false
         }
     }
-    It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
+    # It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
+    # It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
+    It '"<Name>"' -ForEach @(
         @{
             Name = 'stuff'
             Obj  = @{a = 1 ; b = @('a'..'f') }
@@ -99,6 +101,7 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
         @{
             Name = 'Color Children'
             Obj  = @{
+
                 Numbers     = 0..9
                 ColorSingle = ''
             }
@@ -107,12 +110,9 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             Name = 'Color[] Children'
             Obj  = @{
                 Numbers       = 0..9
+                SingleColor   = [rgbcolor]'magenta'
                 ColorGradient = Get-Gradient -StartColor '#FF1C14' -EndColor '#BC8F8F'
             }
-        }
-        @{
-            Name = 'Profile | Select'
-            Obj  = $Profile | Select-Object *
         }
     ) {
         @(
@@ -121,21 +121,24 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
         $true | Should -Be $true
     }
 
+
     It 'future' -Skip -Pending {
 
         if ($false) {
-            @{a = 3 } | Format-dict -Options @{
+            $SampleHash = @{a = 3 }
+            $sampleHash | Format-dict -Options @{
                 'DisplayTypeName' = $false
                 'PrefixLabel'     = '<Label>'
             } -infa Continue -Debug -ea break
-            'need one toggles alignment'
 
-            $profile | format-dict -Options @{'ColorChildType' = $true }
-            $profile | format-dict -Options @{'TruncateLongChildren' = $true }
+            # 'need one that toggles alignment'
 
-            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $true ; 'PrefixLabel' = 'true'; } -ea break
-            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -ea break
-            @{a = 3 } | Format-dict -Options @{'DisplayTypeName' = $false } -infa Continue -Debug -ea break
+            $sampleHash | format-dict -Options @{'ColorChildType' = $true }
+            $sampleHash | format-dict -Options @{'TruncateLongChildren' = $true }
+
+            $sampleHash | Format-dict -Options @{'DisplayTypeName' = $true ; 'PrefixLabel' = 'true'; } -ea break
+            $sampleHash | Format-dict -Options @{'DisplayTypeName' = $false } -ea break
+            $sampleHash | Format-dict -Options @{'DisplayTypeName' = $false } -infa Continue -Debug -ea break
         }
         $true | Should -Be $true
     }
