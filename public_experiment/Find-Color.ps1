@@ -21,6 +21,8 @@ function Find-Color {
         🐒> Find-Color 'alm', 'moun'
         🐒> Gi RgbColor::Foreground:\yellow
     .example
+        🐒> Find-Color orange | _write-AnsiBlock -NoName | str csv
+    .example
         🐒> Find-Color 'alm', 'pink','moun' | _format_RgbColorString # to be a formatter
     .outputs
           [string | None]

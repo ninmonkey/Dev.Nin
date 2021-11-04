@@ -2,7 +2,7 @@
 
 $experimentToExport.function += @(
     'Invoke-GHRepoList'
-    '_gh_enumeratePropertyNames'
+    # '_gh_enumeratePropertyNames'
 )
 # $experimentToExport.alias += @(
 
@@ -16,7 +16,7 @@ function _gh_enumeratePropertyNames {
     $stdout = gh repo list --json *>&1 | Select-Object -Skip 1
     $stdout -replace '\s+', ''
 }
-$props ??= _gh_enumeratePropertyNames
+# $props ??= _gh_enumeratePropertyNames
 
 $__gh_cache ??= @{
 
