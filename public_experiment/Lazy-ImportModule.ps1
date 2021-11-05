@@ -1,6 +1,7 @@
 if ($experimentToExport) {
     $experimentToExport.function += @(
         'Lazy-ImportModule'
+        'Dump'
     )
     $experimentToExport.alias += @(        
         'LazyImport🐢'
@@ -11,58 +12,50 @@ if ($experimentToExport) {
 # https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules
 
 [hashtable]$__LazyImport ??= @{}
-function Lazy-ImportModule {
+
+function Dump { 
     <#
     .synopsis
-        Load modules, if certain files have been modified 
-    .description
-        personal profile adds verb: Lazy        
-    .notes
-        .
-        future:
-            Invoke-Conditional
-    .example   
-            PS> Verb-Noun -Options @{ Title='Other' }
-        #>
-    # [outputtype( [string[]] )]
-    # [Alias('x')]
-    
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Personal Profile may break')]
+        just dump an object, to get an idea of the shape
+    #>
     [cmdletbinding()]
     param(
-        # module[s] to import
-        [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string[]]$ModuleName, 
-    
-        # files to watch last modified time[s]
+        [Parameter(Position = 0, ValueFromPipeline, Mandatory)]
+        $InputObject,
+
         [Parameter()]
-        [string[]]$FileToWatch
+        [uint]$depth = 3,
+
+        [alias('jq')]
+        [Parameter()]
+        [switch]$WithJq
     )
-    begin {
-        $state = $script:__LazyImport
-        $ModuleName | ForEach-Object { 
-            if (! $state.ContainsKey($_) ) {
-                $state[ $_ ] = 0
-
-            }
+    process {
+        $converttoJsonSplat = @{
+            Depth          = $depth
+            EscapeHandling = 'EscapeHtml'
+            AsArray        = $true
+            EnumsAsStrings = $true
         }
-        #     Write-Debug 'already have a cache func or not?'
-        #     Write-Error -CategoryActivity NotImplemented -m 'NYI: wip: LazyInvokeScriptBlock'
-        #     [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
-        #     [hashtable]$Config = @{
-        #         AlignKeyValuePairs = $true
-        #         Title              = 'Default'
-        #         DisplayTypeName    = $true
-        #     }
-        #     $Config = Join-Hashtable $Config ($Options ?? @{})        
-    }
-    process {        
-        $ModuleName | Str Csv -Sort | str Prefix 'ModuleNames =' | Write-Debug
-        $FileToWatch | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
-        Import-Module -Name $ModuleName -Force
 
+        $json = $InputObject | ConvertTo-Json @converttoJsonSplat
+
+        if (! $WithJq) {
+            $json; return 
+        }
+            
+        h1 '. | keys'
+        
+        $json
+        | jq '. | keys'
+        | Write-Color -fg gray80 -bg gray20
+        
+        h1 '.[0] | keys'        
+
+        $json
+        | jq '.[0] | keys'
+        | Write-Color -fg gray80 -bg gray20    
     }
-    end {}
 }
 function Lazy-ImportModule {
     <#
@@ -74,6 +67,10 @@ function Lazy-ImportModule {
         .
         future:
             Invoke-Conditional
+        todo:
+            future
+                - [ ] auto detect file locations based on this path:
+                    Get-Module Dev.Nin | s RootModule, ModuleBase, Path | fl
     .example   
             PS> Verb-Noun -Options @{ Title='Other' }
         #>
@@ -84,6 +81,7 @@ function Lazy-ImportModule {
     [cmdletbinding()]
     param(
         # module[s] to import
+        [Alias('InputObject')]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$ModuleName, 
     
@@ -99,8 +97,6 @@ function Lazy-ImportModule {
 
             }
         }
-
-        $Config = Join-Hashtable $Config ($Options ?? @{})        
     
         $moduleNames = [list[object]]::new()
         if ($FileToWatch.count -eq 0) {
@@ -113,14 +109,15 @@ function Lazy-ImportModule {
         }    
     }
     end {
-        $moduleNames | Str Csv -Sort | str Prefix 'ModuleNames =' | Write-Debug
+        $moduleNames | Str Csv -Sort
+        | str Prefix 'ModuleNames =' | Write-Debug
+
         $FileToWatch
         | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
         | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
 
         $moduleNames | ForEach-Object {
             $curModuleName = $_ 
-        
             [bool]$ShouldLoad = $false
         
             $metaDebug = @{
@@ -132,21 +129,33 @@ function Lazy-ImportModule {
                     
                 ShouldLoad = $ShouldLoad
             }
+            $now = [datetime]::Now
+
+            $root = Get-Module $curModuleName | ForEach-Object ModuleBase
+
+            Write-Color 'magenta' -t 'fast test?' | wi
+            $fastTest = Get-ChildItem -File $root -d 3 | Sort-Object LastModified -Descending -Top 10
+            | wi 
+
             $query = Get-ChildItem $FileToWatch
             $query_watched | ForEach-Object { 
+                $curFile = $_
                 $lastUpdate = $state[$curModuleName].LastImport
                 if ($lastUpdate -lt $_.LastWriteTime) {
                     $ShouldLoad = $true
-                    Write-Information 'Cache is out of date'
+                    Write-Debug "'Cache: '$curModuleName' is out of date'"
+                    
+                    $now - $lastUpdate | ForEach-Object TotalMinutes | Join-String -FormatString 'TotalMinutes {0:n2} ago'
+                    | Write-Information
                     return
                 }
             }
 
             $metaDebug | format-dict | wi
             if ($ShouldLoad) {
-                $now = [datetime]::Now
                 if (! $TestRun ) {
-                    Import-Module -Name $ModuleName -Force
+                    Import-Module -Name $ModuleName -Force -Verbose
+
                     $state[$curModuleName].LastImport = $now
                 }
             }
@@ -154,11 +163,11 @@ function Lazy-ImportModule {
     }
 }
 
-if (!$experimentToExport) {
+if ($false -and !$experimentToExport) {
     # $PSCommandPath | Get-Item
     $lazyImportModuleSplat = @{
         # Debug             = $true
-        InputObject       = 'Dev.Nin'
+        ModuleName        = 'Dev.Nin'
         FileToWatch       = @($PSCommandPath)
         TestRun           = $true
         InformationAction = 'Continue'
@@ -167,6 +176,6 @@ if (!$experimentToExport) {
     Lazy-ImportModule @lazyImportModuleSplat
     hr
     
-    Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath)
+    Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
 
 }
