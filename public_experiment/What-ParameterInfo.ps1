@@ -6,9 +6,7 @@ if ( $experimentToExport ) {
         'What-Param'
     )
 }
-# }
-# gcm x | Get-ParameterInfo | ft -AutoSize *
-    
+
 function What-ParameterInfo {
     <#
         .synopsis
@@ -16,20 +14,50 @@ function What-ParameterInfo {
         .description
             .
         .example
-                🐒> What-ParameterInfo mv -PassThru | Select-Object Name, Type
-
+            # Main Usage:
             
-                Name        Type
-                ----        ----
-                Path        System.String[]
-                LiteralPath System.String[]
-                Destination System.String
-                Force       System.Management.Automation.SwitchParameter
-                Filter      System.String
-                Include     System.String[]
-                Exclude     System.String[]
-                PassThru    System.Management.Automation.SwitchParameter
-                Credential  System.Management.Automation.PSCredential
+            PS> What-Param ls
+            PS> What-Param ls -ByParameterSetName
+        .example
+            🐒> What-ParameterInfo mv -PassThru | Select-Object Name, Type
+        
+            Name        Type
+            ----        ----
+            Path        System.String[]
+            LiteralPath System.String[]
+            Destination System.String
+            Force       System.Management.Automation.SwitchParameter
+            Filter      System.String
+            Include     System.String[]
+            Exclude     System.String[]
+            PassThru    System.Management.Automation.SwitchParameter
+            Credential  System.Management.Automation.PSCredential
+        .example
+            🐒> What-ParameterInfo mv -ByParameterSetName
+
+                ParameterSet: __AllParameterSets
+
+                    Name        Aliases Mandatory Position ValueFromPipeline ValueFromPipelineByPropertyName Type                                         IsDynamic ParameterSet      
+                    ----        ------- --------- -------- ----------------- ------------------------------- ----                                         --------- ------------      
+                    Credential              False Named                False                            True System.Management.Automation.PSCredential        False __AllParameterSets
+                    Destination             False 1                    False                            True System.String                                    False __AllParameterSets
+                    Exclude                 False Named                False                           False System.String[]                                  False __AllParameterSets
+                    Filter                  False Named                False                           False System.String                                    False __AllParameterSets
+                    Force                   False Named                False                           False System.Management.Automation.SwitchParameter     False __AllParameterSets
+                    Include                 False Named                False                           False System.String[]                                  False __AllParameterSets
+                    PassThru                False Named                False                           False System.Management.Automation.SwitchParameter     False __AllParameterSets
+
+                ParameterSet: LiteralPath
+
+                    Name        Aliases   Mandatory Position ValueFromPipeline ValueFromPipelineByPropertyName Type            IsDynamic ParameterSet
+                    ----        -------   --------- -------- ----------------- ------------------------------- ----            --------- ------------
+                    LiteralPath PSPath,LP      True Named                False                            True System.String[]     False LiteralPath
+
+                ParameterSet: Path
+
+                    Name Aliases Mandatory Position ValueFromPipeline ValueFromPipelineByPropertyName Type            IsDynamic ParameterSet
+                    ---- ------- --------- -------- ----------------- ------------------------------- ----            --------- ------------
+                    Path              True 0                     True                            True System.String[]     False Path
         .example
             PS> What-Param 'ls'
             PS> 'ls', 'mv' | What-Param
@@ -60,17 +88,35 @@ function What-ParameterInfo {
         
         # return as objects
         [parameter()]
-        [switch]$PassThru
+        [switch]$PassThru,
+
+        # sort by sets
+        [parameter()]
+        [switch]$ByParameterSetName
     )
     begin {}
     process {
+        
         $target = $InputObject | Resolve-CommandName
         $info = $target | PSScriptTools\Get-ParameterInfo       
+        if ($ByParameterSetName) {
+            $info = $info | Sort-Object 'ParameterSet', 'Name'
+        }
+
         if ($PassThru) {
             $info            
             return 
         }
-        $info | Format-Table * -AutoSize | Write-Information
+        $formatTableSplat = @{
+            AutoSize = $true
+            Property = '*'
+        }
+        if ($ByParameterSetName) {
+            $formatTableSplat['GroupBy'] = 'ParameterSet'
+        }
+
+        $info | Format-Table @formatTableSplat 
+        
     }
     end {}
        
@@ -78,10 +124,5 @@ function What-ParameterInfo {
 
 if (! $experimentToExport ) {
 
-    # hr
-    # $res = What-TypeInfo (Get-Item . ) -infa Continue
-    # hr
-    # $res | Format-List 
     What-Param 'ls'
-    What-Param 'prompt'
 }
