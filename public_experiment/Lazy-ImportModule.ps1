@@ -1,11 +1,12 @@
-#Requires -Version 7
 if ($experimentToExport) {
     $experimentToExport.function += @(
         'Lazy-ImportModule'
     )
     $experimentToExport.alias += @(        
-        'Invoke-LazyImport🐢'
+        'LazyImport🐢'
     )
+    #     }
+         
 }
 # https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules
 
@@ -27,39 +28,24 @@ function Lazy-ImportModule {
     # [Alias('x')]
     
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Personal Profile may break')]
-    [Alias('Invoke-LazyImport🐢')]
     [cmdletbinding()]
     param(
         # module[s] to import
-        [Alias('ModuleName')]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string[]]$InputObject, 
+        [string[]]$ModuleName, 
     
         # files to watch last modified time[s]
         [Parameter()]
-        [string[]]$FileToWatch,
-
-        # only test, output states. Not a true -Whatif
-        [Alias('WhatIf')]
-        [Parameter()]
-        [switch]$TestRun
+        [string[]]$FileToWatch
     )
     begin {
         $state = $script:__LazyImport
-        $InputObject | ForEach-Object { 
+        $ModuleName | ForEach-Object { 
             if (! $state.ContainsKey($_) ) {
-                $state[ $_ ] = @{
-                    LastImport = [datetime]0
-                }
+                $state[ $_ ] = 0
+
             }
         }
-
-        $State | ConvertTo-Json -Depth 1 | Write-Debug 
-        $json = $State | ConvertTo-Json -Depth 1
-
-        # $json | bat -P -l json --color=always
-        $json | out-bat -Language json 
-        | wi
         #     Write-Debug 'already have a cache func or not?'
         #     Write-Error -CategoryActivity NotImplemented -m 'NYI: wip: LazyInvokeScriptBlock'
         #     [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
@@ -69,6 +55,52 @@ function Lazy-ImportModule {
         #         DisplayTypeName    = $true
         #     }
         #     $Config = Join-Hashtable $Config ($Options ?? @{})        
+    }
+    process {        
+        $ModuleName | Str Csv -Sort | str Prefix 'ModuleNames =' | Write-Debug
+        $FileToWatch | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
+        Import-Module -Name $ModuleName -Force
+
+    }
+    end {}
+}
+function Lazy-ImportModule {
+    <#
+    .synopsis
+        Load modules, if certain files have been modified 
+    .description
+        personal profile adds verb: Lazy        
+    .notes
+        .
+        future:
+            Invoke-Conditional
+    .example   
+            PS> Verb-Noun -Options @{ Title='Other' }
+        #>
+    # [outputtype( [string[]] )]
+    # [Alias('x')]
+    
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Personal Profile may break')]
+    [cmdletbinding()]
+    param(
+        # module[s] to import
+        [parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string[]]$ModuleName, 
+    
+        # files to watch last modified time[s]
+        [Parameter()]
+        [string[]]$FileToWatch
+    )
+    begin {
+        $state = $script:__LazyImport
+        $ModuleName | ForEach-Object { 
+            if (! $state.ContainsKey($_) ) {
+                $state[ $_ ] = 0
+
+            }
+        }
+
+        $Config = Join-Hashtable $Config ($Options ?? @{})        
     
         $moduleNames = [list[object]]::new()
         if ($FileToWatch.count -eq 0) {
@@ -133,6 +165,8 @@ if (!$experimentToExport) {
     }
 
     Lazy-ImportModule @lazyImportModuleSplat
+    hr
     
+    Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath)
 
 }
