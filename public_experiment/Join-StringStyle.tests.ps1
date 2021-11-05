@@ -30,7 +30,7 @@ Describe 'Join-StringStyle' {
             # 0..2 | str Csv | str Prefix 'nums: '
             0..2 | str Csv
             0..2 | prefix -ea break
-            { } | Should -Not THrow
+            # { } | Should -Not THrow
         }
         # It 'smart alias "csv"' {
 
