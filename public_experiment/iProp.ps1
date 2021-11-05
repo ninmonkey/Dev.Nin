@@ -13,6 +13,7 @@ $experimentToExport.update_typeDataScriptBlock += @(
     }
 )
 
+### Left here: need to fix it
 function iProp {
     <#
     .synopsis
@@ -216,7 +217,7 @@ function iProp {
             $curProp = $_
             # step through debug filter logic
             $curProp.Name | Join-StringStyle Prefix 'filterByTypeName: ' | Write-Debug
-            $curProp.Name | Prefix 'filterByTypeName: ' | Write-Debug
+            $curProp.Name | str Prefix 'filterByTypeName: ' | Write-Debug
 
 
             # todo: validate this works

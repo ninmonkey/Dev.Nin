@@ -17,7 +17,8 @@ function _enumerateProperty {
     .synopsis
     zero filtering. sugar for $x.psobject.properties.
     .description
-        .
+        .not sure if this should be called enumerate, becase you enumerate all values,
+        or if this is an iterator (at least c style)
     .example
         [datetime]::Now | iterprop -OutGridView
     .example

@@ -2,7 +2,7 @@ $experimentToExport.function += @(
     'Invoke-GHCloneRepo'
 )
 $experimentToExport.alias += @(
-    'GhRepoClone'
+    # 'GhRepoClone'
 )
 
 
@@ -11,11 +11,12 @@ function Invoke-GHCloneRepo {
     .synopsis
         When you want to clone a list of repos from someone
     .description
+        tags: gh, github, cli, clone, util
         Desc
     .outputs
 
     #>
-    [Alias('GhRepoClone')]
+    
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # RootPath

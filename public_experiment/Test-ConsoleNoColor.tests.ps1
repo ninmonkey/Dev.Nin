@@ -14,7 +14,7 @@ Describe 'Test-NoColorIsSet' {
             $Env:NO_COLOR = $true
         }
         It '$Null Value' {
-            $Env:NO_COLOR = $null            Test-Path Env:NO_COLOR
+            $Env:NO_COLOR = $null        #    Test-Path Env:NO_COLOR
             | Should -Be $true
         }
     }

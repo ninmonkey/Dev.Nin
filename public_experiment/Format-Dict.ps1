@@ -28,8 +28,7 @@ function _FormatDictItem_Filepath {
     process {
         if (Test-Path $Path) {
             Format-RelativePath -InputObject $Path
-        }
-        else {
+        } else {
             $Path
         }
     }
@@ -48,8 +47,7 @@ function _FormatDictItem_ColorList {
     process {
         if (Test-Path $Path) {
             Format-RelativePath -InputObject $Path
-        }
-        else {
+        } else {
             $Path
         }
     }
@@ -95,6 +93,7 @@ $__RegisteredFormatDictExtension = @(
         Function = '_FormatDictItem_Filepath'
     }
 )
+# Write-Error 'move format dict to nin'
 function Format-Dict {
     <#
     .synopsis
@@ -148,7 +147,7 @@ function Format-Dict {
         }
         $Config = Join-Hashtable $Config ($Options ?? @{})
         $Config.JoinOuter = @{
-            OutputPrefix = "`n{0} = {{`n" -f @($ConfigTitle ?? 'Dict')
+            OutputPrefix = "`n{0} = {{`n" -f @($Config.Title ?? 'Dict')
         }
 
         $Template = @{
@@ -174,21 +173,19 @@ function Format-Dict {
         try {
             # $metaDebug['firstChild'] = ($InputType)?.GetType() ?? '$null'
             $metaDebug['firstChild'] = @($InputType)[0]?.GetType().FullName ?? '$null'
-        }
-        catch {
+        } catch {
             $metaDebug['firstChild'] = 'failed'
 
         }
 
-        [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
+        [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object Maximum
         [bool]$disableGetEnumerate = $false
         # todo: UX: make dict render on a single line when empty
         # 1 / 0
 
         $typeNameStr = if (!($Config.DisplayTypeName)) {
             ''
-        }
-        else {
+        } else {
             $InputObject.GetType() | Format-TypeName -WithBrackets | Write-Color gray60
         }
         $joinOuter_Splat = @{
@@ -215,24 +212,21 @@ function Format-Dict {
         if ($InputObject -is [Collections.IDictionary]) {
             Write-Color green -t 'Yes'
             | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
-        }
-        else {
+        } else {
             Write-Color red -t 'No'
             | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
         }
         if ($InputObject -is [Collections.IEnumerable]) {
             Write-Color green -t 'Yes'
             | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
-        }
-        else {
+        } else {
             Write-Color red -t 'No'
             | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
         }
 
         if ($InputObject -is [Collections.IDictionary]) {
             $TargetObj = $InputObject
-        }
-        elseif ($InputObject -is [PSCustomObject]) {
+        } elseif ($InputObject -is [PSCustomObject]) {
             $objAsHash = [ordered]@{}
             $InputObject.psobject.properties | ForEach-Object {
                 $SafeKey = $_.Name ?? '[null]'
@@ -244,16 +238,14 @@ function Format-Dict {
             $TargetObj = $objAsHash
 
             # $TargetObj = $InputObject
-        }
-        elseif ($InputObject -is [Collections.DictionaryEntry]) {
+        } elseif ($InputObject -is [Collections.DictionaryEntry]) {
             $disableGetEnumerate = $true
             # $hash = @{}
             # Get-ChildItem env: | ForEach-Object {
             #     $hash[$_.key] = $_.Value
             # }
             # $TargetObj = $hash
-        }
-        else {
+        } else {
             $TargetObj = $InputObject
         }
         # // one final test
@@ -277,8 +269,7 @@ function Format-Dict {
 
         $ToEnumerate = if (!  $disableGetEnumerate ) {
             $TargetObj.GetEnumerator()
-        }
-        else {
+        } else {
             $TargetObj
         }
 
@@ -290,8 +281,7 @@ function Format-Dict {
                     $paddedKey = (($_.Key) ?? '').padright($LongestName, ' ')
                     # $_.Key | Write-Color $ColorType.KeyName
                     $paddedKey | Write-Color $ColorType.KeyName
-                }
-                else {
+                } else {
                     $_.Key | Write-Color $ColorType.KeyName
                 }
                 ' = '
@@ -299,12 +289,10 @@ function Format-Dict {
             $joinPair_splat = @{
                 InputObject  = if ($Config.FormatControlChar) {
                     $_.Value | Format-ControlChar
-                }
-                else {
+                } else {
                     if (! $Config.BackgroundColorValues ) {
                         $_.Value
-                    }
-                    else {
+                    } else {
                         $_.Value | Write-Color black -bg darkpink3
                         # $_.Value | New-Text -bg 'lightpink'
                     }

@@ -1,13 +1,12 @@
 # allows script to be ran alone, or, as module import
 if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
-
         'Test-IsNotBlank'
     )
-    $experimentToExport.alias += @(
-        'TextProcessing📚.IsNotBlank'
-        'Assert-IsNotBlank'
-    )
+    # $experimentToExport.alias += @(
+    #     'TextProcessing📚.IsNotBlank'
+    #     'Assert-IsNotBlank'
+    # )
 }
 
 function Test-IsNotBlank {

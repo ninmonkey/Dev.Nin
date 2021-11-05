@@ -26,18 +26,18 @@ function Resolve-FullTypeName {
     #>
 
     [CmdletBinding( SupportsShouldProcess, PositionalBinding = $false)]
-    [Alias('Fullname')]
+    [Alias('Fullname', 'Resolve-TypeName')]
     [OutputType([String])]
 
     Param (
         # you pass an object, name as text, a type instance, or even type name as a wildcard , name, string, instance
         # or even strings with wildcards
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
-        [object]$InputObject,
+        [object]$InputObject
 
-        # Copy to clipboard
-        [alias('Clip')]
-        [Parameter()][switch]$SetClipboard
+        # # Copy to clipboard
+        # [alias('Clip')]
+        # [Parameter()][switch]$SetClipboard
 
         # also check first element?
         # [Parameter()]
@@ -47,12 +47,12 @@ function Resolve-FullTypeName {
     )
 
     begin {
-        function _maybeExport {
-            param()
-            if ($SetClipboard) {
-                $InputObject.GetType().Fullname | Set-Clipboard
-            }
-        }
+        # function _maybeExport {
+        #     param()
+        #     if ($SetClipboard) {
+        #         $InputObject.GetType().Fullname | Set-Clipboard
+        #     }
+        # }
     }
 
     process {
@@ -74,13 +74,11 @@ function Resolve-FullTypeName {
             if ($maybeTypeName.Count -eq 1) {
                 $maybeTypeName.FullName
                 return
-            }
-            elseif ( $maybeTypeName.Count -gt 1) {
+            } elseif ( $maybeTypeName.Count -gt 1) {
                 Write-Verbose "$($maybeTypeName.Count) matches found"
                 $maybeTypeName.FullName
                 return
-            }
-            else {
+            } else {
                 ''.GetType().FullName
                 return
             }
