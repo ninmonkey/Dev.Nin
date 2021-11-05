@@ -37,7 +37,12 @@ function Lazy-ImportModule {
     
         # files to watch last modified time[s]
         [Parameter()]
-        [string[]]$FileToWatch
+        [string[]]$FileToWatch,
+
+        # only test, output states. Not a true -Whatif
+        [Alias('WhatIf')]
+        [Parameter()]
+        [switch]$TestRun
     )
     begin {
         $state = $script:__LazyImport
@@ -72,15 +77,23 @@ function Lazy-ImportModule {
         $FileToWatch | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
 
         $moduleNames | ForEach-Object {
-            $curName = $_ 
+            $curModuleName = $_ 
         
             [bool]$ShouldLoad = $false
         
-        
+            $metaDebug = @{
+                Names      = $moduleNames | Str Csv -Sort
+                Watch      = $FileToWatch | Str Csv -Sort
+                ShouldLoad = $ShouldLoad
+            }
+
+            $metaDebug | format-dict | wi
             if ($ShouldLoad) {
-                
                 $now = [datetime]::Now
-                Import-Module -Name $ModuleName -Force
+                if (! $TestRun ) {
+                    Import-Module -Name $ModuleName -Force
+                    $state[ $curModuleName ] = $now
+                }
             }
         }
 
@@ -89,7 +102,15 @@ function Lazy-ImportModule {
 
 if (!$experimentToExport) {
     # $PSCommandPath | Get-Item
-    Lazy-ImportModule -Debug -ModuleName 'Dev.Nin' -FileToWatch @($PSCommandPath)
+    $lazyImportModuleSplat = @{
+        Debug             = $true
+        InputObject       = 'Dev.Nin'
+        FileToWatch       = @($PSCommandPath)
+        TestRun           = $true
+        InformationAction = 'Continue'
+    }
+
+    Lazy-ImportModule @lazyImportModuleSplat
     
 
 }
