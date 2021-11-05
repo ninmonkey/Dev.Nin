@@ -205,7 +205,7 @@ function Join-StringStyle {
 
 
         # these are global alias names to the command itself
-        $smartAlias = $myInvokeName -eq @(
+        $isSmartAlias = $myInvokeName -in @(
             'Str', 'JoinStr',
             'Csv', 'NL',
             'Prefix', 'Suffix',
@@ -217,54 +217,67 @@ function Join-StringStyle {
         )
         @{
             InvocationName = $myInvokeName
-            SmartAlias     = $smartAlias
+            IsSmartAlias   = $isSmartAlias
+            SmartAlias     = $smartAlias ?? ''
         } | Format-Table | Out-String | Write-Debug
 
-        $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
-        $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
-        if (! $SmartAlias) {
-            if ($myInvokeName -ne $PSCmdlet.MyInvocation.MyCommand.Name) {
-                Write-Verbose "Alias not implemented: '$myInvokeName'"
-            }
-            else {
-            }
-        }
+        # $SmartAlias | Join-String -op '$SmartAlias: ' | Write-Debug
+        # $JoinStyle | Join-String -op 'JoinStyle (before alias): ' | Write-Debug
+        # if (! $SmartAlias) {
+        #     if ($myInvokeName -ne $PSCmdlet.MyInvocation.MyCommand.Name) {
+        #         Write-Verbose "Alias not implemented: '$myInvokeName'"
+        #     } else {
+        #     }
+        # }
 
-        # map aliases to default configs, many directly map to a style
-        # maybe this switch will always be redundant
-        switch ($smartAlias) {
-            'JoinStr' {
-                # .. normal
-            }
-            'Csv' {
-                # $Fg = 'orange'
-                $JoinStyle = 'Csv'
-            }
-            'NL' {
-                $JoinStyle = 'NL'
-            }
-            # 'Pair' {
-            #     $JoinStyle = 'Pair'
-            # }
-            'Prefix' {
-                $JoinStyle = 'Prefix'
-            }
-            'Table' {
-                $JoinStyle = 'Table'
-            }
-            'Suffix' {
-                $JoinStyle = 'Suffix'
-            }
-            'QuotedList' {
-                $JoinStyle = 'QuotedList'
-            }
-            { $false -eq $_ } {
-                # $JoinStyle = 'Csv'
-            }
-            default {
-                $JoinStyle = 'Csv' # or none or NL ?
-                Write-Warning "Should not reach, unhandled '$SmartAlias' case"
-                # Write-Error 'should never reach'
+        # map aliases to default configs
+        if ($isSmartAlias) {
+            switch ($smartAlias) {
+                # todo: Make JoinStyle a concrete type, and use it for the parameterset
+                'JoinStr' {
+                    # .. normal
+                }
+                'Csv' {
+                    # $Fg = 'orange'
+                    $JoinStyle = 'Csv'
+                }
+                'NL' {
+                    $JoinStyle = 'NL'
+                }
+                # 'Pair' {
+                #     $JoinStyle = 'Pair'
+                # }
+                'Prefix' {
+                    $JoinStyle = 'Prefix'
+                }
+                'Table' {
+                    $JoinStyle = 'Table'
+                }
+                'Suffix' {
+                    $JoinStyle = 'Suffix'
+                }
+                'QuotedList' {
+                    $JoinStyle = 'QuotedList'
+                }
+                { $false -eq $_ } {
+                    # $JoinStyle = 'Csv'
+                }
+                default {
+                    $JoinStyle = 'Csv'
+
+                    @(
+                        'fallback to default case for:'
+                        @{
+                            isSmartAlias = $isSmartAlias
+                            SmartAlias   = $smartAlias
+                            JoinStyle    = $JoinStyle
+                        } | Format-Table | Out-String                        
+                    ) | Write-Debug
+                    # write-ninlog 
+                    # $JoinStyle = 'Csv' # or none or NL ?
+                    # Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                    # Write-Error 'should never reach'
+                }
             }
         }
 
@@ -293,8 +306,7 @@ function Join-StringStyle {
 
                 if (! $DoubleQuote) {
                     $splat_JoinStyle.SingleQuote = $true
-                }
-                else {
+                } else {
 
                 }
 
@@ -314,8 +326,8 @@ function Join-StringStyle {
                 $splat_JoinStyle.OutputPrefix = "`n- [ ] "
             }
             default {
-                $splat_JoinStyle.Separator = ', ' # or user's -sep
-                Write-Warning "Should not reach, unhandled '$SmartAlias' case"
+                $splat_JoinStyle.Separator = ' ' # or user's -sep
+                Write-Warning "using generic case on with  not reach, unhandled '$SmartAlias' case"
                 # Write-Error 'should never reach'
             }
         }
@@ -339,8 +351,7 @@ function Join-StringStyle {
         $InputObject | ForEach-Object {
             if ($null -eq $_) {
                 $InputLines.Add( '␀' )
-            }
-            else {
+            } else {
                 $InputLines.Add( $_ )
             }
             # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
@@ -362,8 +373,7 @@ function Join-StringStyle {
         }
         if ($sort) {
             $InputLines | Sort-Object @sort_splat | Join-String @splat_JoinStyle
-        }
-        else {
+        } else {
             $InputLines | Join-String @splat_JoinStyle
         }
 
