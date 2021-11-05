@@ -9,7 +9,7 @@ if ($experimentToExport) {
 }
 # https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules
 
-[hashtable]$__LazyImport = @{}
+[hashtable]$__LazyImport ??= @{}
 function Lazy-ImportModule {
     <#
     .synopsis
@@ -55,6 +55,11 @@ function Lazy-ImportModule {
         }
 
         $State | ConvertTo-Json -Depth 1 | Write-Debug 
+        $json = $State | ConvertTo-Json -Depth 1
+
+        # $json | bat -P -l json --color=always
+        $json | out-bat -Language json 
+        | wi
         #     Write-Debug 'already have a cache func or not?'
         #     Write-Error -CategoryActivity NotImplemented -m 'NYI: wip: LazyInvokeScriptBlock'
         #     [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
@@ -66,6 +71,9 @@ function Lazy-ImportModule {
         #     $Config = Join-Hashtable $Config ($Options ?? @{})        
     
         $moduleNames = [list[object]]::new()
+        if ($FileToWatch.count -eq 0) {
+            $FileToWatch = @($PSCommandPath)
+        }
     }
     process {        
         $InputObject | ForEach-Object { 
@@ -74,7 +82,9 @@ function Lazy-ImportModule {
     }
     end {
         $moduleNames | Str Csv -Sort | str Prefix 'ModuleNames =' | Write-Debug
-        $FileToWatch | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
+        $FileToWatch
+        | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+        | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
 
         $moduleNames | ForEach-Object {
             $curModuleName = $_ 
@@ -84,7 +94,20 @@ function Lazy-ImportModule {
             $metaDebug = @{
                 Names      = $moduleNames | Str Csv -Sort
                 Watch      = $FileToWatch | Str Csv -Sort
+                WatchNames = $FileToWatch
+                | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+                | Str Csv -Sort
+                    
                 ShouldLoad = $ShouldLoad
+            }
+            $query = Get-ChildItem $FileToWatch
+            $query_watched | ForEach-Object { 
+                $lastUpdate = $state[$curModuleName].LastImport
+                if ($lastUpdate -lt $_.LastWriteTime) {
+                    $ShouldLoad = $true
+                    Write-Information 'Cache is out of date'
+                    return
+                }
             }
 
             $metaDebug | format-dict | wi
@@ -92,18 +115,17 @@ function Lazy-ImportModule {
                 $now = [datetime]::Now
                 if (! $TestRun ) {
                     Import-Module -Name $ModuleName -Force
-                    $state[ $curModuleName ] = $now
+                    $state[$curModuleName].LastImport = $now
                 }
             }
         }
-
     }
 }
 
 if (!$experimentToExport) {
     # $PSCommandPath | Get-Item
     $lazyImportModuleSplat = @{
-        Debug             = $true
+        # Debug             = $true
         InputObject       = 'Dev.Nin'
         FileToWatch       = @($PSCommandPath)
         TestRun           = $true

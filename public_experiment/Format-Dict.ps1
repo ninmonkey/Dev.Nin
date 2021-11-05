@@ -4,10 +4,12 @@ $experimentToExport.function += @(
     'Format-Dict'
     if ($true) {
         # export private funcs
+        # or better, enumerate: $__RegisteredFormatDictExtension
         '_FormatDictItem_ColorList'
         '_FormatDictItem_ColorSingle'
         '_FormatDictItem_Filepath'
         '_FormatDictItem_Filepath'
+        '_FormatDictItem_Boolean'
     }
 )
 $experimentToExport.alias += @(
@@ -52,6 +54,27 @@ function _FormatDictItem_ColorList {
         }
     }
 }
+function _FormatDictItem_Boolean {
+    <#
+    .synopsis
+        Format-Dict Extension: Single [bool expression]
+    .description
+        Input is object, to allow for other truthy values
+    .example
+       PS> 4, $true, 1, 0.0, $false, 0 | _FormatDictItem_Boolean    
+    #>
+    [cmdletbinding()]
+    param(
+        #  color instance
+        [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [object]$InputObject
+    )
+    process {
+        $truthy = [bool]$InputObject
+        $color = $truthy ? 'green' : 'red'
+        Write-Color -fg $color -t $InputObject       
+    }
+}
 function _FormatDictItem_ColorSingle {
     <#
     .synopsis
@@ -77,6 +100,10 @@ $__RegisteredFormatDictExtension = @(
     @{
         TypeName = 'PoshCode.Pansies.RgbColor'
         Function = '_FormatDictItem_ColorSingle'
+    }
+    @{
+        TypeName = 'Boolean'
+        Function = '_FormatDictItem_Boolean'
     }
     @{
         TypeName      = [Collections.IEnumerable]
