@@ -30,9 +30,9 @@ function Out-BatHighlight {
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # inputstream
-        [Alias('Text')]
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [string[]]$InputObject,
+        # [Alias('Text')]
+        # [Parameter(Mandatory)]
+        # [string[]]$InputObject,
 
         # --file-name 
         [Alias('FileName')]
@@ -147,7 +147,7 @@ function Invoke-Batman {
             'wt'
         )]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string]$InputObject
+        [string]$CommandName
     
         # # extra options
         # [Parameter()][hashtable]$Options
@@ -166,9 +166,9 @@ function Invoke-Batman {
         # $RemainingArgs = $Options
 
         
-        $binCmd = Get-NativeCommand $InputObject -OneOrNone -ea Continue
+        $binCmd = Get-NativeCommand $CommandName -OneOrNone -ea Continue
         & $binCmd @('--help')
-        | Out-BatHighlight -l man -Paging auto -infa Continue
+        | Out-BatHighlight -l man -Paging auto -infa Continue -Title $CommandName
         # | Out-BatHighlight -l man -Paging auto
     }
 }
