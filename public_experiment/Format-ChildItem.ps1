@@ -9,6 +9,7 @@ $experimentToExport.alias += @(
     'LsNew'
 )
 
+
 function Format-ChildItemSummary {
     <#
     .synopsis
@@ -28,7 +29,7 @@ function Format-ChildItemSummary {
         [parameter(
             ParameterSetName = 'OnlyConfig'
         )]
-        [switch()]$GetConfig,
+        [switch]$GetConfig,
 
         # base path
         [Parameter()]
@@ -91,8 +92,7 @@ function Format-ChildItemSummary {
     process {
         if ($null -ne $Config.Prefix) {
             $Config.Prefix
-        }
-        else {
+        } else {
             if (!($Config.DisableHr)) {
                 hr
             }
@@ -124,38 +124,80 @@ function Format-ChildItemSummary {
             '∅'
             return
         }
+        
         # $newest = Get-ChildItem $Path | Sort-Object lastWriteTime -desc -Top $MaxItems
+        function __formatItem_Folder {
+            <#
+            .synopsis
+                handles formatting directories for Format-ChildItemSummary
+            #>
+            param(
+                [Parameter(Mandatory, Position = 0)]
+                [object]$curItem
+            )
+            process {
+                $ChildCountSingleDepth = Get-ChildItem -Path $curItem | len
+                $typeColor = 'paleGoldenRod' #DBDCA8
+                $typeIcon = '📁'
+                $TemplateRender = '{2}{0} [{1}]' -f @(
+                    $curItem.name | Write-Color $TypeColor
+                    $ChildCountSingleDepth
+                    | Write-Color 'gray60'
+                    '{0}' -f @(
+                        # if (! $TypeIcon) {
+                        #     $null
+                        # } else {
+                        $TypeIcon
+                        # , ' ' -join ''
+                        # }
+                    )
+                
+                )
+                # 1 / 0
+                $TemplateRender
+            }
+        }
+        function __formatItem_File {
+            <#
+            .synopsis
+                handles formatting filetypes for Format-ChildItemSummary
+            #>
+            param(
+                [Parameter(Mandatory, Position = 0)]
+                [object]$curItem
+            )
+            process {
+                $TypeColor = 'gray90'
+                '{2}{0} [{1}]' -f @(
+                    $curItem.name | Write-Color $TypeColor
+                    $curItem.Length | Format-FileSize | Write-Color 'gray60'
+                    '{0}' -f @(
+                        if (! $TypeIcon) {
+                            $null
+                        } else {
+                            $TypeIcon, ' ' -join ''
+                        }
+                    )
+                )
+            }
+        }
+        
         $newest
         | Join-String {
             $curItem = $_
             if (Test-IsDirectory $curItem) {
-                $typeColor = 'paleGoldenRod' #DBDCA8
-                $typeIcon = '📁'
+                __formatItem_Folder $curItem
+            } else {                
+                __formatItem_File $curItem
             }
-            else {
-                $TypeColor = 'gray90'
-            }
-
-            '{2}{0} [{1}]' -f @(
-                $curItem.name | Write-Color $TypeColor
-                $curItem.Length | Format-FileSize | Write-Color 'gray60'
-                '{0}' -f @(
-                    if (! $TypeIcon) {
-                        $null
-                    }
-                    else {
-                        $TypeIcon, ' ' -join ''
-                    }
-                )
-            )
         } -sep ', '
         #| write-color 'darkred'
+        | Where-IsNotBlank
         | str Csv
 
         if ($null -ne $Config.Suffix) {
             $Config.Prefix
-        }
-        else {
+        } else {
             if (!($Config.DisableHr)) {
                 hr
             }

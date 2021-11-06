@@ -99,16 +99,19 @@ function Lazy-ImportModule {
         }
     
         $moduleList = [list[object]]::new()
-        $moduleList.AddRange( $ModuleName )
+        $ModuleName | ForEach-Object {
+            $moduleList.add( $_ )
+        }
+        # $moduleList.AddRange( $ModuleName )
 
         if ($FileToWatch.count -eq 0) {
-            $FileToWatch = @($PSCommandPath)
+            $FileToWatch = $PSCommandPath
         }
     }
     process {        
-        $InputObject | ForEach-Object { 
-            $moduleList.Add( $_ )
-        }     
+        # $InputObject | ForEach-Object { 
+        #     $moduleList.Add( $_ )
+        # }     
     }
     end {
         $moduleList | Str Csv -Sort
@@ -130,17 +133,18 @@ function Lazy-ImportModule {
         }
         $metaDebug | format-dict | wi
 
-        $moduleNames | ForEach-Object {
-            $curModuleName = $_ 
+        $moduleList | Where-Object { $null -ne $_ } | ForEach-Object {
+            $curModuleName = $_  
         
             $now = [datetime]::Now
 
-            $root = Get-Module $curModuleName | ForEach-Object ModuleBase
+            $root = Get-Module $curModuleName -ea Ignore | ForEach-Object ModuleBase
+            | Get-Item -ea ignore
 
             Write-Color 'magenta' -t 'fast test?' | wi
             $fastTest = Get-ChildItem -File $root -d 3
             | Sort-Object LastModified -Descending -Top 2
-            | wi 
+            | wi
 
             $query = Get-ChildItem $FileToWatch
             $query_watched | ForEach-Object { 
@@ -174,7 +178,7 @@ if ($false -and !$experimentToExport) {
     $lazyImportModuleSplat = @{
         # Debug             = $true
         ModuleName        = 'Dev.Nin'
-        FileToWatch       = @($PSCommandPath)
+        FileToWatch       = $PSCommandPath
         TestRun           = $true
         InformationAction = 'Continue'
     }

@@ -1,4 +1,6 @@
-$experimentToExport.function += 'New-NinModuleManifest'
+$experimentToExport.function += @(
+    'New-NinModuleManifest'
+)
 # $experimentToExport.alias += 'Re', 'ReLiteral'
 
 function New-NinModuleManifest {
@@ -7,10 +9,13 @@ function New-NinModuleManifest {
         boilerplate module creation
     .description
         .
+    .notes
+        . todo: implement
     .example
         $pattern = re 'something' -AsRipGrep
         rg @('-i', $Pattern)
     .notes
+        todo
     .outputs
 
     #>
@@ -74,9 +79,11 @@ function New-NinModuleManifest {
         true                           True
         UserBasePath                   C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\micro.modules
 
-
-
         #>
+
+
+        # make usable and then load it
+
         $ManifestName = "${ModuleName}.psd1"
         $RootModuleName = "${ModuleName}.psm1"
         $ManifestPath_FullName = (Join-Path $ModuleBasePath $ManifestName)
