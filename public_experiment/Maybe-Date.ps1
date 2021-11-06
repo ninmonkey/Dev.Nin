@@ -1,4 +1,6 @@
-$experimentToExport.function += 'Maybe-GetDatetime'
+$experimentToExport.function += @(
+    'Maybe-GetDatetime'
+)
 $experimentToExport.alias += @(
     'ConvertTool💻-MaybeDate?'
     'Get-MaybeDate?'
@@ -41,13 +43,11 @@ function Maybe-GetDatetime {
         try {
             if ([string]::IsNullOrWhiteSpace($FormatString)) {
                 [datetime]$DateString
-            }
-            else {
+            } else {
                 Write-Error 'formatstring NYI'
                 # [datetime]::ParseExact($DateString, $FormatString)
             }
-        }
-        catch {
+        } catch {
             $DateString
         }
     }

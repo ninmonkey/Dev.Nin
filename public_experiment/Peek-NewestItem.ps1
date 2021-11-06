@@ -1,9 +1,16 @@
-$experimentToExport.function += @(
-    'Peek-NewestItem'
-)
-$experimentToExport.alias += @(
-    'Peek'
-)
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        '_Peek-NewestItem'
+        'Peek-NewestItem'
+    )
+    $experimentToExport.alias += @(
+        'Peek'
+        'PeekNew'
+        'pipe->Peek'
+    )
+}
 
 function Peek-NewestItem {
     <#
@@ -34,12 +41,13 @@ function Peek-NewestItem {
     begin {}
     process {
         $OutputMode = 'newest'
+        Write-Information "Mode: '$OutputMode'"
         switch ($OutputMode) {
             'newest' {
                 _Peek-NewestItem
             }
             default {
-                "Unhandled mode: '$outputMode'"
+                throw "Unhandled mode: '$outputMode'"
             }
         }
     }
@@ -70,22 +78,39 @@ function _Peek-NewestItem {
         Dev.Nin\Invoke-FdFind
     #>
 
-    [Alias('peek')]
+    [Alias('PeekNew')]
     [CmdletBinding(PositionalBinding = $false)]
-    param(
+    param(        
+        [Parameter(Position = 0)]
+        [ArgumentCompletions(
+            '2weeks', '2days', '2hours'
+        )]
+        [string]$When = '2weeks',
 
-        # [Alias('Text')]
-        # [Parameter(Mandatory, Position = 0)]
-        # [string[]]$InputText
+        [Parameter(Position = 1)]
+        [ArgumentCompletions(
+            'Changed_Within'
+        )]
+        [string]$What = 'Changed_Within'    
+
     )
     begin {
     }
     process {
         $binFd = Get-NativeCommand 'fd'
         $binFzf = Get-NativeCommand 'fzf'
-        $batString = 'bat --color=always --style=numbers --line-range=:50 {}' #| Join-String -SingleQuote
+        $previewCommand = 'bat --color=always --style=numbers --line-range=:200 {}' #| Join-String -SingleQuote
 
-        fd -e ps1 --changed-within 2weeks  --color=always | fzf -m --preview "$batString"
+        $whatStr = switch ($What) {
+            'Changed_Within' { 
+                '--changed-within'
+            }
+            default {
+                '--changed-within'
+            }
+        }
+        fd -e ps1 $whatStr $When --color=always
+        | fzf -m --preview "$previewCommand"
     }
     end {
     }
@@ -100,29 +125,62 @@ function _PeekAfterJoinLinesMaybe {
        basic idea is
         #$search | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
     .example
+        Get-ChildItem -File . | First 3 | _PeekAfterJoinLinesMaybe
           .
     .outputs
           [string | None]
 
     #>
+    [Alias('pipe->Peek')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
-        # stdin
-        [Alias('Text')]
-        [Parameter(Mandatory, Position = 0)]
-        [string[]]$InputText
+        [Parameter(
+            ParameterSetName = 'FromPipeline',
+            Mandatory, Position = 0,
+            ValueFromPipeline
+        )]
+        [object]$InputObject,
+
+        [Parameter(
+            ParameterSetName = 'FromPath',
+            Mandatory            
+        )]
+        [string]$BasePath
+
+        # [Parameter(Position=0)]
+        # # stdin
+        # [Alias('Text')]
+        # [Parameter(Mandatory, Position = 0)]
+        # [string[]]$InputText
+        # Not sure if I need
+        # $textLines = [list[string]]::new()
     )
 
-    begin {
-        # Not sure if I need
-        $textLines = [list[string]]::new()
-    }
-    process {
-        $Name | ForEach-Object {
-            $textLines.Add( $_ )
-        }
-    }
+    begin {}
     end {
-        $textLines
+        # $Input
+        # Get-ChildItem . 
+        switch ($PSCmdlet.ParameterSetName) {
+            'FromPipeline' {
+                $Source = $Input
+                break
+            }
+            'FromPath' {                
+                $Source = fd -e ps1 --changed-within 2weeks --color=always
+                break
+            }
+            default {
+                throw "unhandled set: '$($PSCmdlet.ParameterSetName)"
+            }
+        }
+        $source
+        | To->RelativePath
+        | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
+    Get-ChildItem -File . | First 3 | _PeekAfterJoinLinesMaybe
 }

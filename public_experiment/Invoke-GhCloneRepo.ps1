@@ -13,6 +13,8 @@ function Invoke-GHCloneRepo {
     .description
         tags: gh, github, cli, clone, util
         Desc
+    .link
+        Dev.Nin\Invoke-GHRepoList
     .outputs
 
     #>
