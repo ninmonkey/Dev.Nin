@@ -2,12 +2,12 @@
 
 $experimentToExport.function += @(
     'Invoke-GHRepoList'
-    # '_gh_enumeratePropertyNames'
+    '_gh_repoList_enumeratePropertyNames'
 )
 # $experimentToExport.alias += @(
 
 # )
-function _gh_enumeratePropertyNames {
+function _gh_repoList_enumeratePropertyNames {
     <#
     .synopsis
         get properties for 'gh repo list'
@@ -16,7 +16,22 @@ function _gh_enumeratePropertyNames {
     $stdout = gh repo list --json *>&1 | Select-Object -Skip 1
     $stdout -replace '\s+', ''
 }
-# $props ??= _gh_enumeratePropertyNames
+# $props ??= _gh_repoList_enumeratePropertyNames
+
+function _processGHRepoListRecord {
+    [cmdletbinding()]
+    param(
+        [Parameter(Position = 0, ValueFromPipeline, Mandatory)]
+        [string]$Json
+    )
+    process {
+        $Json | ConvertFrom-Json
+        | ForEach-Object {
+
+        }
+    }
+
+}
 
 $__gh_cache ??= @{
 
@@ -70,10 +85,18 @@ function Invoke-GHRepoList {
 [.[] | {url, name, diskUsage, description, pushedAt}]
 '@,
 
-
+        # reload cached
         [Alias('Force')]
         [Parameter()]
-        [switch]$NoCache
+        [switch]$NoCache,
+
+        # don't return objects?
+        [Parameter()]
+        [switch]$SkipAutoConvertFromJson,
+
+        # return full json (skip jq) 
+        [Parameter()]
+        [switch]$PassThru
         
     )
     end {
@@ -82,7 +105,7 @@ function Invoke-GHRepoList {
             Write-Debug 'clearing cache'
             $cache.remove($GitRepoOwner)
         }
-        $propList = 'url,pushedAt,parent,nameWithOwner,latestRelease,languages,labels,name,description,diskUsage,createdAt'
+        $propList = 'url,pushedAt,parent,nameWithOwner,latestRelease,languages,labels,name,description,diskUsage,createdAt,viewerSubscription,viewerHasStarred'
         # $allRepo = gh repo list JustinGrote --source --json=$proplist --limit 999 | Set-Content 'api_response.json'
         [object[]]$GhArgs = @(
             'repo'
@@ -111,6 +134,7 @@ function Invoke-GHRepoList {
         
 
         $GhArgs | Join-String -sep ' ' -op 'gh: ' | wi
+        $GhArgs | Join-String -sep ' ' -op 'gh: ' | Write-Debug
 
         
         if (! $cache.ContainsKey($GitRepoOwner)) {
@@ -121,8 +145,25 @@ function Invoke-GHRepoList {
             Write-Debug 'reading cached values...'
         }
 
-        $cache[$GitRepoOwner]
-        | jq @($JQQuery)
-    }
+        if ($PassThru) {            
+            $cache[$GitRepoOwner]
+            | jq
+            return
+        }
+        
+        if ($SkipAutoConvertFromJson) {
+            $cache[$GitRepoOwner]
+            | jq @($JQQuery)
+        } else {
+            $cache[$GitRepoOwner]
+            | jq @($JQQuery)
+            | ConvertFrom-Json #-Depth         
+            | Sort-Object PushedAt -Descending   
+        }
+        
+        
+         
 
+    }
 }
+
