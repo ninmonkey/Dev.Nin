@@ -65,8 +65,7 @@ $private = @(
 foreach ($file in $private) {
     if (Test-Path ('{0}\private\{1}.ps1' -f $psscriptroot, $file)) {
         . ('{0}\private\{1}.ps1' -f $psscriptroot, $file)
-    }
-    else {
+    } else {
         Write-Error "Import: failed: private: $File"
     }
 }
@@ -99,8 +98,7 @@ $public_NativeWrapper = @(
 foreach ($file in $public_NativeWrapper) {
     if (Test-Path ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)) {
         . ('{0}\public\native_wrapper\{1}.ps1' -f $psscriptroot, $file)
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public\native_wrapper: $File"
     }
 
@@ -116,8 +114,7 @@ $completer = @(
 foreach ($file in $completer) {
     if (Test-Path ('{0}\public\completer\{1}.ps1' -f @($psscriptroot, $file))) {
         . ('{0}\public\completer\{1}.ps1' -f $psscriptroot, $file)
-    }
-    else {
+    } else {
         Write-Error "Import: failed: completer: $File"
     }
 }
@@ -137,7 +134,7 @@ $public = @(
 
     'Get-SavedList'
     'Get-SavedData'
-    'Get-DevInspectObject'
+    
     'Get-DevParameterInfo'
     'Format-DevParameterInfo'
 
@@ -185,8 +182,7 @@ foreach ($file in $public) {
     $ExpectedPath = Get-Item -ea stop ('{0}\public\{1}.ps1' -f @($psscriptroot, $file))
     if (Test-Path $ExpectedPath) {
         . $ExpectedPath
-    }
-    else {
+    } else {
         Write-Error "Import: failed: public: $File"
     }
 }
@@ -206,7 +202,7 @@ $functionsToExport = @(
     ## main
     'Compare-StrictEqual'
 
-    'Get-DevInspectObject'
+    
 
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'

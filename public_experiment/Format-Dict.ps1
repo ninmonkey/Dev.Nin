@@ -290,7 +290,7 @@ function Format-Dict {
             $disableGetEnumerate = $true
             "MissingMethodError: type '{0}' has no '.GetEnumerator'" -f @(
                 $InputObject.GetType().FullName
-            ) | Write-Debug -ea continue
+            ) | Write-Warning
             # ) | Write-Verbose
 
             # $hash = @{}

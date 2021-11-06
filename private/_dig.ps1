@@ -9,6 +9,7 @@ if (! $DebugInlineToggle -and $experimentToExport.function) {
     )
     $experimentToExport.alias += @(
         # 'Dive23'
+        'Dive.Item'
     )
 }
 
@@ -24,7 +25,7 @@ function Find-DevItem {
         I chose 'dig' rather than 'dive', because
         dig implies you're searching for something
     #>
-    [alias('Find-Item')]
+    [alias('Find-Item', 'Dive.Item')]
     param (
         # root path to search
         [parameter(Position = 0)]

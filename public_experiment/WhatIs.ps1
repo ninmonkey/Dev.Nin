@@ -53,9 +53,10 @@ function What-TypeInfo {
         
         $meta = [ordered]@{
             PSTypeName = 'nin.WhatIsInfo'
-            Value      = $InputObject
             Type       = $tinfo.Name | Format-TypeName -WithBrackets
             FullName   = $tinfo.FullName
+            Value      = $InputObject
+            TypeNames  = $tinfo.pstypenames  #| Format-TypeName -WithBrackets
 
             # PSTypeNames = $f.pstypenames | convert 'type' | Format-TypeName -Brackets | str csv
         }
@@ -96,8 +97,7 @@ maybe:
 
 if (! $experimentToExport ) {
 
-    hr
-    $res = What-TypeInfo (Get-Item . ) -infa Continue
-    hr
+    $res = What-TypeInfo (Get-Item . ) -infa Continue    
     $res | Format-List 
+    hr
 }
