@@ -82,8 +82,11 @@ function Invoke-GHRepoList {
         # jquery filter
         [Parameter()]
         [string]$JQQuery = @'
-[.[] | {url, name, diskUsage, description, pushedAt}]
+[.[] | {name, description, viewerHasStarred, languages, diskUsage, description, pushedAt, url, viewerSubscription, forkCount, stargazerCount, viewerHasStarred, viewerSubscription}]
 '@,
+
+        # [.[] | {name, description, viewerHasStarred, languages, diskUsage, description, pushedAt, url, viewerSubscription}]
+        # [.[] | {url, name, diskUsage, description, pushedAt}]
 
         # reload cached
         [Alias('Force')]
