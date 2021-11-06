@@ -98,49 +98,55 @@ function Lazy-ImportModule {
             }
         }
     
-        $moduleNames = [list[object]]::new()
+        $moduleList = [list[object]]::new()
+        $moduleList.AddRange( $ModuleName )
+
         if ($FileToWatch.count -eq 0) {
             $FileToWatch = @($PSCommandPath)
         }
     }
     process {        
         $InputObject | ForEach-Object { 
-            $ModuleNames.Add( $_ )
-        }    
+            $moduleList.Add( $_ )
+        }     
     }
     end {
-        $moduleNames | Str Csv -Sort
+        $moduleList | Str Csv -Sort
         | str Prefix 'ModuleNames =' | Write-Debug
 
-        $FileToWatch
-        | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
-        | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
+        # $FileToWatch
+        # | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+        # | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
+
+        [bool]$ShouldLoad = $false
+        $metaDebug = @{
+            Names      = $moduleList | Str Csv -Sort
+            Watch      = $FileToWatch | Str Csv -Sort
+            WatchNames = $FileToWatch
+            | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+            | Str Csv -Sort
+                
+            ShouldLoad = $ShouldLoad 
+        }
+        $metaDebug | format-dict | wi
 
         $moduleNames | ForEach-Object {
             $curModuleName = $_ 
-            [bool]$ShouldLoad = $false
         
-            $metaDebug = @{
-                Names      = $moduleNames | Str Csv -Sort
-                Watch      = $FileToWatch | Str Csv -Sort
-                WatchNames = $FileToWatch
-                | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
-                | Str Csv -Sort
-                    
-                ShouldLoad = $ShouldLoad
-            }
             $now = [datetime]::Now
 
             $root = Get-Module $curModuleName | ForEach-Object ModuleBase
 
             Write-Color 'magenta' -t 'fast test?' | wi
-            $fastTest = Get-ChildItem -File $root -d 3 | Sort-Object LastModified -Descending -Top 10
+            $fastTest = Get-ChildItem -File $root -d 3
+            | Sort-Object LastModified -Descending -Top 2
             | wi 
 
             $query = Get-ChildItem $FileToWatch
             $query_watched | ForEach-Object { 
                 $curFile = $_
-                $lastUpdate = $state[$curModuleName].LastImport
+                
+
                 if ($lastUpdate -lt $_.LastWriteTime) {
                     $ShouldLoad = $true
                     Write-Debug "'Cache: '$curModuleName' is out of date'"
@@ -173,9 +179,9 @@ if ($false -and !$experimentToExport) {
         InformationAction = 'Continue'
     }
 
-    Lazy-ImportModule @lazyImportModuleSplat
-    hr
+    # Lazy-ImportModule @lazyImportModuleSplat
+    # hr
     
-    Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
+    # Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
 
 }

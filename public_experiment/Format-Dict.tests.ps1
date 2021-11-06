@@ -46,6 +46,16 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
         $true | Should -Be $true
 
     }
+    Describe 'Env: Provider' {
+        It 'a' {
+            @(
+                $profile | Format-Dict
+                , (Get-ChildItem env:) | format-dict
+                @(, (Get-Item env:) ) | format-dict                    
+                Get-Item env: | Format-dict
+            ) | Write-Host
+        }
+    }
 
     It 'Default args' {
         $stdout = @(
@@ -106,6 +116,7 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
                 ColorSingle = ''
             }
         }
+        
         @{
             Name = 'Color[] Children'
             Obj  = @{
@@ -132,6 +143,8 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             } -infa Continue -Debug -ea break
 
             # 'need one that toggles alignment'
+
+            $sampleHash | format-dict -Options @{'TruncateLongChildren' = $true }
 
             $sampleHash | format-dict -Options @{'ColorChildType' = $true }
             $sampleHash | format-dict -Options @{'TruncateLongChildren' = $true }

@@ -210,17 +210,27 @@ function Format-Dict {
         # todo: UX: make dict render on a single line when empty
         # 1 / 0
 
-        $typeNameStr = if (!($Config.DisplayTypeName)) {
-            ''
-        } else {
-            $InputObject.GetType() | Format-TypeName -WithBrackets | Write-Color gray60
+        if ($false) {
+
+            try {
+                
+                $typeNameStr = if (!($Config.DisplayTypeName)) {
+                    ''
+                } else {
+                    $InputObject.GetType() | Format-TypeName -WithBrackets | Write-Color gray60
+                }
+            } catch {
+                $typeNameStr = ''
+            }
         }
+        $typeNameStr = ( ($InputObject)?.GetType() ?? 'typeNameStr')
+
         $joinOuter_Splat = @{
 
             Separator    = "`n"
             # OutputPrefix = $Template.OutputPrefix # was: "`nDict = {`n"
             OutputPrefix = $Template.OutputPrefix -f @(
-                $typeNameStr # todo: replace with Invoke-Template
+                $typeNameStr ?? ' ' # todo: replace with Invoke-Template
             )
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
             OutputSuffix = "`n}" # was: "`n}`n"
