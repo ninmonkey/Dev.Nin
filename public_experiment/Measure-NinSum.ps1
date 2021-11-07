@@ -15,9 +15,34 @@ function Measure-NinSum {
     .synopsis
         Sugar for summation. Does not explicitly modify types.
     .description
-       .
+       'Sum∑ -WithoutMeasureObject' will add objects, like timespans
+        without errors, or explicitly specifying property names.
+        See example:
     .example
           .
+          $results
+        | Measure-Object -Sum -Property TotalMilliseconds
+        | ForEach-Object sum
+    
+        # this works
+            
+            $results
+            | Sum∑ -WithoutMeasureObject
+
+        # same usage of measure-object throws execption
+
+            $results
+            | Measure-Object -Sum | ForEach-Object sum
+
+            Error: Measure-Object: 
+                Input object "00:00:00.0050233" is not numeric.
+
+        # to resolve that, explicitly use a property
+
+            $results
+            | Measure-Object -Sum -Property TotalMilliseconds
+            | ForEach-Object sum
+
     .outputs
           [string | None]
 
@@ -28,6 +53,7 @@ function Measure-NinSum {
         [Parameter(Mandatory, Position = 0, valueFromPipeline)]
         [object[]]$InputObject,
 
+        # Sum objects with the += operator, verses using measure-object -Sum
         [Alias('WithoutMeasureObject')]
         [Parameter()] 
         [switch]$UseNativeOperators

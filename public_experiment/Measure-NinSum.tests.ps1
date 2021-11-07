@@ -4,7 +4,7 @@ BeforeAll {
 
 Describe 'Measure-NinSum' {
     BeforeAll {
-        $ErrorActionPreference = 'break'
+        # $ErrorActionPreference = 'break'
     }
     It 'Measure-Object -Sum fails' {
         { @( Get-Date; Get-Date) | Measure-Object -Sum -ea stop }
@@ -22,6 +22,6 @@ Describe 'Measure-NinSum' {
         $results
         | Sum∑ -WithoutMeasureObject
         | ForEach-Object totalmilliseconds
-        | Should -Be $explicitSum -Because 'Should Add Same Total'        
+        | Should -Be $explicitSum -Because 'Should Be Exactly Equal depsite decimal (Adding ms)'        
     }
 }
