@@ -229,41 +229,52 @@ function Join-StringStyle {
         #     } else {
         #     }
         # }
+        
 
         # map aliases to default configs
         if ($isSmartAlias) {
-            switch ($smartAlias) {
+            switch ($JoinStyle) {
                 # todo: Make JoinStyle a concrete type, and use it for the parameterset
                 'JoinStr' {
                     # .. normal
+                    break
                 }
                 'Csv' {
                     # $Fg = 'orange'
                     $JoinStyle = 'Csv'
+                    break
                 }
                 'NL' {
                     $JoinStyle = 'NL'
+                    break
                 }
                 # 'Pair' {
                 #     $JoinStyle = 'Pair'
+                #   break
                 # }
                 'Prefix' {
                     $JoinStyle = 'Prefix'
+                    break
                 }
                 'Table' {
                     $JoinStyle = 'Table'
+                    break
                 }
                 'Suffix' {
                     $JoinStyle = 'Suffix'
+                    break
                 }
                 'QuotedList' {
                     $JoinStyle = 'QuotedList'
+                    break
                 }
                 { $false -eq $_ } {
                     # $JoinStyle = 'Csv'
+                    break
                 }
                 default {
-                    $JoinStyle = 'Csv'
+                    # $JoinStyle = 'Csv'
+                    break
 
                     @(
                         'fallback to default case for:'

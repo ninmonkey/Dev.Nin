@@ -47,19 +47,33 @@ function What-TypeInfo {
                 PSTypeName = 'nin.WhatIsInfo'
                 Value      = $null 
             }
+            return 
         }
         $obj = $InputObject
         $tinfo = ($InputObject)?.GetType()
         
         $meta = [ordered]@{
-            PSTypeName = 'nin.WhatIsInfo'
-            Type       = $tinfo.Name | Format-TypeName -WithBrackets
-            FullName   = $tinfo.FullName
-            Value      = $InputObject
-            TypeNames  = $tinfo.pstypenames  #| Format-TypeName -WithBrackets
-
+            PSTypeName            = 'nin.WhatIsInfo'
+            Type                  = $tinfo.Name
+            # | Format-TypeName -WithBrackets #-ea Ignore
+            FullName              = $tinfo.FullName
+            Value                 = $InputObject
+            TypeNames             = $tinfo.pstypenames
+            TypeNamesFormat       = $tinfo.pstypenames
+            | Format-TypeName -WithBrackets
+            | str csv
+            TypeNamesLong         = $tinfo.pstypenames -join '-'
+            ImplementedInterfaces = $tinfo.ImplementedInterfaces
+            # | Format-TypeName -WithBrackets -ea Ignore
+            | str Csv
+            # todo: make this render happen in formatting
+            # keep full values in object
             # PSTypeNames = $f.pstypenames | convert 'type' | Format-TypeName -Brackets | str csv
         }
+
+        $meta.type | format-typename -Brackets
+        $meta | format-typename -Brackets
+        
         # Name = 
         # FullName
 
@@ -97,7 +111,22 @@ maybe:
 
 if (! $experimentToExport ) {
 
-    $res = What-TypeInfo (Get-Item . ) -infa Continue    
+    # $res = What-TypeInfo (Get-Item . ) -infa Continue    
+    # $res | Format-List 
+    # hr
+    # $sample = ((Get-Command ls).Parameters)
+    # $tinfo = $sample.GetType()
+    # $tinfo | HelpFromType -PassThru
+    # $tinfo.Namespace, $tinfo.name -join '.'
+
+    # WhatIs $tinfo | Format-List *
+    # WhatIs $sample | Format-List *
+
+    $res = What-TypeInfo (Get-Item . )
     $res | Format-List 
     hr
+    $sample = ((Get-Command ls).Parameters)
+    $tinfo = $sample.GetType()
+    $tinfo | HelpFromType -PassThru
+    $tinfo.Namespace, $tinfo.name -join '.'
 }

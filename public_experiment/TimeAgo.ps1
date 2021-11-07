@@ -19,6 +19,39 @@ if ( $experimentToExport ) {
 }
 # }
     
+function Resolve-RelativeTime {
+    <#
+    .synopsis
+        Stuff
+    .description
+       .
+    .example
+          .
+    .outputs
+          [string | None]
+    
+    #>
+    [Alias(
+        'Future⌚', 'Past⌚',
+        'BeforeNow⌚', 'AfterNow⌚',
+        'TimeAsPast',
+        'TimeAsFuture'
+    )]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [object]$InputObject
+    )
+    
+    begin {}
+    process {
+        Write-Error -Category NotImplemented -m "nyi: '$PSCommandPath'"
+        $now = [datetime]::Now
+       
+    }
+    end {}
+}
+
 
 function Get-TimeStuff {
     <#
@@ -144,4 +177,14 @@ function Get-TimeStuff {
 
 if ( ! $experimentToExport ) {
     RelativeTs 1h
+    hr
+    1 | months | ForEach-Object tostring
+    4 | months ago | ForEach-Object tostring
+    hr
+
+    1 | minutes ago 
+
+    RelativeTs 1d | Past⌚
+    RelativeTs 1d | Future⌚ 
+
 }
