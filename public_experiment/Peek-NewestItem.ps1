@@ -179,7 +179,8 @@ function _PeekAfterJoinLinesMaybe {
                 throw "unhandled set: '$($PSCmdlet.ParameterSetName)"
             }
         }
-        $source
+        # $items
+        # $source
         # | Where-Object {
         #     if ($Config.AlwaysSkipDirectory) {
         #         if (Test-IsDirectory $_) {
