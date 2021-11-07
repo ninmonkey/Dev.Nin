@@ -179,26 +179,29 @@ function _PeekAfterJoinLinesMaybe {
                 throw "unhandled set: '$($PSCmdlet.ParameterSetName)"
             }
         }
+        $items = $input 
+        | Where-Object {            
+            if ($Config.AlwaysSkipDirectory) {
+                if (Test-IsDirectory $_) {
+                    $false; return;
+                }                
+            }
+            $true; return;
+        }
+
+        
         # $items
         # $source
-        # | Where-Object {
-        #     if ($Config.AlwaysSkipDirectory) {
-        #         if (Test-IsDirectory $_) {
-        #             $false; return;
-        #         }                
-        #     }
-        #     $true; return;
-        # }
         # | To->RelativePath
         
         
         switch ($OutputMode) {
-            'diff' {                    
-                fzf -m --preview 'bat --color=always --style=changes,grid,rule --line-range=:200 {}'
-                break
-            }
+            # 'diff' {                    
+            #     fzf -m --preview 'bat --color=always --style=changes,grid,rule --line-range=:200 {}'
+            #     break
+            # }
             default {
-                $source 
+                $items
                 | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
             }
         }
