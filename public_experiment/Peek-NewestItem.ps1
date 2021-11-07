@@ -3,12 +3,14 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         '_Peek-NewestItem'
+        
+        '_PeekAfterJoinLinesMaybe'
         'Peek-NewestItem'
     )
     $experimentToExport.alias += @(
         'Peek'
         'PeekNew'
-        'pipe->Peek'
+        'pipe->Peek', 'Out-Peek', 'Out->Peek'
     )
 }
 
@@ -131,7 +133,7 @@ function _PeekAfterJoinLinesMaybe {
           [string | None]
 
     #>
-    [Alias('pipe->Peek')]
+    [Alias('pipe->Peek', 'Out-Peek', 'Out->Peek')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(
@@ -156,7 +158,11 @@ function _PeekAfterJoinLinesMaybe {
         # $textLines = [list[string]]::new()
     )
 
-    begin {}
+    begin {
+        $Config = @{
+            AlwaysSkipDirectory = $true
+        }
+    }
     end {
         # $Input
         # Get-ChildItem . 
@@ -174,8 +180,29 @@ function _PeekAfterJoinLinesMaybe {
             }
         }
         $source
-        | To->RelativePath
-        | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
+        # | Where-Object {
+        #     if ($Config.AlwaysSkipDirectory) {
+        #         if (Test-IsDirectory $_) {
+        #             $false; return;
+        #         }                
+        #     }
+        #     $true; return;
+        # }
+        # | To->RelativePath
+        
+        
+        switch ($OutputMode) {
+            'diff' {                    
+                fzf -m --preview 'bat --color=always --style=changes,grid,rule --line-range=:200 {}'
+                break
+            }
+            default {
+                $source 
+                | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
+            }
+        }
+        
+            
     }
 }
 
