@@ -5,20 +5,28 @@ using namespace System.Text
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Close-OpenWindow'
-        'Get-OpenWindow'
+        'Get-OpenWindow',
         'Get-WindowPosition'
         'Maximize-Window'
         'Minimize-Window'
-        'Restore-Window'
+        'Restore-Window', 
         'Set-WindowPosition'
     )
     $experimentToExport.alias += @(
+        'Window->Close',
+        'Window->Get'
+        'Window->GetPosition'
+        'Window->Maximize'
+        'Window->Minimize'
+        'Window->Restore'
+        'Window->SetPosition'
         
     )
 }
 
+
 <#
-source:
+original source was from:
     indented-automation/WindowTools.ps1
     <https://gist.github.com/indented-automation/cbad4e0c7e059e0b16b4e42ba4be77a1>
 
@@ -101,58 +109,64 @@ class OpenWindow {
 }
 
 function Get-OpenWindow {
+    [Alias('Window->Get')]
     [CmdletBinding()]
     param (
-        [String]$Name = '*'
+        # wildcard patterns
+        [Parameter(Position = 0, ValueFromPipeline)]
+        [string]$Name = '*'
     )
 
-    $handles = [List[IntPtr]]::new()
-    $shellWindowhWnd = [WindowTools]::GetShellWindow()
-
-    $null = [WindowTools]::EnumWindows(
-        {
-            param (
-                [IntPtr] $handle,
-                [int]    $lParam
-            )
-
-            if ($handle -eq $shellWindowhWnd) {
-                return $true
-            }
-
-            if (-not [WindowTools]::IsWindowVisible($handle)) {
-                return $true
-            }
-
-            $handles.Add($handle)
-
-            return $true
-        },
-        0
-    )
-
-    foreach ($handle in $handles) {
-        $titleLength = [WindowTools]::GetWindowTextLength($handle)
-        if ($titleLength -gt 0) {
-            $titleBuilder = [StringBuilder]::new($titleLength)
-            $null = [WindowTools]::GetWindowText(
-                $handle,
-                $titleBuilder,
-                $titleLength + 1
-            )
-            $title = $titleBuilder.ToString()
-
-            if ($title -like $Name) {
-                $processID = 0
-                $null = [WindowTools]::GetWindowThreadProcessId(
-                    $handle,
-                    [ref]$ProcessID
+    
+    process {
+        $handles = [List[IntPtr]]::new()
+        $shellWindowhWnd = [WindowTools]::GetShellWindow()
+    
+        $null = [WindowTools]::EnumWindows(
+            {
+                param (
+                    [IntPtr] $handle,
+                    [int]    $lParam
                 )
-
-                [OpenWindow]@{
-                    Title     = $title
-                    Handle    = $handle
-                    ProcessId = $ProcessID
+    
+                if ($handle -eq $shellWindowhWnd) {
+                    return $true
+                }
+    
+                if (-not [WindowTools]::IsWindowVisible($handle)) {
+                    return $true
+                }
+    
+                $handles.Add($handle)
+    
+                return $true
+            },
+            0
+        )
+    
+        foreach ($handle in $handles) {
+            $titleLength = [WindowTools]::GetWindowTextLength($handle)
+            if ($titleLength -gt 0) {
+                $titleBuilder = [StringBuilder]::new($titleLength)
+                $null = [WindowTools]::GetWindowText(
+                    $handle,
+                    $titleBuilder,
+                    $titleLength + 1
+                )
+                $title = $titleBuilder.ToString()
+    
+                if ($title -like $Name) {
+                    $processID = 0
+                    $null = [WindowTools]::GetWindowThreadProcessId(
+                        $handle,
+                        [ref]$ProcessID
+                    )
+    
+                    [OpenWindow]@{
+                        Title     = $title
+                        Handle    = $handle
+                        ProcessId = $ProcessID
+                    }
                 }
             }
         }
@@ -160,6 +174,7 @@ function Get-OpenWindow {
 }
 
 function Close-Window {
+    [Alias('Window->Close')]
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High', DefaultParameterSetName = 'ByName')]
     param (
         [Parameter(Mandatory, Position = 1, ParameterSetName = 'ByName')]
@@ -190,6 +205,8 @@ function Close-Window {
 }
 
 function Minimize-Window {
+    [Alias('Window->Minimize')]
+
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ByName')]
     param (
         [Parameter(Mandatory, Position = 1, ParameterSetName = 'ByName')]
@@ -220,6 +237,7 @@ function Minimize-Window {
 }
 
 function Restore-Window {
+    [Alias('Window->Restore')]
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ByName')]
     param (
         [Parameter(Mandatory, Position = 1, ParameterSetName = 'ByName')]
@@ -250,6 +268,7 @@ function Restore-Window {
 }
 
 function Maximize-Window {
+    [Alias('Window->Maximize')]
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'ByName')]
     param (
         [Parameter(Mandatory, Position = 1, ParameterSetName = 'ByName')]
@@ -280,6 +299,7 @@ function Maximize-Window {
 }
 
 function Get-WindowPosition {
+    [Alias('Window->GetPosition')]
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'FromInputObject')]
@@ -307,6 +327,7 @@ function Get-WindowPosition {
 }
 
 function Set-WindowPosition {
+    [Alias('Window->SetPosition')]
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'FromInputObject')]
