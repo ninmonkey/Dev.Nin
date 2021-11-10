@@ -6,6 +6,15 @@ BeforeAll {
         PesterGreen  = '#3EBC77'
         PesterPurple = '#A35BAA'
     }
+    $ColorString = $color
+    $ColorInstance = @{
+        FGDimYellow    = [PoshCode.Pansies.RgbColor]'#937E5E'
+        TermThemeFG    = [PoshCode.Pansies.RgbColor]'#EBB667'
+        TermThemeError = [PoshCode.Pansies.RgbColor]'#943B43'
+        FG             = [RgbColor]'#494943'
+        FGDim          = [rgbcolor]'#7C7C73'
+        FGDim2         = [rgbcolor]'#A2A296'
+    }
 }
 
 Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape', 'UsingWriteHost' {
@@ -101,6 +110,26 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             | Should -Be $false
         }
     }
+    Context 'ColorTypes' {
+        It 'RGBInstance' {
+            $Color = @{
+                FGDimYellow    = [PoshCode.Pansies.RgbColor]'#937E5E'
+                TermThemeFG    = [PoshCode.Pansies.RgbColor]'#EBB667'
+                TermThemeError = [PoshCode.Pansies.RgbColor]'#943B43'
+            }
+
+            $Color | Format-Dict
+        }
+        It 'Text: RGB Hex' {
+            $Color = @{
+                FGDimYellow    = '#937E5E'
+                TermThemeFG    = '#EBB667'
+                TermThemeError = '#943B43'
+            }
+
+            $Color | Format-Dict
+        }
+    }
     # It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
     # It 'Custom Options: "<Name>" "<options.keys>"' -ForEach @(
     It '"<Name>"' -ForEach @(
@@ -133,7 +162,8 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
     }
 
 
-    It 'future' -Skip -Pending {
+    It 'future' -Pending {
+        $false | Should -Be $true
 
         if ($false) {
             $SampleHash = @{a = 3 }
@@ -153,6 +183,5 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             $sampleHash | Format-dict -Options @{'DisplayTypeName' = $false } -ea break
             $sampleHash | Format-dict -Options @{'DisplayTypeName' = $false } -infa Continue -Debug -ea break
         }
-        $true | Should -Be $true
     }
 }

@@ -1,22 +1,26 @@
 $experimentToExport.function += @(
-    'Export-ConsoleColor'
+    'Export-FavConsoleColor'
 )
-$ExperimentToExport.alias += @('exportConfigColor', 'Export-FavConsoleColor')
+$ExperimentToExport.alias += @(
+    'Export->FavConsoleColor'
+)
 
 
 function Export-FavConsoleColor {
     <#
     .synopsis
-        export pansies (actually anywhere)
+        export groups of named colors
     .description
        .
     .example
           .
     .outputs
-          [string | None]
+        #   []
 
     #>
-    [Alias('Export-FavConsoleColor', 'exportConfigColor')]
+    [Alias(
+        'Export->FavConsoleColor'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
@@ -27,7 +31,8 @@ function Export-FavConsoleColor {
         [string]$ExportPath = 'C:\nin_temp\colors\autoexport.csv'
     )
 
-    begin {}
+    begin {
+    }
     Process {
         Test-Path $ExportPath -ea Stop | Out-Null
 
@@ -46,7 +51,9 @@ function Export-FavConsoleColor {
         # | Select-Object -First 1 # strip headers
         $text | Add-Content -Path $ExportPath -Encoding utf8
         "Wrote: '$ExportPath'" | Write-Verbose
+        "Wrote: '$ExportPath'" | Write-Information
 
     }
-    end {}
+    end {
+    }
 }

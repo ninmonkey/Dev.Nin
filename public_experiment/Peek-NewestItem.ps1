@@ -14,6 +14,7 @@ if ( $experimentToExport ) {
     )
 }
 
+
 function Peek-NewestItem {
     <#
     .synopsis
@@ -128,6 +129,11 @@ function _PeekAfterJoinLinesMaybe {
         #$search | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
     .example
         Get-ChildItem -File . | First 3 | _PeekAfterJoinLinesMaybe
+    .example
+        newestItem🔎 Code-Workspace💻
+        | StripAnsi | To->RelativePath
+        | pipe->Peek
+
           .
     .outputs
           [string | None]
@@ -202,7 +208,8 @@ function _PeekAfterJoinLinesMaybe {
             # }
             default {
                 $items
-                | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
+                # | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
+                | fzf -m --preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
             }
         }
         

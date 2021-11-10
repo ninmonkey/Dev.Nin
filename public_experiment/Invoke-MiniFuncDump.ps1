@@ -12,6 +12,17 @@ try {
     $state.HistoryFastPrint = {
         Get-History | Join-String -sep "`n`n$(hr)" -Property CommandLine
     }
+    $state.ListMyCommands = {
+        '*filter->*', '*from->*', '*to->*' | ForEach-Object { 
+            Get-Command -m (_enumerateMyModule) $_
+            hr 
+        }            
+    }
+    $state.SortUnique = {        
+        Get-Clipboard
+        #| ForEach-Object { $_ -replace "'", '' }
+        | Sort-Object -Unique
+    }
 
 } catch {
     Write-Warning "funcDumpErrorOnLoad: $_"    
@@ -29,18 +40,31 @@ function Invoke-MiniFuncDump {
     
     #>
     [Alias('InvokeFuncDump')]
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'InvokeCommand')]
     param(
+        # todo: auto-generate completions using hashtable. 
         [Alias('Name')]
-        [Parameter(Mandatory, Position = 0)]
-        [ArgumentCompletions('HistoryFastPrint')]
-        [string]$ScriptName
+        [Parameter(Position = 0,
+            ParameterSetName = 'InvokeCommand'
+        )]
+        [ArgumentCompletions('HistoryFastPrint', 'ListMyCommands')]
+        [string]$ScriptName,
+
+        # list commands
+        [parameter(ParameterSetName = 'ListOnly')]
+        [switch]$List
     )
     
     begin {}
     process {
         $state = $script:__miniFuncDump
-        if (! $State.ContainsKey($InputObject)) {
+
+        if ($List -or (! $ScriptName)) {
+            $state.keys
+            return
+        }
+
+        if (! $State.ContainsKey($ScriptName)) {
             Write-Error -ea stop "No matching keys: '$_'"
             return
         }

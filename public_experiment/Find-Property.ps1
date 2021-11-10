@@ -10,6 +10,7 @@ $experimentToExport.alias += @(
     # 'New-Sketch'
 )
 # }
+# fix me
 
 
 function _enumerateProperty {
@@ -32,7 +33,9 @@ function _enumerateProperty {
     .link
         Dev.Nin\iProp
     #>
-    [Alias('iterProp'
+    [Alias(
+        'iterProp'
+        # 'Enumerate->' ? 
         #'Find-ObjectProperty' find might be for iprop, not this?
     )]
     [cmdletbinding()]
@@ -53,11 +56,11 @@ function _enumerateProperty {
         $tinfo = $InputObject.GetType()
         [ordered]@{
             Name     = $tinfo.Name
-            TypeName = $tinfo | Format-TypeName -Brackets
+            TypeName = $tinfo | Format-TypeName -Brackets -ea break
         } | Format-Dict
         | Write-Information
 
-        $tinfo.ImplementedInterfaces | Format-TypeName -Brackets
+        $tinfo.ImplementedInterfaces | Format-TypeName -Brackets -ea break
         | STR UL -Sort -Unique
         | str Prefix 'ImplementedInterfaces: '
         | Write-Information

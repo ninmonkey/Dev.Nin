@@ -2,9 +2,9 @@ $experimentToExport.function += @(
     'Get-CommandNameCompleter'
 )
 $experimentToExport.alias += @(
-    'ValidArgCommand'
+    # 'ValidArgCommand'
     'MyGcm🐒'
-    'Completer.Command'
+    # 'Completer.Command'
     'Completer.CommandNin🐒'
 )
 

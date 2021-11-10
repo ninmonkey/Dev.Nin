@@ -49,6 +49,50 @@ Describe 'Join-StringStyle' {
             { Get-ChildItem . | Join-StringStyle NL 'hi' Name -Dbg | Write-Debug } | Should -Not -Throw -Because 'On TodoList: Property name'
         }
     }
+    Describe '$null Joiner' {
+        
+        
+        It 'testParam' -f {
+
+        }
+
+        
+
+
+
+
+        It 'Expect Empty' {
+            $text1 = 0..2 | str csv
+
+            $text1 = 0..2 | str csv -sep $Null
+            $text1 = 0..2 | str csv -sep ''
+        }
+    }
+    Describe 'Quotes' {
+        It 'both should not throw' -Pending {
+
+        }
+        It 'Single' -Pending {
+            
+        }
+        It 'Double' -Pending {
+            
+        }
+        Context 'With Joiner' {
+            '0', '1', '2', '3', '4'
+            It 'Default' {
+                0..2
+                | str Csv
+                | Should -Be '0, 1, 2'
+            }
+            It 'Default with Single' {
+                0..2
+                | str Csv -SingleQuote
+                | Should -Be "'0', '1', '2'"
+            }
+
+        }                        
+    }
     Describe 'Styles Implemented' {
 
 

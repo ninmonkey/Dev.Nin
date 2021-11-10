@@ -126,6 +126,16 @@ function Invoke-GHRepoList {
         
     )
     end {
+        $Color = @{
+            FGDimYellow    = [PoshCode.Pansies.RgbColor]'#937E5E'
+            TermThemeFG    = [PoshCode.Pansies.RgbColor]'#EBB667'
+            TermThemeError = [PoshCode.Pansies.RgbColor]'#943B43'
+            FG             = [RgbColor]'#494943'
+            # FGLight        = [rgbcolor]'#7C7C73'
+            FGDim          = [rgbcolor]'#7C7C73'
+            FGDim2         = [rgbcolor]'#A2A296'
+        }
+
         $cache = $script:__gh_cache
 
         if ($NoCache) {
@@ -143,13 +153,26 @@ function Invoke-GHRepoList {
 
         $Flags | ForEach-Object {
             $mapping = switch ($_) {
-                'Archived' { '--archived' } 
-                'NotArchived' { '--no-archived' } 
-                'Fork' { '--fork' } 
-                'Private' { '--private' } 
-                'Public' { '--public' } 
-                'Source' { '--source' }
-                default {}
+                'Archived' {
+                    '--archived' 
+                } 
+                'NotArchived' {
+                    '--no-archived' 
+                } 
+                'Fork' {
+                    '--fork' 
+                } 
+                'Private' {
+                    '--private' 
+                } 
+                'Public' {
+                    '--public' 
+                } 
+                'Source' {
+                    '--source' 
+                }
+                default {
+                }
             }
             if ($mapping) {
                 $GhArgs += $mapping
@@ -160,9 +183,18 @@ function Invoke-GHRepoList {
         )
         
 
-        $propList | Join-String -sep ', ' -SingleQuote -op 'using API properties: ' | wi
+        $propList
+        | Join-String -sep ', ' -SingleQuote | Write-Color $Color.FG
+        $propList
+        | Join-String -sep ', ' -SingleQuote | Write-Color $Color.FGDim
+        | Join-String -op (
+            'using API properties: ' | Write-Color $Color.FGDimYellow
+        ) | wi
+
         $Limit | Join-String -op 'Limit: ' | wi
-        $GhArgs | Join-String -sep ' ' -op 'gh: ' | wi
+        $GhArgs | Join-String -sep ' ' -op 'gh: '
+        | Write-Color $Color.TermThemeFG
+        | wi
         $GhArgs | Join-String -sep ' ' -op 'gh: ' | Write-Debug
 
         

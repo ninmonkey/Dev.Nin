@@ -1,5 +1,9 @@
-$experimentToExport.function += 'Invoke-FavUrlQuery'
-$experimentToExport.alias += @('favWebSearch', 'favUrl')
+$experimentToExport.function += @(
+    'Invoke-FavUrlQuery'
+)
+$experimentToExport.alias += @(
+    'Web->FavUrl'
+)
 
 
 function Get-FavWebItem {
@@ -16,19 +20,16 @@ function Get-ValidFavWebItemName {
 function Invoke-FavUrlQuery {
     <#
     .synopsis
-        convert [string] to a paste-able Pwsh 7 text literal
+        new?
     .description
         Desc
     .example
-        PS> $sample = '🐒‍Business'
-            "`u{1f412}`u{200d}`u{42}`u{75}`u{73}`u{69}`u{6e}`u{65}`u{73}`u{73}"
-
-            Notice the ZWJ char between Monkey and "B"
+        PS>
     .outputs
-        [string]
+        [?]
 
     #>
-    [alias('favUrl', 'favWebSearch')]
+    [alias('Web->FavUrl')]
     [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'WebQuery')]
     param(
         # Label name to use

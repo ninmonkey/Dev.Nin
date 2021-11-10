@@ -128,6 +128,7 @@ function Join-StringStyle {
         # Input pipeline
         [AllowEmptyCollection()]
         [AllowNull()]
+        [AllowEmptyString()]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         # [object[]]$InputObject,
         [string[]]$InputObject,
@@ -144,8 +145,9 @@ function Join-StringStyle {
 
 
         # Optional text, exact placement depends on JoinStyle
+        # [AllowNull()]
         [Parameter(Position = 1)] #
-        [string]$Text = $Null,
+        [string]$Separator, # = $Null,
 
         # Pre-sort values ?
         [Parameter()] #
@@ -160,6 +162,11 @@ function Join-StringStyle {
         [Alias('DbgOutput', 'DbgOut')]
         [Parameter()] #
         [Switch]$OutputStreamDebug,
+
+        # DoubleQuotes instead of single quotes, if used in the formatter
+        [Alias('Quote')]
+        [Parameter()] #
+        [Switch]$SingleQuote,
 
         # DoubleQuotes instead of single quotes, if used in the formatter
         [Parameter()] #
@@ -293,11 +300,22 @@ function Join-StringStyle {
         }
 
         $JoinStyle | Join-String -op 'JoinStyle (after alias): ' | Write-Debug
+        if ($DoubleQuote) { 
+            $splat_JoinStyle['DoubleQuote'] = $true
+            $splat_JoinStyle.Remove('SingleQuote')
+        }
+        if ($SingleQuote) {
+            $splat_JoinStyle['SingleQuote'] = $true
+            $splat_JoinStyle.Remove('DoubleQuote')
+        }
 
         # style based behavior
         switch ($JoinStyle) {
             'Csv' {
-                $splat_JoinStyle.Separator = ', '
+                $Separator ??= ' '
+                $joinStr = ',{0}' -f @($Separator)
+                $splat_JoinStyle.Separator = $joinStr # was: ', '
+                
             }
             'NL' {
                 $splat_JoinStyle.Separator = "`n"
@@ -377,13 +395,23 @@ function Join-StringStyle {
     }
     end {
         # try {
+        if ($DoubleQuote) { 
+            $splat_JoinStyle['DoubleQuote'] = $true
+            $splat_JoinStyle.Remove('SingleQuote')
+        }
+        if ($SingleQuote) {
+            $splat_JoinStyle['SingleQuote'] = $true
+            $splat_JoinStyle.Remove('DoubleQuote')
+        }
+    
         $sort_splat = @{}
         if ($Unique) {
             $sort_splat['Unique'] = $True
             $Sort = $true
         }
         if ($sort) {
-            $InputLines | Sort-Object @sort_splat | Join-String @splat_JoinStyle
+            $InputLines | Sort-Object @sort_splat
+            | Join-String @splat_JoinStyle
         } else {
             $InputLines | Join-String @splat_JoinStyle
         }

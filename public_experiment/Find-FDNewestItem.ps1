@@ -217,7 +217,7 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
         if (! (Test-Path $BasePath) ) {
             $BasePath = '.'
         }
-        $QueryRootDir = Get-Item $BasePath  -ea stop
+        $QueryRootDir = Get-Item $BasePath -ea stop
 
         $ItemType | ForEach-Object {
             # refactor/extract name to extension
@@ -279,16 +279,21 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
             }
             if (! $Env:NO_COLOR) {
                 $ColorModeParam = switch ($Color) {
-                    'Always' { '--color=always' }
-                    'Never' { '--color=never' }
-                    'Auto' { '--color=auto' }
+                    'Always' {
+                        '--color=always' 
+                    }
+                    'Never' {
+                        '--color=never' 
+                    }
+                    'Auto' {
+                        '--color=auto' 
+                    }
                     default {
                         '--color=always'
                     }
                 }
                 $ColorModeParam
-            }
-            else {
+            } else {
                 '--color=never'
             }
 
@@ -332,5 +337,6 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
     }
 
 
-    end {}
+    end {
+    }
 }
