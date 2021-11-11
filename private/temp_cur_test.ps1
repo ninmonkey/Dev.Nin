@@ -26,8 +26,7 @@ Import-Module 'dev.nin' -Force
             hr
 
             $savedErr[0] | gotoError -PassThru
-        }
-        else {
+        } else {
             Write-Error 'No Saved Errors'
         }
     }

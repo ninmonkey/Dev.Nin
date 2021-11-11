@@ -68,14 +68,12 @@ function Test-IsBasicDatatype {
                             $curVal = $_
                             if ($curVal -is [type]) {
                                 $curVal | Format-TypeName -Brackets
-                            }
-                            else {
+                            } else {
                                 $curVal
                             }
                         }
                     }
-                }
-                catch {
+                } catch {
                     $PSCmdlet.WriteError( $_ )
                 }
             }
@@ -98,18 +96,18 @@ function Test-IsBasicDatatype {
 
                 [bool]$isBasic = $curObj.GetType().IsPrimitive -or $curObj.GetType() -eq [string]
                 $summary = @{
-                    IsBasic       = $isBasic
-                    IsNull        = $isNull
-                    IsNumeric_WIP = $IsNumeric
-                    IsValueType   = $curObj -is [valuetype] # means ValueType is in .pstypenames, which means what?
-                    IsIsPrimitive = $isPrimitive
-                    IsType        = $IsType
-                    Type          = $type
-                    TypeData      = $typeData
-                    TypePSTypeNames   = $curObj.PSTypeNames
-                    HasPsBase     = $null -ne $curObj.psbase
-                    Count         = $curObj.Count
-                    Length        = ($curObj)?.Length
+                    IsBasic         = $isBasic
+                    IsNull          = $isNull
+                    IsNumeric_WIP   = $IsNumeric
+                    IsValueType     = $curObj -is [valuetype] # means ValueType is in .pstypenames, which means what?
+                    IsIsPrimitive   = $isPrimitive
+                    IsType          = $IsType
+                    Type            = $type
+                    TypeData        = $typeData
+                    TypePSTypeNames = $curObj.PSTypeNames
+                    HasPsBase       = $null -ne $curObj.psbase
+                    Count           = $curObj.Count
+                    Length          = ($curObj)?.Length
                     # PSCustomObject = [pscustomobject]
                 }
 
@@ -118,8 +116,7 @@ function Test-IsBasicDatatype {
 
 
             }
-        }
-        catch {
+        } catch {
             $PSCmdlet.WriteError( $_ )
         }
 

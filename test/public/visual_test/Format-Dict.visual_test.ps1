@@ -11,7 +11,21 @@ $RunConfig = @{
     CatChunk         = $true
     NeedsImprovement = $True
     BestExamples     = $True
+    Colors           = $true
 
+}
+
+if ($RunConfig.FrontChunk) {
+    $Color = @{
+        FGDimYellow    = [PoshCode.Pansies.RgbColor]'#937E5E'
+        TermThemeFG    = [PoshCode.Pansies.RgbColor]'#EBB667'
+        TermThemeError = [PoshCode.Pansies.RgbColor]'#943B43'
+        FG             = [RgbColor]'#494943'
+        FGDim          = [rgbcolor]'#7C7C73'
+        FGDim2         = [rgbcolor]'#A2A296'
+    }
+
+    $Color | Format-Dict
 }
 
 $ErrorActionPreference = 'continue'
@@ -100,28 +114,28 @@ if ($RunConfig.NeedsImprovement) {
 
 
 
-    '$Human Dict' | write-color 'magenta'
+    '$Human Dict' | Write-Color 'magenta'
     $human | Format-dict
     hr
-    '$Human Obj' | write-color 'magenta'
+    '$Human Obj' | Write-Color 'magenta'
     $humanObj | Format-Dict
 
-    'Array Properties' | write-color 'magenta'
+    'Array Properties' | Write-Color 'magenta'
     @'
 ,@() | Format-Dict
-'@ | write-color gray70 | str prefix '> '
+'@ | Write-Color gray70 | str prefix '> '
     , @() | Format-Dict
 
     hr
 }
 
 if ($RunConfig.BestExamples) {
-    'Array Properties' | write-color 'magenta'
+    'Array Properties' | Write-Color 'magenta'
     @'
 > ,@() | Format-Dict
 > , @(0, '3', (Get-Item . )) | Format-Dict
 
-'@ | write-color gray70
+'@ | Write-Color gray70
 
     , @() | Format-Dict
     , @(0, '3', (Get-Item . )) | Format-Dict

@@ -1,7 +1,9 @@
-$experimentToExport.function += 'Format-RipGrepResult'
-$experimentToExport.alias += 'Out-ConRipGrepResult'
-
-
+$experimentToExport.function += @(
+    'Format-RipGrepResult'
+)
+$experimentToExport.alias += @(
+    'From->RipGrepResult'
+)
 
 function Format-RipGrepResult {
     <#
@@ -15,7 +17,9 @@ function Format-RipGrepResult {
 2021\dotfiles_git\power
 
     .example
-        PS>
+            PS> rg -c -tps 'invoke-restmethod'
+                | Format-RipGrepResult -AsText
+                | gi
     .notes
         original snippet was
 
@@ -23,7 +27,8 @@ function Format-RipGrepResult {
 
     #>
     [cmdletbinding(PositionalBinding = $false)]
-    [alias('Out-ConRipGrepResult')]
+    [alias('Out-ConRipGrepResult', 
+        'From->RipGrepResult')]
     param (
         #
         [Alias('Text')]
@@ -38,9 +43,12 @@ function Format-RipGrepResult {
         # Ansi escapes
         [Parameter()][switch]$AsUri
     )
-    begin {}
+    begin {
+    }
     process {
-        $ResultList = $InputObject | ForEach-Object -ea continue {
+        $ResultList = $InputObject
+        | StripAnsi
+        | ForEach-Object -ea continue {
             [hashtable]$Result = @{}
             $Parts = $_ -split ':'
 
@@ -55,12 +63,10 @@ function Format-RipGrepResult {
 
         if ($PassThru) {
             $ResultList
-        }
-        else {
+        } else {
             if ($AsText) {
                 $ResultList | ForEach-Object FullName
-            }
-            elseif ($AsUri) {
+            } elseif ($AsUri) {
                 <#
                 Note: VS Code does not allow urls with a separate name,
                 but 'wt' does. ie:
@@ -76,12 +82,12 @@ function Format-RipGrepResult {
                     New-Hyperlink -Uri "file:///$($_.FullName)"
                 }
                 # $ResultList | ForEach-Object File
-            }
-            else {
+            } else {
                 $ResultList # fallback to result with metadata
             }
             # $ResultList | ForEach-Object FullName | ForEach-Object tostring
         }
     }
-    end {}
+    end {
+    }
 }

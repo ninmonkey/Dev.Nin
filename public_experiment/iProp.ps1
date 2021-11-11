@@ -4,12 +4,14 @@ $experimentToExport.function += @(
     'iProp'
 )
 $experimentToExport.alias += @(
+    'Find->Property'
     'DevTool💻-iProp'
 )
 
 $experimentToExport.update_typeDataScriptBlock += @(
     {
         Update-TypeData -TypeName 'Nin.iProp' -DefaultDisplayPropertySet 'TypeNameStr', 'Name', 'ValueStr' -Force
+        # update : make default FL property list better, and ordered
     }
 )
 
@@ -72,7 +74,10 @@ function iProp {
           [nin.iProp]
 
     #>
-    [Alias('DevTool💻-iProp')]
+    [Alias(
+        'DevTool💻-iProp',
+        'Find->Property'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Object to inspect
@@ -142,8 +147,7 @@ function iProp {
         if ($UniqueOnType) {
             $filtered = $InputList | Get-Unique -OnType
             $filtered.Count | Join-String -op 'After filterby -OnType: $InputList.count: ' | Write-Debug
-        }
-        else {
+        } else {
             $filtered = $InputList
         }
 

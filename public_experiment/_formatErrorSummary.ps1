@@ -72,7 +72,10 @@ function _formatErrorSummary {
     #>
     param(
         #
-        [alias('Error')]
+        [alias(
+            'Error',
+            'Format->Error'
+        )]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [object]$InputObject
     )
@@ -135,11 +138,9 @@ function _formatErrorSummary {
     process {
         if ($InputObject -is 'Exception') {
             _processException $InputObject
-        }
-        elseif ($InputObject -is [Management.Automation.ErrorRecord]) {
+        } elseif ($InputObject -is [Management.Automation.ErrorRecord]) {
             _processErrorRecord $InputObject
-        }
-        else {
+        } else {
             Write-Error -ea stop 'Input is not an Exception?' -Category InvalidType -ErrorId 'NotAnExceptionType' -TargetObject ($InputObject.GetType())
         }
 
