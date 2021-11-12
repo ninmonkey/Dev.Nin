@@ -81,7 +81,7 @@ $
         }
     }
     process {
-        $InputObject -replace $Regex.NumberCrumb, { $_ | Write-Color  -fg $Colors.Bold | Join-String }
+        $InputObject -replace $Regex.NumberCrumb, { $_ | Write-Color -fg $Colors.Bold | Join-String }
 
     }
 }
@@ -283,7 +283,12 @@ function Invoke-VSCodeVenv {
 
         [Alias('ExtraArgs')]
         [Parameter(ValueFromRemainingArguments)]
-        [string]$RemainingArgs
+        [string]$RemainingArgs,
+
+        # return paths, but don't run code
+        [alias('GetCurrentBin')]
+        [Parameter()]
+        [switch]$PassThru
 
 
 
@@ -314,24 +319,24 @@ function Invoke-VSCodeVenv {
             $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
             $DataDir = Get-Item -ea stop $DataDir
             $target = Get-Item -ea ignore $TargetPath
-        }
-        catch {
+        } catch {
             Write-Error -ea stop 'Invalid Path'
             # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
 
-        if (Test-IsDirectory $target) {
-            hr
-            'Open 📁 a directory?'
-            | Write-Color 'blue'
-            hr
-
-        }
-        else {
-            hr
-            'Open 📄 File?' | Write-Color 'blue'
-            hr
-        }
+        @(
+            if (Test-IsDirectory $target) {
+                hr
+                'Open 📁 a directory?'
+                | Write-Color 'blue'
+                hr
+    
+            } else {
+                hr
+                'Open 📄 File?' | Write-Color 'blue'
+                hr
+            }
+        ) | Wi
 
         [string[]]$codeArgs = @()
 
@@ -352,6 +357,16 @@ function Invoke-VSCodeVenv {
         if ($Help) {
             & $CodeBin @('--help')
             return
+        }
+        if ($PassThru) {
+            # GetCurrentBin
+            [pscustomobject]@{
+                PSTypeName   = 'nin.CodeVenv.Config'
+                CodeBinPath  = $CodeBin            
+                UserDataDir  = $DataDir ?? $Null
+                ExtensionDir = 'nyi'
+            }
+            return 
         }
 
 
@@ -392,8 +407,7 @@ function Invoke-VSCodeVenv {
                 }
                 Get-Item $Target | Join-String -DoubleQuote
             )
-        }
-        else {
+        } else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
                 'LineNumber? Y' | Write-Color green | wi
@@ -401,8 +415,7 @@ function Invoke-VSCodeVenv {
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
-            }
-            else {
+            } else {
                 'LineNumber? Y' | Write-Color green | wi
                 $codeArgs += @(
                     '--goto'
@@ -465,8 +478,7 @@ function Invoke-VSCodeVenv {
 
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
-        }
-        else {
+        } else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }

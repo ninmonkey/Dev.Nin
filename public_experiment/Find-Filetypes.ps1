@@ -88,7 +88,8 @@ function Find-FileType {
         Invoke-NativeCommand 'fd' -ArgumentList $finalArgs_list
 
     }
-    end {}
+    end {
+    }
 }
 function Get-FileType {
     <#
@@ -105,6 +106,19 @@ function Get-FileType {
         Find-FileType
     .example
         🐒> Get-FileType
+    .example
+        🐒> Get-FileType
+
+            .code-workspace
+            .csv
+            .gif
+            .gitattributes
+            .gitignore
+            .json
+            .lnk
+            .log
+            .md
+        
     .outputs
         string[]
 
@@ -143,5 +157,6 @@ function Get-FileType {
 
 
     }
-    end {}
+    end {
+    }
 }

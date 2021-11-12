@@ -21,6 +21,7 @@ $__Config = @{
     Enable_FormatData_BuiltIn           = $true # toggles overriting builtin type's formatdata
     Enable_Import_PublicExperiment_Dir  = $True
     Enable_Import_PrivateExperiment_Dir = $True
+    Enable_PSReadLineScripts            = $True
 }
 $formatData = @(
 )
@@ -312,6 +313,11 @@ if ($__Config.Enable_Import_PublicExperiment_Dir) {
 if ($__Config.Enable_Import_PrivateExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
 }
+if ($__Config.Enable_PSReadLineScripts) {
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_psreadline\__init__.ps1'))
+}
+
+
 # __yell I
 <#
 Sketch: Detect imports

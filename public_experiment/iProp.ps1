@@ -70,6 +70,12 @@ function iProp {
         [Boolean]           Exists           True
         [Boolean]           ExistsCore       True
 
+    .link
+        Dev.Nin\iProp
+    .link
+        Dev.Nin\_enumerateProperty
+    .link
+        Ninmonkey.Console\Get-ObjectProperty
     .outputs
           [nin.iProp]
 

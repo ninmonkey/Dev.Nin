@@ -5,6 +5,8 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'iterProp'
+    'Iter->Prop'
+    'Find->Prop'
 
     # 'Find-ObjectProperty'
     # 'New-Sketch'
@@ -34,7 +36,9 @@ function _enumerateProperty {
         Dev.Nin\iProp
     #>
     [Alias(
-        'iterProp'
+        'iterProp',
+        'Iter-Prop',
+        'Find->Prop'
         # 'Enumerate->' ? 
         #'Find-ObjectProperty' find might be for iprop, not this?
     )]

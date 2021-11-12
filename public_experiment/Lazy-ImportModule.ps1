@@ -72,7 +72,7 @@ function Lazy-ImportModule {
                 - [ ] auto detect file locations based on this path:
                     Get-Module Dev.Nin | s RootModule, ModuleBase, Path | fl
     .example   
-            PS> Verb-Noun -Options @{ Title='Other' }
+            
         #>
     # [outputtype( [string[]] )]
     # [Alias('x')]
@@ -87,13 +87,19 @@ function Lazy-ImportModule {
     
         # files to watch last modified time[s]
         [Parameter()]
-        [string[]]$FileToWatch
+        [string[]]$FileToWatch,
+
+        #don't actually run import-module
+        [Parameter()]
+        [switch]$TestOnly
     )
-    begin {
+    begin {        
         $state = $script:__LazyImport
+        h1 'state' 
+        $state | format-dict
         $ModuleName | ForEach-Object { 
             if (! $state.ContainsKey($_) ) {
-                $state[ $_ ] = 0
+                $state[ $_ ] = [datetime]0
 
             }
         }
@@ -147,11 +153,12 @@ function Lazy-ImportModule {
             | wi
 
             $query = Get-ChildItem $FileToWatch
+            $query_watched = $query_watched
             $query_watched | ForEach-Object { 
                 $curFile = $_
                 
 
-                if ($lastUpdate -lt $_.LastWriteTime) {
+                if ($lastUpdate -lt $curFile.LastWriteTime) {
                     $ShouldLoad = $true
                     Write-Debug "'Cache: '$curModuleName' is out of date'"
                     
@@ -161,31 +168,66 @@ function Lazy-ImportModule {
                 }
             }
 
+            $importModuleSplat = @{
+                Name  = $ModuleName
+                Force = $true
+                # Verbose = $true
+            }
+            $metaDebug += @{
+                ShouldLoad_2 = $ShouldLoad
+                TestOnly     = $ShouldLoad
+                ModuleName   = $ModuleName
+                now          = $now
+                LastImport   = $state[$curModuleName].LastImport
+            }            
             $metaDebug | format-dict | wi
             if ($ShouldLoad) {
-                if (! $TestRun ) {
-                    Import-Module -Name $ModuleName -Force -Verbose
+                if (! $TestOnly ) {
 
+                    if ($false) {
+                        Import-Module @importModuleSplat 
+                    }
                     $state[$curModuleName].LastImport = $now
+                    $state | Format-Dict
+                    $false; return # ei: $ShouldLoad
                 }
             }
+            $state | Format-Dict
+            # $true
+            $ShouldLoad; return;
         }
     }
 }
 
-if ($false -and !$experimentToExport) {
+if ($true -and !$experimentToExport) {
     # $PSCommandPath | Get-Item
-    $lazyImportModuleSplat = @{
-        # Debug             = $true
-        ModuleName        = 'Dev.Nin'
-        FileToWatch       = $PSCommandPath
-        TestRun           = $true
-        InformationAction = 'Continue'
-    }
-
-    # Lazy-ImportModule @lazyImportModuleSplat
-    # hr
-    
-    # Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
-
+    # $lazyImportModuleSplat = @{
+    # Debug             = $true
+    # ModuleName = 'Dev.Nin'
+    # FileToWatch = $PSCommandPath
+    # TestRun = $true
+    # InformationAction = 'Continue'
+    # $lazyImportModuleSplat | format-dict
+    hr 5
+    # h1 'before'
+    # $isStale = Lazy-ImportModule -ModuleName dev.nin -infa Continue -Verbose -TestOnly -ea break
+    # $isStale | str prefix 'stale?' | Write-Color white -bg cyan
+    # $isStale = Lazy-ImportModule -ModuleName dev.nin -infa Continue -Verbose -TestOnly -ea break
+    # $isStale | str prefix 'stale?' | Write-Color white -bg cyan
+    # h1 'before'
+    $isStale = Lazy-ImportModule -ModuleName dev.nin -infa Continue -Verbose -ea break
+    $isStale | str prefix 'stale?' | Write-Color white -bg cyan
+    $isStale = Lazy-ImportModule -ModuleName dev.nin -infa Continue -Verbose -ea break
+    $isStale | str prefix 'stale?' | Write-Color white -bg cyan
+    h1 'after'
+        
 }
+
+
+# Lazy-ImportModule @lazyImportModuleSplat
+# hr
+    
+# Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
+
+
+

@@ -251,7 +251,9 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
                 }
 
                 'Pwsh' {
-
+                    $QueryExtension += @(
+                        'ps1', 'ps1xml', 'psd1', 'psm1'
+                    )
                 }
 
                 default {
