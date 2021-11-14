@@ -12,7 +12,7 @@
     RootModule        = 'Dev.Nin.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.9'
+    ModuleVersion     = '0.0.11'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -27,10 +27,10 @@
     CompanyName       = 'Jake Bolton'
 
     # Copyright statement for this module
-    Copyright         = '(c) Jake Bolton 2020-2021'
+    Copyright         = '(c) Jake Bolton 2020-2022'
 
     # Description of the functionality provided by this module
-    Description       = 'Internal dev tools, they are not pretty'
+    Description       = 'Internal experiments, not even dev tools, they are not pretty'
 
     # Minimum version of the PowerShell engine required by this module
     # PowerShellVersion = ''
@@ -53,6 +53,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @(
         'Ninmonkey.Console'
+        'Utility' # Seeemingly science
         'Pansies'
     )
 

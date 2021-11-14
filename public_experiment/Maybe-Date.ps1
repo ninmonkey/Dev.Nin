@@ -2,8 +2,8 @@ $experimentToExport.function += @(
     'Maybe-GetDatetime'
 )
 $experimentToExport.alias += @(
-    'ConvertTool💻-MaybeDate?'
-    'Get-MaybeDate?'
+    # 'ConvertTool💻-MaybeDate?'
+    # 'Get-MaybeDate?'
     '?Date'
 )
 
@@ -51,6 +51,7 @@ function Maybe-GetDatetime {
             $DateString
         }
     }
-    end {}
+    end {
+    }
 
 }

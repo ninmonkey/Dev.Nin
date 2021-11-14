@@ -89,8 +89,9 @@ function Invoke-GHRepoList {
             'Jaykul', 'JustinGrote', 'SeeminglyScience', 'StartAutomating')]
         [string]$GitRepoOwner,
             
+        # because it caches, set limit to 999
         [Parameter()]
-        [uint]$Limit = 30,
+        [uint]$Limit = 999, # 30,
     
         # see: gh repo list --help
         [Parameter(Position = 1)]

@@ -5,7 +5,7 @@ if (! $DebugInlineToggle ) {
     )
     # $experimentToExport.alias += @(
     #     'TextProcessing📚.IsNotBlank'
-    #     'Assert-IsNotBlank'
+        'Assert-IsNotBlank'
     # )
 }
 

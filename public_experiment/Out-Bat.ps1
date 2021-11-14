@@ -1,4 +1,5 @@
 if ($experimentToExport) {
+    # todo: first:
     
     $experimentToExport.function += @(
         'Out-BatHighlight'
@@ -10,6 +11,20 @@ if ($experimentToExport) {
         'Batman'
     )
 }
+# & { # todo: move to use modulemetadata
+$metadata_manpage = @(
+    @{
+        CommandName = 'dotnet'
+        OnlineHelp  = 'https://docs.microsoft.com/en-us/dotnet/core/tools/'
+    }
+    @{
+        CommandName = 'default'
+        OnlineHelp  = 'https://www.mankier.com/1/{0}'
+        # Tags        = 'Wolfram', 'Language'
+    }
+) | ForEach-Object { [pscustomobject]$_ }
+# Set-ModuleMetada -key 'command.manpage' -Value $Metadata
+
 
 
 function Out-BatHighlight {
@@ -89,7 +104,8 @@ function Out-BatHighlight {
 
     )
 
-    begin {}
+    begin {
+    }
     # process {}
 
     # | bat -P -l json --color=always
@@ -128,11 +144,11 @@ function Out-BatHighlight {
 function Invoke-Batman {
     <#
         .synopsis
-            man pages on windows
+            (almost) sugar to invoke Out-Bat for a man page
         .notes
             .
         .example   
-            PS> man 'ls'
+            PS> batman 'ls'
         #>
     # [outputtype( [string[]] )]
     [Alias('Batman')]
@@ -147,7 +163,11 @@ function Invoke-Batman {
             'wt'
         )]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string]$CommandName
+        [string]$CommandName,
+
+        # use web pages if possible
+        [Parameter()]
+        [switch]$Online
     
         # # extra options
         # [Parameter()][hashtable]$Options
@@ -164,15 +184,53 @@ function Invoke-Batman {
     # process {}
     end {
         # $RemainingArgs = $Options
+        if ($Online) {
+            throw 'nyi; get module url metadata'
+        }
 
         
         $binCmd = Get-NativeCommand $CommandName -OneOrNone -ea Continue
-        & $binCmd @('--help')
-        | Out-BatHighlight -l man -Paging auto -infa Continue -Title $CommandName
+        if (! $binCmd ) {
+            Write-Error "Could not find '$CommandName' or it was not unique"
+        }        
+        # & $binCmd @('--help')
+        # | Out-BatHighlight -l man -Paging auto -infa Continue -Title $CommandName
+        # | bat -l man
+
+        # Get-ModuleMetadata -list
+
         # | Out-BatHighlight -l man -Paging auto
+    }
+}
+function __collectManpageUrl {
+    <#
+    .synopsis
+        process command metadata to collect urls from full commands
+    #>
+    [CmdletBinding()]
+    param(
+        #Docstring
+        [Alias('CommandName')]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string]$InputObject
+    )
+
+    process {
+        if ( $InputObject.CommandType -eq 'Application' ) {
+            Write-Warning "skipping queries on applications: '$InputObject'"
+            return 
+        } 
+        
+        # | Get-Help
+        $helpobj = Get-Command $InputObject | Get-Help
+        $helpobj.relatedLinks | ForEach-Object NavigationLink | ForEach-Object pstypenames
+        $helpobj.relatedLinks        
+
     }
 }
 
 if (! $experimentToExport) {
-    Batman fzf
+    # Batman fzf -ea break
+    __collectManpageUrl 'find-type'
+
 }

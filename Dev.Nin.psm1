@@ -306,12 +306,12 @@ Export-ModuleMember -Alias $aliasesToExport
 . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_stable\__init__.ps1'))
 
 
+if ($__Config.Enable_Import_PrivateExperiment_Dir) {
+    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
+}
 if ($__Config.Enable_Import_PublicExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\git\__init__.ps1'))
-}
-if ($__Config.Enable_Import_PrivateExperiment_Dir) {
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
 }
 if ($__Config.Enable_PSReadLineScripts) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_psreadline\__init__.ps1'))

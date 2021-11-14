@@ -13,6 +13,7 @@ $experimentToExport.function += @(
     }
 )
 $experimentToExport.alias += @(
+    'fDict' 
     # 'Dev.Format-Dict'
     # 'Ansi.Format-Dict'
     # 'New-Sketch'
@@ -138,7 +139,8 @@ function Format-Dict {
         - [ ] doesn't have recursion
         - [ ] coerce values better?
     #>
-    # [outputtype( [string[]] )]
+    [Alias('fDict')]
+    [outputtype( [string[]] )]
     [cmdletbinding()]
     param(
         # Dict to print
