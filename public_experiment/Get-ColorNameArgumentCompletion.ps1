@@ -34,10 +34,10 @@ function _formatColorNameTooltip {
 }
 
 # Get-ColorArgumentCompleter ?
-function Get-ColorNameArgumentCompleter {
+function Get-ColorNameArgumentCompletion {
     <#
     .synopsis
-        auto complete colors, previewd
+        auto complete colors, tooltips show names and color, colorizes in terminal
     .description
        .
     .example
@@ -46,6 +46,7 @@ function Get-ColorNameArgumentCompleter {
           [string | None]
 
     #>
+    [Alias('Completion->ColorName')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(Mandatory, Position = 0)]
@@ -54,14 +55,12 @@ function Get-ColorNameArgumentCompleter {
 
     begin {}
     process {
-        'this will format tooltips in the completer like
+        'nyi:
+        this will format tooltips in the completer like
         using: _formatColorNameTooltip
 
     but then the output/completion value could be the HEX string
     '
-
-
-
 
     }
     end {}

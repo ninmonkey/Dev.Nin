@@ -4,9 +4,21 @@ if (! $DebugInlineToggle ) {
         'Invoke-FdFind'
     )
     $experimentToExport.alias += @(
-        'Dive'
-        'Dig'
+        # 'Dive'
+        # 'Dig'
     )
+    <#
+    todo: remove dig + dive -> they should wrap to invoke this function, not be in it
+        dive probably invokes
+            peek->directory
+            or peek->item
+            or goto
+    
+        dive =>
+            moves; goto location
+        find =>
+            search files, peek->item or peek->directory
+    #>
 }
 
 function Invoke-FdFind {
@@ -22,11 +34,16 @@ function Invoke-FdFind {
         naming:
             dive -> you find and enter filepath
             dig -> you find something, but don't get it
+    .link
+        Dev.Nin\Invoke-FdFind
+    .link
+        Dev.Nin\Invoke-FdFindItem
 
     .outputs
 
     #>
-    [alias('Dive', 'FdFind', 'Dig')]
+ 
+    [alias('FdFind')] 
     [CmdletBinding(PositionalBinding = $true, SupportsShouldProcess
         # NYI: , SupportsPaging
     )]
@@ -64,7 +81,8 @@ function Invoke-FdFind {
 
     )
 
-    begin {}
+    begin {
+    }
     process {
         try {
             if ($Type.Count -eq 0) {
@@ -110,13 +128,14 @@ function Invoke-FdFind {
                         $fdArgs += '-t', 'd'
                         break
                     }
-                    default { 'bad' }
+                    default {
+                        'bad' 
+                    }
                 }
             }
             if ($Type -contains 'Directory' -and $Type -contains 'File') {
                 # implicit is all
-            }
-            else {
+            } else {
                 if ($Type -contains 'Directory') {
                     $fdArgs += @('-t', 'd')
                 }
@@ -143,20 +162,19 @@ function Invoke-FdFind {
             # if ($PSCmdlet.ShouldProcess("$kwargs", "'FdFind'")) {
             if ($WhatIf) {
                 @(
-                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: ' | write-color green
-                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color green
+                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: ' | Write-Color green
+                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | Write-Color green
                 ) | Join-String
                 return
 
-            }
-            else {
+            } else {
                 if ($Path) {
                     Push-Location $Path -StackName 'fd.find'
                 }
 
                 @(
                     $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: '
-                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | write-color magenta
+                    $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | Write-Color magenta
                 ) | Write-Information
 
                 if (! $Go) {
@@ -175,15 +193,15 @@ function Invoke-FdFind {
                 # Pop-Location -StackName 'fd.find'
 
             }
-        }
-        catch {
+        } catch {
             $PSCmdlet.WriteError($_)
         }
     }
     # todo: always wrap CmdletExceptionWrapper: From Sci
 
 
-    end {}
+    end {
+    }
 }
 
 if ($DebugInlineToggle ) {
@@ -196,7 +214,7 @@ if ($DebugInlineToggle ) {
 
 
     # code
-    Invoke-FdFind '.' a  -Type Directory, File
+    Invoke-FdFind '.' a -Type Directory, File
     Invoke-FdFind . -Type Directory a -infa Continue -e code-workspace, ps1
 }
 <#

@@ -14,6 +14,8 @@ function Show-CommandUsed {
         jumps to module's source, or its directory
     .notes
         future: search last N commands in history, parse AST for command names
+    .link
+        Dev.Nin\Show-CommandUsed
     .outputs
         [string] or none
     .example

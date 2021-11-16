@@ -315,6 +315,7 @@ function Join-StringStyle {
                 $Separator ??= ' '
                 $joinStr = ',{0}' -f @($Separator)
                 $splat_JoinStyle.Separator = $joinStr # was: ', '
+                # Wait-Debugger
                 
             }
             'NL' {

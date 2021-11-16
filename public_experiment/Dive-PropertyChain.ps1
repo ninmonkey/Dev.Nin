@@ -4,8 +4,7 @@ if ($experimentToExport) {
         # 'Dive-PropertyChain'
     )
     $experimentToExport.alias += @(
-        'Dive.Member'
-        'Dive.Prop'
+        'Dive->Member'
     )
 }
 
@@ -28,7 +27,9 @@ function Invoke-PropertyChain {
                 | Should -be 'DirectoryInfo'
     #>
     # [OutputType([String])]
-    [Alias('Dive.Prop', 'Dive.Member')]
+    [Alias(
+        'Dive->Member'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # what to use
@@ -39,7 +40,7 @@ function Invoke-PropertyChain {
         # query to try
         [Parameter(Mandatory, Position = 0)]
         [string]$Query,
-        
+
         # as Iex instead, make Invoke-Expression Explicit
         [Alias('EvalUnsafe')]
         [parameter(ParameterSetName = 'UsingIEX')]
@@ -65,17 +66,17 @@ function Invoke-PropertyChain {
         }
         # $meta | format-dict | wi
         $meta | Format-Table | Out-String | wi
-        
-        $curTarget = $InputObject                
+
+        $curTarget = $InputObject
         $Steps = $Query -split '\.'
         $InputObject | Format-TypeName
         $steps | Join-String -sep ' -> ' -op '$InputObject -> ' | Write-Debug
-        $Steps | ForEach-Object {            
+        $Steps | ForEach-Object {
             $curStep = $_
             Write-Debug "Step: '$curStep'"
 
         }
-        
+
     }
     end {}
 }
@@ -92,10 +93,10 @@ if (! $experimentToExport) {
     | Dive.Prop @lvlDiagnostic fullname -ErrorAction Break
 
     $x = Get-Item .
-    ForEach-Object -InputObject $x -MemberName gettype -infa Continue -Verbose | ForEach-Object name 
+    ForEach-Object -InputObject $x -MemberName gettype -infa Continue -Verbose | ForEach-Object name
     $x | Dive.Prop 'gettype.name' -infa Continue -Debug -Verbose
 
     $t = Get-Item .
-    
+
     $Expected = 'System.IO.DirectoryInfo'
 }

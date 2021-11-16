@@ -3,6 +3,8 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'From->RipGrepResult'
+    'ConvertFrom-RipGrepResult'
+    # 'ConvertFrom' ? or 'ConvertTo' ? 
 )
 
 function Format-RipGrepResult {
@@ -10,6 +12,10 @@ function Format-RipGrepResult {
     .synopsis
         basic ripgrep filename output, to usable url
     .description
+        .
+    .notes
+        ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
+
     .notes
         currently a relative path like this is not clickable:
 
@@ -27,8 +33,11 @@ function Format-RipGrepResult {
 
     #>
     [cmdletbinding(PositionalBinding = $false)]
-    [alias('Out-ConRipGrepResult', 
-        'From->RipGrepResult')]
+    [alias(
+        # 'Out-ConRipGrepResult', 
+        'ConvertFrom-RipGrepResult',
+        'From->RipGrepResult'
+    )]
     param (
         #
         [Alias('Text')]

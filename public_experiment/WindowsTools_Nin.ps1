@@ -11,6 +11,7 @@ if ( $experimentToExport ) {
 }
 
 
+
 function Window_BringToFront {
     <#
     .synopsis
@@ -20,9 +21,9 @@ function Window_BringToFront {
     .link
         Dev.Nin\Close-OpenWindow
     .link
-        Dev.Nin\Get-OpenWindow        
+        Dev.Nin\Get-OpenWindow
     .link
-        Dev.Nin\Get-WindowPosition 
+        Dev.Nin\Get-WindowPosition
     .link
         Dev.Nin\Maximize-OpenWindow
     .link
@@ -30,7 +31,7 @@ function Window_BringToFront {
     .link
         Dev.Nin\Restore-OpenWindow
     .link
-        Dev.Nin\Set-WindowPosition 
+        Dev.Nin\Set-WindowPosition
     #>
     [Alias('Window->ToFront')]
     [CmdletBinding()]
@@ -51,10 +52,10 @@ function Window_BringToFront {
             $_ | Join-String -op '*' -os '*'
         }
 
-        $query = $TitleName | Get-OpenWindow #-Name $TitleName 
+        $query = $TitleName | Get-OpenWindow #-Name $TitleName
 
         $query | str csv -DoubleQuote | str prefix 'query: ' | Write-Information
-        
+
         #strict?
         if ($query.count -ne 1 -and ($OneOrNone)) {
             Write-Error '-OneOrNone: Failed'
@@ -65,7 +66,8 @@ function Window_BringToFront {
 
             if ($query.count -eq 1 -and ($OneOrNone)) {
                 $FinalTarget = $query
-            } else {
+            }
+            else {
                 Write-Verbose 'query: OneOrNone: false'
                 $FinalTarget = $query.Title | Sort-Object -Unique | fzf -m
             }
@@ -73,10 +75,10 @@ function Window_BringToFront {
 
         $FinalTarget | ForEach-Object {
             $cur = $_
-            # try parallel 
-            $cur | Minimize-Window -ea break
+            # try parallel
+            $cur | Minimize-Window #-ea break
             Start-Sleep 0.2
-            $cur | Restore-Window -ea break
+            $cur | Restore-Window #-ea break
         }
     }
 }
@@ -85,4 +87,3 @@ function Window_BringToFront {
 if (! $experimentToExport) {
     # ...
 }
-

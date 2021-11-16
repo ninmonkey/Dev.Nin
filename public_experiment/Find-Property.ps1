@@ -2,17 +2,55 @@
 
 $experimentToExport.function += @(
     '_enumerateProperty'
+    'Completion->PropertyName'
 )
 $experimentToExport.alias += @(
     'iterProp'
     'Iter->Prop'
-    'Find->Prop'
+
 
     # 'Find-ObjectProperty'
     # 'New-Sketch'
 )
 # }
 # fix me
+
+function Completion->PropertyName {
+    <#
+    .synopsis
+        Generate completions for an object's property names
+    .notes
+        'Completion' -> means get valid results
+        'Completer' -> script that does more logic
+    #>
+    [cmdletbinding()]
+    param(
+        # any object
+        [Parameter(
+            Mandatory, Position = 0,
+            ValueFromPipeline)]
+        [object]$InputObject
+    )
+    process {
+        $InputObject.psobject.properties.Name | Sort-Object -Unique
+    }
+
+
+    <#
+    Dev.Nin\_enumerateProperty
+Dev.Nin\_gh_repoList_enumeratePropertyNames
+Dev.Nin\Get-PropertyNameCompleter
+Dev.Nin\iProp
+Dev.Nin\Invoke-PropertyChain
+Dev.Nin\Where-EmptyProperty
+Ninmonkey.Console\ConvertTo-PropertyList
+Ninmonkey.Console\Select-NinProperty
+'@ | SplitStr -SplitStyle Newline | Resolve-CommandName
+| editfunc -PassThru | % file | sort
+
+#>
+
+}
 
 
 function _enumerateProperty {
@@ -37,9 +75,8 @@ function _enumerateProperty {
     #>
     [Alias(
         'iterProp',
-        'Iter-Prop',
-        'Find->Prop'
-        # 'Enumerate->' ? 
+        'Iter->Prop'
+        # 'Enumerate->' ?
         #'Find-ObjectProperty' find might be for iprop, not this?
     )]
     [cmdletbinding()]
@@ -53,6 +90,9 @@ function _enumerateProperty {
         [parameter()]
         [switch]$OutGridView
     )
+    begin {
+        Write-Warning 'actual error is in Format-TypeName'
+    }
     process {
         $meta = @{
             # ImplementedInterfaces
@@ -60,11 +100,11 @@ function _enumerateProperty {
         $tinfo = $InputObject.GetType()
         [ordered]@{
             Name     = $tinfo.Name
-            TypeName = $tinfo | Format-TypeName -Brackets -ea break
+            TypeName = $tinfo | Format-TypeName -Brackets
         } | Format-Dict
         | Write-Information
 
-        $tinfo.ImplementedInterfaces | Format-TypeName -Brackets -ea break
+        $tinfo.ImplementedInterfaces | Format-TypeName -Brackets
         | STR UL -Sort -Unique
         | str Prefix 'ImplementedInterfaces: '
         | Write-Information
