@@ -1,11 +1,14 @@
-#Requires -Version 7.0.0
+#Requires -Version 7
 
-# allows script to be ran alone, or, as module import
-if (! $DebugInlineToggle -and $experimentToExport) {
+if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Invoke-BitwiseVisualization'
     )
     $experimentToExport.alias += @(
+    )
+
+    $NotImplementedTags = @(
+        # tags, not aliases
         'Bitwise'
         'Bitwise🎨'
         'Style🎨.BitwiseVisual'
@@ -14,6 +17,7 @@ if (! $DebugInlineToggle -and $experimentToExport) {
     )
 }
 
+
 function _colorizeBits {
     <#.
     .synopsis
@@ -21,6 +25,7 @@ function _colorizeBits {
     .description
         refactor to colorize a 'Nin.BitString' type
         ANSI formatting
+
     .example
         🐒 16 | bits
         | SHould -be '0001.0000'
@@ -44,6 +49,12 @@ function Invoke-BitwiseVisualization {
     <#
     .synopsis
         visualize bitwise operations
+    .notes
+
+        see / merge with:
+        \nin.com\Dive-of-The-Week\2021-10-13 - DAX bitwise operators\BitwiseAndpowershell.ps1
+        \nin.com\Dive-of-The-Week\2021-10-13 - DAX bitwise operators\BitwiseAnd-iter2-visualize.ps1
+        \Dev.Nin\public_experiment\Invoke-BitwiseVisualization.ps1
     .example
         🐒> Invoke-BitwiseVisualization 5 4 -Operation 'And' -MinimizeOutput
 
@@ -67,7 +78,13 @@ function Invoke-BitwiseVisualization {
                 =
             4   0000.0100
     #>
-    [Alias('Bitwise', 'Bitwise🎨', 'Style🎨.BitwiseVisual', 'Cli_Interactive🖐.BitwiseVisual', 'DevTool💻.BitwiseVisual')]
+    # [Alias(
+    #     'Bitwise',
+    #     'Bitwise🎨',
+    #     'Style🎨.BitwiseVisual',
+    #     'Cli_Interactive🖐.BitwiseVisual',
+    #     'DevTool💻.BitwiseVisual'
+    # )]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # LHS operand in test
@@ -125,7 +142,9 @@ function Invoke-BitwiseVisualization {
                     'OR' {
                         $OperandLeft -bor $OperandRight
                     }
-                    default { throw "Operation NYI: '$Operation'" }
+                    default {
+                        throw "Operation NYI: '$Operation'"
+                    }
                 }
 
                 # } $OperandLeft -bor $OperandRight
@@ -156,7 +175,7 @@ function Invoke-BitwiseVisualization {
                     if (! $MinimizeOutput) {
                         $innerText = [ordered]@{
                             Dec  = ''
-                            Bits = "Bitwise $Operation" | Write-color 'orange'
+                            Bits = "Bitwise $Operation" | Write-Color 'orange'
                         }
                         [pscustomobject]$InnerText
                     }
@@ -165,7 +184,7 @@ function Invoke-BitwiseVisualization {
                     if (! $MinimizeOutput) {
                         $innerText = [ordered]@{
                             Dec  = ''
-                            Bits = '=' | Write-color 'orange'
+                            Bits = '=' | Write-Color 'orange'
                         }
                         [pscustomobject]$InnerText
                     }
@@ -179,8 +198,7 @@ function Invoke-BitwiseVisualization {
         if ($Operation -ne 'all' ) {
             _processOperation -OperandLeft $OperandLeft -OperandRight $OperandRight -Operation $Operation
             return
-        }
-        else {
+        } else {
             'AND', 'OR' | ForEach-Object {
                 hr
                 $curOperation = $_
@@ -205,6 +223,11 @@ function Invoke-BitwiseVisualization {
     }
 }
 
-$info_sp = @{
-    'InformationAction' = 'continue'
+
+
+if (! $experimentToExport) {
+    $info_sp = @{
+        'InformationAction' = 'continue'
+    }
+    # ...
 }

@@ -59,6 +59,14 @@ function Join-StringStyle {
             - [ ] optional join on str argument when using ie: prefix ?
 
             - [ ] after first pass, use dynamically generated join styles for type safety
+
+        Styles:
+
+            csv
+                [string]separator = ''
+            NL
+                [int]numLines = 1
+
     .example
         🐒> 0..4 | csv
 
@@ -136,7 +144,8 @@ function Join-StringStyle {
         # if not validateset, use as the actual join?
         [Parameter(Position = 0)] #
         [ArgumentCompletions(
-            'Csv', 'NL', 'Prefix', 'QuotedList',
+            'Csv', 'NL', 'Prefix', 'Suffix',
+            'QuotedList',
             'UL', 'Checklist',
             'Table'
         )] # todo: map to completions generator
@@ -236,7 +245,7 @@ function Join-StringStyle {
         #     } else {
         #     }
         # }
-        
+
 
         # map aliases to default configs
         if ($isSmartAlias) {
@@ -289,9 +298,9 @@ function Join-StringStyle {
                             isSmartAlias = $isSmartAlias
                             SmartAlias   = $smartAlias
                             JoinStyle    = $JoinStyle
-                        } | Format-Table | Out-String                        
+                        } | Format-Table | Out-String
                     ) | Write-Debug
-                    # write-ninlog 
+                    # write-ninlog
                     # $JoinStyle = 'Csv' # or none or NL ?
                     # Write-Warning "Should not reach, unhandled '$SmartAlias' case"
                     # Write-Error 'should never reach'
@@ -300,7 +309,7 @@ function Join-StringStyle {
         }
 
         $JoinStyle | Join-String -op 'JoinStyle (after alias): ' | Write-Debug
-        if ($DoubleQuote) { 
+        if ($DoubleQuote) {
             $splat_JoinStyle['DoubleQuote'] = $true
             $splat_JoinStyle.Remove('SingleQuote')
         }
@@ -316,20 +325,23 @@ function Join-StringStyle {
                 $joinStr = ',{0}' -f @($Separator)
                 $splat_JoinStyle.Separator = $joinStr # was: ', '
                 # Wait-Debugger
-                
+
             }
             'NL' {
-                $splat_JoinStyle.Separator = "`n"
+                $lineCount = $separator -as [int]
+                $lineCount ??= 1
+                $splat_JoinStyle.Separator = ("`n" * $lineCount) -join ''
             }
             # 'Pair' {
             #     $splat_JoinStyle.Separator = ', '
             #     $splat_JoinStyle.OutputPrefix = "${Text}: "
             # }
             'Prefix' {
-                $splat_JoinStyle.OutputPrefix = "${Text}"
+                # note: currently 2nd operand is named separator but it's for others
+                $splat_JoinStyle.OutputPrefix = "${Separator}${Text}"
             }
             'Suffix' {
-                $splat_JoinStyle.OutputSuffix = "${Text}"
+                $splat_JoinStyle.OutputSuffix = "${Text}${Separator}"
             }
             'QuotedList' {
                 $splat_JoinStyle.Separator = ', ' # or user's -sep
@@ -396,7 +408,7 @@ function Join-StringStyle {
     }
     end {
         # try {
-        if ($DoubleQuote) { 
+        if ($DoubleQuote) {
             $splat_JoinStyle['DoubleQuote'] = $true
             $splat_JoinStyle.Remove('SingleQuote')
         }
@@ -404,7 +416,7 @@ function Join-StringStyle {
             $splat_JoinStyle['SingleQuote'] = $true
             $splat_JoinStyle.Remove('DoubleQuote')
         }
-    
+
         $sort_splat = @{}
         if ($Unique) {
             $sort_splat['Unique'] = $True
