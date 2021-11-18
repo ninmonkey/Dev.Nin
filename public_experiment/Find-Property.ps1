@@ -5,8 +5,9 @@ $experimentToExport.function += @(
     'Completion->PropertyName'
 )
 $experimentToExport.alias += @(
-    'iterProp'
+    # 'iterProp'
     'Iter->Prop'
+    'Iter->PropName'
 
 
     # 'Find-ObjectProperty'
@@ -23,6 +24,9 @@ function Completion->PropertyName {
         'Completion' -> means get valid results
         'Completer' -> script that does more logic
     #>
+    [Alias(
+        'Iter->PropName'
+    )]
     [cmdletbinding()]
     param(
         # any object
@@ -34,22 +38,36 @@ function Completion->PropertyName {
     process {
         $InputObject.psobject.properties.Name | Sort-Object -Unique
     }
-
-
+}
+function _get-ObjectProperty {
     <#
-    Dev.Nin\_enumerateProperty
-Dev.Nin\_gh_repoList_enumeratePropertyNames
-Dev.Nin\Get-PropertyNameCompleter
-Dev.Nin\iProp
-Dev.Nin\Invoke-PropertyChain
-Dev.Nin\Where-EmptyProperty
-Ninmonkey.Console\ConvertTo-PropertyList
-Ninmonkey.Console\Select-NinProperty
-'@ | SplitStr -SplitStyle Newline | Resolve-CommandName
-| editfunc -PassThru | % file | sort
-
-#>
-
+    .synopsis
+        sugar for '$x.psobject.properties'
+    .link
+        Dev.Nin\_enumerateProperty
+    .link
+        Dev.Nin\Iter->PropName
+    .link
+        dev.nin\EnumerateProperty
+    .link
+        Dev.Nin\Completion->PropertyName
+        
+    #>
+    [Alias(
+        'Iter->Prop'
+    )]
+    [OutputType([PSMemberInfoCollection[PSPropertyInfo]])]
+    [cmdletbinding()]
+    param(
+        # any object
+        [Parameter(
+            Mandatory, Position = 0,
+            ValueFromPipeline)]
+        [object]$InputObject
+    )
+    process {
+        $InputObject.psobject.properties
+    }
 }
 
 
@@ -71,11 +89,13 @@ function _enumerateProperty {
     .link
         # Dev.Nin\_enumerateProperty
     .link
+        Dev.Nin\_get-ObjectProperty
+    .link
         Dev.Nin\iProp
     #>
     [Alias(
-        'iterProp',
-        'Iter->Prop'
+        # 'iterProp',
+        # 'Iter->Prop'
         # 'Enumerate->' ?
         #'Find-ObjectProperty' find might be for iprop, not this?
     )]
@@ -91,7 +111,8 @@ function _enumerateProperty {
         [switch]$OutGridView
     )
     begin {
-        Write-Warning 'actual error is in Format-TypeName'
+       
+
     }
     process {
         $meta = @{
