@@ -1,12 +1,16 @@
 #Requires -Version 7
+using namespace System.Collections.Generic
+
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Out->Picker'
+        'Pick->Member'
     )
     $experimentToExport.alias += @(
         'Pick'
         'Pipe->Pick'
+        'pm', 'pickProp' # Pick->Member
     )
 }
 
@@ -23,7 +27,91 @@ function Out->Picker {
     }
 }
 
-function BreaksWhenParam-Out->Picker {
+function Pick->Member {
+    <#
+    .synopsis 
+        You choose a property, like '.Name', then populate with values
+    .description
+        returns sorted, distinct list
+        for example you want to query a few processes by name, ignore the rest
+        .
+
+    .example
+        🐒> ps | Pick->Member Name
+
+            Agent
+            AppleMobileDeviceService  
+            ApplicationFrameHost    
+            audiodg
+            BtwRSupportService
+
+        🐒>
+            #$picks = $Null # to always pick
+            ps
+            | Pick->Member Name
+            | Out->Picker
+
+            ps $picks
+            ps | Pick->Member Name
+
+        $picks | str ul
+            | Label 'Picks: '
+
+            ps $picks
+            | Ft Name, WorkingSet64
+
+    .example
+        #$picks = $Null # always relelect values
+        Get-Process
+        | Pick->Member Name
+        | Out->Picker
+
+        Get-Process $picks
+    .example
+        PS> ls g:\ | Pick->Member Name  
+
+            Downloads
+            eula.1033.txt
+            eula.1036.txt
+            temp
+
+    #>
+    [Alias(
+        'pm', 'pickProp'        
+    )]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        # current object
+        # Docstring
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [object[]]$InputObject,
+
+        # property to choose from
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Name
+    )
+    
+    begin {        
+        $valueList = [List[string]]::new()
+    }
+    process {
+        $InputObject | ForEach-Object {
+            
+            $valueList.Add( 
+                (($_)?.$Name ?? $null)
+            )
+        }
+    }
+    end {
+        $valueList | Sort-Object -Unique
+    }
+}
+
+
+
+
+function Out->Picker {
     <#
     .synopsis 
         Throw in a pipeline to quickly filter, also saves as $picker, if needed
@@ -35,19 +123,36 @@ function BreaksWhenParam-Out->Picker {
     )]
     # [cmdletbinding()]
     param(
+        #Docstring
+        [Parameter(ValueFromPipeline, Mandatory)]
+        [string]$Text,
+
         # always pick something
         [Parameter()]
         [switch]$Force
     )
+    begin {
+    }
+    process {
+    }
     end {
         if ($Force) {
             $global:picks = $null
         }
-        $global:picks ??= $Input | fzf -m 
+
+        # $choice = $Text | Join-String -sep "`n`n" | fzf -m 
+        $selected = $Text -join '' | fzf -m
+        $selected
+        
+        $global:picks ??= $selected
         $global:picks
     }
 }
 
 if (! $experimentToExport) {
-    # ...
+    # Get-ChildItem .. | Select-Object -First 3 | ForEach-Object name
+    $files = Get-ChildItem c:\ -dir | ForEach-Object name | s -First 9
+    $files | Out->Picker
+    
+    #| Out->Picker
 }
