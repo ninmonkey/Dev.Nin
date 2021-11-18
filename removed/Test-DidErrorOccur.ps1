@@ -61,8 +61,7 @@ function Test-DidErrorOccur {
 
             if ($Delta -gt 0) {
                 $script:__moduleMetaData_TurnsSinceLastError = 0
-            }
-            else {
+            } else {
                 $script:__moduleMetaData_TurnsSinceLastError++
             }
             $turnsSinceLastCount = $script:__moduleMetaData_TurnsSinceLastError
@@ -117,8 +116,7 @@ function Test-DidErrorOccur {
             if ($Delta -le 3) {
                 # $FirstN = [math]::max($Delta, $FirstN)
                 $FirstN = [math]::min($Delta, $FirstN)
-            }
-            else {
+            } else {
                 $FirstN = [math]::max(1, $FirstN) # 0
             }
 
@@ -154,8 +152,7 @@ errors: {0}, new {1}, {2}
                     $delta
                     $turnsSinceLastCount
                 )
-            }
-            elseif ($OutputFormatMode -eq 'default') {
+            } elseif ($OutputFormatMode -eq 'default') {
                 "`n"
                 @(
                     '[E]: {0} ' -f @($curCount)
@@ -163,8 +160,7 @@ errors: {0}, new {1}, {2}
                     if ($turnsSinceLastCount -gt 3) {
                         'Last: {0}' -f @($turnsSinceLastCount)
                         | New-Text -fg '#3AB81C' #'#AB7D88'
-                    }
-                    else {
+                    } else {
                         'New: +{0}' -f @($delta)
                         | New-Text -fg yellow
                     }
@@ -177,8 +173,7 @@ errors: {0}, new {1}, {2}
             if ( $AlwaysClear) {
                 $globalError.clear() # Forgive me 😿
             }
-        }
-        catch {
+        } catch {
             $PSCmdlet.WriteError( $_ )
         }
     }

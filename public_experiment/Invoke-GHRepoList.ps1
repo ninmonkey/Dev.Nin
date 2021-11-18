@@ -2,13 +2,13 @@
 
 $experimentToExport.function += @(
     'Invoke-GHRepoList'
-    '_gh_repoList_enumeratePropertyNames'
+    '_enumerateProperty_gh_repoList'
 )
 $experimentToExport.alias += @(
     'Gh_RepoList🐒'
 
 )
-function _gh_repoList_enumeratePropertyNames {
+function _enumerateProperty_gh_repoList {
     <#
     .synopsis
         get properties for 'gh repo list'
@@ -17,7 +17,7 @@ function _gh_repoList_enumeratePropertyNames {
     $stdout = gh repo list --json *>&1 | Select-Object -Skip 1
     $stdout -replace '\s+', ''
 }
-# $props ??= _gh_repoList_enumeratePropertyNames
+# $props ??= _enumerateProperty_gh_repoList
 
 function _processGHRepoListRecord {
     <#
@@ -76,7 +76,7 @@ function Invoke-GHRepoList {
     .link
         Dev.Nin\Invoke-GHCloneRepo
     .link
-        Dev.Nin\_gh_repoList_enumeratePropertyNames
+        Dev.Nin\_enumerateProperty_gh_repoList
     #>
     [Alias('Gh_RepoList🐒')]
     [CmdletBinding()]
