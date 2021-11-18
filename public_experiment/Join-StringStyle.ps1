@@ -5,21 +5,23 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
         'Join-StringStyle'
     )
     $experimentToExport.alias += @(
+        'Str'
         #
         #for the main command, i'm not sure if I want
         # 'Join-StringStyle'
-        'Join-StyleString'
+        # 'Join-StyleString'
         # ideas for alias names?
 
 
         if ($true) {
             # allow user override/disable for aggressive aliases
             # or maybe an arg to Import-Module for exluding aliases
-            'Str', 'JoinStr',
-            'Csv', 'NL',
-            'Prefix', 'Suffix',
-            'QuotedList', #single/double
-            'UL', 'Checklist'
+            # 'JoinStr',
+            # 'Csv', 'NL',
+            # 'HR',
+            # 'Prefix', 'Suffix',
+            # 'QuotedList', #single/double
+            # 'UL', 'Checklist'
         }
 
         # Like prefix, but "key: Value" pairs
@@ -54,6 +56,9 @@ function Join-StringStyle {
             customizing defaults based on smart aliases
     .notes
         future:
+            - [ ] prefix/suffix on itself
+
+
             - [ ] optional parameter name, so you could use
                 ls . *.json | str Prefix 'config: ' -prop 'Name'
             - [ ] optional join on str argument when using ie: prefix ?
@@ -66,15 +71,82 @@ function Join-StringStyle {
                 [string]separator = ''
             NL
                 [int]numLines = 1
+            HR
+                [int]extraLinesToPad = 1
+            Str
+                [string]$JoinOnSeparator
+    bug:
+        [1] 
+            # this prints
 
-    .example
-        🐒> 0..4 | csv
+                ls . -File | New-HashtableFromObject Name
+                | Str hr
 
-            0, 1, 2, 3, 4
+                System.Collections.Specialized.OrderedDictionary
+                ------------------------------------------------
+                System.Collections.Specialized.OrderedDictionary
+
+            # fixed by 'out-string' first
+                
+                ls . -File | New-HashtableFromObject Name
+                | Out-String | Str hr
+
+            # not: but not fixed by ToString()
+
+                ls . -File | New-HashtableFromObject Name
+                | % tostring | Str hr
+
+    .example       
+        🐒> 0..3 | str csv
+            0,1,2,3
+
+        🐒> 0..3 | str csv -sep ' '
+            0, 1, 2, 3
+
+        
+        🐒> 0..3 | str str '> <' | join-string -op '<' -os '>'
+            <0> <1> <2> <3>
 
         🐒> 'cat', (get-date), 'dog' | csv
 
             cat, 10/18/2021 18:25:24, dog
+
+        🐒> 'c', 'a', 't' | str str "),`n(" | join-string -op '(' -os ')'
+
+            (c),
+            (a),
+            (t)
+
+        🐒> (get-date).ToShortDateString(), (gi C:\Temp), 'cat', 0x234, (126 | bits)
+        | str str ', ' | join-string -op '(' -os ')'
+
+        🐒>  (get-date).ToShortDateString(), (gi C:\Temp), 'cat', 0x234, (126 | bits)
+        | str str ', ' -DoubleQuote
+        | join-string -op '( ' -os ' )'
+
+            ( "11/17/2021", "C:\Temp", "cat", "564", "0111.1110" )
+
+
+
+    .example
+        🐒> Get-History  | str hr
+            
+            ------------------------------------------
+            ul
+            ------------------------------------------
+            0..4 | Str
+            ------------------------------------------
+            0..4 | Str UL
+            ------------------------------------------
+            str csv
+            ------------------------------------------
+            hr csv
+            ------------------------------------------
+            0..3 | str csv
+            ------------------------------------------
+            Import-Module Dev.Nin -Force
+            0..4 | str csv
+            ------------------------------------------
 
     .example
         🐒> (get-date).psobject.properties.Name
@@ -123,12 +195,22 @@ function Join-StringStyle {
 
     #>
     [alias(
-        'Str', 'JoinStr',
-        'Csv', 'NL',
-        'Prefix', 'Suffix',
-        'Table',
-        'QuotedList', #single/double
-        'UL', 'Checklist'
+        <#
+            to add:
+                'None' does -join ''
+            
+            'Str' does -join $separator
+
+            I'm not currently using func aliases like 'csv'
+        #>
+        'Str'
+        # 'JoinStr',
+        # 'Csv', 'NL',
+        # 'HR',
+        # 'Prefix', 'Suffix',
+        # 'Table',
+        # 'QuotedList', #single/double
+        # 'UL', 'Checklist'
     )]
     [OutputType([String])]
     [CmdletBinding(PositionalBinding = $false)]
@@ -144,7 +226,7 @@ function Join-StringStyle {
         # if not validateset, use as the actual join?
         [Parameter(Position = 0)] #
         [ArgumentCompletions(
-            'Csv', 'NL', 'Prefix', 'Suffix',
+            'Csv', 'NL', 'Prefix', 'Suffix', 'HR',
             'QuotedList',
             'UL', 'Checklist',
             'Table'
@@ -264,6 +346,10 @@ function Join-StringStyle {
                     $JoinStyle = 'NL'
                     break
                 }
+                'HR' {
+                    $JoinStyle = 'HR'
+                    break
+                }
                 # 'Pair' {
                 #     $JoinStyle = 'Pair'
                 #   break
@@ -298,8 +384,8 @@ function Join-StringStyle {
                             isSmartAlias = $isSmartAlias
                             SmartAlias   = $smartAlias
                             JoinStyle    = $JoinStyle
-                        } | Format-Table | Out-String
-                    ) | Write-Debug
+                        } | Format-Table
+                    ) | Out-String | Write-Warning # revert to -debug after a while
                     # write-ninlog
                     # $JoinStyle = 'Csv' # or none or NL ?
                     # Write-Warning "Should not reach, unhandled '$SmartAlias' case"
@@ -320,17 +406,29 @@ function Join-StringStyle {
 
         # style based behavior
         switch ($JoinStyle) {
+            'Str' {
+                $splat_JoinStyle.Separator = $Separator
+            }
             'Csv' {
                 $Separator ??= ' '
                 $joinStr = ',{0}' -f @($Separator)
-                $splat_JoinStyle.Separator = $joinStr # was: ', '
-                # Wait-Debugger
+                $splat_JoinStyle.Separator = $joinStr # was: ', '             
 
             }
             'NL' {
                 $lineCount = $separator -as [int]
                 $lineCount ??= 1
                 $splat_JoinStyle.Separator = ("`n" * $lineCount) -join ''
+            }
+            'HR' {
+                if ( [string]::IsNullOrWhiteSpace( $Separator) ) {
+                    $extraLines = 1
+                } else {
+                    $extraLines = $separator -as [int]
+                    $extraLines ??= 1
+                }
+                $splat_JoinStyle.Separator = hr -ExtraLines $extraLines | ForEach-Object tostring
+                
             }
             # 'Pair' {
             #     $splat_JoinStyle.Separator = ', '
@@ -407,7 +505,7 @@ function Join-StringStyle {
         # }
     }
     end {
-        # try {
+        # single/double are exlusive
         if ($DoubleQuote) {
             $splat_JoinStyle['DoubleQuote'] = $true
             $splat_JoinStyle.Remove('SingleQuote')
