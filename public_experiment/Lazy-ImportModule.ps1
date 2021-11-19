@@ -7,7 +7,8 @@ if ($experimentToExport) {
     $experimentToExport.alias += @(
         'LazyImport🐢'
         'jq_dump'
-        '?LazyImport'
+        # '?LazyImport'
+        'Test-IsLazyImportStale'
     )
     #     }
 
@@ -35,15 +36,19 @@ $round = [datetime]::ParseExact($out, 'o', $null)
 function _lazyImportIsStale {
     <#
     .synopsis
-        minimal sketch test
+        watch a single file for changes
     .example
+            $target = gi 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\_formatErrorSummary.ps1'
+            if(Test-IsLazyImportStale -WatchFile $target -ea Continue -Verbose) { Import-Module Dev.Nin -Force }
+    .example
+
         $target = gi 'c:\..\My_Github\Dev.Nin\public_experiment\_formatErrorSummary.ps1'
         if(?LazyImport -WatchFile $target) {
             Import-Module Dev.Nin -Force
         }
     #>
     [Alias(
-        '?LazyImport'                
+        'Test-IsLazyImportStale'                
     )]
     [cmdletbinding()]
     param(
@@ -68,8 +73,7 @@ function _lazyImportIsStale {
                 $out | label out
 
                 $round = [datetime]::ParseExact($out, 'o', $null)
-            #>
-            
+            #>            
             
             Get-Content -Path 'temp:\lazy_state.json'
             | ConvertFrom-Json -AsHashtable
@@ -119,12 +123,13 @@ function _lazyImportIsStale {
 
             $lastLoadTime = $state[$KeyName]
             if ($target.LastWriteTime -gt $lastLoadTime) {                    
+                $deltaTs = ($target.LastWriteTime - $lastLoadTime)
                 @(
-                    'stale: ' | write-color orange
+                    'stale: ' | Write-Color orange
                     $target.FullName | Join-String -SingleQuote  
                     ' ' 
                     @(
-                    ($n2 - $n1).TotalSeconds.tostring('n0') 
+                    ($deltaTs).TotalSeconds.tostring('n0') 
                         ' secs ago'
                     ) | Write-Color gray80
                 ) | Join-String
@@ -136,12 +141,14 @@ function _lazyImportIsStale {
             }
         }
 
-        
-
-
-
-        
-        __detectByState
+    
+        if (__detectByState) {
+            'true' | wi 
+            $true; return;
+        } else {
+            'false' | wi 
+            $false; return;
+        }
 
         # # if(! $state.ContainsKey( $KeyName )) {
         # #     $state[ $KeyName ] = 0
@@ -153,7 +160,7 @@ function _lazyImportIsStale {
 
         #     $true; return;
         # }
-        $false; return;
+        # $false; return;
     }
 }
 
@@ -217,7 +224,6 @@ function Lazy-ImportModule {
                 - [ ] auto detect file locations based on this path:
                     Get-Module Dev.Nin | s RootModule, ModuleBase, Path | fl
     .example
-
         #>
     # [outputtype( [string[]] )]
     # [Alias('x')]
@@ -345,7 +351,7 @@ function Lazy-ImportModule {
     }
 }
 
-if ($true -and !$experimentToExport) {
+if ($false -and $true -and !$experimentToExport) {
     # $PSCommandPath | Get-Item
     # $lazyImportModuleSplat = @{
     # Debug             = $true
