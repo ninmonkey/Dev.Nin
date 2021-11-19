@@ -17,20 +17,53 @@ if ( $experimentToExport ) {
 }
 
 function showErr {
+    <#
+    .synopis   
+        view and hide errors easier in the term
+        
+    .example
+        🐒> showErr -Recent
+            ErrorRecord -> DriveNotFoundException
+            Cannot find drive. A drive with the name '
+            C' does not exist.
+            ------------------------------------------------------------------------
+            ErrorRecord -> SessionStateException
+
+        🐒> err? -PassThru
+
+            LastCount CurCount DeltaCount
+            --------- -------- ----------
+                27       27          2
+
+        errΔ [2] of [27]
+        🐒> err? -Reset
+
+
+        🐒> showErr -Recent
+        # shows 0, does not call clear on errors if -reset
+    #>
     [cmdletbinding()]
     param(    
         # err obj
         [Parameter(Position = 0, ValueFromPipeline)]
-        [object]$ErrorObject
+        [object]$ErrorObject,
+
+        # show recent only
+        [Alias('ShowRecent')]
+        [Parameter()][switch]$Recent
     )
     process {
         $Target = $ErrorObject ?? $global:Error
+        $deltaCount = (err? -PassThru).deltaCount
+        if ($Recent) {
+            $target = $global:Error | Select-Object -Last $deltaCount
+        }
         
         $dbgInfo = @{
 
         }
         $dbgInfo | Write-Debug
-        $Target | _formatErr | str hr
+        $Target | formatErr | str hr
     }
 
     <# 

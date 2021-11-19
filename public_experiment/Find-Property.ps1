@@ -3,6 +3,7 @@
 $experimentToExport.function += @(
     '_enumerateProperty'
     'Completion->PropertyName'
+    '_get-ObjectProperty' # is Iter->Prop
 )
 $experimentToExport.alias += @(
     # 'iterProp'
@@ -56,7 +57,7 @@ function _get-ObjectProperty {
     [Alias(
         'Iter->Prop'
     )]
-    [OutputType([PSMemberInfoCollection[PSPropertyInfo]])]
+    [OutputType([Management.Automation.PSMemberInfoCollection[Management.Automation.PSPropertyInfo]])]
     [cmdletbinding()]
     param(
         # any object
@@ -111,7 +112,21 @@ function _enumerateProperty {
         [switch]$OutGridView
     )
     begin {
-       
+        Write-Warning 'actual error is in Format-TypeName'
+
+        <#
+            Dev.Nin\_enumerateProperty
+            Dev.Nin\_gh_repoList_enumeratePropertyNames
+            Dev.Nin\Get-PropertyNameCompleter
+            Dev.Nin\iProp
+            Dev.Nin\Invoke-PropertyChain
+            Dev.Nin\Where-EmptyProperty
+            Ninmonkey.Console\ConvertTo-PropertyList
+            Ninmonkey.Console\Select-NinProperty
+            '@ | SplitStr -SplitStyle Newline | Resolve-CommandName
+            | editfunc -PassThru | % file | sort
+
+        #>
 
     }
     process {

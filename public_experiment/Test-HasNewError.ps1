@@ -28,6 +28,34 @@ function Test-HasNewError {
         smart alias 'Err?' automatically returns info?
     .notes
         .
+    .example
+    🐒> showErr -Recent
+        ErrorRecord -> DriveNotFoundException
+        Cannot find drive. A drive with the name '
+        C' does not exist.
+        ------------------------------------------------------------------------
+        ErrorRecord -> SessionStateException
+
+    🐒> err? -PassThru
+
+        LastCount CurCount DeltaCount
+        --------- -------- ----------
+            27       27          2
+
+    errΔ [2] of [27]
+    🐒> err? -Reset
+
+
+    🐒> showErr -Recent
+    # shows 0, does not call clear on errors if -reset
+
+    .example
+        PS> Err?
+        False
+        
+        1 / 0 
+        PS> Err?
+        True
     .outputs
         [$null | bool | hashtable]
 
