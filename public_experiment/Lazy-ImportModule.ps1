@@ -2,22 +2,97 @@ if ($experimentToExport) {
     $experimentToExport.function += @(
         'Lazy-ImportModule'
         'Dump'
+        '_lazyImportIsStale'
     )
-    $experimentToExport.alias += @(        
+    $experimentToExport.alias += @(
         'LazyImport🐢'
+        'jq_dump'
+        '?LazyImport'
     )
     #     }
-         
+
 }
 # https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules
 
 [hashtable]$__LazyImport ??= @{}
 
-function Dump { 
+<# original, working sketch: 
+if( (gi $watchFile).LastWriteTime -gt $__lastImport ) { 
+  'stale' | write-color 'orange'
+  Import-Module Dev.Nin -Force ;
+  $__lastImport = get-date
+}#>
+[hashtable]$script:__staleLazyImport ??= @{}
+function _lazyImportIsStale {
+    [Alias(
+        '?LazyImport'                
+    )]
+    [cmdletbinding()]
+    param(
+        # when this (single) file changes, consider it stale
+        [Parameter(Mandatory, Position = 0)]
+        $WatchFile
+
+        # #Docstring
+        # [Parameter()]
+        # [validateset('Now', 'bySavedState')]
+        # [string]$Mode,
+    )
+    begin {
+        Write-Warning 'loses state on import, todo: save to json'
+        $state = $script:__staleLazyImport
+    }
+    process {
+        
+
+        $target = Get-Item -ea stop $WatchFile
+        [string]$KeyName = [string]$target.FullName
+        $state[$KeyName] ??= 0
+
+        function __detectByState { 
+            # works if it's watching a different module
+
+            $lastLoadTime = $state[$KeyName]
+            if ($target.LastWriteTime -gt $lastLoadTime) {                    
+                @(
+                    'stale: ' | write-color orange
+                    $target.FullName | Join-String -SingleQuote  
+                    ' ' 
+                    @(
+                    ($n2 - $n1).TotalSeconds.tostring('n0') 
+                        ' secs ago'
+                    ) | Write-Color gray80
+                ) | Join-String
+                | wi             
+                $state[$KeyName] = Get-Date 
+            
+                $true; return
+            }
+        }
+
+        Wait-Debugger
+        __detectByState
+
+        # # if(! $state.ContainsKey( $KeyName )) {
+        # #     $state[ $KeyName ] = 0
+        # # }
+        # $lastImportTime
+        # if ( (Get-Item $watchFile).LastWriteTime -gt $__lastImport ) { 
+        #     'stale' | write-color 'orange' | wi 
+        #     $__lastImport = Get-Date
+
+        #     $true; return;
+        # }
+        $false; return;
+    }
+}
+
+function Dump {
     <#
     .synopsis
         just dump an object, to get an idea of the shape
     #>
+    [Alias('jq_dump')]
     [cmdletbinding()]
     param(
         [Parameter(Position = 0, ValueFromPipeline, Mandatory)]
@@ -41,28 +116,28 @@ function Dump {
         $json = $InputObject | ConvertTo-Json @converttoJsonSplat
 
         if (! $WithJq) {
-            $json; return 
+            $json; return
         }
-            
+
         h1 '. | keys'
-        
+
         $json
         | jq '. | keys'
         | Write-Color -fg gray80 -bg gray20
-        
-        h1 '.[0] | keys'        
+
+        h1 '.[0] | keys'
 
         $json
         | jq '.[0] | keys'
-        | Write-Color -fg gray80 -bg gray20    
+        | Write-Color -fg gray80 -bg gray20
     }
 }
 function Lazy-ImportModule {
     <#
     .synopsis
-        Load modules, if certain files have been modified 
+        Load modules, if certain files have been modified
     .description
-        personal profile adds verb: Lazy        
+        personal profile adds verb: Lazy
     .notes
         .
         future:
@@ -71,20 +146,20 @@ function Lazy-ImportModule {
             future
                 - [ ] auto detect file locations based on this path:
                     Get-Module Dev.Nin | s RootModule, ModuleBase, Path | fl
-    .example   
-            
+    .example
+
         #>
     # [outputtype( [string[]] )]
     # [Alias('x')]
-    
+
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'Personal Profile may break')]
     [cmdletbinding()]
     param(
         # module[s] to import
         [Alias('InputObject')]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [string[]]$ModuleName, 
-    
+        [string[]]$ModuleName,
+
         # files to watch last modified time[s]
         [Parameter()]
         [string[]]$FileToWatch,
@@ -93,17 +168,18 @@ function Lazy-ImportModule {
         [Parameter()]
         [switch]$TestOnly
     )
-    begin {        
+    begin {
+        # next
         $state = $script:__LazyImport
-        h1 'state' 
+        h1 'state'
         $state | format-dict
-        $ModuleName | ForEach-Object { 
+        $ModuleName | ForEach-Object {
             if (! $state.ContainsKey($_) ) {
                 $state[ $_ ] = [datetime]0
 
             }
         }
-    
+
         $moduleList = [list[object]]::new()
         $ModuleName | ForEach-Object {
             $moduleList.add( $_ )
@@ -114,10 +190,10 @@ function Lazy-ImportModule {
             $FileToWatch = $PSCommandPath
         }
     }
-    process {        
-        # $InputObject | ForEach-Object { 
+    process {
+        # $InputObject | ForEach-Object {
         #     $moduleList.Add( $_ )
-        # }     
+        # }
     }
     end {
         $moduleList | Str Csv -Sort
@@ -134,14 +210,14 @@ function Lazy-ImportModule {
             WatchNames = $FileToWatch
             | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
             | Str Csv -Sort
-                
-            ShouldLoad = $ShouldLoad 
+
+            ShouldLoad = $ShouldLoad
         }
         $metaDebug | format-dict | wi
 
         $moduleList | Where-Object { $null -ne $_ } | ForEach-Object {
-            $curModuleName = $_  
-        
+            $curModuleName = $_
+
             $now = [datetime]::Now
 
             $root = Get-Module $curModuleName -ea Ignore | ForEach-Object ModuleBase
@@ -154,14 +230,14 @@ function Lazy-ImportModule {
 
             $query = Get-ChildItem $FileToWatch
             $query_watched = $query_watched
-            $query_watched | ForEach-Object { 
+            $query_watched | ForEach-Object {
                 $curFile = $_
-                
+
 
                 if ($lastUpdate -lt $curFile.LastWriteTime) {
                     $ShouldLoad = $true
                     Write-Debug "'Cache: '$curModuleName' is out of date'"
-                    
+
                     $now - $lastUpdate | ForEach-Object TotalMinutes | Join-String -FormatString 'TotalMinutes {0:n2} ago'
                     | Write-Information
                     return
@@ -179,13 +255,13 @@ function Lazy-ImportModule {
                 ModuleName   = $ModuleName
                 now          = $now
                 LastImport   = $state[$curModuleName].LastImport
-            }            
+            }
             $metaDebug | format-dict | wi
             if ($ShouldLoad) {
                 if (! $TestOnly ) {
 
                     if ($false) {
-                        Import-Module @importModuleSplat 
+                        Import-Module @importModuleSplat
                     }
                     $state[$curModuleName].LastImport = $now
                     $state | Format-Dict
@@ -220,14 +296,11 @@ if ($true -and !$experimentToExport) {
     $isStale = Lazy-ImportModule -ModuleName dev.nin -infa Continue -Verbose -ea break
     $isStale | str prefix 'stale?' | Write-Color white -bg cyan
     h1 'after'
-        
+
 }
 
 
 # Lazy-ImportModule @lazyImportModuleSplat
 # hr
-    
+
 # Lazy-ImportModule -Debug -Verbose -infa Continue -FileToWatch @($PSCommandPath) -ModuleName 'dev.nin'
-
-
-
