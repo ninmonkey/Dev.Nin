@@ -1,4 +1,6 @@
-﻿function __yell {
+﻿New-Alias 'Join-hashTable' -Value 'Ninmonkey.Console\Join-Hashtable' -Description 'to prevent PSScriptTools\Join-Hashtable'
+
+function __yell {
     <#
     .synopsis
         quick hack, not for use

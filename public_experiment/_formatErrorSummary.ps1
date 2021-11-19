@@ -41,12 +41,27 @@ function _formatErrorSummarySingleLine {
         # MaxWidth / columns
         [Alias('Width')]
         [Parameter()]
-        [uint]$MaxLineLength
+        [uint]$MaxLineLength,
+
+           
+        # extra options
+        [Parameter()][hashtable]$Options
     )
 
     begin {        
         $errorList = [list[object]]::new()
-        $colors = @{
+
+        [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
+        [hashtable]$Config = @{
+            AlignKeyValuePairs = $true
+            Title              = 'Default'
+            DisplayTypeName    = $true
+            JoinOnString       = hr 1 
+        }
+        $Config = Join-Hashtable $Config ($Options ?? @{})        
+
+
+        [hashtable]$colors = @{
             ErrorDim    = [PoshCode.Pansies.RgbColor]'#8B0000' # darkred'
             ErrorBright = [PoshCode.Pansies.RgbColor]'#FF82AB'
             ErrorPale   = [PoshCode.Pansies.RgbColor]'#CD5C5C'
@@ -55,9 +70,9 @@ function _formatErrorSummarySingleLine {
             FgDim       = [PoshCode.Pansies.RgbColor]'gray60'
             Fg          = [PoshCode.Pansies.RgbColor]'gray80'
             FgBright    = [PoshCode.Pansies.RgbColor]'gray90'
-            FgBright2   = [PoshCode.Pansies.RgbColor]'gray100'
-            
+            FgBright2   = [PoshCode.Pansies.RgbColor]'gray100'            
         }
+        $colors = Join-Hashtable $colors ($Options.Colors ?? @{})
         
     }
     process {
@@ -92,6 +107,8 @@ function _formatErrorSummarySingleLine {
             <#
             .synopsis
                 minimal space taken
+            .outputs
+                [string] or [string[]]
             .notes
                 the error [Automation.ParseException]
                     has these members
@@ -115,6 +132,7 @@ function _formatErrorSummarySingleLine {
                 # $errorList.AddRange( $global:error ) # Do I want global or script?
                 $global:error | ForEach-Object { $errorList.Add( $_ ) }
             }
+            $FormattedText = 
             $errorList | ForEach-Object -Begin { $i = 0 } {
                 $curError = $_
                 $hasSubErrors = $null -ne $curError.Errors
@@ -144,26 +162,39 @@ function _formatErrorSummarySingleLine {
                 | ShortenStringJoin -MaxLength $MaxLineLength # because header changes len
 
                 $i++
-            } | Join-String -sep (Hr 1)
+            }
+
+            
+            
+            
         }
 
 
         # -------
+        $Config.JoinOnString = Hr 1
         
 
         switch ($OutputFormat) {
             '2Line' { 
-                __outputFormat_2Line
+                $render = __outputFormat_2Line
                 break
             }
             'Single' {
-                __outputFormat_SingleLine
+                $render = __outputFormat_SingleLine
             }
             default {
-                __outputFormat_SingleLine
+                $render = __outputFormat_SingleLine
                 break
             }
         }
+
+        if ($Config.JoinOnString) {
+            $render | Join-String -sep $Config.JoinOnString
+        } else {
+            $render
+        }
+
+
 
     }
 }
