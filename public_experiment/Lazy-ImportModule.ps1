@@ -23,7 +23,25 @@ if( (gi $watchFile).LastWriteTime -gt $__lastImport ) {
   $__lastImport = get-date
 }#>
 [hashtable]$script:__staleLazyImport ??= @{}
+
+<#
+    date round trip example
+    $now | label now
+$out = $now.ToString('o')
+$out | label out
+
+$round = [datetime]::ParseExact($out, 'o', $null)
+#>
 function _lazyImportIsStale {
+    <#
+    .synopsis
+        minimal sketch test
+    .example
+        $target = gi 'c:\..\My_Github\Dev.Nin\public_experiment\_formatErrorSummary.ps1'
+        if(?LazyImport -WatchFile $target) {
+            Import-Module Dev.Nin -Force
+        }
+    #>
     [Alias(
         '?LazyImport'                
     )]
@@ -39,15 +57,62 @@ function _lazyImportIsStale {
         # [string]$Mode,
     )
     begin {
+        function __detectLazy_importState {
+            # import to preserve state after reloading itself
+            param()
+            
+
+            <#
+                $now | label now  
+                $out = $now.ToString('o')
+                $out | label out
+
+                $round = [datetime]::ParseExact($out, 'o', $null)
+            #>
+            
+            
+            Get-Content -Path 'temp:\lazy_state.json'
+            | ConvertFrom-Json -AsHashtable
+            | ForEach-Object getenumerator | ForEach-Object {
+                [string]$KeyName = $_.Key ;
+                $Value = $_.Value
+                $state[ $KeyName ] = $Value
+                # already is a datetime
+                # $dateFromStr = [datetime]::ParseExact($Value, 'o', $null)
+                # $state[ $KeyName ] = $dateFromStr
+            }
+
+            $state | format-dict | Out-String | wi 
+
+            # foreach ($cur in $state.GetEnumerator()) {
+            #     $dateStr = $cur.Value.tostring('o')
+            #     $tempHash[ $cur.Key ] = $dateStr
+
+            # }   
+            # $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'             
+        }
+
         Write-Warning 'loses state on import, todo: save to json'
         $state = $script:__staleLazyImport
-    }
-    process {
-        
-
-        $target = Get-Item -ea stop $WatchFile
+        $target = Get-Item -ea stop $WatchFile        
         [string]$KeyName = [string]$target.FullName
+        if ($state.keys.count -eq 0) {
+            __detectLazy_importState
+        }
         $state[$KeyName] ??= 0
+    }
+    process {    
+        function __detectLazy_exportState {
+            # export to preserve state after reloading itself
+            param()
+            $tempHash = @{}
+            foreach ($cur in $state.GetEnumerator()) {
+                $dateStr = $cur.Value.tostring('o')
+                $tempHash[ $cur.Key ] = $dateStr
+            }   
+            $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'             
+        }
+        
 
         function __detectByState { 
             # works if it's watching a different module
@@ -65,12 +130,17 @@ function _lazyImportIsStale {
                 ) | Join-String
                 | wi             
                 $state[$KeyName] = Get-Date 
-            
+                
+                __detectLazy_exportState
                 $true; return
             }
         }
 
-        Wait-Debugger
+        
+
+
+
+        
         __detectByState
 
         # # if(! $state.ContainsKey( $KeyName )) {
