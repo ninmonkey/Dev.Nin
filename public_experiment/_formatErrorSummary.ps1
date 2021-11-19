@@ -1,19 +1,21 @@
+#Requires -Version 7
 using namespace System.Management.Automation
 
-$experimentToExport.function += @(
-    '_formatErrorSummarySingleLine'
-    '_formatErrorSummary'
-)
-$experimentToExport.alias += @(
-
-)
-
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        '_formatErrorSummarySingleLine'
+        '_processErrorRecord'
+    )
+    $experimentToExport.alias += @(
+        # ''
+    )
+}
 function _formatErrorSummarySingleLine {
     <#
     .synopsis
-        Summarize errors, one per line
+        formats Summarize errors, one per line
     .notes
-        .
+        .Format outputs text, see _processErrorRecord for inspection
     .example
         PS> _formatErrorSummarySingleLine
     .example
@@ -25,18 +27,45 @@ function _formatErrorSummarySingleLine {
     #>
     param(
         #
-        [alias('Error')]
+        [alias(
+            # 'Error' # 'default resolves as get-error' 
+        )]
         [Parameter(ValueFromPipeline, Position = 0)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # alter style
+        [Parameter()]
+        [validateset('2Line', 'Single')]
+        [string]$OutputFormat,
+
+        # MaxWidth / columns
+        [Alias('Width')]
+        [Parameter()]
+        [uint]$MaxLineLength
     )
 
-    begin {
+    begin {        
         $errorList = [list[object]]::new()
+        $colors = @{
+            ErrorDim    = [PoshCode.Pansies.RgbColor]'#8B0000' # darkred'
+            ErrorBright = [PoshCode.Pansies.RgbColor]'#FF82AB'
+            ErrorPale   = [PoshCode.Pansies.RgbColor]'#CD5C5C'
+            Error       = [PoshCode.Pansies.RgbColor]'#CD3700'
+            FgVeryDim   = [PoshCode.Pansies.RgbColor]'gray40'
+            FgDim       = [PoshCode.Pansies.RgbColor]'gray60'
+            Fg          = [PoshCode.Pansies.RgbColor]'gray80'
+            FgBright    = [PoshCode.Pansies.RgbColor]'gray90'
+            FgBright2   = [PoshCode.Pansies.RgbColor]'gray100'
+            
+        }
+        
     }
     process {
+        
         # if (!$InputObject) {
         #     $InputObject = $global:error # Do I want global or script?
         # }
+
         if ($InputObject) {
             $errorList.Add( $InputObject )
         }
@@ -44,27 +73,87 @@ function _formatErrorSummarySingleLine {
 
     }
     end {
-        if ($errorList.count -le 0) {
-            # $errorList.AddRange( $global:error ) # Do I want global or script?
-            $global:error | ForEach-Object { $errorList.Add( $_ ) }
+
+        function __outputFormat_2Line {
+            # minimal space taken
+            $MaxLineLength ??= [console]::WindowWidth - 1
+
+            if ($errorList.count -le 0) {
+                # $errorList.AddRange( $global:error ) # Do I want global or script?
+                $global:error | ForEach-Object { $errorList.Add( $_ ) }
+            }
+            $errorList | ForEach-Object -Begin { $i = 0 } {
+                'e -> {0}' -f $i
+                $_ | ShortenStringJoin -MaxLength $MaxLineLength
+                $i++
+            } | Join-String -sep (Hr 1)
         }
-        $errorList | ForEach-Object {
-            $_ | ShortenStringJoin -MaxLength ([console]::WindowWidth - 1 )
-        } | Join-String -sep (Hr 1)
+        function __outputFormat_SingleLine {
+            # minimal space taken
+            $MaxLineLength ??= [console]::WindowWidth - 1
+
+            if ($errorList.count -le 0) {
+                # $errorList.AddRange( $global:error ) # Do I want global or script?
+                $global:error | ForEach-Object { $errorList.Add( $_ ) }
+            }
+            $errorList | ForEach-Object -Begin { $i = 0 } {
+                $cDef = $colors.fg
+                $cStatus = [rgbcolor]'red'
+                @(                  
+                    'errΔ [' | Write-Color $cDef
+                    '{0}' -f @(
+                        $i | Write-Color $cStatus
+                    )
+                    ']' | Write-Color $cDef
+                    ' of ['
+                    '{0}' -f @(
+                        $errorList.count | Write-Color $cStatus
+                    )
+                    ']'
+
+                ) | Join-String 
+
+                @(
+                    'e[{0}]' -f $i
+                    $_ | ShortenStringJoin -MaxLength $MaxLineLength | Write-Color 'gray80'
+                ) | Join-String
+                $i++
+            } | Join-String -sep (Hr 1)
+        }
+
+
+        # -------
+
+        switch ($OutputFormat) {
+            '2Line' { 
+                __outputFormat_2Line
+                break
+            }
+            'Single' {
+                __outputFormat_SingleLine
+            }
+            default {
+                __outputFormat_SingleLine
+                break
+            }
+        }
 
     }
 }
 
-function _formatErrorSummary {
+
+
+
+function _processErrorRecord {
     <#
     .synopsis
-        attempt to summarize ErrorRecords
+        attempt to summarize ErrorRecords, and exceptions (maybe split into two)
     .notes
         .
     .example
-        PS> _formatErrorSummarySingleLine
+        PS> _processErrorRecord
     .example
-        PS> $error[0..2] | _formatErrorSummarySingleLine
+        PS> $error[0..2] | _processErrorRecord
     .inputs
         [Exception] | [RuntimeException] | [ActionPreferenceStopException]
     .outputs
@@ -126,16 +215,18 @@ function _formatErrorSummary {
                 [object]$ErrorRecord
             )
             $cur = $ErrorRecord
-            throw 'left off here'
+            # Write-Warning 'left off here'
             $meta = @{
                 PSTypeName = 'dev.nin.ErrorRecordSummary'
 
 
             }
             [pscustomobject]$meta
+             
         }
     }
     process {
+        # Wait-Debugger
         if ($InputObject -is 'Exception') {
             _processException $InputObject
         } elseif ($InputObject -is [Management.Automation.ErrorRecord]) {
@@ -163,4 +254,9 @@ function _formatErrorSummary {
     end {
         Write-Warning "finish me: $PSCommandPath"
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
