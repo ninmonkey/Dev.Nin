@@ -89,7 +89,26 @@ function _formatErrorSummarySingleLine {
             } | Join-String -sep (Hr 1)
         }
         function __outputFormat_SingleLine {
-            # minimal space taken
+            <#
+            .synopsis
+                minimal space taken
+            .notes
+                the error [Automation.ParseException]
+                    has these members
+                        - [Language.ParseError[]]: Errors
+                        - [ErrorRecord]: ErrorRecord
+
+                type: [Automation.ParseException]
+                    members: 
+                        - [Language.ParseError[]]: Errors
+                        - [ErrorRecord]: ErrorRecord
+                        
+                type: [Automation.ErrorRecord]
+                    members:
+                        - [Automation.ErrorRecord]: ErrorDetails
+
+                    
+            #>
             $MaxLineLength ??= [console]::WindowWidth - 1
 
             if ($errorList.count -le 0) {
@@ -97,9 +116,14 @@ function _formatErrorSummarySingleLine {
                 $global:error | ForEach-Object { $errorList.Add( $_ ) }
             }
             $errorList | ForEach-Object -Begin { $i = 0 } {
+                $curError = $_
+                $hasSubErrors = $null -ne $curError.Errors
                 $cDef = $colors.fg
                 $cStatus = [rgbcolor]'red'
                 @(                  
+                    if ($hasSubErrors) { 
+                        "+ subs`n" | Write-Color gray80
+                    }                    
                     'errΔ [' | Write-Color $cDef
                     '{0}' -f @(
                         $i | Write-Color $cStatus
@@ -115,14 +139,17 @@ function _formatErrorSummarySingleLine {
 
                 @(
                     'e[{0}]' -f $i
-                    $_ | ShortenStringJoin -MaxLength $MaxLineLength | Write-Color 'gray80'
+                    $curError | ShortenStringJoin -MaxLength $MaxLineLength | Write-Color 'gray80'
                 ) | Join-String
+                | ShortenStringJoin -MaxLength $MaxLineLength # because header changes len
+
                 $i++
             } | Join-String -sep (Hr 1)
         }
 
 
         # -------
+        
 
         switch ($OutputFormat) {
             '2Line' { 
