@@ -416,8 +416,13 @@ function Join-StringStyle {
 
             }
             'NL' {
-                $lineCount = $separator -as [int]
-                $lineCount ??= 1
+                if ( [string]::IsNullOrEmpty($Separator) ) {
+                    $lineCount = 1
+                } else {
+                    $lineCount = $separator -as [int]
+                    $lineCount ??= 1
+                }
+                # $lineCount ??= 2
                 $splat_JoinStyle.Separator = ("`n" * $lineCount) -join ''
             }
             'HR' {

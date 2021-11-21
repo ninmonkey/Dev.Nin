@@ -48,7 +48,9 @@ function Split-String {
 
     #>
     [alias('SplitStr', 'SplitNewline')]
-    [CmdletBinding( PositionalBinding = $false, DefaultParameterSetName = 'UsingRegex')]
+    [CmdletBinding( PositionalBinding = $false,
+        DefaultParameterSetName = 'UsingTemplate' #'UsingRegex'
+    )]
     param(
         <# (copied 'Format-ControlChar')
         format unicode strings, making them safe.
@@ -68,7 +70,8 @@ function Split-String {
         # split styles built-in
         [Alias('Type', 'Template', 'As')]
         [Parameter(
-            Mandatory, ParameterSetName = 'UsingTemplate')]
+            Mandatory, ParameterSetName = 'UsingTemplate', Position = 0
+        )]
         [ValidateSet('Newline', 'Csv', 'WhiteSpace', 'Tab', 'Word', 'NonWord', 'ControlChar', 'ControlCharAll')]
         [string]$SplitStyle,
 
@@ -133,8 +136,7 @@ function Split-String {
                     throw "unhandled: `$SplitStyle '$SplitStyle'"
                 }
             }
-        }
-        elseif ($PSCmdlet.ParameterSetName -eq 'UsingRegex') {
+        } elseif ($PSCmdlet.ParameterSetName -eq 'UsingRegex') {
             #..
             $SplitPattern = $Regex
         }

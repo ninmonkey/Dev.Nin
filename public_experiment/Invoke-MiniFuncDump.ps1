@@ -18,6 +18,19 @@ try {
             hr 
         }            
     }
+    $state.Alarm_asBackground = {
+        "'$PSCommandPath': Alarm_asBackground: Starts repeating timer, at 15m"
+        $finalCmd = 'alarm -relativeTimeString {0} -message ''{1}'' $repeat:{2}' -f @(
+            '15m', 'bump', '$true'
+        )
+        New-BurntToastNotification -Text "Starting: '$finalCmd'" 
+        Start-Process -path 'pwsh' -WindowStyle Hidden -ArgumentList @(
+            '-Command'
+            # "alarm -RelativeTimeString 1s -Message 'bump'"
+            $finalCmd
+        )
+    }
+
     $state.SortUnique = {        
         Get-Clipboard
         #| ForEach-Object { $_ -replace "'", '' }
@@ -47,7 +60,7 @@ function Invoke-MiniFuncDump {
         [Parameter(Position = 0,
             ParameterSetName = 'InvokeCommand'
         )]
-        [ArgumentCompletions('HistoryFastPrint', 'ListMyCommands')]
+        [ArgumentCompletions('HistoryFastPrint', 'ListMyCommands', 'Alarm_asBackground')]
         [string]$ScriptName,
 
         # list commands
@@ -55,7 +68,8 @@ function Invoke-MiniFuncDump {
         [switch]$List
     )
     
-    begin {}
+    begin {
+    }
     process {
         $state = $script:__miniFuncDump
 
@@ -79,6 +93,7 @@ function Invoke-MiniFuncDump {
 
        
     }
-    end {}
+    end {
+    }
 }
 

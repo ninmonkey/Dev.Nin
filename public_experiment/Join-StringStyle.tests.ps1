@@ -22,22 +22,6 @@ Describe 'Join-StringStyle' {
         }
     }
 
-    Describe 'Smart Alias' {
-        BeforeAll {
-            # $ErrorActionPreference = 'Break'
-        }
-        It 'Explicit of "csv"' {
-            # 0..2 | str Csv | str Prefix 'nums: '
-            0..2 | str Csv
-            0..2 | prefix -ea break
-            # { } | Should -Not THrow
-        }
-        # It 'smart alias "csv"' {
-
-        # }
-
-    }
-
     Context 'ToImplement' -Tag 'nyi' -Skip {
         It 'Propertynames' {
             { Get-ChildItem . | Join-StringStyle NL 'hi' Name } | Should -Not -Throw -Because 'On TodoList: Property name'
