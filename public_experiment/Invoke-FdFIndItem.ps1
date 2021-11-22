@@ -17,17 +17,28 @@ if ( $experimentToExport ) {
 function Invoke-FdFindItem {
     <#
     .synopsis
-        Stuff
+        wrapper ontop of 'fdfind', which is fast
     .description
-       .
+    
+        .
     .example
-        PS> FindD # this finds 📁
+            # filters paths by regex, preserves color in the pipe to fzf
+        PS> findd | ?str azure | fzf -m
+
+        # sugar for the same
+        PS> findd -Regex 'azure' | fzf -m
     .example
-        PS> FindF # this finds 📄
+        PS> FindD
+            # only find 📁
+    .example
+        PS> FindF
+            # only finds 📄
     .link
         Dev.Nin\Invoke-FdFind
     .link
         Dev.Nin\Invoke-FdFindItem
+    .link
+        Dev.Nin\Match-String
 
     .outputs
           [string | None]
@@ -71,7 +82,7 @@ function Invoke-FdFindItem {
             if ($Regex) {
                 $Regex
             }
-            # '--color=always'
+            '--color=always'
         )
 
         $fdArgs | Join-String -sep ' ' -op 'Invoke-Fd args: '

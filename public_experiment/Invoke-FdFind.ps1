@@ -1,5 +1,6 @@
-# allows script to be ran alone, or, as module import
-if (! $DebugInlineToggle ) {
+#Requires -Version 7
+
+if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Invoke-FdFind'
     )
@@ -19,12 +20,16 @@ if (! $DebugInlineToggle ) {
         find =>
             search files, peek->item or peek->directory
     #>
+
+    
 }
+
+# allows script to be ran alone, or, as module import
 
 function Invoke-FdFind {
     <#
     .synopsis
-        Stuff
+        Main entry point for calling 'fdfind', used by the others
     .description
         Desc
 
@@ -204,15 +209,15 @@ function Invoke-FdFind {
     }
 }
 
-if ($DebugInlineToggle ) {
+
+if (! $experimentToExport) {
+    # ...
     # pester tests
     if ($false -and 'for pester parameter unit testing') {
         Invoke-FdFind -t Directory | Should -Be @('.', '-t', 'd')
         Invoke-FdFind -t File, Directory | Should -Be @('.', '-t', 'd', '-t', 'f')
         Invoke-FdFind 'a' -t File, Directory | Should -Be @('.', '-t', 'd', '-t', 'f', 'a')
     }
-
-
     # code
     Invoke-FdFind '.' a -Type Directory, File
     Invoke-FdFind . -Type Directory a -infa Continue -e code-workspace, ps1

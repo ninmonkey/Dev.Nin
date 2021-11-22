@@ -45,7 +45,7 @@ function Write-TextColor {
     .notes
         cleanup then merge into ninmonkey.console
     #>
-    [Alias('WriteTextColor', 'Write-Color')]
+    [Alias('Write-Color')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # Foreground [rgbcolor]
@@ -91,16 +91,14 @@ function Write-TextColor {
             $ForegroundColor
             try {
                 $closeColor = [rgbcolor]$ForegroundColor
-            }
-            catch {
+            } catch {
                 $closeColor = Find-color $ForegroundColor | Select-Object -First 1
             }
             $foregroundColor = $closeColor
             $BackgroundColor
             try {
                 $closeColor = [rgbcolor]$BackgroundColor
-            }
-            catch {
+            } catch {
                 $closeColor = Find-color $BackgroundColor | Select-Object -First 1
             }
             $BackgroundColor = $closeColor

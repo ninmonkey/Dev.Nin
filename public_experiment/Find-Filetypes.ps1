@@ -2,11 +2,11 @@ using namespace Management.Automation
 
 $experimentToExport.function += @(
     'Find-Filetype'
-    'Get-Filetype'
+    'Get-FileTypeExtension'
 )
 $experimentToExport.alias += @(
     'LsExt'
-    'ExtLs'
+    'Completion->FileExtensionType'
 )
 
 function _get-ExtensionsList {
@@ -38,7 +38,7 @@ function Find-FileType {
     .link
         Dev.Nin\Find-FDNewestItem
     .link
-        Get-FileType
+        Get-FileTypeExtension
     .example
         🐒> Find-Filetypes
     .outputs
@@ -91,7 +91,7 @@ function Find-FileType {
     end {
     }
 }
-function Get-FileType {
+function Get-FileTypeExtension {
     <#
     .synopsis
         enumerate file extensions used. populates 'Find-FileType's argument completer
@@ -105,9 +105,9 @@ function Get-FileType {
     .link
         Find-FileType
     .example
-        🐒> Get-FileType
+        🐒> Get-FileTypeExtension
     .example
-        🐒> Get-FileType
+        🐒> Get-FileTypeExtension
 
             .code-workspace
             .csv
@@ -123,7 +123,9 @@ function Get-FileType {
         string[]
 
     #>
-    [Alias('ExtLs')]
+    [Alias(
+        'Completion->FileExtensionType'
+    )]
     [OutputType( [string[]] )]
     [CmdletBinding(PositionalBinding = $false)]
     param(

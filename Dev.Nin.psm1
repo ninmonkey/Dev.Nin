@@ -1,4 +1,4 @@
-﻿New-Alias 'Join-hashTable' -Value 'Ninmonkey.Console\Join-Hashtable' -Description 'to prevent PSScriptTools\Join-Hashtable'
+﻿New-Alias 'Join-hashTable' -Value 'Ninmonkey.Console\Join-Hashtable' -Description 'to prevent PSScriptTools\Join-Hashtable' -ea ignore
 
 function __yell {
     <#
@@ -312,8 +312,21 @@ if ($__Config.Enable_Import_PrivateExperiment_Dir) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'private_experiment\__init__.ps1'))
 }
 if ($__Config.Enable_Import_PublicExperiment_Dir) {
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
-    . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\git\__init__.ps1'))
+    if ($false -and 'Static subdir list' ) {
+        . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
+        . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\git\__init__.ps1'))
+    } else {
+        # Wait-Debugger
+        # $subdirs = Get-ChildItem (Join-Path $b 'public_experiment') -Directory | ForEach-Object FullName
+        $subdirs = Get-ChildItem (Join-Path $PSScriptRoot 'public_experiment') -Directory | ForEach-Object FullName
+        $initFiles = $subdirs | ForEach-Object { 
+            Get-ChildItem $_ -Filter '__init__.ps1'
+        } #| ForEach-Object fullname
+        $initFiles | ForEach-Object {
+            Write-Debug "Loading subdir init: '$_'"
+            . $_
+        }
+    }
 }
 if ($__Config.Enable_PSReadLineScripts) {
     . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_psreadline\__init__.ps1'))

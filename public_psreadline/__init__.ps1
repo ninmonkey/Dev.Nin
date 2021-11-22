@@ -82,7 +82,7 @@ $PSRL_experimentToExport.PSReadLineKeyHandler | ForEach-Object {
     throw 'Did I reach?'
 }
 
-$PSRL_experimentToExport.meta | format-dict | Write-Information
+$PSRL_experimentToExport.meta | Format-Table | Write-Information
 
 # }
 #

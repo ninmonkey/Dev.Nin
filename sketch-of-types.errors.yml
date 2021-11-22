@@ -1,0 +1,40 @@
+# best cheat sheet: <https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html>
+# - types:
+# type:
+# members:
+#   name: ErrorDetails
+#   type: [Automation.ErrorRecord]
+
+- Automation.ErrorRecord:
+  url: https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.errorrecord?view=powershellsdk-7.0.0
+  name: ..
+  namespace: ..
+  members:
+    - name: ErrorDetails
+      type: Automation.ErrorRecord
+          
+
+    - name: ErrorDetails
+      type: Automation.ErrorRecord
+
+- Automation.ParseException:
+  url: https://docs.microsoft.com/en-us/dotnet/api/System.Management.Automation.ParseException?view=powershellsdk-7.0.0
+  members:
+    - name: 
+
+
+
+                #     has these members
+                #         - [Language.ParseError[]]: Errors
+                #         - [ErrorRecord]: ErrorRecord
+
+                # type: [Automation.ParseException]
+                #     members: 
+                #         - [Language.ParseError[]]: Errors
+                #         - [ErrorRecord]: ErrorRecord
+                        
+                # type: [Automation.ErrorRecord]
+                #     members:
+                #         - [Automation.ErrorRecord]: ErrorDetails
+
+                    
