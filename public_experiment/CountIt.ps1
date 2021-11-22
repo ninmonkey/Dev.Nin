@@ -1,3 +1,5 @@
+using namespace System.Collections.Generic
+
 # $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
 
 $experimentToExport.function += @(
@@ -30,7 +32,7 @@ function Measure-ObjectCount {
         [object[]]$InputObject
     )
     begin {
-        $objectList = [list[object]]::new()
+        $objectList = [List[object]]::new()
     }
     process {
         $InputObject | ForEach-Object {
@@ -40,8 +42,7 @@ function Measure-ObjectCount {
     end {
         try {
             $objectList | Measure-Object | ForEach-Object Count
-        }
-        catch {
+        } catch {
             $PSCmdlet.WriteError( $_ )
         }
     }

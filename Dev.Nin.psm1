@@ -316,6 +316,7 @@ if ($__Config.Enable_Import_PublicExperiment_Dir) {
         . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
         . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\git\__init__.ps1'))
     } else {
+        . (Get-Item -ea Stop (Join-Path $PSScriptRoot 'public_experiment\__init__.ps1'))
         # Wait-Debugger
         # $subdirs = Get-ChildItem (Join-Path $b 'public_experiment') -Directory | ForEach-Object FullName
         $subdirs = Get-ChildItem (Join-Path $PSScriptRoot 'public_experiment') -Directory | ForEach-Object FullName
