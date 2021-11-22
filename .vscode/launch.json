@@ -14,6 +14,7 @@
             ],
             "cwd": "${workspaceFolder}"
         },
+
         // {
         //     "name": "PowerShell: Launch Script",
         //     "type": "PowerShell",
@@ -21,6 +22,7 @@
         //     "script": "enter path or command to execute e.g.: ${workspaceFolder}/src/foo.ps1 or Invoke-Pester",
         //     "cwd": "${workspaceFolder}"
         // },
+        
         {
             "name": "cur.ps1",
             "type": "PowerShell",
@@ -28,6 +30,8 @@
             "script": "${file}",
             "cwd": "${file}"
         },
+   
+        
         {
             "name": "cur 🐜 (temp_cur_test.ps1)",
             "type": "PowerShell",

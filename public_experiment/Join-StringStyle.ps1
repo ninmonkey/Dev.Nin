@@ -169,6 +169,12 @@ function Join-StringStyle {
             - Ticks
             - TimeOfDay
             - Year
+    .example
+        🐒> "a`nb" | Str UL -SplitNL
+
+        # Instead of:
+        PS> "a`nb" | Split-String Newline | Str UL
+        PS> "... | %{ $_ -split '\r?\n' } | str UL"
 
     .example
         # discover smart aliases:
@@ -243,6 +249,11 @@ function Join-StringStyle {
         # Pre-sort values ?
         [Parameter()] #
         [Switch]$Sort,
+
+        # some sugar for when you need to split to join: "... | %{ $_ -split '\r?\n' } | str UL"
+        [Alias('SplitInputsByNewline')]
+        [Parameter()] #
+        [Switch]$SplitNL,
 
         # Unique values when sorting ?
         [Parameter()] #
@@ -493,6 +504,9 @@ function Join-StringStyle {
 
     process {
         # try {
+        if ($SplitNL) { 
+            $InputObject = $InputObject -split '\r?\n'
+        }
         $InputObject | ForEach-Object {
             if ($null -eq $_) {
                 $InputLines.Add( '␀' )
