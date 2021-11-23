@@ -1,10 +1,4 @@
-# rename self to __init__.ps1 for my brain
-# re-use logic from below: "../__init__.ps1"
 
-# rename self to __init__.ps1 for my brain?
-
-# eaiser to manage and filter, especially a dynamic set, in one place
-# Warning: this isn't loaading
 [hashtable]$script:experimentToExport ??= @{
     'function'                   = @()
     'alias'                      = @()
@@ -86,7 +80,7 @@ $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
     }
 }
 
-$experimentToExport.meta | Write-Information
+
 
 # }
 #

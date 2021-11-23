@@ -110,12 +110,12 @@ function Convert-CodepointFromChar {
             default {
                 $numCp = Get-UnicodeLength $Char
                 if ($numCp -gt 1) {
-                    Write-Warning 'Expected Len == 1, using first index '                    
+                    Write-Verbose 'Expected Len == 1, enumerating found codepoints.'                    
+                    $char.EnumerateRunes().Value
+                    return
                 }
-                [char]::ConvertToUtf32( $Char, 0 )
-
-                
-                
+                [char]::ConvertToUtf32( $Char, 0 ) # maybe no longer required, with runes in 7+            
+                # $char.EnumerateRunes().Value
             }
         }
     }
@@ -151,14 +151,23 @@ function Compare-StringByChar {
         $r = $right[$index]
         $areSame = $l -eq $r
 
+        function _invokeIfNotNull {
+            param($maybeNull) 
+            if ($null -eq $maybeNull) {
+                return; 
+            }
+            Convert-CodepointFromChar $maybeNull
+        }
+
         if ($PassThru ) {
             [PSCustomObject]@{
                 Index   = $index
                 Equal   = $areSame
                 Left    = $l
-                Right   = $r6
+                Right   = $r
                 LeftCp  = Convert-CodepointFromChar $l 
-                RightCp = Convert-CodepointFromChar $r
+                # RightCp = Convert-CodepointFromChar $r
+                RightCp = _invokeIfNotNull $r
             }
             return 
         }
@@ -167,7 +176,7 @@ function Compare-StringByChar {
             # "[$_] ? = $areSame"
             # $l, $r | Join-String -sep ' = ' -SingleQuote -op "`t"
             if (! $areSame) { 
-                $l, $r | Get-RuneDetail -wa Ignore
+                $l, $r | Where-NotNull NullOrWhiteSpace | Get-RuneDetail #-wa Ignore
                 | Format-Table | Out-String
                 | Write-Color orange
             } else {
