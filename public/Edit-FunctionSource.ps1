@@ -1,7 +1,7 @@
 function Edit-FunctionSource {
     <#
     .synopsis
-        open script that declares funnction
+        open script that declares function
     .description
         currently only opens .ps1 scripts.
         see [Indented] for automatically viewing assemblies

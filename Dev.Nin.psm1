@@ -137,7 +137,7 @@ $public = @(
 
     'Get-SavedList'
     'Get-SavedData'
-    
+
     'Get-DevParameterInfo'
     'Format-DevParameterInfo'
 
@@ -151,7 +151,7 @@ $public = @(
     'Get-Exponentiation'
     'Edit-FunctionSource'
     'Start-DevTimer'
-    'Get-RegexHelp'
+
 
     # newest experiments
     'New-RegexToggleSensitive'
@@ -205,7 +205,7 @@ $functionsToExport = @(
     ## main
     'Compare-StrictEqual'
 
-    
+
 
     'Dev-PrintTableTemplate'
     'Dev-GetNewestItem'
@@ -218,7 +218,7 @@ $functionsToExport = @(
     'Get-Exponentiation'
     'Get-FunctionDebugInfo'
     'Edit-FunctionSource'
-    'Get-RegexHelp'
+
 
 
     # newest experiments
@@ -320,7 +320,7 @@ if ($__Config.Enable_Import_PublicExperiment_Dir) {
         # Wait-Debugger
         # $subdirs = Get-ChildItem (Join-Path $b 'public_experiment') -Directory | ForEach-Object FullName
         $subdirs = Get-ChildItem (Join-Path $PSScriptRoot 'public_experiment') -Directory | ForEach-Object FullName
-        $initFiles = $subdirs | ForEach-Object { 
+        $initFiles = $subdirs | ForEach-Object {
             Get-ChildItem $_ -Filter '__init__.ps1'
         } #| ForEach-Object fullname
         $initFiles | ForEach-Object {
