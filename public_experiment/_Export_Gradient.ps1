@@ -6,6 +6,8 @@ $experimentToExport.function += @(
     '_Export-RgbColor'
 )
 $experimentToExport.alias += @(
+    'Color->Export'
+    'Fav->Color'
     # '_write-AnsiBlock'
     # 'All' # breaks pester
     # 'Any'
@@ -22,7 +24,10 @@ if (!(Test-Path $__ExportColorMeta.ExportPath)) {
 
 function _Export-RgbColor {
     param(
-        [Alias('Color')]
+        [Alias(
+            'Color->Export',
+            'Fav->Color' # after 'fav' refactor, this aliad will change target
+        )]
         [parameter(Mandatory, Position = 1, ValueFromPipeline)]
         [rgbcolor[]]$InputObject,
 
