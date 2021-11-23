@@ -12,6 +12,8 @@ function Get-ModuleMetadata {
         internal private metadata [todo] move to its own tiny module
     .description
         Desc
+    .example
+        
     .outputs
         type any
     #>
