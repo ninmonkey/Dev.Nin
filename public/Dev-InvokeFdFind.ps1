@@ -11,7 +11,7 @@ $ENV:FZF_DEFAULT_COMMAND = 'fd --type f'
 function Dev-InvokeFdFind {
     <#
     .synopsis
-        wrapper to find files /w fdfind
+        wrapper to find files /w fdfind : dodo replace with the other root level wrapper
     .notes
         Docs: https://github.com/sharkdp/fd#how-to-use
         Regex's are Rust: https://docs.rs/regex/1.0.0/regex/#syntax

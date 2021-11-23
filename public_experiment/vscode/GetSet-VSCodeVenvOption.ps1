@@ -22,12 +22,16 @@ class VSCodeVenvOption {
 
 function Set-VSCodeVenvOption {
     <#
-
     .synopsis
         quick hack: save metadat
+
+    future could be one command
+        venv-config <set|get> [key] [value]
+
     #>
     [cmdletbinding()]
     param()
+    throw 'WIP'
 }
 function Get-VSCodeVenvOption {
     <#
@@ -36,6 +40,7 @@ function Get-VSCodeVenvOption {
     #>
     [cmdletbinding()]
     param()
+    throw 'WIP'
 }
 
 Write-Warning 'need: abstract, minimal, nested config class for arbitrary data to json store'
