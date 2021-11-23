@@ -4,7 +4,7 @@ $experimentToExport.function += @(
 $experimentToExport.alias += @(
     'PingSlow'
     'NetworkTool🌎.SlowNetTest'
-   
+
 )
 
 function _slowNetTest {

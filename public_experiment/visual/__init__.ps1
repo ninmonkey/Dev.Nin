@@ -1,7 +1,11 @@
-﻿# rename self to __init__.ps1 for my brain?
+# rename self to __init__.ps1 for my brain
+# re-use logic from below: "../__init__.ps1"
+
+# rename self to __init__.ps1 for my brain?
 
 # eaiser to manage and filter, especially a dynamic set, in one place
-[hashtable]$script:experimentToExport = @{
+# Warning: this isn't loaading
+[hashtable]$script:experimentToExport ??= @{
     'function'                   = @()
     'alias'                      = @()
     'cmdlet'                     = @()
@@ -21,19 +25,17 @@ try {
     | Where-Object {
         # are these safe? or will it alter where-object?
         # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$' -and
-        $_.Name -match '\.ps1$'
+        $_.Name -notmatch '\.tests\.ps1$'
     }
     $filteredFiles
     | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
     | Write-Debug
 
     $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
-
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
 } catch {
-    $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
+    $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
 $sortedFiles
@@ -45,17 +47,16 @@ $sortedFiles
     | Write-Debug
     # are these safe? or will it alter where-object?
     # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-    # try {
-    . $curFile
-    # }
-    # catch {
-    # Write-Error -Message "__init__ module '$CurFile' failed!" -ErrorRecord $_
-    # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+    try {
+        . $curFile
+    } catch {
+        Write-Error -Message 'bad' -ErrorRecord $_
+        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
-    #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-    # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-    # $PSCmdlet.WriteError( $_ )
-    # }
+        #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+        # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+        # $PSCmdlet.WriteError( $_ )
+    }
 }
 
 
@@ -76,7 +77,7 @@ if ($experimentToExport['variable']) {
 }
 
 $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
-    $curSB = $_ 
+    $curSB = $_
     Write-Verbose 'Loading TypeData'
     try {
         . $curSB

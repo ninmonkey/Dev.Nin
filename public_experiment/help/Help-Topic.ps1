@@ -43,14 +43,18 @@ function Help->Topics {
         Stuff
     .description
         .
+    .link
+        Ninmonkey.Console\Format-TypeName
+    .link
+        Ninmonkey.Console\Get-ObjectTypeHelp
 
     #>
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # What kind?
         [Parameter(Position = 0)]
-        [ValidateSet([helpSourceKind])]
-        [string]$SourceKind
+        # [ValidateSet([helpSourceKind])]
+        [helpSourceKind]$SourceKind
     )
 
     begin {
@@ -74,10 +78,10 @@ function Help->Topics {
 
             }
             ([helpSourceKind]::Reference) {
-
+                throw 'grab all that metadata JSON in my notes'
             }
             ([helpSourceKind]::Cheatsheet) {
-
+                throw 'grab all that metadata JSON in my notes'
             }
 
             Default {
