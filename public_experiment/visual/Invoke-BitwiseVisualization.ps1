@@ -230,4 +230,31 @@ if (! $experimentToExport) {
         'InformationAction' = 'continue'
     }
     # ...
+
+    $fsr = [System.Security.AccessControl.FileSystemRights]
+    $invokeBitwiseVisualizationSplat = @{
+        Operation    = 'or'
+        OperandLeft  = [int]$fsr::Delete
+        OperandRight = [int]$fsr::Read
+    }
+    if ($false) {
+        Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat -MinimizeOutput:$false
+        hr 4
+    }
+    hr 2
+
+    h1 'verbose'
+    Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat -MinimizeOutput:$false
+    | Format-Table -AutoSize
+
+
+    h1 'Minimize with hidden headers'
+    Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat
+    | Format-Table -AutoSize -HideTableHeaders
+
+    h1 'Minimize'
+    Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat
+    | Format-Table -AutoSize
+
+    hr 2
 }
