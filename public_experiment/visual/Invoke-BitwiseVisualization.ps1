@@ -150,11 +150,11 @@ function Invoke-BitwiseVisualization {
                 # } $OperandLeft -bor $OperandRight
 
                 $results = $OperandLeft, $OperandRight, $OperationResult | ForEach-Object {
-                    $curOp = $_
+                    [int]$curOp = $_
                     $renderObj = [ordered]@{
-                        Dec  = $curOp
+                        Dec  = [int]$curOp
                         # BitsRaw  = $curOp | bits
-                        Bits = $curOp | bits | _colorizeBits
+                        Bits = [int]$curOp | bits | _colorizeBits
                         # warning: order breaks render
                     }
                     if (! $Env:NoColor) {
@@ -234,13 +234,19 @@ if (! $experimentToExport) {
     $fsr = [System.Security.AccessControl.FileSystemRights]
     $invokeBitwiseVisualizationSplat = @{
         Operation    = 'or'
-        OperandLeft  = [int]$fsr::Delete
+        # OperandLeft  = [int]$fsr::Delete
+        OperandLeft  = [int]$fsr::TakeOwnership
+        # OperandRight = [int]$fsr::ReadAndExecute
+        # OperandRight = [int]$fsr::Modify
+        # OperandRight = [int]$fsr::ReadAndExecute
         OperandRight = [int]$fsr::Read
     }
     if ($false) {
         Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat -MinimizeOutput:$false
         hr 4
     }
+    h1 'info'
+    $fsr | Get-EnumInfo
     hr 2
 
     h1 'verbose'
@@ -256,5 +262,56 @@ if (! $experimentToExport) {
     Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat
     | Format-Table -AutoSize
 
-    hr 2
+    hr
+    h1 'modify single row'
+    $record = Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat
+    # | Select-Object -First 1
+
+    $propHexSelectStr = @{
+        Name       = 'HexStr'
+        # Width      = 3
+        Expression = {
+            $_.Dec
+            # ('0x{0,8:x}' -f $_.Dec)
+        }
+        # FormatString = '0,8:x'
+        # alignment  = 'right'
+    }
+
+    hr
+    h1 'custom + header'
+    $record | Select-Object Dec, $propHexSelectStr, Bits
+    | Format-Table -AutoSize
+
+    hr 1
+
+    h1 'custom - header'
+    $record | Select-Object Dec, $propHexSelectStr, Bits
+    | Format-Table -HideTableHeaders -AutoSize
+
+    $propHexTable = @{
+        Name       = 'Hex'
+        Width      = 3
+        Expression = {
+
+            $render = @(
+                '0x'
+                $_.Dec.ToString('x')
+            ) -join ''
+
+            $render.PadLeft(20)
+        }
+        # FormatString = 'x'
+        alignment  = 'right'
+    }
+    hr
+    $splatTable = @{
+        AutoSize         = $true
+        HideTableHeaders = $true
+        Property         = $propHexTable, 'Bits'
+    }
+
+    $record | Format-Table @splatTable
+
 }
+
