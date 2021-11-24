@@ -225,6 +225,17 @@ function Invoke-BitwiseVisualization {
 
 
 
+$Config = @{
+    Randomize = $true
+}
+function _randomEnumValue {
+    param(
+        [Parameter(Position = 0, Mandatory)]
+        # [enum]
+        $Enum = [System.Security.AccessControl.FileSystemRights]
+    )
+    $Enum | Get-EnumInfo | Get-Random -Count 1
+}
 if (! $experimentToExport) {
     $info_sp = @{
         'InformationAction' = 'continue'
@@ -240,6 +251,17 @@ if (! $experimentToExport) {
         # OperandRight = [int]$fsr::Modify
         # OperandRight = [int]$fsr::ReadAndExecute
         OperandRight = [int]$fsr::Read
+    }
+
+    $invokeBitwiseVisualizationSplat | Format-Table
+
+
+    if ($Config.Randomize) {
+        # $invokeBitwiseVisualizationSplat.OperandRight = _randomEnumValue [System.Security.AccessControl.FileSystemRights]
+        $invokeBitwiseVisualizationSplat.OperandLeft = [int]($fsr | Get-EnumInfo | Get-Random -Count 1)
+        $invokeBitwiseVisualizationSplat.OperandRight = [int]($fsr | Get-EnumInfo | Get-Random -Count 1)
+
+        $invokeBitwiseVisualizationSplat | Format-Table
     }
     if ($false) {
         Invoke-BitwiseVisualization @invokeBitwiseVisualizationSplat -MinimizeOutput:$false
@@ -299,7 +321,7 @@ if (! $experimentToExport) {
                 $_.Dec.ToString('x')
             ) -join ''
 
-            $render.PadLeft(20)
+            $render.PadLeft(6)
         }
         # FormatString = 'x'
         alignment  = 'right'
