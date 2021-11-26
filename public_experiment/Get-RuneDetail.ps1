@@ -5,7 +5,7 @@ $experimentToExport.function += @(
     'Get-RuneDetail'
 )
 $experimentToExport.alias += @(
-    # 'GhRepoClone'
+    'Uni->RuneInfo'
 )
 
 
@@ -28,6 +28,9 @@ function Get-RuneDetail {
         🐒> Get-RuneDetail -InputText 'afz🐒>' | ft -AutoSize
 
     #>
+    [Alias(
+        'Uni->RuneInfo'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Docstring
@@ -60,8 +63,7 @@ function Get-RuneDetail {
             }
             if ($meta.UniCategory -notmatch 'control' ) {
                 $meta['RuneOnRenderTest'] = "Good: '$Rune'"
-            }
-            else {
+            } else {
                 $meta['RuneOnRenderTest'] = "Bad:  '$($meta['RuneStr'])'"
             }
 

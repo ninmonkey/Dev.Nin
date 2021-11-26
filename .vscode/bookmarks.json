@@ -7,6 +7,81 @@
 					"line": 537,
 					"column": 67,
 					"label": "editor.minimap"
+				},
+				{
+					"line": 573,
+					"column": 34,
+					"label": "workbench.colorCustomizations"
+				},
+				{
+					"line": 575,
+					"column": 18,
+					"label": "workbench.Color ➝ errorLens"
+				},
+				{
+					"line": 620,
+					"column": 13,
+					"label": "workbench.Color ➝ minimap"
+				},
+				{
+					"line": 697,
+					"column": 40,
+					"label": "workbench.Color ➝ JustinGrote's pester theme"
+				},
+				{
+					"line": 824,
+					"column": 39,
+					"label": "### Sect: theme: subtler error lens"
+				},
+				{
+					"line": 948,
+					"column": 17,
+					"label": "[powerquery]"
+				},
+				{
+					"line": 961,
+					"column": 23,
+					"label": "files.associations"
+				},
+				{
+					"line": 1009,
+					"column": 21,
+					"label": "gitlens.advanced"
+				},
+				{
+					"line": 1030,
+					"column": 24,
+					"label": "prettier.configPath"
+				},
+				{
+					"line": 1040,
+					"column": 15,
+					"label": "[json]"
+				},
+				{
+					"line": 1066,
+					"column": 21,
+					"label": "vsicons.associations ➝ files"
+				},
+				{
+					"line": 1105,
+					"column": 20,
+					"label": "vsicons.associations ➝ folders"
+				},
+				{
+					"line": 1133,
+					"column": 25,
+					"label": "xml ➝ fileAssociations"
+				},
+				{
+					"line": 1194,
+					"column": 18,
+					"label": "files.exclude"
+				},
+				{
+					"line": 1213,
+					"column": 25,
+					"label": "files.watcherExclude"
 				}
 			]
 		}

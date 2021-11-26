@@ -2,20 +2,45 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        '_Peek-NewestItem'
-        
-        '_PeekAfterJoinLinesMaybe'
-        'Peek-NewestItem'
+        'old_Peek->NewestItem'
+        'Peek->NewestItem'
+        'Pipe->Peek2'
     )
+    <#
+
+    # todo: future: 'bat' command can truncate newlines, when peeking
+    # like the output form several of: which have tons of empty newlines:
+        https://docs.microsoft.com/en-gb/azure/azure-monitor/essentials/metrics-supported
+    #>
+
+
     $experimentToExport.alias += @(
-        'Peek'
-        'PeekNew'
-        'pipe->Peek', 'Out-Peek', 'Out->Peek'
+
+        <#
+        currently:
+            fn      old_Peek->NewestItem
+
+            fn      Peek->NewestItem
+                alias: Pipe->PeekNewest
+
+            fn      Pipe->Peek2
+
+
+        #>
     )
+    # old batch of names
+    # functions
+    # '_Peek-NewestItem'
+    # '_PeekAfterJoinLinesMaybe'
+    # 'Peek->NewestItem'
+    # alias
+    # 'Peek'
+    # 'PeekNew'
+    # 'pipe->Peek', 'Out-Peek', 'Out->Peek'
 }
 
 
-function Peek-NewestItem {
+function old_Peek->NewestItem {
     <#
     .synopsis
         find newest, preview them in bat
@@ -35,13 +60,14 @@ function Peek-NewestItem {
     #     'UL', 'Checklist'
     # )]
     # [OutputType([String])]
-    [Alias('Peek')]
+    # [Alias('Peek')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
 
     )
 
-    begin {}
+    begin {
+    }
     process {
         $OutputMode = 'newest'
         Write-Information "Mode: '$OutputMode'"
@@ -54,9 +80,10 @@ function Peek-NewestItem {
             }
         }
     }
-    end {}
+    end {
+    }
 }
-function _Peek-NewestItem {
+function Peek->NewestItem {
     <#
     .synopsis
         find files, like an EverythingSearch, but also preview them in Bat
@@ -81,9 +108,9 @@ function _Peek-NewestItem {
         Dev.Nin\Invoke-FdFind
     #>
 
-    [Alias('PeekNew')]
+    # [Alias('Pipe->PeekNewest')]
     [CmdletBinding(PositionalBinding = $false)]
-    param(        
+    param(
         [Parameter(Position = 0)]
         [ArgumentCompletions(
             '2weeks', '2days', '2hours'
@@ -94,7 +121,7 @@ function _Peek-NewestItem {
         [ArgumentCompletions(
             'Changed_Within'
         )]
-        [string]$What = 'Changed_Within'    
+        [string]$What = 'Changed_Within'
 
     )
     begin {
@@ -105,7 +132,7 @@ function _Peek-NewestItem {
         $previewCommand = 'bat --color=always --style=numbers --line-range=:200 {}' #| Join-String -SingleQuote
 
         $whatStr = switch ($What) {
-            'Changed_Within' { 
+            'Changed_Within' {
                 '--changed-within'
             }
             default {
@@ -120,7 +147,7 @@ function _Peek-NewestItem {
 }
 
 
-function _PeekAfterJoinLinesMaybe {
+function Pipe->Peek2 {
     <#
     .synopsis
         peek
@@ -139,7 +166,9 @@ function _PeekAfterJoinLinesMaybe {
           [string | None]
 
     #>
-    [Alias('pipe->Peek', 'Out-Peek', 'Out->Peek')]
+    [Alias(
+        # 'Out->Peek'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter(
@@ -151,7 +180,7 @@ function _PeekAfterJoinLinesMaybe {
 
         [Parameter(
             ParameterSetName = 'FromPath',
-            Mandatory            
+            Mandatory
         )]
         [string]$BasePath
 
@@ -171,13 +200,13 @@ function _PeekAfterJoinLinesMaybe {
     }
     end {
         # $Input
-        # Get-ChildItem . 
+        # Get-ChildItem .
         switch ($PSCmdlet.ParameterSetName) {
             'FromPipeline' {
                 $Source = $Input
                 break
             }
-            'FromPath' {                
+            'FromPath' {
                 $Source = fd -e ps1 --changed-within 2weeks --color=always
                 break
             }
@@ -185,24 +214,24 @@ function _PeekAfterJoinLinesMaybe {
                 throw "unhandled set: '$($PSCmdlet.ParameterSetName)"
             }
         }
-        $items = $input 
-        | Where-Object {            
+        $items = $input
+        | Where-Object {
             if ($Config.AlwaysSkipDirectory) {
                 if (Test-IsDirectory $_) {
                     $false; return;
-                }                
+                }
             }
             $true; return;
         }
 
-        
+
         # $items
         # $source
         # | To->RelativePath
-        
-        
+
+
         switch ($OutputMode) {
-            # 'diff' {                    
+            # 'diff' {
             #     fzf -m --preview 'bat --color=always --style=changes,grid,rule --line-range=:200 {}'
             #     break
             # }
@@ -212,8 +241,8 @@ function _PeekAfterJoinLinesMaybe {
                 | fzf -m --preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
             }
         }
-        
-            
+
+
     }
 }
 

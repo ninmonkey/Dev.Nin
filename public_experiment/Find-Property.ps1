@@ -52,7 +52,7 @@ function _get-ObjectProperty {
         dev.nin\EnumerateProperty
     .link
         Dev.Nin\Completion->PropertyName
-        
+
     #>
     [Alias(
         'Iter->Prop'
@@ -61,6 +61,7 @@ function _get-ObjectProperty {
     [cmdletbinding()]
     param(
         # any object
+        [AllowNull()]
         [Parameter(
             Mandatory, Position = 0,
             ValueFromPipeline)]

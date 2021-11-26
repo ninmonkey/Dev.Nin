@@ -16,15 +16,28 @@ function ShortenStringJoin {
     .example
         $someExteption.ToString() | SHortenStringJoin -CollapseWhiteSpace
     .link
-        ShortenString
+        Dev.Nin\ShortenString
+    .link
+        Dev.Nin\ShortenStringJoin
     #>
     [cmdletbinding(PositionalBinding = $false)]
     param(
-        # Docstring
+        <# InputLine used to be:
         [alias('Text')]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$InputLine,
+        #>
 
+        # allows extra empty values, to simplify logic when caller is piping
+        # this was updated to match ShortenString's param type
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [alias('Text')]
+        [string[]]$InputLine,
+
+        # truncate at
         [parameter(Position = 1)]
         [int]$MaxLength, # = 120,
 
@@ -35,8 +48,8 @@ function ShortenStringJoin {
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
-        }
-        else { $maxLength
+        } else {
+            $maxLength
         }
         $Str = @{
             JoinNewline = ' ◁ ' | New-Text -fg 'gray60' | ForEach-Object tostring            # '… …◁'
@@ -61,7 +74,9 @@ function ShortenString {
     .synopsis
         shorten strings, if needed.
     .link
-        ShortStringJoin
+        Dev.Nin\ShortString
+    .link
+        Dev.Nin\ShortStringJoin
     #>
     [cmdletbinding(
         DefaultParameterSetName = 'StringFromPipe', PositionalBinding = $false)]
@@ -106,8 +121,9 @@ function ShortenString {
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
+        } else {
+            $maxLength
         }
-        else { $maxLength }
     }
 
     Process {
@@ -119,8 +135,7 @@ function ShortenString {
         if ( $actualLen -le $MaxLength ) {
             $InputText
             return
-        }
-        else {
+        } else {
             $InputText.Substring(0, ( $MaxLength ) )
         }
     }

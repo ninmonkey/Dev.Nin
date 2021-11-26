@@ -78,7 +78,12 @@ function Write-TextColor {
 
         # When colors can be close
         [Parameter()]
-        [switch]$LooseColorName
+        [switch]$LooseColorName,
+
+        # Do not append a reset / clear color sequence
+        [Parameter()]
+        [switch]$LeaveColor
+
     )
 
     process {
@@ -108,7 +113,14 @@ function Write-TextColor {
             ($null -ne $BackgroundColor ? $BackgroundColor : $Null )
         )
 
-        New-Text -Object $Text -fg $ForegroundColor -bg $BackgroundColor #-LeaveColor:$false
+        $newTextSplat = @{
+            Object          = $Text
+            ForegroundColor = $ForegroundColor
+            BackgroundColor = $BackgroundColor
+            LeaveColor      = $LeaveColor
+        }
+
+        New-Text @newTextSplat
         | ForEach-Object ToString
     }
 }

@@ -290,7 +290,7 @@ if (! $experimentToExport) {
     # | Select-Object -First 1
 
     $propHexSelectStr = @{
-        Name       = 'HexStr'
+        Name       = 'Hex'
         # Width      = 3
         Expression = {
             $_.Dec
@@ -313,7 +313,7 @@ if (! $experimentToExport) {
 
     $propHexTable = @{
         Name       = 'Hex'
-        Width      = 3
+
         Expression = {
 
             $render = @(
@@ -327,6 +327,7 @@ if (! $experimentToExport) {
         alignment  = 'right'
     }
     hr
+    h1 'flat'
     $splatTable = @{
         AutoSize         = $true
         HideTableHeaders = $true
@@ -334,6 +335,97 @@ if (! $experimentToExport) {
     }
 
     $record | Format-Table @splatTable
+    hr
+    h1 'labels'
+    $splatTable = @{
+        AutoSize         = $true
+        HideTableHeaders = $true
+        Property         = $propHexTable, 'Bits'
+    }
+    $record | Format-Table @splatTable -HideTableHeaders:$false
 
+
+
+    # $tableBitsColor = @{
+    #     Name       = 'Bits'
+    #     Expression = {
+    #         $_ | Out-String | _colorizeBits | ForEach-Object tostring
+    #     }
+    #     # FormatString = 'x'
+    #     # alignment  = 'right'
+    # }
+    # $fsr | Get-EnumInfo | Format-Table Name, $tableBitsColor -Wrap -AutoSize
+    # $fsr | Get-EnumInfo | Format-Table Name, Bits -Wrap -AutoSize
+    $propHexTable = @{
+        Name       = 'Hex'
+
+        Expression = {
+
+            $render = @(
+                '0x'
+                $_.Dec.ToString('x')
+            ) -join ''
+
+            $render.PadLeft(6)
+        }
+        # FormatString = 'x'
+        alignment  = 'right'
+    }
+    $formatTableSplat = @{
+
+        Wrap     = $true
+        AutoSize = $true
+        Property = 'Bits', 'Value', 'Hex' #'Name', 'Dec'
+    }
+
+    h1 'oops, tooo much'
+
+    $fsr | Get-EnumInfo
+    | Format-Table @formatTableSplat
+    | Out-String | _colorizeBits | Out-String
+
+
+
+    h1 'just bits'
+    $bitsColor = @{
+        Name       = 'BitsC'
+
+        Expression = {
+            $_.Bits
+
+            # $render = @(
+            #     '0x'
+            #     $_.Dec.ToString('x')
+            # ) -join ''
+
+            # $render.PadLeft(6)
+        }
+        # FormatString = 'x'
+        alignment  = 'right'
+    }
+    $formatTableSplat = @{
+
+        Wrap     = $true
+        AutoSize = $true
+        Property = 'BitsC', 'Value', 'Hex' #'Name', 'Dec'
+    }
+    $render = $fsr | Get-EnumInfo
+    | ForEach-Object {
+        $_
+    }
+    # | Add-Member -NotePropertyName 'BitsC' -NotePropertyValue { $this.Bits | _colorizeBits } -PassThru
+    $render | Format-Table @formatTableSplat
+    $render | ForEach-Object bits | _colorizeBits
+    h1 'weird object'
+
+    $targetObj = $render[0]
+    $renderobj = [pscustomobject]@{
+        Bits  = $targetObj.Bits
+        BitsC = $targetObj.Bits | _colorizeBits
+        Value = $target.Value
+        Name  = $target.Name
+    }
+    #| Out-String | _colorizeBits | Out-String
+    $render | s *
 }
 
