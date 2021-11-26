@@ -14,14 +14,14 @@ if ( $experimentToExport ) {
             peek->directory
             or peek->item
             or goto
-    
+
         dive =>
             moves; goto location
         find =>
             search files, peek->item or peek->directory
     #>
 
-    
+
 }
 
 # allows script to be ran alone, or, as module import
@@ -47,8 +47,8 @@ function Invoke-FdFind {
     .outputs
 
     #>
- 
-    [alias('FdFind')] 
+
+    [alias('FdFind')]
     [CmdletBinding(PositionalBinding = $true, SupportsShouldProcess
         # NYI: , SupportsPaging
     )]
@@ -134,7 +134,7 @@ function Invoke-FdFind {
                         break
                     }
                     default {
-                        'bad' 
+                        'bad'
                     }
                 }
             }

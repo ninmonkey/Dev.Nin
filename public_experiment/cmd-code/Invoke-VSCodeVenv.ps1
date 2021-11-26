@@ -11,6 +11,8 @@ if ($experimentToExport) {
     )
 }
 
+
+
 function __format_HighlightVenvPath {
     <#
     .synopsis
@@ -165,6 +167,7 @@ code --help:
                                         collects.
 
 #>
+
 function Invoke-VSCodeVenv {
     <#
     .synopsis
@@ -315,9 +318,31 @@ function Invoke-VSCodeVenv {
 
 
         $metaInfo = [ordered]@{}
+
+        # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
+        # first try default, else fallback
+        $splatSilent = @{'ErrorAction' = 'SilentlyContinue' }
+        $CodeBin = @(
+            # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
+            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
+            Get-Command code-insiders.cmd -CommandType Application @splatSilent
+
+            # paths differ because ? local user install?
+            Get-Item @splatSilent 'C:\Program Files\Microsoft VS Code\bin\code.cmd'
+            Get-Command @splatSilent code.cmd -All -CommandType Application
+            Get-Command @splatSilent code-insiders -All -CommandType Application
+            Get-Command @splatSilent code -All -CommandType Application
+        ) | Select-Object -First 1
+        if (! $CodeBin) {
+            throw 'Did not find any code-insider instances' ; return;
+        }
         try {
-            $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
             $DataDir = Get-Item -ea stop $DataDir
+        } catch {
+            Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
+            Write-Warning 'falling back to implicit default path'
+        }
+        try {
             $target = Get-Item -ea ignore $TargetPath
         } catch {
             Write-Error -ea stop 'Invalid Path'
@@ -330,7 +355,7 @@ function Invoke-VSCodeVenv {
                 'Open 📁 a directory?'
                 | Write-Color 'blue'
                 hr
-    
+
             } else {
                 hr
                 'Open 📄 File?' | Write-Color 'blue'
@@ -362,11 +387,11 @@ function Invoke-VSCodeVenv {
             # GetCurrentBin
             [pscustomobject]@{
                 PSTypeName   = 'nin.CodeVenv.Config'
-                CodeBinPath  = $CodeBin            
+                CodeBinPath  = $CodeBin
                 UserDataDir  = $DataDir ?? $Null
                 ExtensionDir = 'nyi'
             }
-            return 
+            return
         }
 
 
@@ -390,6 +415,7 @@ function Invoke-VSCodeVenv {
             }
         }
         if ($ResumeSession) {
+            Wait-Debugger
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
                 __printCodeArgs
