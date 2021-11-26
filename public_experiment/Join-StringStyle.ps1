@@ -76,7 +76,7 @@ function Join-StringStyle {
             Str
                 [string]$JoinOnSeparator
     bug:
-        [1] 
+        [1]
             # this prints
 
                 ls . -File | New-HashtableFromObject Name
@@ -87,7 +87,7 @@ function Join-StringStyle {
                 System.Collections.Specialized.OrderedDictionary
 
             # fixed by 'out-string' first
-                
+
                 ls . -File | New-HashtableFromObject Name
                 | Out-String | Str hr
 
@@ -96,14 +96,14 @@ function Join-StringStyle {
                 ls . -File | New-HashtableFromObject Name
                 | % tostring | Str hr
 
-    .example       
+    .example
         🐒> 0..3 | str csv
             0,1,2,3
 
         🐒> 0..3 | str csv -sep ' '
             0, 1, 2, 3
 
-        
+
         🐒> 0..3 | str str '> <' | join-string -op '<' -os '>'
             <0> <1> <2> <3>
 
@@ -130,7 +130,7 @@ function Join-StringStyle {
 
     .example
         🐒> Get-History  | str hr
-            
+
             ------------------------------------------
             ul
             ------------------------------------------
@@ -204,7 +204,7 @@ function Join-StringStyle {
         <#
             to add:
                 'None' does -join ''
-            
+
             'Str' does -join $separator
 
             I'm not currently using func aliases like 'csv'
@@ -269,6 +269,14 @@ function Join-StringStyle {
         [Alias('Quote')]
         [Parameter()] #
         [Switch]$SingleQuote,
+
+        # extra string to the end of pipe
+        [ALias('op')]
+        [Parameter()][string]$OutputPrefix,
+
+        # extra string prefix
+        [ALias('os')]
+        [Parameter()][string]$OutputSuffix,
 
         # DoubleQuotes instead of single quotes, if used in the formatter
         [Parameter()] #
@@ -423,13 +431,14 @@ function Join-StringStyle {
             'Csv' {
                 $Separator ??= ' '
                 $joinStr = ',{0}' -f @($Separator)
-                $splat_JoinStyle.Separator = $joinStr # was: ', '             
+                $splat_JoinStyle.Separator = $joinStr # was: ', '
 
             }
             'NL' {
                 if ( [string]::IsNullOrEmpty($Separator) ) {
                     $lineCount = 1
-                } else {
+                }
+                else {
                     $lineCount = $separator -as [int]
                     $lineCount ??= 1
                 }
@@ -439,12 +448,13 @@ function Join-StringStyle {
             'HR' {
                 if ( [string]::IsNullOrWhiteSpace( $Separator) ) {
                     $extraLines = 1
-                } else {
+                }
+                else {
                     $extraLines = $separator -as [int]
                     $extraLines ??= 1
                 }
                 $splat_JoinStyle.Separator = hr -ExtraLines $extraLines | ForEach-Object tostring
-                
+
             }
             # 'Pair' {
             #     $splat_JoinStyle.Separator = ', '
@@ -462,7 +472,8 @@ function Join-StringStyle {
 
                 if (! $DoubleQuote) {
                     $splat_JoinStyle.SingleQuote = $true
-                } else {
+                }
+                else {
 
                 }
 
@@ -504,13 +515,14 @@ function Join-StringStyle {
 
     process {
         # try {
-        if ($SplitNL) { 
+        if ($SplitNL) {
             $InputObject = $InputObject -split '\r?\n'
         }
         $InputObject | ForEach-Object {
             if ($null -eq $_) {
                 $InputLines.Add( '␀' )
-            } else {
+            }
+            else {
                 $InputLines.Add( $_ )
             }
             # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
@@ -539,12 +551,16 @@ function Join-StringStyle {
             $sort_splat['Unique'] = $True
             $Sort = $true
         }
-        if ($sort) {
+
+        $finalRender = if ($sort) {
             $InputLines | Sort-Object @sort_splat
             | Join-String @splat_JoinStyle
-        } else {
+        }
+        else {
             $InputLines | Join-String @splat_JoinStyle
         }
+
+        $finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep ''
 
         # }
         # catch {

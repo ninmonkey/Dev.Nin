@@ -1,0 +1,1 @@
+# compare to: # see:'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\ConvertFrom-ScriptExtent.ps1'

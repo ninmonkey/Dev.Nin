@@ -1,11 +1,12 @@
 #Requires -Version 7
+using namespace System.Collections.Generic
 using namespace System.Management.Automation
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         '_formatErrorSummarySingleLine'
         '_processErrorRecord'
-        
+
         #  testing
         '__inspectErrorType'
         'showErr'
@@ -18,9 +19,11 @@ if ( $experimentToExport ) {
 
 function showErr {
     <#
-    .synopis   
+    .synopsis
         view and hide errors easier in the term
-        
+    .notes
+        'ShowError() => formatErr()'
+
     .example
         🐒> showErr -Recent
             ErrorRecord -> DriveNotFoundException
@@ -43,7 +46,7 @@ function showErr {
         # shows 0, does not call clear on errors if -reset
     #>
     [cmdletbinding()]
-    param(    
+    param(
         # err obj
         [Parameter(Position = 0, ValueFromPipeline)]
         [object]$ErrorObject,
@@ -58,25 +61,34 @@ function showErr {
         if ($Recent) {
             $target = $global:Error | Select-Object -Last $deltaCount
         }
-        
+
         $dbgInfo = @{
 
         }
         $dbgInfo | Write-Debug
-        $Target | formatErr | str hr
+        $Target
+        | ReverseIt
+        | formatErr | str hr
     }
 
-    <# 
+    <#
         try:
         Import-Module Dev.Nin -Force
 
-        $Error | % tostring 
-        | %{ $_ -replace (ReLit 'System.Management.Automation'), 'sma' } 
+        $Error | % tostring
+        | %{ $_ -replace (ReLit 'System.Management.Automation'), 'sma' }
         |  ShortenStringJoin
 
 #>
 }
 function __inspectErrorType {
+    <#
+    .synopsis
+        internal inspection that generates
+    .notes
+        'ShowError() => formatErr()'
+        'formatErr() => __inspectErrorType()'
+    #>
     [CmdletBinding()]
     param(
         # error
@@ -114,7 +126,7 @@ function __inspectErrorType {
         wanted template:
             [type] -> [childtype] -> [string]
 
-        from: 
+        from:
             #Import-Module Dev.Nin -Force
             $Error | Get-Random -Count 3
             | __inspectErrorType
@@ -129,8 +141,11 @@ function __inspectErrorType {
 }
 function formatErr {
     <#
-    .example            
+    .example
             $error | formatErr | str hr 1
+    .notes
+        'ShowError() => formatErr()'
+        'formatErr() => __inspectErrorType()'
     #>
     param(
         # err  obj
@@ -155,33 +170,33 @@ function formatErr {
             ColorFg       = 'gray60'
         }
         $Config = Join-Hashtable $Config $Options
-        
+
         $Colors = @{
             ErrorRed   = $Config.ColorErrorRed
             FgTypeName = $Config.ColorFg
         }
         $Colors = Join-Hashtable $Colors ($Options ?? @{})
-    }    
+    }
     process {
         if ($null -eq $ErrorObject) {
             return
         }
 
-        if ($AsRaw) {         
+        if ($AsRaw) {
             $ErrorObject | ShortenString
             return
         }
 
         $eInfo = $ErrorObject | __inspectErrorType
         $einfo | Format-Table | Out-String | Write-Debug
-        
+
         $prefixTypes = @(
             $eInfo.Type | Write-Color $Colors.FgTypeName
             if ($eInfo.HasChildException) {
                 @(
-                    ' -> '
-                    $eInfo.Child_ExceptionType
-                ) | Write-Color $Colors.FgTypeName
+                    ' -> ' | Write-Color $Colors.FgTypeName
+                    $eInfo.Child_ExceptionType | Write-Color $Colors.FgTypeName
+                ) | Join-String
             }
         ) | Join-String
         # Wait-Debugger
@@ -201,6 +216,14 @@ function _formatErrorSummarySingleLine {
         formats Summarize errors, one per line
     .notes
         .Format outputs text, see _processErrorRecord for inspection
+
+        'ShowError() => formatErr()'
+        None => _formatErrorSummarySingleLine
+
+        _formatErrorSummarySingleLine =>
+            (intern) __outputFormat_Minimal
+            (intern) __outputFormat_SingleLine
+
     .example
         PS> _formatErrorSummarySingleLine
     .example
@@ -213,7 +236,7 @@ function _formatErrorSummarySingleLine {
     param(
         #
         [alias(
-            # 'Error' # 'default resolves as get-error' 
+            # 'Error' # 'default resolves as get-error'
         )]
         [Parameter(ValueFromPipeline, Position = 0)]
         [object]$InputObject,
@@ -228,21 +251,21 @@ function _formatErrorSummarySingleLine {
         [Parameter()]
         [uint]$MaxLineLength,
 
-           
+
         # extra options
         [Parameter()][hashtable]$Options
     )
 
-    begin {        
-        $errorList = [list[object]]::new()
+    begin {
+        $errorList = [List[object]]::new()
 
         [hashtable]$Config = @{
             AlignKeyValuePairs = $true
             Title              = 'Default'
             DisplayTypeName    = $true
-            JoinOnString       = hr 1 
+            JoinOnString       = hr 1
         }
-        $Config = Join-Hashtable $Config ($Options ?? @{})        
+        $Config = Join-Hashtable $Config ($Options ?? @{})
 
         [hashtable]$colors = @{
             ErrorDim    = [PoshCode.Pansies.RgbColor]'#8B0000' # darkred'
@@ -253,13 +276,13 @@ function _formatErrorSummarySingleLine {
             FgDim       = [PoshCode.Pansies.RgbColor]'gray60'
             Fg          = [PoshCode.Pansies.RgbColor]'gray80'
             FgBright    = [PoshCode.Pansies.RgbColor]'gray90'
-            FgBright2   = [PoshCode.Pansies.RgbColor]'gray100'            
+            FgBright2   = [PoshCode.Pansies.RgbColor]'gray100'
         }
         $colors = Join-Hashtable $colors ($Options.Colors ?? @{})
-        
+
     }
     process {
-        
+
         # if (!$InputObject) {
         #     $InputObject = $global:error # Do I want global or script?
         # }
@@ -285,8 +308,8 @@ function _formatErrorSummarySingleLine {
             begin {
             }
             process {
-                Wait-Debugger
-                $InputObject | ShortenString -MaxLength 0 
+                # Wait-Debugger
+                $InputObject | ShortenString -MaxLength 0
                 # if ($errorList.count -le 0) {
                 #     # $errorList.AddRange( $global:error ) # Do I want global or script?
                 #     $global:error | ForEach-Object { $errorList.Add( $_ ) }
@@ -299,7 +322,7 @@ function _formatErrorSummarySingleLine {
                 # } | Join-String -sep (Hr 1)
             }
             end {
-                
+
 
             }
             # minimal space taken
@@ -332,15 +355,15 @@ function _formatErrorSummarySingleLine {
                         - [ErrorRecord]: ErrorRecord
 
                 type: [Automation.ParseException]
-                    members: 
+                    members:
                         - [Language.ParseError[]]: Errors
                         - [ErrorRecord]: ErrorRecord
-                        
+
                 type: [Automation.ErrorRecord]
                     members:
                         - [Automation.ErrorRecord]: ErrorDetails
 
-                    
+
             #>
             param(
                 # extra options
@@ -358,7 +381,7 @@ function _formatErrorSummarySingleLine {
                 # $errorList.AddRange( $global:error ) # Do I want global or script?
                 $global:error | ForEach-Object { $errorList.Add( $_ ) }
             }
-            $FormattedText = 
+            $FormattedText =
             $errorList | ForEach-Object -Begin { $i = 0 } {
                 $curError = $_
                 $hasSubErrors = ($null -ne $curError.Errors) -or ($curError.errors.count -gt 0)
@@ -369,15 +392,15 @@ function _formatErrorSummarySingleLine {
                     # | Format-IndentText -Depth 2
                     # | ShortenString
 
-                    # or 
+                    # or
                     $errorList.Errors
                     | ShortenStringJoin -MaxLength 90
                     | Format-IndentText -Depth 2
                 }
-                @(                  
-                    if ($hasSubErrors) { 
+                @(
+                    if ($hasSubErrors) {
                         "+ subs`n" | Write-Color $cBright
-                    }                    
+                    }
                     'errΔ [' | Write-Color $cDef
                     '{0}' -f @(
                         $i | Write-Color $cStatus
@@ -389,7 +412,7 @@ function _formatErrorSummarySingleLine {
                     )
                     ']'
 
-                ) | Join-String 
+                ) | Join-String
 
                 @(
                     'e[{0}]' -f $i
@@ -400,11 +423,11 @@ function _formatErrorSummarySingleLine {
                 $i++
             }
 
-    
+
 
             # -------
             $Config.JoinOnString = Hr 1
-        
+
 
             switch ($OutputFormat) {
                 'Minimal' {
@@ -412,8 +435,8 @@ function _formatErrorSummarySingleLine {
                     $render
                     break
                 }
-                '2Line' { 
-                    $render = $ErrorList | __outputFormat_Minimal -Options $Config 
+                '2Line' {
+                    $render = $ErrorList | __outputFormat_Minimal -Options $Config
                     break
                 }
                 'Single' {
@@ -431,13 +454,13 @@ function _formatErrorSummarySingleLine {
                 $render
             }
 
-        
-            
+
+
             # }
             # end {
 
             # }
-            
+
         }
 
 
@@ -525,7 +548,7 @@ function _processErrorRecord {
 
             }
             [pscustomobject]$meta
-             
+
         }
     }
     process {
@@ -561,7 +584,13 @@ function _processErrorRecord {
 
 
 if (! $experimentToExport) {
-    # colors generated by:  
+    $TestConfig = @{
+        Slow_PrintAllExamples = $false
+        CompareSingleDefaults = $true
+
+    }
+    $TestConfig | Format-dict
+    # colors generated by:
     # PS> (find-color red | % rgb | hex | str csv -SingleQuote) -replace '0x', '#'
     $colorList = @(
         '#8b0000', '#cd5c5c', '#ff6a6a', '#ee6363', '#cd5555', '#8b3a3a', '#c71585',
@@ -569,17 +598,43 @@ if (! $experimentToExport) {
         '#ee799f', '#cd6889', '#8b475d', '#ff0000', '#ff0000', '#ee0000', '#cd0000',
         '#8b0000', '#d02090', '#ff3e96', '#ee3a8c', '#cd3278', '#8b2252'
     )
-    # $randErrors = $error | Get-Random -Count 10    
+    # $randErrors = $error | Get-Random -Count 10
     # hard to reproduce in pester context. so inline for now.
     $randErrors = $global:Error | Get-Random -Count 10
     $someErrors = $global:Error | Select-Object -First 5
-    
-    foreach ($c in ($colorList)) {
-        $randErrors | formatErr -Options @{
-            'ColorErrorRed' = $c
+
+    if ($TestConfig.Slow_PrintAllExamples) {
+        foreach ($c in ($colorList)) {
+            h1 "$c | FormatErr -ColorErrorRed" -bef 0 -aft 0
+            $randErrors | formatErr -Options @{
+                'ColorErrorRed' = $c
+            }
         }
-    }        
+    }
     hr
+    h1 $colorList[8] -Before 0 -after 0
     $randErrors | formatErr -Options @{'ColorErrorRed' = $colorList[8] }
+    h1 $colorList[1] -Before 0 -after 0
     $randErrors | formatErr -Options @{'ColorErrorRed' = $colorList[1] }
+
+    hr 4
+
+    # saved test
+    $targetErr = ($savedErr ?? $error[0])
+    if ($TestConfig.CompareSingleDefaults) {
+        hr -ForegroundColor 'magenta'
+        h1 ' | formatErr'
+        $targetErr | formatErr
+        hr
+        h1 ' | _formatErrorSummarySingleLine'
+        $targetErr | _formatErrorSummarySingleLine -OutputFormat Single
+
+
+        h1 'testing for defaults'
+        $targetErr | formatErr -Options @{
+
+            'ColorErrorRed' = '#ff4500' # or '#ee799f'
+        }
+    }
+
 }
