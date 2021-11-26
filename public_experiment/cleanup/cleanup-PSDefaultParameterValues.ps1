@@ -61,8 +61,12 @@ function Get-CleanupCommand {
 
     h1 'NYI'
     @'
-    Invoke-CleanupMissingNamespaceImports
+    - [ ] Invoke-CleanupMissingNamespaceImports
         nyi: search for files with "[list" but no import namespace
+
+    - [ ]  Cleanup-DeprecatedSettings
+        check whether  Set-ItResult() is passed "pending|inconclusive" deprecated args
+            https://pester.dev/docs/commands/Set-ItResult#-pending
 '@
 
 }

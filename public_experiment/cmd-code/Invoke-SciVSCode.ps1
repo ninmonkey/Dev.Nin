@@ -1,10 +1,10 @@
 using namespace System.Collections.Generic
 
 $experimentToExport.function += @(
-    'iProp'
+    'Invoke-SciVSCode'
 )
 $experimentToExport.alias += @(
-    # 'GetFuncInfo'
+    # 'CodeSci'
 )
 $global:PathToVSCodeOverride ??= 'code'
 
@@ -31,7 +31,9 @@ function Invoke-SciVSCode {
         $pathList = [List[string]]::new()
     }
     process {
-        if (-not $Path) { return }
+        if (-not $Path) {
+            return
+        }
         $pathList.Add($Path)
     }
     end {

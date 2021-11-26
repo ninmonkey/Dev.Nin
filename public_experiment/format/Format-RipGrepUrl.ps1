@@ -4,7 +4,7 @@ $experimentToExport.function += @(
 $experimentToExport.alias += @(
     'From->RipGrepResult'
     'ConvertFrom-RipGrepResult'
-    # 'ConvertFrom' ? or 'ConvertTo' ? 
+    # 'ConvertFrom' ? or 'ConvertTo' ?
 )
 
 function Format-RipGrepResult {
@@ -12,7 +12,11 @@ function Format-RipGrepResult {
     .synopsis
         basic ripgrep filename output, to usable url
     .description
-        .
+        todo:
+        - [ ] extract numbered filepath logic, move to: =>
+            Format-RipGrepResult -> ConvertFrom-NumberedFilepath
+        - [ ] then this func is actually Format-PathToConsoleUrl() or something
+
     .notes
         ripgrep and/or grep have file line numbers  at the start, or end, depending on mode
 
@@ -34,7 +38,7 @@ function Format-RipGrepResult {
     #>
     [cmdletbinding(PositionalBinding = $false)]
     [alias(
-        # 'Out-ConRipGrepResult', 
+        # 'Out-ConRipGrepResult',
         'ConvertFrom-RipGrepResult',
         'From->RipGrepResult'
     )]
