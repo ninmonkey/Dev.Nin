@@ -167,7 +167,7 @@ function Invoke-FdFind {
             # if ($PSCmdlet.ShouldProcess("$kwargs", "'FdFind'")) {
             if ($WhatIf) {
                 @(
-                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: ' | Write-Color green
+                    $Path | ConvertTo-RelativePath -BasePath '.' | Join-String -op 'Path: ' | Write-Color green
                     $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | Write-Color green
                 ) | Join-String
                 return
@@ -178,7 +178,7 @@ function Invoke-FdFind {
                 }
 
                 @(
-                    $Path | Format-RelativePath -BasePath '.' | Join-String -op 'Path: '
+                    $Path | ConvertTo-RelativePath -BasePath '.' | Join-String -op 'Path: '
                     $fdArgs | Join-String -sep ' ' -op 'fdfind args: ' | Write-Color magenta
                 ) | Write-Information
 

@@ -13,7 +13,7 @@ $experimentToExport.function += @(
     }
 )
 $experimentToExport.alias += @(
-    'fDict' 
+    'fDict'
     # 'Dev.Format-Dict'
     # 'Ansi.Format-Dict'
     # 'New-Sketch'
@@ -30,7 +30,7 @@ function _FormatDictItem_Filepath {
     param([string]$Path)
     process {
         if (Test-Path $Path) {
-            Format-RelativePath -InputObject $Path
+            ConvertTo-RelativePath -InputObject $Path
         } else {
             $Path
         }
@@ -49,7 +49,7 @@ function _FormatDictItem_ColorList {
     param([string]$Path)
     process {
         if (Test-Path $Path) {
-            Format-RelativePath -InputObject $Path
+            ConvertTo-RelativePath -InputObject $Path
         } else {
             $Path
         }
@@ -62,7 +62,7 @@ function _FormatDictItem_Boolean {
     .description
         Input is object, to allow for other truthy values
     .example
-       PS> 4, $true, 1, 0.0, $false, 0 | _FormatDictItem_Boolean    
+       PS> 4, $true, 1, 0.0, $false, 0 | _FormatDictItem_Boolean
     #>
     [cmdletbinding()]
     param(
@@ -73,7 +73,7 @@ function _FormatDictItem_Boolean {
     process {
         $truthy = [bool]$InputObject
         $color = $truthy ? 'green' : 'red'
-        Write-Color -fg $color -t $InputObject       
+        Write-Color -fg $color -t $InputObject
     }
 }
 function _FormatDictItem_ColorSingle {
@@ -215,7 +215,7 @@ function Format-Dict {
         if ($false) {
 
             try {
-                
+
                 $typeNameStr = if (!($Config.DisplayTypeName)) {
                     ''
                 } else {

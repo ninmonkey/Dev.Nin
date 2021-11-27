@@ -477,7 +477,7 @@ function Invoke-VSCodeVenv {
                     "`nDataDir = "
                     $DataDir | Write-Color cyan
                     "`n"
-                    $strTarget | Format-RelativePath -BasePath .
+                    $strTarget | ConvertTo-RelativePath -BasePath .
                     "`n"
                 ) | Join-String
 

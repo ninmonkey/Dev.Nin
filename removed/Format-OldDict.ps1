@@ -18,9 +18,8 @@ function _FormatDictItem_Filepath {
     param([string]$Path)
     process {
         if (Test-Path $Path) {
-            Format-RelativePath -InputObject $Path
-        }
-        else {
+            ConvertTo-RelativePath -InputObject $Path
+        } else {
             $Path
         }
     }
@@ -81,7 +80,7 @@ function Format-Dict {
         }
     }
     process {
-        [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object  Maximum
+        [int]$LongestName = $InputObject.Keys | ForEach-Object { $_.Length } | Measure-Object -Maximum | ForEach-Object Maximum
         # todo: UX: make dict render on a single line when empty
         $joinOuter_Splat = @{
             Separator    = "`n"
@@ -93,24 +92,21 @@ function Format-Dict {
         if ($InputObject -is [Collections.IDictionary]) {
             Write-Color green -t 'Yes'
             | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
-        }
-        else {
+        } else {
             Write-Color red -t 'No'
             | str Prefix 'Is: [IDictionary]? ' | Write-Color 'gray80' | Write-Debug
         }
         if ($InputObject -is [Collections.IEnumerable]) {
             Write-Color green -t 'Yes'
             | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
-        }
-        else {
+        } else {
             Write-Color red -t 'No'
             | str Prefix 'Is: [IEnumerable]? ' | Write-Color 'gray80' | Write-Debug
         }
 
         if ($InputObject -is [Collections.IDictionary]) {
             $TargetObj = $InputObject
-        }
-        elseif ($InputObject -is [PSCustomObject]) {
+        } elseif ($InputObject -is [PSCustomObject]) {
             $objAsHash = [ordered]@{}
             $InputObject.psobject.properties | ForEach-Object {
                 $SafeKey = $_.Name ?? '[null]'
@@ -122,8 +118,7 @@ function Format-Dict {
             $TargetObj = $objAsHash
 
             # $TargetObj = $InputObject
-        }
-        elseif ($InputObject -is [Collections.DictionaryEntry]) {
+        } elseif ($InputObject -is [Collections.DictionaryEntry]) {
             $hash = @{}
             Get-ChildItem env: | ForEach-Object {
                 $hash[$_.key] = $_.Value
@@ -138,8 +133,7 @@ function Format-Dict {
             # # $targetObject = $objAsHash
             # # temp disable
             # $TargetObj = $objAsHash
-        }
-        else {
+        } else {
             $TargetObj = $InputObject
         }
 
@@ -150,8 +144,7 @@ function Format-Dict {
                     $paddedKey = (($_.Key) ?? '').padright($LongestName, ' ')
                     # $_.Key | Write-Color $ColorType.KeyName
                     $paddedKey | Write-Color $ColorType.KeyName
-                }
-                else {
+                } else {
                     $_.Key | Write-Color $ColorType.KeyName
                 }
                 ' = '
@@ -159,12 +152,10 @@ function Format-Dict {
             $joinPair_splat = @{
                 InputObject  = if ($Config.FormatControlChar) {
                     $_.Value | Format-ControlChar
-                }
-                else {
+                } else {
                     if (! $Config.BackgroundColorValues ) {
                         $_.Value
-                    }
-                    else {
+                    } else {
                         $_.Value | Write-Color black -bg darkpink3
                         # $_.Value | New-Text -bg 'lightpink'
                     }

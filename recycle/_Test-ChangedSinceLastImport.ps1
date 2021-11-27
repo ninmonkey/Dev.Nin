@@ -20,7 +20,7 @@ function _Test-ChangedSinceLastImport {
 
         $script:__lastImportTime | str prefix 'inside: '
         $currentFiles | ForEach-Object {
-            $_ | format-relativePath | Sort-Object | Write-Information
+            $_ | ConvertTo-RelativePath | Sort-Object | Write-Information
             if ( $cur.LastWriteTime -gt $script:__lastImportTime ) {
                 "$($cur.Name) key is old" | Write-Debug
                 $true; return

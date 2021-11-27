@@ -1,16 +1,17 @@
-# C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-07
-# if ($BadDebugEnabled) {
+#Requires -Version 7
 
-$experimentToExport.function += @(
-    'New-DevFileSketchItem'
-    'New-SketchItem'
-)
-$experimentToExport.alias += @(
-    'NewBufferItem'
-    'Dev.New-Sketch'
-    # 'New-Sketch'
-)
-# }
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'New-DevFileSketchItem'
+    )
+    $experimentToExport.alias += @(
+        'New->Sketch'
+
+    )
+}
+
+# C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-07
+
 
 function New-DevFileSketchItem {
     <#
@@ -28,7 +29,11 @@ function New-DevFileSketchItem {
     .notes
         .
     #>
-    [Alias('Dev.New-Sketch', 'NewBufferItem')]
+    [Alias(
+        'Dev.New-Sketch',
+        'NewBufferItem',
+        'New->Sketch'
+    )]
     [cmdletbinding( ConfirmImpact = 'high', PositionalBinding = $false, SupportsShouldProcess)]
     param (
         # Name
@@ -104,8 +109,8 @@ function New-DevFileSketchItem {
         }
         # $NewItemPath = $LocationPath['$']
         # $x = 20
-        $target = @( 'foo.ps1' | Write-color green) | Join-String
-        $operation = @( 'c:\foo\bar' | Write-color pink) | Join-String
+        $target = @( 'foo.ps1' | Write-Color green) | Join-String
+        $operation = @( 'c:\foo\bar' | Write-Color pink) | Join-String
         # $target = 'target' ; $operation = 'operation'
 
         # $NewItemPath
@@ -128,10 +133,10 @@ function New-DevFileSketchItem {
         # $PSCmdlet.ShouldProcess
 
     }
-    end {}
+    end {
+    }
 }
-# $BadDebugEnabled = $true
-# $BadDebugEnabled = $null
-if ($false) { #//$BadDebugEnabled) {
 
+if (! $experimentToExport) {
+    # ...
 }
