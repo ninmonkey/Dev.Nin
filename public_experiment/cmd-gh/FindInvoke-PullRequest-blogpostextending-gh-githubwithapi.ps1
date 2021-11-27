@@ -1,3 +1,15 @@
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'FindInvoke-PullRequest'
+        'FindInvoke-PullRequest-NoDependency'
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
+
 <#
 see post:
     https://github.blog/2021-03-11-scripting-with-github-cli/#combine-gh-with-other-tools
@@ -28,13 +40,13 @@ function FindInvoke-PullRequest {
         PS> FindInvoke-PullRequest
 
         # you select PR 15171 here
-
+1`
         Confirm
         Are you sure you want to perform this action?
         Performing the operation "gh pr checkout" on target "15171 Remove alias D of -Directory switch kvprasoon:remove-ls-alias OPEN".
         [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"):
     #>
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
         # limit
         [Parameter(position = 0)]
@@ -75,7 +87,7 @@ function FindInvoke-PullRequest-NoDependency {
         Performing the operation "gh pr checkout" on target "15171 Remove alias D of -Directory switch kvprasoon:remove-ls-alias OPEN".
         [Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "Y"):
     #>
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param()
 
     $fzf = gh pr list -L10 | fzf
@@ -86,4 +98,9 @@ function FindInvoke-PullRequest-NoDependency {
         $ghBin = Get-Command -CommandType Application 'gh' -ea Stop | Select-Object -First 1
         & $ghBin @ghArgs
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

@@ -59,6 +59,7 @@ function Format-ChildItemSummary {
         [hashtable]$Options
     )
     begin {
+        # do me
         # $ColorType = @{
         #     'KeyName' = 'SkyBlue'
         # }
@@ -114,7 +115,8 @@ function Format-ChildItemSummary {
             $DirectoryOnly {
                 $childSplat['Directory'] = $true
             }
-            default {}
+            default {
+            }
         }
 
         $newest = Get-ChildItem @childSplat
@@ -124,7 +126,7 @@ function Format-ChildItemSummary {
             '∅'
             return
         }
-        
+
         # $newest = Get-ChildItem $Path | Sort-Object lastWriteTime -desc -Top $MaxItems
         function __formatItem_Folder {
             <#
@@ -151,7 +153,7 @@ function Format-ChildItemSummary {
                         # , ' ' -join ''
                         # }
                     )
-                
+
                 )
                 # 1 / 0
                 $TemplateRender
@@ -181,13 +183,13 @@ function Format-ChildItemSummary {
                 )
             }
         }
-        
+
         $newest
         | Join-String {
             $curItem = $_
             if (Test-IsDirectory $curItem) {
                 __formatItem_Folder $curItem
-            } else {                
+            } else {
                 __formatItem_File $curItem
             }
         } -sep ', '

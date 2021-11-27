@@ -1,3 +1,14 @@
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'F'
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
+
 function Test-AnyRegexMatch {
     <#
         .synopsis
@@ -38,21 +49,26 @@ function Test-AnyRegexMatch {
         }
     }
 }
-# $ErrorActionPreference = 'stop'
-
-$samples = 'cat', 'at', 'dog', '34'
-$regex = 'at', '\d+'
-$expect = 'cat', 'at', '34'
 
 
-$res = $samples | wheremini -pattern $regex
-$res -join ', '
+if (! $experimentToExport) {
+    # $ErrorActionPreference = 'stop'
 
-$samples | wheremini -pattern $regex
-| Should -Be $expect
+    $samples = 'cat', 'at', 'dog', '34'
+    $regex = 'at', '\d+'
+    $expect = 'cat', 'at', '34'
 
 
-hr
-# wheremini -InputText $samples -pattern $regex -Debug -ea break
-wheremini -InputText $samples[0] -pattern $regex -Debug -ea break
-hr
+    $res = $samples | wheremini -pattern $regex
+    $res -join ', '
+
+    $samples | wheremini -pattern $regex
+    | Should -Be $expect
+
+
+    hr
+    # wheremini -InputText $samples -pattern $regex -Debug -ea break
+    wheremini -InputText $samples[0] -pattern $regex -Debug
+    hr
+    # ...
+}
