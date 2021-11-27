@@ -159,7 +159,7 @@ $public = @(
     'Sort-NinObject'
     'Edit-DevTodoList'
     'Find-VerbPrefix'
-    'Dev-InvokeFdFind'
+
     'Out-ConsoleHighlight'
 
 
@@ -230,7 +230,7 @@ $functionsToExport = @(
     # more
 
     'Edit-DevTodoList'
-    'Dev-InvokeFdFind'
+
     'Get-SavedList'
     'Get-SavedData'
     'Find-VerbPrefix'

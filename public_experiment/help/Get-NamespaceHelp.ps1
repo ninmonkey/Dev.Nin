@@ -32,8 +32,18 @@ function Get-NamespaceHelp {
         $namespace | ForEach-Object { $_ -replace '^system\.', '' }
         | str ul
         Find-Type -Namespace $Namespace | ForEach-Object {
+
             # _renderName $_.Name
-            $_.Name
+            @(
+
+                '{1} {2}[ {0} ]' -f @(
+                    ($_.BaseType ?? '') -replace '^System\.'
+                    $_.Name
+                    Write-Color -fg gray50 -LeaveColor -Text ''
+                )
+                "${fg:clear}"
+                # $_.DeclaringType
+            ) | str nl 0
         }
         | str ul -sort -Unique | Format-IndentText -Depth $RelativeDepth
     ) | str nl 0
@@ -41,7 +51,7 @@ function Get-NamespaceHelp {
 
 if (! $experimentToExport) {
     # ...
-    Help->Namespace system.text
+    Help->Namespace system
     Help->Namespace system.text
 }
 function _disabled__refactor-Get-NamespaceHelp {

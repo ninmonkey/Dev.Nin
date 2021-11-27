@@ -238,7 +238,9 @@ function Pipe->Peek2 {
             default {
                 $items
                 # | fzf -m --preview 'bat --color=always --style=numbers --line-range=:200 {}'
-                | fzf -m --preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
+                # was:
+                # | fzf.exe -m --preview 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
+                | fzf -MultiSelect -PreviewCommand 'bat --color=always --style=snip,header,numbers --line-range=:200 {}'
             }
         }
 

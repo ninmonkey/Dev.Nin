@@ -4,6 +4,7 @@
   - [Generics](#generics)
   - [Interfaces](#interfaces)
   - [Exceptions](#exceptions)
+  - [Commands](#commands)
 
 # interesting classes
 
@@ -49,3 +50,38 @@ Properties of dynamic types
 - [InvalidOperationException](https://docs.microsoft.com/en-us/dotnet/api/system.invalidoperationexception?view=net-5.0)
 - [ArgumentNullexception](https://docs.microsoft.com/en-us/dotnet/api/system.argumentnullexception?view=net-5.0)
 - [ArgumentException](https://docs.microsoft.com/en-us/dotnet/api/system.argumentexception?view=net-5.0)
+
+## Commands
+
+```ps1
+🐒> gcm * | Get-Unique -OnType | % gettype |  % fullname | str ul -Sort -Unique
+
+- Management
+    - AutomationAliasInfo
+    - ApplicationInfo
+    - CmdletInfo
+    - ExternalScriptInfo
+    - FilterInfo
+    - FunctionInfo
+```
+
+```yml
+- Namespace: "System.Management.Automation"
+  types:
+    - AutomationAliasInfo
+    - ApplicationInfo
+    - CmdletInfo
+    - ExternalScriptInfo
+    - FilterInfo
+    - FunctionInfo
+
+- Namespace: "System.Text"
+    types:
+
+```
+or
+```yml
+- Namespace: "System"
+  types:
+    - AutomationAliasInfo
+```

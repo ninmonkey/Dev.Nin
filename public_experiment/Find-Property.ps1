@@ -43,7 +43,7 @@ function Completion->PropertyName {
 function _get-ObjectProperty {
     <#
     .synopsis
-        sugar for '$x.psobject.properties'
+        sugar for '$x.psobject.properties' # rename to functon: Iter-ObjectProperty
     .link
         Dev.Nin\_enumerateProperty
     .link

@@ -437,8 +437,7 @@ function Join-StringStyle {
             'NL' {
                 if ( [string]::IsNullOrEmpty($Separator) ) {
                     $lineCount = 1
-                }
-                else {
+                } else {
                     $lineCount = $separator -as [int]
                     $lineCount ??= 1
                 }
@@ -448,8 +447,7 @@ function Join-StringStyle {
             'HR' {
                 if ( [string]::IsNullOrWhiteSpace( $Separator) ) {
                     $extraLines = 1
-                }
-                else {
+                } else {
                     $extraLines = $separator -as [int]
                     $extraLines ??= 1
                 }
@@ -472,8 +470,7 @@ function Join-StringStyle {
 
                 if (! $DoubleQuote) {
                     $splat_JoinStyle.SingleQuote = $true
-                }
-                else {
+                } else {
 
                 }
 
@@ -521,8 +518,7 @@ function Join-StringStyle {
         $InputObject | ForEach-Object {
             if ($null -eq $_) {
                 $InputLines.Add( '␀' )
-            }
-            else {
+            } else {
                 $InputLines.Add( $_ )
             }
             # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
@@ -555,12 +551,11 @@ function Join-StringStyle {
         $finalRender = if ($sort) {
             $InputLines | Sort-Object @sort_splat
             | Join-String @splat_JoinStyle
-        }
-        else {
+        } else {
             $InputLines | Join-String @splat_JoinStyle
         }
 
-        $finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep ''
+        Write-Output -NoEnumerate ($finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep '')
 
         # }
         # catch {

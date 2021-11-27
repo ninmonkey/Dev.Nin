@@ -13,7 +13,7 @@ if ( $experimentToExport ) {
 function Get-SmartAlias {
     <#
     .synopsis
-        sugar to validate alias
+        sugar to validate alias, maybe named Test-SmartAlias
     .outputs
         <$null | [string]>
     #>
@@ -75,11 +75,13 @@ function Invoke-FdFindItem {
         PS> FindF
             # only finds 📄
     .link
-        Dev.Nin\Invoke-FdFind
+        dev.nin\Match-String
     .link
-        Dev.Nin\Invoke-FdFindItem
+        dev.nin\Find-FDNewestItem
     .link
-        Dev.Nin\Match-String
+        dev.nin\Invoke-FdFind
+    .link
+        dev.nin\Invoke-FdFindItem
 
     .outputs
           [string | None]

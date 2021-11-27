@@ -22,11 +22,16 @@ function cmdToFilepath {
         Dev.Nin\Resolve-CommandName
     #>
     param(
+        # names as text/gcm/whatever
+        [Alias('FunctionName')]
+        [AllowNull()]
+        [AllowEmptyString()]
         [parameter(Mandatory, Position = 0 , ValueFromPipeline)]
-        $FunctionName
+        $InputObject
     )
     process {
-        Get-Command $FunctionName | editfunc -PassThru | ForEach-Object file
+        $CleanNames = $functionName | Remove-AnsiEscape
+        Get-Command $CleanNames | editfunc -PassThru -ea continue | ForEach-Object file
     }
 }
 

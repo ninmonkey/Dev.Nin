@@ -17,6 +17,8 @@ function Remove-AnsiEscape {
     [cmdletbinding()]
     param(
         [Alias('Text')]
+        [AllowNull()]
+        [AllowEmptyString()]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$InputObject,
 
@@ -26,16 +28,19 @@ function Remove-AnsiEscape {
     )
     begin {
         # Regex from Jaykul
-        $Regex = @{ 
+        $Regex = @{
             StripColor = '\u001B.*?m'
             StripAll   = '\u001B.*?\p{L}'
-        }                
+        }
         # I use that for stripping escape sequences so I can measure string length
         # But it removes everything
         # if you wanted just color stuff, you might put m instead of \p{L}
-        
+
     }
     process {
+        if ($null -eq $InputObject) {
+            return
+        }
         if ($StripEverything) {
             $InputObject -replace $Regex.StripAll, ''
         } else {
