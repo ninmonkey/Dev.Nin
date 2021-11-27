@@ -4,20 +4,22 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Out->Picker'
         'Pick->Member'
+        'Help->Topics'
+        'Pipe->Pick'
     )
     $experimentToExport.alias += @(
         'Pick'
-        'Pipe->Pick'
+        'Out->Picker'
         'pm', 'pickProp' # Pick->Member
     )
 }
 
 
+
 function Out->Picker {
     <#
-    .synopsis 
+    .synopsis
         Throw in a pipeline to quickly filter, also saves as $picker, if needed
     .description
     #>
@@ -29,7 +31,7 @@ function Out->Picker {
 
 function Pick->Member {
     <#
-    .synopsis 
+    .synopsis
         You choose a property, like '.Name', then populate with values
     .description
         returns sorted, distinct list
@@ -40,8 +42,8 @@ function Pick->Member {
         🐒> ps | Pick->Member Name
 
             Agent
-            AppleMobileDeviceService  
-            ApplicationFrameHost    
+            AppleMobileDeviceService
+            ApplicationFrameHost
             audiodg
             BtwRSupportService
 
@@ -68,7 +70,7 @@ function Pick->Member {
 
         Get-Process $picks
     .example
-        PS> ls g:\ | Pick->Member Name  
+        PS> ls g:\ | Pick->Member Name
 
             Downloads
             eula.1033.txt
@@ -77,7 +79,7 @@ function Pick->Member {
 
     #>
     [Alias(
-        'pm', 'pickProp'        
+        'pm', 'pickProp'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -91,14 +93,14 @@ function Pick->Member {
         [Parameter(Mandatory, Position = 0)]
         [string]$Name
     )
-    
-    begin {        
+
+    begin {
         $valueList = [List[string]]::new()
     }
     process {
         $InputObject | ForEach-Object {
-            
-            $valueList.Add( 
+
+            $valueList.Add(
                 (($_)?.$Name ?? $null)
             )
         }
@@ -111,15 +113,30 @@ function Pick->Member {
 
 
 
-function Out->Picker {
+function Pipe->Pick {
     <#
-    .synopsis 
+    .synopsis
         Throw in a pipeline to quickly filter, also saves as $picker, if needed
     .description
+    ..notes
+        maybe integrate
+        <#
+            Dev.Nin\_enumerateProperty
+            Dev.Nin\_gh_repoList_enumeratePropertyNames
+            Dev.Nin\Get-PropertyNameCompleter
+            Dev.Nin\iProp
+            Dev.Nin\Invoke-PropertyChain
+            Dev.Nin\Where-EmptyProperty
+            Ninmonkey.Console\ConvertTo-PropertyList
+            Ninmonkey.Console\Select-NinProperty
+            '@ | SplitStr -SplitStyle Newline | Resolve-CommandName
+            | editfunc -PassThru | % file | sort
+
+        #>
     #>
     [Alias(
         'Pick',
-        'Pipe->Pick'
+        'Out->Picker'
     )]
     # [cmdletbinding()]
     param(
@@ -140,10 +157,10 @@ function Out->Picker {
             $global:picks = $null
         }
 
-        # $choice = $Text | Join-String -sep "`n`n" | fzf -m 
-        $selected = $Text -join '' | fzf -m
+        # $choice = $Text | Join-String -sep "`n`n" | fzf -m
+        $selected = $Text -join '' | fzf -m # todo: find call code using 'fzf -m', use invoke-ninfzf
         $selected
-        
+
         $global:picks ??= $selected
         $global:picks
     }
@@ -153,6 +170,6 @@ if (! $experimentToExport) {
     # Get-ChildItem .. | Select-Object -First 3 | ForEach-Object name
     $files = Get-ChildItem c:\ -dir | ForEach-Object name | s -First 9
     $files | Out->Picker
-    
+
     #| Out->Picker
 }
