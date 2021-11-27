@@ -323,6 +323,7 @@ function Invoke-VSCodeVenv {
         # first try default, else fallback
         $splatSilent = @{'ErrorAction' = 'SilentlyContinue' }
         $CodeBin = @(
+            # todo: add user's saved value as the first part
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
             Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
             Get-Command code-insiders.cmd -CommandType Application @splatSilent
@@ -415,7 +416,7 @@ function Invoke-VSCodeVenv {
             }
         }
         if ($ResumeSession) {
-            Wait-Debugger
+
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
                 __printCodeArgs

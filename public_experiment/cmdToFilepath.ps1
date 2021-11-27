@@ -30,11 +30,18 @@ function cmdToFilepath {
         $InputObject
     )
     process {
-        $CleanNames = $functionName | Remove-AnsiEscape
+        $CleanNames = $InputObject | Remove-AnsiEscape
         Get-Command $CleanNames | editfunc -PassThru -ea continue | ForEach-Object file
     }
 }
 
 if (! $experimentToExport) {
     # ...
+    '/w rescmd'
+    Get-Command *fzf* -m (_enumerateMyModule)
+    | rescmd -QualifiedName
+
+    h1 '/w cmdToFilepath'
+    Get-Command *fzf* -m (_enumerateMyModule)
+    | cmdToFilepath
 }

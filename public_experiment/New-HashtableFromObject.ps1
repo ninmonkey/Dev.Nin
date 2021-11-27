@@ -9,7 +9,7 @@ if ( $experimentToExport ) {
         'To->Hashtable'
         'ConvertTo-Hashtable'
         # 'Filter->Hashtable',
-     
+
     )
 }
 
@@ -122,7 +122,7 @@ function New-HashtableFromObject {
             # $hash[ $curName ] = $InputObject.psobject.properties[ $curName ].Value
         }
         # $InputObject
-        # Wait-Debugger
+
         $hash
 
     }

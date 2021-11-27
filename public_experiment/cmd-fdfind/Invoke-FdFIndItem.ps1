@@ -26,7 +26,7 @@ function Get-SmartAlias {
         $PSCmdletSource
     )
     $maybeAlias = $PSCmdletSource.MyInvocation.InvocationName
-    # Wait-Debugger
+
     if ($maybeAlias -eq $PSCmdletSource.CommandRuntime.ToString()) {
         $null; return
     }

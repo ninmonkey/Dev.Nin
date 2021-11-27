@@ -199,7 +199,7 @@ function formatErr {
                 ) | Join-String
             }
         ) | Join-String
-        # Wait-Debugger
+
         $finalRender = @(
             $prefixTypes
             # ': '
@@ -308,7 +308,7 @@ function _formatErrorSummarySingleLine {
             begin {
             }
             process {
-                # Wait-Debugger
+
                 $InputObject | ShortenString -MaxLength 0
                 # if ($errorList.count -le 0) {
                 #     # $errorList.AddRange( $global:error ) # Do I want global or script?
@@ -552,7 +552,7 @@ function _processErrorRecord {
         }
     }
     process {
-        # Wait-Debugger
+
         if ($InputObject -is 'Exception') {
             _processException $InputObject
         } elseif ($InputObject -is [Management.Automation.ErrorRecord]) {

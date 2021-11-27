@@ -70,7 +70,7 @@ function Out-Error {
         ) -join ''
 
         $template | wi 
-        
+             
         switch ($PSCmdlet.ParameterSetName) {
             'FromNewest' {
                 # $getErrorSplat['Newest'] = $count

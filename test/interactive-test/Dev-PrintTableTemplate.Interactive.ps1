@@ -10,6 +10,7 @@ if ($ConfigTest.first_test) {
     Dev-PrintTableTemplate -MinColWidth 5 -FillRemainingWidth -Debug
 
     h1 'start'
+    # '// maybe markdown' ? 
 
     hr
     Table -NumColumns 15
@@ -29,7 +30,7 @@ function Interactive_NoRender {
 
     $MinCellWidth = 1
 
-    $rowData = Get-ChildItem -Path 'c:\'  | Select-Object -First 4| ForEach-Object {
+    $rowData = Get-ChildItem -Path 'c:\' | Select-Object -First 4 | ForEach-Object {
         $Extension = [string]::IsNullOrWhiteSpace( $_.Extension ) ? 'N/A' : $_.Extension
         $Vals = $_.Name, $Extension, $_.LastWriteTimeString
         $Vals
@@ -54,7 +55,7 @@ function Interactive {
     param ()
 
     process {
-        $rowData = Get-ChildItem -Path 'c:\'  | Select-Object -First 9 | ForEach-Object {
+        $rowData = Get-ChildItem -Path 'c:\' | Select-Object -First 9 | ForEach-Object {
             $MinCellWidth = 1
             $Extension = [string]::IsNullOrWhiteSpace( $_.Extension ) ? 'N/A' : $_.Extension
             $CurRow = $_.Name, $Extension, $_.LastWriteTimeString
@@ -84,7 +85,7 @@ function Interactive {
                 #>
                 [CmdletBinding()]
                 param (
-                    [Parameter(HelpMessage = "Align text left or right?")][switch]$AlignLeft
+                    [Parameter(HelpMessage = 'Align text left or right?')][switch]$AlignLeft
                 )
 
                 $NumAsStr = ('{0}' -f $MinCellWidth)
