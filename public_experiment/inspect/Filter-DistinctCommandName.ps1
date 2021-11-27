@@ -42,6 +42,7 @@ function Filter-DistinctCommandName {
         Get-Command $CommandName (_enumerateMyModule)
         | rescmd -PreserveAlias:$PreserveAlias -QualifiedName
         | Sort-Object
+        ' test me'
     }
     end {
     }
