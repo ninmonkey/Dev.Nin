@@ -76,6 +76,7 @@ if (! $experimentToExport) {
     # ...
 
 
+    h1 'modulus determines breaks'
     0..99 | ForEach-Object { $i = 0 } {
         $i++
         $paint = '▆' * 3 -join ''
@@ -96,5 +97,6 @@ if (! $experimentToExport) {
     Write-Warning 'todo: use explicitly set RGB values'
 
     hr
+    h1 'Using Group-Object'
     0..10 | Group-ObjectList -Count 3
 }

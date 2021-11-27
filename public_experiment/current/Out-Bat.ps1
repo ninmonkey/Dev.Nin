@@ -1,6 +1,6 @@
 if ($experimentToExport) {
     # todo: first:
-    
+
     $experimentToExport.function += @(
         'Out-BatHighlight'
         'Invoke-Batman'
@@ -10,6 +10,7 @@ if ($experimentToExport) {
         'Bat🐒'
         'Batman'
     )
+
 }
 # & { # todo: move to use modulemetadata
 $metadata_manpage = @(
@@ -25,7 +26,7 @@ $metadata_manpage = @(
 ) | ForEach-Object { [pscustomobject]$_ }
 # Set-ModuleMetada -key 'command.manpage' -Value $Metadata
 
-
+# first
 
 function Out-BatHighlight {
     <#
@@ -40,7 +41,8 @@ function Out-BatHighlight {
     .outputs
 
     #>
-    
+
+
     [Alias('Out-Bat', 'Bat🐒')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -49,20 +51,20 @@ function Out-BatHighlight {
         # [Parameter(Mandatory)]
         # [string[]]$InputObject,
 
-        # --file-name 
+        # --file-name
         [Alias('FileName')]
         [Parameter()][string]$Title,
-        
+
         # file type
         [Parameter(Position = 0)]
         [string]$Language,
-        
+
         # file type
         [Alias('Color')]
         [Parameter()]
         [ValidateSet('auto', 'never', 'always')]
         [string]$ColorWhen = 'always',
-        
+
         # file type
         # Explicitly set the width of the terminal instead of determining it automatically. If
         # prefixed with '+' or '-', the value will be treated as an offset to the actual terminal
@@ -83,7 +85,7 @@ function Out-BatHighlight {
         # file type
         [Parameter()]
         [ValidateSet('auto', 'never', 'character')]
-        [string]$Wrap = 'auto' 
+        [string]$Wrap = 'auto'
         # The '--terminal-width' option, can be used in addition to control the output width.
 
         <#
@@ -109,7 +111,7 @@ function Out-BatHighlight {
     # process {}
 
     # | bat -P -l json --color=always
-    
+
     end {
         [object[]]$BatArgs = @(
             if ($Language) {
@@ -133,7 +135,7 @@ function Out-BatHighlight {
             }
         )
 
-        $BatArgs | Join-String -sep ' ' -op 'BatArgs: ' | wi 
+        $BatArgs | Join-String -sep ' ' -op 'BatArgs: ' | wi
 
         $Input
         | bat @BatArgs
@@ -146,8 +148,8 @@ function Invoke-Batman {
         .synopsis
             (almost) sugar to invoke Out-Bat for a man page
         .notes
-            .
-        .example   
+            . todo: refactor batman, this func is bat, batman will invoke this func
+        .example
             PS> batman 'ls'
         #>
     # [outputtype( [string[]] )]
@@ -168,18 +170,18 @@ function Invoke-Batman {
         # use web pages if possible
         [Parameter()]
         [switch]$Online
-    
+
         # # extra options
         # [Parameter()][hashtable]$Options
     )
     begin {
-        # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
+        # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
         # [hashtable]$Config = @{
         #     AlignKeyValuePairs = $true
         #     Title              = 'Default'
         #     DisplayTypeName    = $true
         # }
-        # $Config = Join-Hashtable $Config ($Options ?? @{})        
+        # $Config = Join-Hashtable $Config ($Options ?? @{})
     }
     # process {}
     end {
@@ -188,11 +190,11 @@ function Invoke-Batman {
             throw 'nyi; get module url metadata'
         }
 
-        
+
         $binCmd = Get-NativeCommand $CommandName -OneOrNone -ea Continue
         if (! $binCmd ) {
             Write-Error "Could not find '$CommandName' or it was not unique"
-        }        
+        }
         # & $binCmd @('--help')
         # | Out-BatHighlight -l man -Paging auto -infa Continue -Title $CommandName
         # | bat -l man
@@ -218,13 +220,13 @@ function __collectManpageUrl {
     process {
         if ( $InputObject.CommandType -eq 'Application' ) {
             Write-Warning "skipping queries on applications: '$InputObject'"
-            return 
-        } 
-        
+            return
+        }
+
         # | Get-Help
         $helpobj = Get-Command $InputObject | Get-Help
         $helpobj.relatedLinks | ForEach-Object NavigationLink | ForEach-Object pstypenames
-        $helpobj.relatedLinks        
+        $helpobj.relatedLinks
 
     }
 }

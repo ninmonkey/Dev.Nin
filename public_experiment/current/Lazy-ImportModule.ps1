@@ -17,8 +17,8 @@ if ($experimentToExport) {
 
 [hashtable]$__LazyImport ??= @{}
 
-<# original, working sketch: 
-if( (gi $watchFile).LastWriteTime -gt $__lastImport ) { 
+<# original, working sketch:
+if( (gi $watchFile).LastWriteTime -gt $__lastImport ) {
   'stale' | write-color 'orange'
   Import-Module Dev.Nin -Force ;
   $__lastImport = get-date
@@ -48,7 +48,7 @@ function _lazyImportIsStale {
         }
     #>
     [Alias(
-        'Test-IsLazyImportStale'                
+        'Test-IsLazyImportStale'
     )]
     [cmdletbinding()]
     param(
@@ -65,16 +65,16 @@ function _lazyImportIsStale {
         function __detectLazy_importState {
             # import to preserve state after reloading itself
             param()
-            
+
 
             <#
-                $now | label now  
+                $now | label now
                 $out = $now.ToString('o')
                 $out | label out
 
                 $round = [datetime]::ParseExact($out, 'o', $null)
-            #>            
-            
+            #>
+
             Get-Content -Path 'temp:\lazy_state.json'
             | ConvertFrom-Json -AsHashtable
             | ForEach-Object getenumerator | ForEach-Object {
@@ -86,26 +86,26 @@ function _lazyImportIsStale {
                 # $state[ $KeyName ] = $dateFromStr
             }
 
-            $state | format-dict | Out-String | wi 
+            $state | format-dict | Out-String | wi
 
             # foreach ($cur in $state.GetEnumerator()) {
             #     $dateStr = $cur.Value.tostring('o')
             #     $tempHash[ $cur.Key ] = $dateStr
 
-            # }   
-            # $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'             
+            # }
+            # $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'
         }
 
         Write-Warning 'loses state on import, todo: save to json'
         $state = $script:__staleLazyImport
-        $target = Get-Item -ea stop $WatchFile        
+        $target = Get-Item -ea stop $WatchFile
         [string]$KeyName = [string]$target.FullName
         if ($state.keys.count -eq 0) {
             __detectLazy_importState
         }
         $state[$KeyName] ??= 0
     }
-    process {    
+    process {
         function __detectLazy_exportState {
             # export to preserve state after reloading itself
             param()
@@ -113,40 +113,40 @@ function _lazyImportIsStale {
             foreach ($cur in $state.GetEnumerator()) {
                 $dateStr = $cur.Value.tostring('o')
                 $tempHash[ $cur.Key ] = $dateStr
-            }   
-            $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'             
+            }
+            $tempHash | ConvertTo-Json | Set-Content -Path 'temp:\lazy_state.json'
         }
-        
 
-        function __detectByState { 
+
+        function __detectByState {
             # works if it's watching a different module
 
             $lastLoadTime = $state[$KeyName]
-            if ($target.LastWriteTime -gt $lastLoadTime) {                    
+            if ($target.LastWriteTime -gt $lastLoadTime) {
                 $deltaTs = ($target.LastWriteTime - $lastLoadTime)
                 @(
                     'stale: ' | Write-Color orange
-                    $target.FullName | Join-String -SingleQuote  
-                    ' ' 
+                    $target.FullName | Join-String -SingleQuote
+                    ' '
                     @(
-                    ($deltaTs).TotalSeconds.tostring('n0') 
+                    ($deltaTs).TotalSeconds.tostring('n0')
                         ' secs ago'
                     ) | Write-Color gray80
                 ) | Join-String
-                | wi             
-                $state[$KeyName] = Get-Date 
-                
+                | wi
+                $state[$KeyName] = Get-Date
+
                 __detectLazy_exportState
                 $true; return
             }
         }
 
-    
+
         if (__detectByState) {
-            'true' | wi 
+            'true' | wi
             $true; return;
         } else {
-            'false' | wi 
+            'false' | wi
             $false; return;
         }
 
@@ -154,8 +154,8 @@ function _lazyImportIsStale {
         # #     $state[ $KeyName ] = 0
         # # }
         # $lastImportTime
-        # if ( (Get-Item $watchFile).LastWriteTime -gt $__lastImport ) { 
-        #     'stale' | write-color 'orange' | wi 
+        # if ( (Get-Item $watchFile).LastWriteTime -gt $__lastImport ) {
+        #     'stale' | write-color 'orange' | wi
         #     $__lastImport = Get-Date
 
         #     $true; return;
@@ -276,7 +276,7 @@ function Lazy-ImportModule {
         | str Prefix 'ModuleNames =' | Write-Debug
 
         # $FileToWatch
-        # | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+        # | Get-Item | ConvertTo-RelativePath -BasePath $PSScriptRoot
         # | Str Csv -Sort | str Prefix 'FileToWatch =' | Write-Debug
 
         [bool]$ShouldLoad = $false
@@ -284,7 +284,7 @@ function Lazy-ImportModule {
             Names      = $moduleList | Str Csv -Sort
             Watch      = $FileToWatch | Str Csv -Sort
             WatchNames = $FileToWatch
-            | Get-Item | Format-RelativePath -BasePath $PSScriptRoot
+            | Get-Item | ConvertTo-RelativePath -BasePath $PSScriptRoot
             | Str Csv -Sort
 
             ShouldLoad = $ShouldLoad
@@ -351,7 +351,7 @@ function Lazy-ImportModule {
     }
 }
 
-if ($false -and $true -and !$experimentToExport) {
+if ($false -and (! $experimentToExport)) {
     # $PSCommandPath | Get-Item
     # $lazyImportModuleSplat = @{
     # Debug             = $true
