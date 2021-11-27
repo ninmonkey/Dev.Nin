@@ -17,14 +17,14 @@ $ErrorActionPreference = 'stop'
 
 # try {
 # Don't dot tests, don't call self.
-$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
 | Where-Object { $_.Name -ne '__init__.ps1' }
 | Where-Object {
     # are these safe? or will it alter where-object?
     # Write-Debug "removing test: '$($_.Name)'"
     $_.Name -notmatch '\.tests\.ps1$' -and
     $_.Name -notmatch '\.disabled\.ps1$' -and
-    $_.Name -match '\.ps1$'    
+    $_.Name -match '\.ps1$'
 }
 $filteredFiles
 | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
@@ -41,7 +41,7 @@ $sortedFiles
     $curFile | Join-String -op 'CurFile: ' FullName
     | Write-Debug
     . $curFile
-  
+
 }
 
 
@@ -68,7 +68,7 @@ $PSRL_experimentToExport.update_typeDataScriptBlock | ForEach-Object {
     } catch {
         Write-Error -ea continue -Message 'LoadingTypeData Scriptblock failed' -Category InvalidResult
     }
-} 
+}
 
 $PSRL_experimentToExport.PSReadLineKeyHandler | ForEach-Object {
     throw 'this never getrs invoked'

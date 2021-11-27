@@ -1,10 +1,3 @@
-# rename self to __init__.ps1 for my brain
-# re-use logic from below: "../__init__.ps1"
-
-# rename self to __init__.ps1 for my brain?
-
-# eaiser to manage and filter, especially a dynamic set, in one place
-# Warning: this isn't loaading
 [hashtable]$script:experimentToExport ??= @{
     'function'                   = @()
     'alias'                      = @()
@@ -20,7 +13,7 @@ $ErrorActionPreference = 'stop'
 
 try {
     # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot)
+    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
     | Where-Object { $_.Name -ne '__init__.ps1' }
     | Where-Object {
         # are these safe? or will it alter where-object?
@@ -86,7 +79,6 @@ $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
     }
 }
 
-$experimentToExport.meta | Write-Information
 
 # }
 #
