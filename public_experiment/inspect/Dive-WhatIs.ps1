@@ -3,10 +3,13 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Dive-WhatIsDump'
+
     )
     $experimentToExport.alias += @(
         'dw'
+
         'Dive->WhatIsDump'
+
     )
 }
 
@@ -17,8 +20,23 @@ function Dive-WhatIsDump {
     .description
         .
 
+    some in:
+        _Write-ErrorSummaryPrompt
+    many error processing ones in:
+        C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\format\_formatErrorSummary.ps1
+    many in:
+        C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\current\Pipe-Error.ps1
+    many error proc in:
+        C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\cmd-code\Invoke-VSCodeViewError.ps1
+    .notes
+    .link
+        Dev.Nin\__inspectErrorType
+
     #>
-    [Alias('dw', 'Dive->WhatIsDump')]
+    [Alias(
+        'dw',
+        'Dive->WhatIsDump'
+    )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         #
@@ -36,6 +54,9 @@ function Dive-WhatIsDump {
             $Str.NullStr; return;
         }
         $target = $InputObject
+
+
+
         $t = $error[0].InvocationInfo
         $out_prop1 | iter->prop | ForEach-Object name
         $out_prop2 = $t | Get-Member -MemberType Properties | ForEach-Object Name
@@ -67,4 +88,9 @@ function Dive-WhatIsDump {
 
 if (! $experimentToExport) {
     # ...
+
+    [System.Exception] | Show-type
+    [System.Exception] | Show-type -OutputFormat Csv
+
+    [System.Management.Automation.ErrorRecord] | show-type
 }

@@ -47,7 +47,8 @@ function Invoke-PropertyChain {
         [switch]$AsIEX
     )
 
-    begin {}
+    begin {
+    }
     process {
         $meta = @{
             Object    = $InputObject
@@ -62,7 +63,8 @@ function Invoke-PropertyChain {
                 return
             }
 
-            default {}
+            default {
+            }
         }
         # $meta | format-dict | wi
         $meta | Format-Table | Out-String | wi
@@ -74,11 +76,14 @@ function Invoke-PropertyChain {
         $Steps | ForEach-Object {
             $curStep = $_
             Write-Debug "Step: '$curStep'"
+            $curTarget = $curTarget.$CurStep
 
         }
+        $curTarget
 
     }
-    end {}
+    end {
+    }
 }
 
 if (! $experimentToExport) {
