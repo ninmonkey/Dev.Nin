@@ -234,6 +234,7 @@ function Join-StringStyle {
         [ArgumentCompletions(
             'Csv', 'NL', 'Prefix', 'Suffix', 'HR',
             'QuotedList',
+            'Bracket',
             'UL', 'Checklist',
             'Table'
         )] # todo: map to completions generator
@@ -385,6 +386,10 @@ function Join-StringStyle {
                     $JoinStyle = 'Suffix'
                     break
                 }
+                'Bracket' {
+                    $JoinStyle = 'Bracket'
+                    break
+                }
                 'QuotedList' {
                     $JoinStyle = 'QuotedList'
                     break
@@ -480,6 +485,12 @@ function Join-StringStyle {
                 $splat_JoinStyle.Separator = ' | '
                 $splat_JoinStyle.OutputPrefix = '| '
                 $splat_JoinStyle.OutputSuffix = ' |'
+            }
+            'Bracket' {
+                $splat_JoinStyle.Separator = ''
+                $splat_JoinStyle.OutputPrefix = '['
+                $splat_JoinStyle.OutputSuffix = ']'
+
             }
             'UL' {
                 $splat_JoinStyle.Separator = "`n- "

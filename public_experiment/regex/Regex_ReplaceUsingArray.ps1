@@ -1,4 +1,15 @@
-function Format-RegexList {
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
+
+function RegexReplaceArray {
     <#
     .synopsis
         transforms using a list of (key -> value) pairs
@@ -24,12 +35,15 @@ function Format-RegexList {
 
     )
 
-    begin {}
+    begin {
+    }
     process {
+        Write-Error -Category NotImplemented 'wip: nyi'
 
         # todo: always wrap CmdletExceptionWrapper: From Sci
     }
-    end {}
+    end {
+    }
 }
 
 if ($false) {
@@ -151,4 +165,9 @@ if ($false) {
     }
 
 
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
