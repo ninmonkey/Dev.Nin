@@ -248,8 +248,14 @@ function Invoke-VSCodeVenv {
         )]
         [string]$TargetPath = '.',
 
+        # the --user-data-dir path
         [Parameter()]
-        [string]$DataDir = 'J:\vscode_datadir\games',
+        [string]$DataDir = 'J:\vscode_datadir\code-dev\', #  'J:\vscode_datadir\games',
+
+        # the --extensions-dir  path
+        [Parameter()]
+        [string]$AddonDir = 'J:\vscode_datadir\code-dev-addons', # or ''
+
 
         # which mode, reuse/new
         [alias('Mode')]
@@ -325,8 +331,9 @@ function Invoke-VSCodeVenv {
         $CodeBin = @(
             # todo: add user's saved value as the first part
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
-            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
+            Get-Command 'code.cmd' -CommandType Application @splatSilent
             Get-Command code-insiders.cmd -CommandType Application @splatSilent
+            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
 
             # paths differ because ? local user install?
             Get-Item @splatSilent 'C:\Program Files\Microsoft VS Code\bin\code.cmd'
@@ -339,13 +346,24 @@ function Invoke-VSCodeVenv {
         }
         try {
             $DataDir = Get-Item -ea stop $DataDir
-        } catch {
+        }
+        catch {
             Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
             Write-Warning 'falling back to implicit default path'
         }
         try {
+            $AddonDir = Get-Item -ea stop $AddonDir
+        }
+        catch {
+            Write-Error -ea continue "Invalid $AddonDir = '$AddonDir'. $_"
+            Write-Warning 'falling back to implicit default path'
+        }
+
+
+        try {
             $target = Get-Item -ea ignore $TargetPath
-        } catch {
+        }
+        catch {
             Write-Error -ea stop 'Invalid Path'
             # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
@@ -357,7 +375,8 @@ function Invoke-VSCodeVenv {
                 | Write-Color 'blue'
                 hr
 
-            } else {
+            }
+            else {
                 hr
                 'Open 📄 File?' | Write-Color 'blue'
                 hr
@@ -390,7 +409,7 @@ function Invoke-VSCodeVenv {
                 PSTypeName   = 'nin.CodeVenv.Config'
                 CodeBinPath  = $CodeBin
                 UserDataDir  = $DataDir ?? $Null
-                ExtensionDir = 'nyi'
+                ExtensionDir = $AddonDir ?? $Null
             }
             return
         }
@@ -400,7 +419,13 @@ function Invoke-VSCodeVenv {
         if ($DataDir) {
             $codeArgs += @(
                 '--user-data-dir'
-                $DataDir | Get-Item -ea stop
+                $DataDir | Get-Item -ea stop #| Join-String -DoubleQuote
+            )
+        }
+        if ($AddonDir) {
+            $codeArgs += @(
+                '--extensions-dir'
+                $AddonDir | Get-Item -ea stop # | Join-String -DoubleQuote
             )
         }
 
@@ -434,7 +459,8 @@ function Invoke-VSCodeVenv {
                 }
                 Get-Item $Target | Join-String -DoubleQuote
             )
-        } else {
+        }
+        else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
                 'LineNumber? Y' | Write-Color green | wi
@@ -442,7 +468,8 @@ function Invoke-VSCodeVenv {
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
-            } else {
+            }
+            else {
                 'LineNumber? Y' | Write-Color green | wi
                 $codeArgs += @(
                     '--goto'
@@ -463,7 +490,7 @@ function Invoke-VSCodeVenv {
         if ($True) {
             # any non-finished invokes
             $strTarget = $target | Join-String -sep ' ' -DoubleQuote
-            $StrOperation = $CodeBin, $DataDIr -join ', '
+            $StrOperation = $CodeBin, $DataDIr, $AddonDir -join ', '
 
             if (! $Env:NoColor) {
 
@@ -505,13 +532,15 @@ function Invoke-VSCodeVenv {
 
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
-        } else {
+        }
+        else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }
         $metaInfo += @{
             BinCode       = $CodeBin
             DataDir       = $DataDir
+            AddonDir      = $AddonDir
             Target        = $Target
             codeArgs      = $CodeArgs
             ResumeSession = $ResumeSession

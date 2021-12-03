@@ -5,10 +5,12 @@ $experimentToExport.function += @(
 )
 $experimentToExport.alias += @(
     'Get-IndentedFunctionInfo'
+    'lsFunc'
     #     'Get-FuncInfo', 'FindFunc'
 )
 
 New-Alias -ea ignore -Name 'Get-IndentedFunctionInfo' -Value 'Indented.ScriptAnalyzerRules\Get-FunctionInfo'
+New-Alias -ea ignore -Name 'lsFunc' -Value 'Indented.ScriptAnalyzerRules\Get-FunctionInfo'
 
 # function Get-IndentedFunctionInfo {
 function Get-FunctionInfo4 {
