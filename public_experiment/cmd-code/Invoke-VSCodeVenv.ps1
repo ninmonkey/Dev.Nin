@@ -250,11 +250,16 @@ function Invoke-VSCodeVenv {
 
         # the --user-data-dir path
         [Parameter()]
-        [string]$DataDir = 'J:\vscode_datadir\code-dev\', #  'J:\vscode_datadir\games',
+        [ArgumentCompletions(
+            'J:\vscode_datadir\code-dev\',
+            'J:\vscode_datadir\games'
+        )][string]$DataDir, # = $null,
 
         # the --extensions-dir  path
         [Parameter()]
-        [string]$AddonDir = 'J:\vscode_datadir\code-dev-addons', # or ''
+        [ArgumentCompletions(
+            'J:\vscode_datadir\code-dev-addons'
+        )][string]$AddonDir, # = $null,
 
 
         # which mode, reuse/new
