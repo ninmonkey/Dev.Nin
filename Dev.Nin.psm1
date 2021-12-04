@@ -128,7 +128,6 @@ $public = @(
     # new
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
-    'ConvertFrom-LiteralPath'
 
 
     # ...
@@ -195,7 +194,6 @@ $functionsToExport = @(
     ##  newer
     'Resolve-FullTypeName'
     'ConvertFrom-GistList'
-    'ConvertFrom-LiteralPath'
 
 
     ## temp imports, to be removed

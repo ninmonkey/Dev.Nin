@@ -48,7 +48,8 @@ function ShortenStringJoin {
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
-        } else {
+        }
+        else {
             $maxLength
         }
         $Str = @{
@@ -94,7 +95,7 @@ function ShortenString {
             will normally pipe empty or empty-whitespace
         #>
         # Input text
-        [Alias('Text', 'String', 'Line')]
+        [Alias('Text')]
         [Parameter(
             Mandatory, ParameterSetName = 'StringFromPipe',
             ValueFromPipeline)]
@@ -116,12 +117,16 @@ function ShortenString {
             ParameterSetName = 'StringFromParam',
             Position = 1)]
         [uint] # post, why exactly does the enum fail on parapset2 but not paramset 1?
-        $MaxLength # = 120 80
+        $MaxLength, # = 120 80,
+
+        # truncate the end or start of the string?
+        [Parameter()][switch]$FromEnd
     )
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
-        } else {
+        }
+        else {
             $maxLength
         }
     }
@@ -135,8 +140,14 @@ function ShortenString {
         if ( $actualLen -le $MaxLength ) {
             $InputText
             return
-        } else {
-            $InputText.Substring(0, ( $MaxLength ) )
+        }
+        else {
+            if ($FromEnd) {
+                $InputText.Substring( $inputText.Length - $MaxLength)
+            }
+            else {
+                $InputText.Substring(0, ( $MaxLength ) )
+            }
         }
     }
 }

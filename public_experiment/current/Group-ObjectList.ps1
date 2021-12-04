@@ -2,16 +2,16 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Group-ObjectCount'
+        'Group-ObjectByCount'
     )
     $experimentToExport.alias += @(
         'Iter->ByCount',
-        'GroupBySize'
+        'GroupCount'
     )
 }
 
 
-function Group-ObjectCount {
+function Group-ObjectByCount {
     <#
     .synopsis
         collects items and emits them in groups **without full listing**
@@ -40,7 +40,7 @@ function Group-ObjectCount {
     #>
     [Alias(
         'Iter->ByCount',
-        'GroupBySize'
+        'GroupCount'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -98,18 +98,18 @@ if (! $experimentToExport) {
 
     hr
     h1 'Using Group-Object'
-    0..10 | Group-ObjectCount -Count 3
+    0..10 | Group-ObjectByCount -Count 3
 
     h1 'to->json'
-    0..10 | Group-ObjectCount -Count 3 | ConvertTo-Json
+    0..10 | Group-ObjectByCount -Count 3 | ConvertTo-Json
 
     h1 'Join-String'
-    0..10 | Group-ObjectCount -Count 5 | ForEach-Object {
+    0..10 | Group-ObjectByCount -Count 5 | ForEach-Object {
         $_ | Join-String -sep ', ' -op 'Group: '
     }
 
     h1 'inner to->json'
-    0..10 | Group-ObjectCount -Count 5 | ForEach-Object {
+    0..10 | Group-ObjectByCount -Count 5 | ForEach-Object {
         $_ | ConvertTo-Json
     }
 }

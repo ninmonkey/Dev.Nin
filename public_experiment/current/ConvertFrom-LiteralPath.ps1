@@ -1,3 +1,15 @@
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'ConvertFrom-LiteralPath'
+        # below?
+    )
+    $experimentToExport.alias += @(
+        'To->VariablePath' # ConvertFrom-LiteralPath
+    )
+}
+
 function ConvertFrom-LiteralPath {
     <#
     .synopsis
@@ -17,7 +29,7 @@ function ConvertFrom-LiteralPath {
     .notes
         .
     #>
-    [Alias('PathToVars')]
+    [Alias('To->VariablePath')]
     [cmdletbinding()]
     param (
         # input LiteralPath to convert
@@ -88,5 +100,11 @@ function ConvertFrom-LiteralPath {
         Write-Error 'No matches'
         return
     }
-    end {}
+    end {
+    }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

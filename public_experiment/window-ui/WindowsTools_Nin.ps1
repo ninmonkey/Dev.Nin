@@ -3,14 +3,28 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Window_BringToFront'
+        'Window_ExportOpenFolders'
     )
     $experimentToExport.alias += @(
         'Window->ToFront'
+        'Window->ExportFolders'
         # 'A'
     )
 }
 
+function Window_ExportOpenFolders {
+    <#
+    .SYNOPSIS
+        print all open filepaths
+    #>
+    [Alias('Window->ExportFolders')]
+    [cmdletbinding()]
+    param(
 
+    )
+
+    Window->Get | ForEach-Object Title | Where-Object { Test-Path $_ } | Sort -Unique
+}
 
 function Window_BringToFront {
     <#

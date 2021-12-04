@@ -35,13 +35,13 @@ Describe Split-String {
                 "a`n`n`nb`nc`n`ne" | SplitStr -as Newline
                 | Should -Be 'a', '', '', 'b', 'c', '', 'e' -Because 'Manual case'
             }
-                        
+
             It 'Csv' {
                 'a,b,,c' -split ',\s*' | SplitStr -as Csv
                 | Should -Be @('a', 'b', '', 'c')
             }
-            
-            
+
+
             It 'Whitespace' {
                 # /s+ is equiv to:'[\r\n\t\f\v ]+'
                 # /w+ is equiv to:'[a-zA-Z0-9_]+'
@@ -86,7 +86,7 @@ Describe Split-String {
             'a,b,c' | Split-String -Regex ',' | Should -Be @('a', 'b', 'c')
         }
         It 'Param with regex' {
-            
+
             Split-String -InputObject 'a,b,c' -Regex ','
             | Should -Be @('a', 'b', 'c')
         }
@@ -99,11 +99,11 @@ Describe Split-String {
     }
 
     It 'Runs without error' {
-        { 'a1b' | Split-String '\d+' } | Should -Not -Throw        
+        { 'a1b' | Split-String -Regex '\d+' } | Should -Not -Throw
     }
     It 'Direct Compare' {
         $test1 = ('abc-de---39' -split '\-+') | Should -Be ('abc', 'de', 39)
-        $test2 = 'abc-de---39' | Split-String '\-+' | Should -Be ('abc', 'de', 39)
+        $test2 = 'abc-de---39' | Split-String -regex '\-+' | Should -Be ('abc', 'de', 39)
         $test1 | Should -Be $Test2 -Because 'equivalent compare'
     }
     It 'basic Baseline' {

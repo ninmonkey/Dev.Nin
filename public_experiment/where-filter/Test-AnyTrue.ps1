@@ -12,6 +12,8 @@ function Test-AnyTrue {
     <#
     .synopsis
     are any one of the expressions true ?
+    .link
+        functional\Test-Any
     #>
     [Alias('?Any')] # 'Any'
     [CmdletBinding()]
@@ -24,6 +26,8 @@ function Test-AllTrue {
     <#
     .synopsis
     are all expressions true ?
+    .LINK
+        functional\Test-All
     .example
         PS> # Do they evaluate as true?
 
