@@ -7,7 +7,9 @@ if ($experimentToExport) {
         'Invoke-VSCodeVenv'
     )
     $experimentToExport.alias += @(
-        'Code-vEnv'
+        # 'Code', 'CodeI'
+        'Code-vEnv', 'CodeI-vEnv',
+        'Out-CodevEnv', 'Out-CodeIvEnv'
     )
 }
 
@@ -207,7 +209,11 @@ function Invoke-VSCodeVenv {
     # #>
     # [Alias('Code-vEnv', 'Out-CodeVEnv', 'Out-VSCodeEnv')]
     #>
-    [Alias('Code-vEnv', 'Out-CodeVEnv')]
+    [Alias(
+        # 'Code', 'CodeI',
+        'Code-vEnv', 'CodeI-vEnv',
+        'Out-CodevEnv', 'Out-CodeIvEnv'
+    )]
     [cmdletbinding(
         PositionalBinding = $false,
         DefaultParameterSetName = 'OpenItem',
@@ -333,6 +339,7 @@ function Invoke-VSCodeVenv {
         # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
         # first try default, else fallback
         $splatSilent = @{'ErrorAction' = 'SilentlyContinue' }
+            # wait-debugger
         $CodeBin = @(
             # todo: add user's saved value as the first part
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
@@ -442,7 +449,12 @@ function Invoke-VSCodeVenv {
                 $CodeArgs += @('--reuse-window')
             }
             default {
-                $CodeArgs += @('--reuse-window')
+                <#
+                if windowMode -eq 'ResuseWindow', causes '--add' to be added
+
+                #>
+                $CodeArgs += @('--new-window')
+                # $CodeArgs += @('--reuse-window')
             }
         }
         if ($ResumeSession) {
@@ -522,6 +534,7 @@ function Invoke-VSCodeVenv {
             }
 
 
+                h1 'here'
             @(
                 hr 1
                 $strTarget | Join-String -op '$strTarget: '

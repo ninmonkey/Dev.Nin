@@ -1,3 +1,4 @@
+﻿
 [hashtable]$script:experimentToExport ??= @{
     'function'                   = @()
     'alias'                      = @()
@@ -13,16 +14,8 @@ $ErrorActionPreference = 'stop'
 
 try {
     # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
+    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
     | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object % {
-        $curFile = $_
-        $match_tests = '.visual_tests.ps1', '.Interactive.ps1' | ForEach-Object {
-            $pattern = [regex]::escape( $_ )
-            $curFile -match $pattern
-        }
-        -not [bool](Test-Any $match_tests)
-    }
     | Where-Object {
         # are these safe? or will it alter where-object?
         # Write-Debug "removing test: '$($_.Name)'"
@@ -36,8 +29,7 @@ try {
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
 } catch {
-    Write-Warning "warning: $_"
-    Write-Error "Error: $_"
+    Write-Warning "Exception: $_"
     # $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
@@ -53,7 +45,7 @@ $sortedFiles
     try {
         . $curFile
     } catch {
-        Write-Error -Message 'bad' -ErrorRecord $_
+        Write-Error -Message "__init__: error: $_" -Category 'ParserError' #-ErrorRecord $_
         # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
         #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
@@ -88,6 +80,7 @@ $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
         Write-Error -ea continue -Message 'LoadingTypeData Scriptblock failed' -Category InvalidResult
     }
 }
+
 
 
 # }

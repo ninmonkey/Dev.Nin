@@ -33,7 +33,8 @@ try {
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
 } catch {
-    $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
+    Write-Warning "Exception: $_"
+    # $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
 }
 
 $sortedFiles
@@ -81,6 +82,7 @@ $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
     try {
         . $curSB
     } catch {
+        Write-Warning "Exception: $_"
         Write-Error -ea continue -Message 'LoadingTypeData Scriptblock failed' -Category InvalidResult
     }
 }
