@@ -527,12 +527,18 @@ function Invoke-VSCodeVenv {
 
         if ($True) {
             # any non-finished invokes
-            $strTarget = $target | Join-String -sep ' ' -DoubleQuote
-            $StrOperation = $CodeBin, $DataDIr, $AddonDir -join ', '
+            @(
+                $target | Join-String -sep ' ' -DoubleQuote
+                $CodeBin, $DataDIr, $AddonDir -join ', '
+                $strTarget = $target | Join-String -sep ' ' -DoubleQuote
+                # $StrOperation = $CodeBin, $DataDIr, $AddonDir -join ', '
+
+            ) | Write-Debug
 
             if (! $Env:NoColor) {
 
-                $StrTarget = $Target | Join-String -sep "`n" -op "`n" -os "`n"
+                $StrTarget = #$Target | Join-String -sep "`n" -op "`n" -os "`n"
+                $StrTarget = $Target
 
                 # bold version number
                 $boldBinCode = __format_HighlightVenvPath $CodeBin
@@ -545,6 +551,7 @@ function Invoke-VSCodeVenv {
                     $strTarget | ConvertTo-RelativePath -BasePath .
                     "`n"
                 ) | Join-String
+                | Write-Debug
 
                 # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
                 # | Join-String -sep "`n" -op "`n" -os "`n"
@@ -555,7 +562,7 @@ function Invoke-VSCodeVenv {
             }
 
 
-            h1 'here'
+            # h1 'here' write-host
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
                 @(
                     __printCodeArgs
@@ -569,14 +576,14 @@ function Invoke-VSCodeVenv {
             }
         }
 
-        hr
+        # hr
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
         } else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }
-        hr
+        # hr
         $metaInfo += @{
             BinCode       = $CodeBin
             DataDir       = $DataDir
@@ -604,6 +611,10 @@ function Invoke-VSCodeVenv {
             Operation     = $operation
             FinalCodeArgs = $codeArgs
         }
+        if ($PassThru) {
+            #$codeArgs
+            $metaInfo
+        }
 
         # catch {
         #     $PSCmdlet.WriteError( $_ )
@@ -615,7 +626,6 @@ function Invoke-VSCodeVenv {
 
     end {
         Write-Debug 'checklist:
-    - [ ] resume session
     - [ ] open file (append to session)
     - [ ] and from pipeline
     - [ ] --status
@@ -624,6 +634,6 @@ function Invoke-VSCodeVenv {
     - [ ] --inspect-brk-extensions <port>
     - [ ] --status
     - [ ] --verbose'
-        Format-Dict $metaInfo | Write-Information
+        Format-Dict $metaInfo | Write-Debug
     }
 }

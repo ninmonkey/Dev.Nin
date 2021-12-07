@@ -5,19 +5,12 @@
 
 Import-Module 'dev.nin' -Force
 
-Import-Module Dev.Nin -Force
-CodeI-vEnv -WhatIf .\test.log #-ea break
-CodeI-vEnv -WhatIf '.'  #-ea break
-# CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea break
-# CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea inquire
-
-
-& {
 
     hr
 
     $RunTest = @{
-        'GotoError'                = $True
+        'Code-Insider' = $true
+        'GotoError'                = $false
         'New-Sketch'               = $false
         'Format-Dict'              = $false
         'Format-Dict.Verbose'      = $false
@@ -27,6 +20,27 @@ CodeI-vEnv -WhatIf '.'  #-ea break
 
 
 
+    if($RunTest.'Code-Insider') {
+        # & {
+
+    $codeIvEnvSplat = @{
+        WhatIf = $true
+        TargetPath = ls . -file | select -first 1 #'.\test.log'
+    }
+
+    CodeI-vEnv @codeIvEnvSplat #-ea break
+
+    $codeIvEnvSplat = @{
+        WhatIf = $true
+        TargetPath = '.'
+    }
+
+    CodeI-vEnv @codeIvEnvSplat  #-ea break
+    # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea break
+    # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea inquire
+    }
+
+    # }
 
     if ($RunTest.'GotoError') {
         if ($savedErr) {
