@@ -11,6 +11,7 @@ $experimentToExport.alias += @(
 
 function _get-ExtensionsList {
     param(
+        # root directory to use
         [Alias('PSPath')]
         [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
         [String]$Path = '.',
@@ -118,7 +119,7 @@ function Get-FileTypeExtension {
             .lnk
             .log
             .md
-        
+
     .outputs
         string[]
 

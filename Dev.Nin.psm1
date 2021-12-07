@@ -28,6 +28,7 @@ $__Config = @{
 $formatData = @(
 )
 
+. (Get-Item -ea stop (Join-Path $PSScriptRoot 'private/before_everything.ps1' ))
 
 # write-debug ('.' * 120 | Join-string -op '  debug')
 # write-warning ('.' * 120 | Join-string -op '  warn')
