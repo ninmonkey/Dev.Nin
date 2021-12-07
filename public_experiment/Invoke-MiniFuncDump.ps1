@@ -2,7 +2,7 @@ $experimentToExport.function += @(
     'Invoke-MiniFuncDump'
 )
 $experimentToExport.alias += @(
-    'InvokeFuncDump'
+    'InvokeFuncDump', 'idump'
 )
 
 try {
@@ -12,11 +12,52 @@ try {
     $state.HistoryFastPrint = {
         Get-History | Join-String -sep "`n`n$(hr)" -Property CommandLine
     }
+    $state.MiniBitsConverter = {
+        @'
+    $a = '🥰d😀'
+    [BitConverter]::ToString( [Text.UTF8Encoding]::new($false).getBytes($a)).replace('-', ' ')
+'@ | bat -l ps1
+
+        $a = '🥰d😀'
+        [BitConverter]::ToString( [Text.UTF8Encoding]::new($false).getBytes($a)).replace('-', ' ')
+
+    }
+    $state.Pager_GetEnvVars = {
+        Get-ChildItem env: | Where-Object Key -Match 'less|pager|bat' | Format-Table -AutoSize
+        hr
+        $regex = 'less|pager|bat|nin|dotfile|path|wsl|rg|ripgrep|gh|git'
+        Get-ChildItem env: | Where-Object Key -Match $regex
+        | Sort-Object key
+        | Format-Table -AutoSize | rg ($regex + '|$')
+        @'
+# Env-Vars are all caps because some apps check for env vars case-sensitive
+$Env:LESS ??= '-R'
+$ENV:PAGER ??= 'bat'
+$Env:PAGER ??= 'less -R' # check My_Github/CommandlineUtils for- better less args
+$Env:PAGER ??= 'less' # todo: autodetect 'bat' or 'less', fallback  on 'git less'
+
+# check the comments in the source:
+# Get-Item function:\help | ForEach-Object ScriptBlock | code.cmd -
+'@ | bat -l ps1 | Write-Information
+    }
     $state.ListMyCommands = {
         '*filter->*', '*from->*', '*to->*' | ForEach-Object {
             Get-Command -m (_enumerateMyModule) $_
             hr
         }
+        h1 'part 2 objects'
+        Get-Command -m (_enumerateMyModule) *
+        | Where-Object Name -Match (ReLit '->') # .Verb isn't returning all of the verbs
+        | ForEach-Object {
+            $verb, $noun = $_ -split (relit '->')
+            [pscustomobject]@{
+                PSTypeName = 'nin.minidump->customVerbInfo'
+                Verb       = $verb
+                Noun       = $noun
+                Name       = $_
+            }
+        } | Tee-Object -var 'last'
+
     }
     $state.Alarm_asBase64 = {
         # [1] save: [2021-12-03] -> invoke alarm subprocess
@@ -46,8 +87,17 @@ $When = (Get-Date).ToString('u')
             # "alarm -RelativeTimeString 1s -Message 'bump'"
             $finalCmd
         )
+    }
+    $state.ExportFolders = {
+        $stream = @(
+            Window->ExportFolders
+            Get-Date | str prefix 'date: '
+        )
+        | str nl 1
+        # | Add-Content "$Env:UserProfile\SkyDrive\Documents\2021\profile_dump\recent-folders.log"
 
-
+        $stream | Add-Content "${Env:TempNin}\recent-folders.log"
+        $stream | str hr -op "wrote:`n"
     }
 
     $state.SortUnique = {
@@ -72,16 +122,27 @@ function Invoke-MiniFuncDump {
           [string | None]
 
     #>
-    [Alias('InvokeFuncDump')]
-    [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'InvokeCommand')]
+    [Alias(
+        'InvokeFuncDump', 'iDump'
+    )]
+    [CmdletBinding(
+        DefaultParameterSetName = 'InvokeCommand')]
     param(
         # todo: auto-generate completions using hashtable.
         [Alias('Name')]
-        [Parameter(Position = 0,
+        [Parameter(
+            Mandatory, Position = 0,
             ParameterSetName = 'InvokeCommand'
         )]
-        [ArgumentCompletions('HistoryFastPrint', 'ListMyCommands', 'Alarm_asBase64')]
+        [ArgumentCompletions(
+            'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
+            'ListMyCommands', 'Alarm_asBase64', 'ExportFolders'
+        )]
         [string]$ScriptName,
+
+        # don't run, dump the SB instead
+        [parameter()]
+        [switch]$GetScriptBlock,
 
         # list commands
         [parameter(ParameterSetName = 'ListOnly')]
@@ -100,6 +161,10 @@ function Invoke-MiniFuncDump {
 
         if (! $State.ContainsKey($ScriptName)) {
             Write-Error -ea stop "No matching keys: '$_'"
+            return
+        }
+        if ($GetScriptBlock) {
+            $state[$ScriptName]
             return
         }
 
