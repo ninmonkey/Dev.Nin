@@ -397,16 +397,24 @@ function Invoke-VSCodeVenv {
         }
 
         @(
-            if (Test-IsDirectory $target) {
+            if (Test-IsDirectory $TargetPath) {
                 hr
+
                 'Open 📁 a directory?'
+                | Join-String -DoubleQuote
                 | Write-Color 'blue'
+
                 hr
 
             } else {
-                hr
-                'Open 📄 File?' | Write-Color 'blue'
-                hr
+                @(
+                    hr
+
+                    'Open 📄 File?' | Write-Color 'blue'
+                    | Join-String -DoubleQuote
+
+                    hr
+                )
             }
         ) | Wi
 
@@ -476,14 +484,14 @@ function Invoke-VSCodeVenv {
 
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
-                __printCodeArgs
+                __printCodeArgs | wi
                 Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
                 return
             }
         }
         ## now more
 
-        if (Test-IsDirectory $target) {
+        if (Test-IsDirectory -ea ignore $targetPath) {
             $CodeArgs += @(
                 # '--add' modifier will *always* use an existing window
                 if ($WindowMode -eq 'ReuseWindow') {
@@ -548,25 +556,27 @@ function Invoke-VSCodeVenv {
 
 
             h1 'here'
-            @(
-                hr 1
-                $strTarget | Join-String -op '$strTarget: '
-                $StrOperation | Join-String -op '$strOperation: '
-                $codeArgs | Join-String -sep ' ' -op '***args***'
-                hr 1
-            ) | wi
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
-                __printCodeArgs
+                @(
+                    __printCodeArgs
+                    hr
+                    $strTarget | Join-String -op '$strTarget: '
+                    $StrOperation | Join-String -op '$strOperation: '
+                    $codeArgs | Join-String -sep ' ' -op '***args***'
+                )
+                | Write-Debug
                 Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
             }
         }
 
+        hr
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
         } else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }
+        hr
         $metaInfo += @{
             BinCode       = $CodeBin
             DataDir       = $DataDir

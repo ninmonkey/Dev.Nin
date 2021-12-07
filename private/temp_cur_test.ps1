@@ -5,6 +5,12 @@
 
 Import-Module 'dev.nin' -Force
 
+Import-Module Dev.Nin -Force
+CodeI-vEnv -WhatIf .\test.log #-ea break
+CodeI-vEnv -WhatIf '.'  #-ea break
+# CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea break
+# CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea inquire
+
 
 & {
 
@@ -18,6 +24,8 @@ Import-Module 'dev.nin' -Force
         'Format-Dict.CustomConfig' = $false # 📌 best
         'RegexTestFilepath'        = $false
     }
+
+
 
 
     if ($RunTest.'GotoError') {
