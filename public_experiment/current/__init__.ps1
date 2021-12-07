@@ -12,13 +12,20 @@ $ErrorActionPreference = 'stop'
 # & {
 
 try {
+    $ignoreNamesLiteral = @(
+        '.visual_tests.ps1', '.Interactive.ps1',
+        '__init__.ps1'
+    )
+    | ForEach-Object {
+        [regex]::escape($_)
+    }
     # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
+    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
     | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object % {
+    | Where-Object {
         $curFile = $_
-        $match_tests = '.visual_tests.ps1', '.Interactive.ps1' | ForEach-Object {
-            $pattern = [regex]::escape( $_ )
+        $match_tests = $ignoreNamesLiteral | ForEach-Object {
+            $pattern = $_
             $curFile -match $pattern
         }
         -not [bool](Test-Any $match_tests)
