@@ -4,9 +4,9 @@ BeforeAll {
 
 Describe 'iProp' {
     It 'Returns anything' {
-        $ErrorActionPreference = 'break'
+        $ErrorActionPreference = 'stop'
         Get-Date
         | iprop | len
-        | Should -Not -Be 0 -ea Break        
+        | Should -Not -Be 0 -ea Break
     }
 }

@@ -15,13 +15,38 @@ function Dev-ProcessFormatErrorRecord {
     #>
     [Alias('er')]
     param( $Slice)
-    $target = $global:error
-    if ($Slice -ge $target.length) {
-        return
+    begin {
+
+        function _collect-FormatErrorStacktrace {
+            $Error.GetEnumerator() | ForEach-Object { $errIndex = 0 } {
+                $curError = $_
+                "`n`n==== error[$errIndex]`n"
+                "`n== Exception`n"
+                $curError | e | ForEach-Object Tostring
+                "`n`n--`n"
+                "`n== ErrorRecord`n"
+                $curError | e -ErrorRecord | ForEach-Object Tostring
+                "`n`n--`n"
+                "`n== StackTrace`n"
+    ($_.StackTrace)?.ToString() ?? "[`u{2400}]"
+            }
+        }
+
+        # _collect-FormatErrorStacktrace
+
     }
-    $target[$Slice]
+    process {
+        $target = $global:error
+        if ($Slice -ge $target.length) {
+            return
+        }
+        $target[$Slice]
+        #$error[2]  }}| e -ErrorRecord)
+    }
+    end {
+    }
 }
-#$error[2]  }}| e -ErrorRecord)
+
 
 if (! $experimentToExport) {
     # ...

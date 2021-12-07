@@ -20,8 +20,8 @@ Describe 'New-VsCodeFilepath' {
             'bar.t',
             'foo:3',
             '3:fo.ps:3:1'
-        ) | Sort -Unique | %{
-            @{ SamplePath = $_ ; Expected = $True}
+        ) | Sort-Object -Unique | ForEach-Object {
+            @{ SamplePath = $_ ; Expected = $True }
         }
         $Samples.Invalid = @(
             'c:\foo  \foobar.ps1:a:3:',
@@ -31,31 +31,32 @@ Describe 'New-VsCodeFilepath' {
             'bar:4: 6',
             'bar:4:6:',
             ':2:3:'
-        )| Sort -Unique | %{
-            @{ SamplePath = $_ ; Expected = $False}
+        ) | Sort-Object -Unique | ForEach-Object {
+            @{ SamplePath = $_ ; Expected = $False }
         }
 
+    }
+}
+# 10 / 0
 
-        # 10 / 0
-
-        <#
+<#
         Possible input types;
 
 
             gi .\Invoke-BuildGenerateAll.ps1 | % gettype | Fullname
             [System.IO.FileInfo]
-        #>
-    }
-    It '"<SamplePath>" Returns "<expected>"' -ForEach @(
-        $samples.Valid
-    ) {
-            # #     $Samples.valid.'SamplePath' | ForEach-Object {
-            # # $_ | Write-Color pink
-            # $_ -match $re | Should -Be $True
+#         #>
+#     }
+#     It '"<SamplePath>" Returns "<expected>"' -ForEach @(
+#         $samples.Valid
+#     ) {
+#             # #     $Samples.valid.'SamplePath' | ForEach-Object {
+#             # # $_ | Write-Color pink
+#             # $_ -match $re | Should -Be $True
 
-}
-        # New-VSCodeFilepath -SamplePath $SamplePath | Should -Be $Expected
-    }
+# }
+#         # New-VSCodeFilepath -SamplePath $SamplePath | Should -Be $Expected
+#     }
 
-    }
-}
+#     }
+# }

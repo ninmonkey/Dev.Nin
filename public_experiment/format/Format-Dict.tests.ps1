@@ -60,7 +60,7 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
             @(
                 $profile | Format-Dict
                 , (Get-ChildItem env:) | format-dict
-                @(, (Get-Item env:) ) | format-dict                    
+                @(, (Get-Item env:) ) | format-dict
                 Get-Item env: | Format-dict
             ) | Write-Host
         }
@@ -104,8 +104,8 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
         ) | Write-Host
         $true | Should -Be $true
     }
-    Context 'Nested Tests' -Pending {
-        It 'todo: nesting' {
+    Context 'Nested Tests' {
+        It 'todo: nesting' -Pending {
             'Todo: Take the same sample inputs, crossproduct on different options'
             | Should -Be $false
         }
@@ -145,7 +145,7 @@ Describe 'Format-Dict: Visual Test' -Skip:$true -Tag 'VisualTest', 'ANSIEscape',
                 ColorSingle = ''
             }
         }
-        
+
         @{
             Name = 'Color[] Children'
             Obj  = @{

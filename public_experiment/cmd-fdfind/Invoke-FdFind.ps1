@@ -159,7 +159,9 @@ function Invoke-FdFind {
             #     )
             # }
 
-            $fdArgs += @($Pattern)
+            $fdArgs += @(
+                $Pattern
+            )
             $fdArgs += @(
                 '--color=always'
             )
@@ -172,7 +174,8 @@ function Invoke-FdFind {
                 ) | Join-String
                 return
 
-            } else {
+            }
+            else {
                 if ($Path) {
                     Push-Location $Path -StackName 'fd.find'
                 }
@@ -198,7 +201,8 @@ function Invoke-FdFind {
                 # Pop-Location -StackName 'fd.find'
 
             }
-        } catch {
+        }
+        catch {
             $PSCmdlet.WriteError($_)
         }
     }
@@ -206,6 +210,7 @@ function Invoke-FdFind {
 
 
     end {
+        Write-Warning 'verify pattern is applied when also using filetype and dir type'
     }
 }
 

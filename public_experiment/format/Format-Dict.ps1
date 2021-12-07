@@ -35,6 +35,7 @@ function _FormatDictItem_Filepath {
             $Path
         }
     }
+    # 'try me'
 }
 function _FormatDictItem_ColorList {
     <#

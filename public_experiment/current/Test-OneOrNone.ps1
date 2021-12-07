@@ -32,6 +32,8 @@ function Test-OneOrNone {
     .notes
         Conflicted on whether Test- or Assert-
         and whether
+
+        todo: add/validate tests
     .example
           .
     .outputs

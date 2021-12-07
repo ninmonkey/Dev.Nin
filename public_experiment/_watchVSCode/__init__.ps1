@@ -9,7 +9,7 @@
     'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
-$ErrorActionPreference = 'stop'
+# $ErrorActionPreference =
 # & {
 
 try {
@@ -30,6 +30,7 @@ try {
     | Write-Debug
 } catch {
     Write-Warning "Exception: $_"
+    Write-Error $_
     # $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
