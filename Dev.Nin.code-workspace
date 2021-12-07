@@ -3,9 +3,6 @@
         {
             "name": "Dev.Nin",
             "path": "."
-        },
-        {
-            "path": "..\\ModuleData"
         }
     ],
     "settings": {
@@ -79,7 +76,6 @@
             "testing.iconErrored": "#bb600c",
             "testing.iconUnset": "#848484"
         },
-
     },
     "tasks": {
         "version": "2.0.0",

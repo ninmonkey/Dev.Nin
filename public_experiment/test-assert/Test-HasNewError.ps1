@@ -4,12 +4,12 @@ if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Test-HasNewError'
         # 'errorCount'
-        
+
     )
     $experimentToExport.alias += @(
         'Err?'
         # 'Err?Module'
-        
+
     )
 }
 
@@ -20,7 +20,7 @@ $__moduleMetaData_DidError ??= @{
 function Test-HasNewError {
     <#
     .synopsis
-        tests errors, returns count[s] with passthru 
+        tests errors, returns count[s] with passthru
     .description
         does not 'reset' automatically, so multiple calls (like outside the prompt
         or multiple calls per prompt) don't erase counts
@@ -52,8 +52,8 @@ function Test-HasNewError {
     .example
         PS> Err?
         False
-        
-        1 / 0 
+
+        1 / 0
         PS> Err?
         True
     .outputs
@@ -81,34 +81,34 @@ function Test-HasNewError {
         # [Parameter(Position = 0)][int]$Limit = 1
 
     )
-    begin {    
+    begin {
         $state = $script:__moduleMetaData_DidError
 
         if ($Clear) {
             $global:error.clear()
             $state.LastCount = 0
-            return 
+            return
         }
         if ($Reset) {
             $state.LastCount = $global:error.count
         }
-        
+
     }
     end {
-        $state | Format-Table | Out-String | wi 
+        # $state | Format-Table | Out-String | wi
         if ($PassThru) {
             [pscustomobject][ordered]@{
                 LastCount  = $state.LastCount
                 CurCount   = $global:error.count
                 DeltaCount = $global:error.count - $state.LastCount
-            }            
-            return 
+            }
+            return
         }
 
         if ($Clear -or $Reset) {
             return
         }
-        
+
         if ($global:Error.Count -eq 0) {
             $false; return;
         }
@@ -117,7 +117,7 @@ function Test-HasNewError {
             $true; return;
         }
 
-        $false; return 
+        $false; return
     }
 }
 
@@ -128,5 +128,3 @@ if (! $experimentToExport) {
     Test-HasNewError -infa continue
     Test-HasNewError -PassThru
 }
-
-

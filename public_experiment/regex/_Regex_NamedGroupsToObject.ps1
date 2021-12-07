@@ -2,11 +2,11 @@
 $experimentToExport.function += @(
     '_Regex-ProcessNamedGroups'
 )
-$experimentToExport.alias += @(        
+$experimentToExport.alias += @(
 )
 
-    
-    
+
+
 function _Regex-ProcessNamedGroups {
     <#
     .synopsis
@@ -14,18 +14,18 @@ function _Regex-ProcessNamedGroups {
     .description
         from: <https://gist.github.com/IISResetMe/654b302383a687bd92faa8c8c3ab28fa>
     .notes
-        because it's dtnet, checkout the regex flag (?n) to only capture named groups
+        tip: because it's dotnet, checkout the regex flag (?n) to only capture named groups
 
     #>
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowEmptyString()]
         [string[]]$InputString,
-  
+
         [Parameter(Mandatory = $true, ValueFromRemainingArguments = $true)]
         [string[]]$Pattern
     )
-  
+
     process {
         foreach ($string in $InputString | Where-Object { $_ }) {
             foreach ($p in $Pattern) {

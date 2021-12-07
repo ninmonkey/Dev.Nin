@@ -55,31 +55,48 @@ function Dive-WhatIsDump {
         }
         $target = $InputObject
 
+        try {
+            $t = $InputObject
+            $out_prop1 = $error[0].InvocationInfo
+            $out_prop1 | iter->prop | ForEach-Object name
+            $out_prop2 = $t | Get-Member -MemberType Properties | ForEach-Object Name
+        } catch {
+            "part1 $_"
+        }
 
-
-        $t = $error[0].InvocationInfo
-        $out_prop1 | iter->prop | ForEach-Object name
-        $out_prop2 = $t | Get-Member -MemberType Properties | ForEach-Object Name
-
-
-        $target = $error[0]
-        $t_iInfo = $target.InvocationInfo
-        $t_iInfo | Iter->PropName | str ul -Sort
-        $t_iInfo
+        try {
+            $target = $error[0]
+            $t_iInfo = $target.InvocationInfo
+            $t_iInfo | Iter->PropName | str ul -Sort
+            $t_iInfo
+        } catch {
+            "part2 $_ "
+        }
 
         $t_prop_iter = $target
         $t_prop_iter | Iter->PropName | str ul -Sort
         $t_prop_iter
 
-        $t | Iter->PropName | str ul -Sort -op 'Props: '
-        $t.psobject.methods | str ul -Sort -op 'Props: '
-        # $t.psobject.me
-        $t
-        $t | Get-Member -MemberType Methods | ForEach-Object Name | Sort-Object -Unique | str csv ' ' -op 'Methods: '
-        $t = $error[0].InvocationInfo
-        $out_prop1 | iter->prop | ForEach-Object name
-        $out_prop2 = $t | Get-Member -MemberType Properties | ForEach-Object Name
-        $t | Write-Endcap Bold
+        $t = $t_prop_iter
+
+        try {
+
+            $t | Iter->PropName | str ul -Sort -op 'Props: '
+            $t.psobject.methods | str ul -Sort -op 'Props: '
+            # $t.psobject.me
+            $t
+            $t | Get-Member -MemberType Methods | ForEach-Object Name | Sort-Object -Unique | str csv ' ' -op 'Methods: '
+        } catch {
+            "part3: $_ "
+        }
+        try {
+            $t = $error[0].InvocationInfo
+            $out_prop1 | iter->prop | ForEach-Object name
+            $out_prop2 = $t | Get-Member -MemberType Properties | ForEach-Object Name
+            $t | Write-Endcap Bold
+        } catch {
+            "Part4: $_"
+        }
     }
     end {
     }

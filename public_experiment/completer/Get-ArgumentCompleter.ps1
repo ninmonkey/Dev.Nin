@@ -1,33 +1,35 @@
-$experimentToExport.function += 'Get-ArgumentCompleter'
+$experimentToExport.function += @(
+    'Find-CustomArgumentCompleter'
+)
 $experimentToExport.alias += @(
-    'getCompleterDent'
+    # 'getCompleterDent'
     'DevTool💻-GetArgumentCompleter'
 )
 
-function Get-ArgumentCompleter {
+function Find-CustomArgumentCompleter {
     <#
     .SYNOPSIS
         Get custom argument completers registered in the current session.
     .DESCRIPTION
         Get custom argument completers registered in the current session.
-        By default Get-ArgumentCompleter lists all of the completers registered in the session.
+        By default Find-CustomArgumentCompleter lists all of the completers registered in the session.
 
-        Originally from: [indented-automation/Get-ArgumentCompleter.ps1](https://gist.github.com/indented-automation/26c637fb530c4b168e62c72582534f5b)
+        Originally from: [indented-automation/Find-CustomArgumentCompleter.ps1](https://gist.github.com/indented-automation/26c637fb530c4b168e62c72582534f5b)
     .EXAMPLE
-        Get-ArgumentCompleter
+        Find-CustomArgumentCompleter
 
         Get all of the argument completers for PowerShell commands in the current session.
     .EXAMPLE
-        Get-ArgumentCompleter -CommandName Invoke-ScriptAnalyzer
+        Find-CustomArgumentCompleter -CommandName Invoke-ScriptAnalyzer
 
         Get all of the argument completers used by the Invoke-ScriptAnalyzer command.
     .EXAMPLE
-        Get-ArgumentCompleter -Native
+        Find-CustomArgumentCompleter -Native
 
         Get all of the argument completers for native commands in the current session.
     #>
 
-    [alias('getCompleterDent', 'DevTool💻-GetArgumentCompleter')]
+    [alias('DevTool💻-GetArgumentCompleter')]
     [CmdletBinding(DefaultParameterSetName = 'PSCommand')]
     param (
         # Filter results by command name.

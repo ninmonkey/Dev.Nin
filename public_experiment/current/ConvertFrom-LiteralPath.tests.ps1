@@ -1,5 +1,4 @@
 BeforeAll {
-    # . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
     Import-Module Dev.Nin -Force
     # $ErrorActionPreference = 'break'
 }
@@ -21,8 +20,14 @@ Describe 'ConvertFrom-LiteralPath' {
     }
 
     It '"<LiteralPath>" Returns "<Expected>"' -ForEach @(
-        @{ LiteralPath = "$Env:UserProfile\Users\cppmo_000\AppData\Roaming" ; Expected = '$Env:APPDATA' }
-        @{ LiteralPath = 'C:\Users\cppmo_000\Documents\2021' ; Expected = '$Env:UserProfile\Documents\2021' }
+        @{
+            LiteralPath = "$Env:UserProfile\Users\cppmo_000\AppData\Roaming"
+            Expected    = '$Env:APPDATA'
+        }
+        @{
+            LiteralPath = 'C:\Users\cppmo_000\Documents\2021'
+            Expected    = '$Env:UserProfile\Documents\2021'
+        }
     ) {
         $LiteralPath | ConvertFrom-LiteralPath | Should -Be $Expected
         # . $__PesterFunctionName $LiteralPath | Should -Be $Expected
