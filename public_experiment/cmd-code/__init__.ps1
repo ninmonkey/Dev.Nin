@@ -48,7 +48,9 @@ try {
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
 } catch {
-    $PSCmdlet.ThrowTerminatingError( $_ )
+    Write-Warning "warning: $_"
+    Write-Error "Error: $_"
+    # $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
 $sortedFiles
