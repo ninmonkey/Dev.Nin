@@ -269,6 +269,12 @@ function Invoke-VSCodeVenv {
             'J:\vscode_datadir\code-dev-addons'
         )][string]$AddonDir, # = $null,
 
+        # the --extensions-dir  path
+        [Parameter()]
+        [ArgumentCompletions(
+            'code-insiders', 'code'
+        )][string]$CodeBinPath, # = $null,
+
 
         # which mode, reuse/new
         [alias('Mode')]
@@ -337,6 +343,7 @@ function Invoke-VSCodeVenv {
 
         $maybeAlias = $PSCmdlet.MyInvocation.InvocationName
         $prioritizeInsidersBin = [bool]($maybeAlias -match 'Ivy|CodeI|CodeIVenv|CodeI-vEnv|Out-CodeIvEnv')
+        $prioritizeInsidersBin = $prioritizeInsidersBin -or $true # always true, until config #
         $metaInfo = [ordered]@{}
 
         # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
@@ -368,6 +375,9 @@ function Invoke-VSCodeVenv {
             }
 
         ) | Select-Object -First 1
+        if ($CodeBinPath) {
+            $CodeBin = Get-Command $CodeBinPath
+        }
 
         # if($prioritizeInsidersBin)
 
