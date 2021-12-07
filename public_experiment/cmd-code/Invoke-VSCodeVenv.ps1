@@ -9,7 +9,8 @@ if ($experimentToExport) {
     $experimentToExport.alias += @(
         # 'Code', 'CodeI'
         'Code-vEnv', 'CodeI-vEnv',
-        'Out-CodevEnv', 'Out-CodeIvEnv'
+        'Out-CodevEnv', 'Out-CodeIvEnv',
+        'Ivy'
     )
 }
 
@@ -212,7 +213,8 @@ function Invoke-VSCodeVenv {
     [Alias(
         # 'Code', 'CodeI',
         'Code-vEnv', 'CodeI-vEnv',
-        'Out-CodevEnv', 'Out-CodeIvEnv'
+        'Out-CodevEnv', 'Out-CodeIvEnv',
+        'Ivy' # pronounced from the 'i venv'
     )]
     [cmdletbinding(
         PositionalBinding = $false,
@@ -333,40 +335,55 @@ function Invoke-VSCodeVenv {
             | Write-Information
         }
 
-
+        $maybeAlias = $PSCmdlet.MyInvocation.InvocationName
+        $prioritizeInsidersBin = [bool]($maybeAlias -match 'Ivy|CodeI|CodeIVenv|CodeI-vEnv|Out-CodeIvEnv')
         $metaInfo = [ordered]@{}
 
         # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
         # first try default, else fallback
         $splatSilent = @{'ErrorAction' = 'SilentlyContinue' }
-            # wait-debugger
-        $CodeBin = @(
-            # todo: add user's saved value as the first part
+        # wait-debugger
+        $queryCodeBin = @(
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
             Get-Command 'code.cmd' -CommandType Application @splatSilent
-            Get-Command code-insiders.cmd -CommandType Application @splatSilent
-            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
-
-            # paths differ because ? local user install?
+            # my current install has code on the first one
             Get-Item @splatSilent 'C:\Program Files\Microsoft VS Code\bin\code.cmd'
-            Get-Command @splatSilent code.cmd -All -CommandType Application
-            Get-Command @splatSilent code-insiders -All -CommandType Application
-            Get-Command @splatSilent code -All -CommandType Application
+            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code\bin\code.cmd"
+            Get-Command @splatSilent 'code.cmd' -All -CommandType Application
+            Get-Command @splatSilent 'code' -All -CommandType Application
+
+        )
+        $queryCodeInsiderBin = @(
+            Get-Command 'code-insiders.cmd' -CommandType Application @splatSilent
+            Get-Command @splatSilent 'code-insiders' -All -CommandType Application
+            # my current install has code on the first one
+            Get-Item @splatSilent 'C:\Program Files\Microsoft VS Code Insiders\bin\code-insiders.cmd'
+            Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
+        )
+        $CodeBin = @(
+            if ($prioritizeInsidersBin) {
+                @( $queryCodeInsiderBin ; $queryCodeBin )
+            } else {
+                @( $queryCodeBin ; $queryCodeInsiderBin ; )
+            }
+
         ) | Select-Object -First 1
+
+        # if($prioritizeInsidersBin)
+
+
         if (! $CodeBin) {
             throw 'Did not find any code-insider instances' ; return;
         }
         try {
             $DataDir = Get-Item -ea stop $DataDir
-        }
-        catch {
+        } catch {
             Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
             Write-Warning 'falling back to implicit default path'
         }
         try {
             $AddonDir = Get-Item -ea stop $AddonDir
-        }
-        catch {
+        } catch {
             Write-Error -ea continue "Invalid $AddonDir = '$AddonDir'. $_"
             Write-Warning 'falling back to implicit default path'
         }
@@ -374,8 +391,7 @@ function Invoke-VSCodeVenv {
 
         try {
             $target = Get-Item -ea ignore $TargetPath
-        }
-        catch {
+        } catch {
             Write-Error -ea stop 'Invalid Path'
             # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
@@ -387,8 +403,7 @@ function Invoke-VSCodeVenv {
                 | Write-Color 'blue'
                 hr
 
-            }
-            else {
+            } else {
                 hr
                 'Open 📄 File?' | Write-Color 'blue'
                 hr
@@ -476,8 +491,7 @@ function Invoke-VSCodeVenv {
                 }
                 Get-Item $Target | Join-String -DoubleQuote
             )
-        }
-        else {
+        } else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
                 'LineNumber? Y' | Write-Color green | wi
@@ -485,8 +499,7 @@ function Invoke-VSCodeVenv {
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
-            }
-            else {
+            } else {
                 'LineNumber? Y' | Write-Color green | wi
                 $codeArgs += @(
                     '--goto'
@@ -534,7 +547,7 @@ function Invoke-VSCodeVenv {
             }
 
 
-                h1 'here'
+            h1 'here'
             @(
                 hr 1
                 $strTarget | Join-String -op '$strTarget: '
@@ -550,8 +563,7 @@ function Invoke-VSCodeVenv {
 
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
-        }
-        else {
+        } else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }
