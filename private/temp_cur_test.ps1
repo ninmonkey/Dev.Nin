@@ -9,7 +9,7 @@ Import-Module 'dev.nin' -Force
     hr
 
     $RunTest = @{
-        'Code-Insider' = $true
+        'Code-Insider' = $false
         'GotoError'                = $false
         'New-Sketch'               = $false
         'Format-Dict'              = $false
@@ -18,6 +18,12 @@ Import-Module 'dev.nin' -Force
         'RegexTestFilepath'        = $false
     }
 
+    if($RunTest.'Rune-Detail') {
+        $grapheme = '👩🏼‍🦳'
+        $grapheme.EnumerateRunes() | ft
+        hr
+        $grapheme | Get-RuneDetail
+    }
 
 
     if($RunTest.'Code-Insider') {

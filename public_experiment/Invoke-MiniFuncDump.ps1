@@ -105,6 +105,25 @@ $When = (Get-Date).ToString('u')
         #| ForEach-Object { $_ -replace "'", '' }
         | Sort-Object -Unique
     }
+    $state.Find_Pwsh_EncodedCommands = {
+        <#
+        .synopsis
+            decode base64
+
+        .notes
+            See: Utility:
+            [ArgumentCompleter([EncodingArgumentCompleter])]
+            [EncodingArgumentConverter()]
+            [Encoding] $Encoding
+        .link
+            Utility\
+        #>
+        $pwsh | Where-Object CommandLine -Match '\s+\-encodedCommand\s+' | ForEach-Object CommandLine
+    }
+    $state.Pwsh_ShowRunningArgs = {
+        # [tip] using joinstring
+        Get-Process pwsh | jstr -sep (hr 2) { $_.CommandLine -replace '\s-', "`n-" }
+    }
 
 }
 catch {
