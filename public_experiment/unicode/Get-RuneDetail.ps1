@@ -56,16 +56,23 @@ function Get-RuneDetail {
             $meta = [ordered]@{
                 PSTypeName  = 'nin.RuneDetail'
                 CodeHex     = '0x{0:x}' -f $Rune.Value
+                UTF8Length  = $Rune.Utf8SequenceLength
+                UTF16Length = $Rune.Utf16SequenceLength
                 # Name        = $Str.Nyi
                 # Rune        = $Rune # Actual
                 # RuneStr     = $Rune | CtrlChar # Safe value
                 UniCategory = [Rune]::GetUnicodeCategory( $Rune )
             }
             if ($meta.UniCategory -notmatch 'control' ) {
-                $meta['RuneOnRenderTest'] = "Good: '$Rune'"
+                $meta['Render'] = "'$Rune'"
             } else {
-                $meta['RuneOnRenderTest'] = "Bad:  '$($meta['RuneStr'])'"
+                $meta['Render'] = [rune]::new( $rune.value + 0x2400 ) | Join-String -SingleQuote
             }
+            <#
+            [Globalization.CharUnicodeInfo]::GetUnicodeCategory('a')
+            #>
+            # Write-Warning 'calling method was causing REPL error on crash'
+            # Wait-Debugger
 
             if (!$Simplify) {
                 $meta += @{
@@ -83,7 +90,7 @@ function Get-RuneDetail {
         }
     }
     end {
-        Write-Warning 'needs custom view format, use default properties, so I can include properties I do not want to print by default'
+
     }
 }
 
