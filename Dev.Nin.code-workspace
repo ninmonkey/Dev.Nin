@@ -6,6 +6,8 @@
         }
     ],
     "settings": {
+        "editor.fontSize": 17,
+        "terminal.integrated.fontSize": 16,
         "snippets.viewer.sortSnippetsByName": true,
         "markdownlint.config": {
             "MD028": false,

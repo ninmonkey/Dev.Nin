@@ -309,14 +309,20 @@ function Invoke-VSCodeVenv {
         [Parameter()]
         [uint]$ColumnNumber,
 
-        [Alias('ExtraArgs')]
-        [Parameter(ValueFromRemainingArguments)]
-        [string]$RemainingArgs,
+        #force version name
+        [Parameter()]
+        [validateSet('code', 'insiders')]
+        [string]$ForceMode,
 
         # return paths, but don't run code
         [alias('GetCurrentBin')]
         [Parameter()]
-        [switch]$PassThru
+        [switch]$PassThru,
+
+        [Alias('ExtraArgs')]
+        [Parameter(ValueFromRemainingArguments)]
+        [string]$RemainingArgs
+
 
 
 
@@ -344,6 +350,15 @@ function Invoke-VSCodeVenv {
         $maybeAlias = $PSCmdlet.MyInvocation.InvocationName
         $prioritizeInsidersBin = [bool]($maybeAlias -match 'Ivy|CodeI|CodeIVenv|CodeI-vEnv|Out-CodeIvEnv')
         $prioritizeInsidersBin = $prioritizeInsidersBin -or $true # always true, until config #
+        if ($PSBoundParameters.containsKey('ForceMode')) {
+            if ($ForceMode -eq 'insiders') {
+                $prioritizeInsidersBin = $true
+            }
+            elseif ($ForceMode -eq 'code') {
+                $prioritizeInsidersBin = $false
+            }
+            Write-Debug "ForceEdition: $ForceMode"
+        }
         $metaInfo = [ordered]@{}
 
         # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
@@ -370,7 +385,8 @@ function Invoke-VSCodeVenv {
         $CodeBin = @(
             if ($prioritizeInsidersBin) {
                 @( $queryCodeInsiderBin ; $queryCodeBin )
-            } else {
+            }
+            else {
                 @( $queryCodeBin ; $queryCodeInsiderBin ; )
             }
 
@@ -387,13 +403,15 @@ function Invoke-VSCodeVenv {
         }
         try {
             $DataDir = Get-Item -ea stop $DataDir
-        } catch {
+        }
+        catch {
             Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
             Write-Warning 'falling back to implicit default path'
         }
         try {
             $AddonDir = Get-Item -ea stop $AddonDir
-        } catch {
+        }
+        catch {
             Write-Error -ea continue "Invalid $AddonDir = '$AddonDir'. $_"
             Write-Warning 'falling back to implicit default path'
         }
@@ -401,7 +419,8 @@ function Invoke-VSCodeVenv {
 
         try {
             $target = Get-Item -ea ignore $TargetPath
-        } catch {
+        }
+        catch {
             Write-Error -ea stop 'Invalid Path'
             # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
@@ -416,7 +435,8 @@ function Invoke-VSCodeVenv {
 
                 hr
 
-            } else {
+            }
+            else {
                 @(
                     hr
 
@@ -509,7 +529,8 @@ function Invoke-VSCodeVenv {
                 }
                 Get-Item $Target | Join-String -DoubleQuote
             )
-        } else {
+        }
+        else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
                 'LineNumber? Y' | Write-Color green | wi
@@ -517,7 +538,8 @@ function Invoke-VSCodeVenv {
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
-            } else {
+            }
+            else {
                 'LineNumber? Y' | Write-Color green | wi
                 $codeArgs += @(
                     '--goto'
@@ -589,7 +611,8 @@ function Invoke-VSCodeVenv {
         # hr
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' 'green' | Write-Information
-        } else {
+        }
+        else {
             Write-Color -t 'LoadItem: ' 'orange' | Write-Information
             Write-Color -t $Target 'yellow' | Write-Information
         }
@@ -625,6 +648,7 @@ function Invoke-VSCodeVenv {
             #$codeArgs
             $metaInfo
         }
+        $zed = 4
 
         # catch {
         #     $PSCmdlet.WriteError( $_ )

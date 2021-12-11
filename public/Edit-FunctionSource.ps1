@@ -78,7 +78,6 @@ function Edit-FunctionSource {
             }
 
             $functionQuery | Where-Object {
-                # 1 / 0
                 Write-Debug 'test: Is [FunctionInfo]?'
                 $_ -is [System.Management.Automation.FunctionInfo]
             }
@@ -120,7 +119,7 @@ function Edit-FunctionSource {
                         )
                         $codeArgs | Join-String -sep ' ' -op 'ArgList: ' | Write-Debug
                         # $CodeArgs | Join-String -sep ' '
-                        Code-Venv -path $Path -Line $Meta.StartLineNumber -Column $Meta.StartColumnNumber
+                        Code-Venv -ea break  -path $Path -Line $Meta.StartLineNumber -Column $Meta.StartColumnNumber
 
                         # $codeArgs | prefix 'ArgList: ' -sep ' ' | Write-Debug
 
