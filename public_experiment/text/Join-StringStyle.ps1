@@ -3,9 +3,11 @@
 if (! $DebugInlineToggle -and $ExperimentToExport) {
     $experimentToExport.function += @(
         'Join-StringStyle'
+        '_dumpPsTypeName'
     )
     $experimentToExport.alias += @(
         'Str'
+        '_dumpTNames'
         #
         #for the main command, i'm not sure if I want
         # 'Join-StringStyle'
@@ -43,6 +45,48 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
     #     'UList'
 
     # )
+}
+
+
+function _dumpPsTypeName {
+    <#
+        .synopsis quick hack for clipboard
+    .description
+    see this to see how to map typeinfo to a string that's url
+        <https://github.com/SeeminglyScience/ClassExplorer/blob/signature-query/src/ClassExplorer/SignatureWriter.cs>
+    #>
+    [alias('_dumpTNames')]
+    param(
+        [alias('Target')]
+        [parameter(position = 0, valueFromPipeline)]
+        [object]$InputObject
+    )
+
+    # $TInfo = $InputObject -as 'type'
+    # if ($InputObject -is 'type') {
+    #     $Target = $inputObject.GetTypeInfo()
+    # }
+    # $TypeName | Write-Debug
+    # $TypeName -as [type] | Write-Debug
+    hr
+    $tinfo = $InputObject.GetType()
+    $tinfo.BaseType.FullName | label 'baseType.fullname'
+    $tinfo.psobject.psbase.TypeNameOfValue | label 'psobject->psbase->TypeNameOfValue'
+    hr
+    $TypeNames = $InputObject.PSTypeNames
+
+    $str_op = @'
+<#
+PSTypeNames:
+'@
+    $str_os = @'
+#>
+'@
+
+    $str_op
+    $TypeNames | str str "`n" -SingleQuote -Sort -Unique
+    | Format-IndentText -Depth 2
+    $str_os
 }
 
 

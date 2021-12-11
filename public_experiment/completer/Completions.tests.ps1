@@ -3,7 +3,7 @@ BeforeAll {
 }
 
 Describe 'Enumerate Completions' {
-    It 'not' {
-        Set-ItResult -Skipped -Because 'nyi'
+    It 'Basic' -Pending {
+        Set-ItResult -Skipped -Because 'nyi | Testing param sets etc'
     }
 }

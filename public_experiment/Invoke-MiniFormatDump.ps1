@@ -14,9 +14,10 @@ try {
 
     $state.Help_PSTypeNames = {
         # param($TypeName)
-        $TypeName = @($args) | Select-Object -First 1
+        $TypeName = @($ArgList) | Select-Object -First 1
         $TypeName ??= '[Math]'
         $__doc__ = 'Nicely print out full PSTypeNames to copy -> paste'
+        # Wait-Debugger6
         $str_op = @'
 <#
 PSTypeNames:

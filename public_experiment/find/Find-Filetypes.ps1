@@ -30,8 +30,9 @@ function _get-ExtensionsList {
 function Find-FileType {
     <#
     .synopsis
-        Find extension types quickly using fdfind
+        Find filename extension types quickly using fdfind
     .description
+
 
     .notes
         todo:
