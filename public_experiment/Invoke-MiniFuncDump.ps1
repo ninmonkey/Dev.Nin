@@ -88,6 +88,18 @@ $When = (Get-Date).ToString('u')
             $finalCmd
         )
     }
+    $state.Tree = {
+        # using python lib 'rich', do a pretty tree
+        $paths = @{
+            venv   = Get-Item -ea stop 'c:/nin_temp/.venv'
+            script = Get-Item -ea stop 'c:/nin_temp/tree.py'
+        }
+        $paths += @{
+            toActivate = Get-Item -ea stop (Join-Path $paths.venv 'Scripts/Activate.ps1')
+        }
+        . $paths.toActivate
+        . $paths.script (Get-Item .)
+    }
     $state.ExportFolders = {
         $stream = @(
             Window->ExportFolders
@@ -154,7 +166,7 @@ function Invoke-MiniFuncDump {
             ParameterSetName = 'InvokeCommand'
         )]
         [ArgumentCompletions(
-            'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
+            'Tree', 'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
             'ListMyCommands', 'Alarm_asBase64', 'ExportFolders'
         )]
         [string]$ScriptName,
@@ -165,7 +177,12 @@ function Invoke-MiniFuncDump {
 
         # list commands
         [parameter(ParameterSetName = 'ListOnly')]
-        [switch]$List
+        [switch]$List,
+
+        # any  other params?
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [object[]]$ArgList
     )
 
     begin {
@@ -188,6 +205,11 @@ function Invoke-MiniFuncDump {
         }
 
         try {
+            if ($ArgList) {
+                throw 'double check args pass correctly'
+            }
+            # try  allowing arglist?
+            # & $state[$ScriptName] @ArgList
             & $state[$ScriptName]
             return
         }
