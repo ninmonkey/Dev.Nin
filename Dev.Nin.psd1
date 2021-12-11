@@ -12,7 +12,7 @@
     RootModule        = 'Dev.Nin.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.0.13'
+    ModuleVersion     = '0.0.14'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -53,7 +53,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @(
         'Ninmonkey.Console'
-        # 'Utility' # Seeemingly science
+        'Utility' # Seemingly science
         'Pansies'
     )
 
@@ -103,7 +103,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            # Tags = @()
+            Tags = @('experimental')
 
             # A URL to the license for this module.
             # LicenseUri = ''
