@@ -559,38 +559,42 @@ function Invoke-VSCodeVenv {
 
         if ($True) {
             # any non-finished invokes
-            @(
-                $target | Join-String -sep ' ' -DoubleQuote
-                $CodeBin, $DataDIr, $AddonDir -join ', '
-                $strTarget = $target | Join-String -sep ' ' -DoubleQuote
-                # $StrOperation = $CodeBin, $DataDIr, $AddonDir -join ', '
-
-            ) | Write-Debug
-
-            if (! $Env:NoColor) {
-
-                $StrTarget = #$Target | Join-String -sep "`n" -op "`n" -os "`n"
-                $StrTarget = $Target
-
-                # bold version number
-                $boldBinCode = __format_HighlightVenvPath $CodeBin
+            if ($false) {
                 @(
-                    "`nCode = "
-                    $BoldBinCode
-                    "`nDataDir = "
-                    $DataDir | Write-Color cyan
-                    "`n"
-                    $strTarget | ConvertTo-RelativePath -BasePath . -ea ignore
-                    "`n"
-                ) | Join-String
-                | Write-Debug
+                    $target | Join-String -sep ' ' -DoubleQuote
+                    $CodeBin, $DataDIr, $AddonDir -join ', '
+                    $strTarget = $target | Join-String -sep ' ' -DoubleQuote
+                    # $StrOperation = $CodeBin, $DataDIr, $AddonDir -join ', '
 
-                # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
-                # | Join-String -sep "`n" -op "`n" -os "`n"
+                ) | Write-Debug
+            }
 
-                # | Join-String -sep "`n" -op "`n" -os "`n"
-                # | write-color magenta
-                # | write-color magenta
+            if ($false) {
+                if (! $Env:NoColor) {
+
+                    $StrTarget = #$Target | Join-String -sep "`n" -op "`n" -os "`n"
+                    $StrTarget = $Target
+
+                    # bold version number
+                    $boldBinCode = __format_HighlightVenvPath $CodeBin
+                    @(
+                        "`nCode = "
+                        $BoldBinCode
+                        "`nDataDir = "
+                        $DataDir | Write-Color cyan
+                        "`n"
+                        $strTarget | ConvertTo-RelativePath -BasePath . -ea ignore
+                        "`n"
+                    ) | Join-String
+                    | Write-Debug
+
+                    # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
+                    # | Join-String -sep "`n" -op "`n" -os "`n"
+
+                    # | Join-String -sep "`n" -op "`n" -os "`n"
+                    # | write-color magenta
+                    # | write-color magenta
+                }
             }
 
 
@@ -668,6 +672,7 @@ function Invoke-VSCodeVenv {
     - [ ] --inspect-brk-extensions <port>
     - [ ] --status
     - [ ] --verbose'
-        Format-Dict $metaInfo | Write-Debug
+        $metaInfo | Format-Table | Out-String | Write-Debug
+        $metaInfo | Format-Dict | Out-String | Write-Debug
     }
 }
