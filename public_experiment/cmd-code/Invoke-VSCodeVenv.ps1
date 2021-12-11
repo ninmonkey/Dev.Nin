@@ -479,8 +479,6 @@ function Invoke-VSCodeVenv {
             return
         }
 
-
-
         if ($DataDir) {
             $codeArgs += @(
                 '--user-data-dir'
