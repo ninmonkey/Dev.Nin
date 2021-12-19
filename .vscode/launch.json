@@ -3,6 +3,14 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
+    "inputs": [
+        {
+            "type": "promptString",
+            "description": "temp cur.ps1 type file to run",
+            "default": "\\${file}",
+            "id": "selectedCurFile"
+        }
+    ],
     "configurations": [
         {
             "name": "🐛🐜TaskTest",
@@ -14,7 +22,6 @@
             ],
             "cwd": "${workspaceFolder}"
         },
-
         // {
         //     "name": "PowerShell: Launch Script",
         //     "type": "PowerShell",
@@ -22,16 +29,48 @@
         //     "script": "enter path or command to execute e.g.: ${workspaceFolder}/src/foo.ps1 or Invoke-Pester",
         //     "cwd": "${workspaceFolder}"
         // },
-        
         {
-            "name": "cur.ps1",
+            "name": "cur.ps1 🐈 using vars",
             "type": "PowerShell",
             "request": "launch",
-            "script": "${file}",
-            "cwd": "${file}"
+            /*
+                variable scopes:
+                    workspaceFolder for multi root
+                    env
+                    config
+                        ${config:editor.fontSize}
+                    command
+                    input
+                        https://code.visualstudio.com/docs/editor/variables-reference#_input-variables
+
+                custom problem watcher:
+                    https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
+
+                ${workspace:x}
+                ${env:x}
+                ${config:x}
+                ${command:extension.pickNodeProcess}
+                ${input:x}
+
+
+
+            */
+            // variable constants: https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables
+            // see: https://code.visualstudio.com/docs/editor/tasks#_variable-substitution
+            // https://code.visualstudio.com/docs/editor/variables-reference
+            // "script": "${varCurFile}",
+            // "script": "${config:varCurFile}",
+            "cwd": "${varCurFile}"
         },
-   
-        
+        // {
+        //     "name": "cur.ps1",
+        //     "type": "PowerShell",
+        //     "request": "launch",
+        //     // see: https://code.visualstudio.com/docs/editor/tasks#_variable-substitution
+        //     // "script": "${varCurFile}",
+        //     // "script": "${config:varCurFile}",
+        //     "cwd": "${varCurFile}"
+        // },
         {
             "name": "cur 🐜 (temp_cur_test.ps1)",
             "type": "PowerShell",
