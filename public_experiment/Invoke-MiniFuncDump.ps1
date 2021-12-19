@@ -117,6 +117,14 @@ $When = (Get-Date).ToString('u')
         #| ForEach-Object { $_ -replace "'", '' }
         | Sort-Object -Unique
     }
+    $state.Find_Ps1Within2Weeks = {
+        # find: newest 2weeks, by *.ps1, recurse
+        fd --changed-within 2weeks -e ps1
+        # sorted by lastwrite time
+        | Sort-Object { $_ | Get-Item | ForEach-Object LastWriteTime }
+        # normal tables, but don't group
+        | Get-Item | Format-Table -group { $true }
+    }
     $state.Find_Pwsh_EncodedCommands = {
         <#
         .synopsis
@@ -137,9 +145,25 @@ $When = (Get-Date).ToString('u')
         Get-Process pwsh | jstr -sep (hr 2) { $_.CommandLine -replace '\s-', "`n-" }
     }
 
-}
-catch {
+    $state.PsTypeNames_TypeDataDumpSummary = {
+        $src = ($args[0] ?? $args) ?? (Get-Item .)
+        $td = @{}
+
+        $tnames = $src.pstypenames
+        $tnames | ForEach-Object {
+            $td[$_] = Get-TypeData -TypeName $_
+
+        }
+
+        $td.GetEnumerator() | ForEach-Object {
+            h1 $_.Key
+            $_.Value | s * | Format-List *
+        }
+    }
+
+} catch {
     Write-Warning "funcDumpErrorOnLoad: $_"
+    throw "funcDumpErrorOnLoad: $_"
 }
 function Invoke-MiniFuncDump {
     <#
@@ -167,6 +191,7 @@ function Invoke-MiniFuncDump {
         )]
         [ArgumentCompletions(
             'Tree', 'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
+            'Find_Ps1Within2Weeks',
             'ListMyCommands', 'Alarm_asBase64', 'ExportFolders'
         )]
         [string]$ScriptName,
@@ -206,14 +231,13 @@ function Invoke-MiniFuncDump {
 
         try {
             if ($ArgList) {
-                throw 'double check args pass correctly'
+                Write-Warning 'double check args pass correctly'
             }
             # try  allowing arglist?
             # & $state[$ScriptName] @ArgList
-            & $state[$ScriptName]
+            & $state[$ScriptName] @ArgList
             return
-        }
-        catch {
+        } catch {
             Write-Error "SBFailed: $_"
             return
         }

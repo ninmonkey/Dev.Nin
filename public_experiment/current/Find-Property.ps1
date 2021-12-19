@@ -34,10 +34,18 @@ function Completion->PropertyName {
         [Parameter(
             Mandatory, Position = 0,
             ValueFromPipeline)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # don't sort/unique
+        [Parameter()][switch]$NoSort
     )
     process {
-        $InputObject.psobject.properties.Name | Sort-Object -Unique
+        $names = $InputObject.psobject.properties.Name
+        if ($NoSort) {
+            $names
+            return
+        }
+        $names | Sort-Object -Unique
     }
 }
 function _get-ObjectProperty {
