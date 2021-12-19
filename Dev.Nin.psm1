@@ -127,7 +127,7 @@ Export-ModuleMember -Function $completer
 
 $public = @(
     # new
-    'Resolve-FullTypeName'
+
     'ConvertFrom-GistList'
 
 
@@ -193,7 +193,7 @@ foreach ($file in $public) {
 
 $functionsToExport = @(
     ##  newer
-    'Resolve-FullTypeName'
+
     'ConvertFrom-GistList'
 
 

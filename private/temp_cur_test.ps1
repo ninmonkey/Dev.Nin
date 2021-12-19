@@ -3,13 +3,16 @@
 # 'rgbcolor' | New-TypeInfo
 # hest explicit
 
+# $ErrorActionPreference = 'stop'
 Import-Module 'dev.nin' -Force
 
-
-    hr
-
+'tests?'
+hr
+& {
     $RunTest = @{
-        'Code-Insider' = $false
+        'Resolve-TypeName'         = $false
+        'Resolve-TypeNamePester'   = $true
+        'Code-Insider'             = $false
         'GotoError'                = $false
         'New-Sketch'               = $false
         'Format-Dict'              = $false
@@ -17,33 +20,50 @@ Import-Module 'dev.nin' -Force
         'Format-Dict.CustomConfig' = $false # 📌 best
         'RegexTestFilepath'        = $false
     }
+    if ($RunTest.'Resolve-TypeName') {
+        'hashtable' | Resolve-TypeName
+    (Get-Item . ) | ResolveTypeName
 
-    if($RunTest.'Rune-Detail') {
+        [Text.ASCIIEncoding] | Resolve-TypeName
+        [ASCIIEncoding] | resolve-typename
+    }
+    if ($RunTest.'Resolve-TypeNamePester') {
+        $invokePesterSplat = @{
+            Path   = 'C:/Users/cppmo_000/SkyDrive/Documents/2021/powershell/My_Github/dev.nin/public_autoloader/current/Resolve-TypeName.tests.ps1'
+            Output = 'detailed'
+        }
+
+        '...' | label 'before'
+        Invoke-Pester @invokePesterSplat
+        '...' | label 'after'
+    }
+
+    if ($RunTest.'Rune-Detail') {
         $grapheme = '👩🏼‍🦳'
-        $grapheme.EnumerateRunes() | ft
+        $grapheme.EnumerateRunes() | Format-Table
         hr
         $grapheme | Get-RuneDetail
     }
 
 
-    if($RunTest.'Code-Insider') {
+    if ($RunTest.'Code-Insider') {
         # & {
 
-    $codeIvEnvSplat = @{
-        WhatIf = $true
-        TargetPath = ls . -file | select -first 1 #'.\test.log'
-    }
+        $codeIvEnvSplat = @{
+            WhatIf     = $true
+            TargetPath = Get-ChildItem . -File | Select-Object -First 1 #'.\test.log'
+        }
 
-    CodeI-vEnv @codeIvEnvSplat #-ea break
+        CodeI-vEnv @codeIvEnvSplat #-ea break
 
-    $codeIvEnvSplat = @{
-        WhatIf = $true
-        TargetPath = '.'
-    }
+        $codeIvEnvSplat = @{
+            WhatIf     = $true
+            TargetPath = '.'
+        }
 
-    CodeI-vEnv @codeIvEnvSplat  #-ea break
-    # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea break
-    # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea inquire
+        CodeI-vEnv @codeIvEnvSplat  #-ea break
+        # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea break
+        # CodeI-vEnv -WhatIf .\test.log -LineNumber 20 -ea inquire
     }
 
     # }

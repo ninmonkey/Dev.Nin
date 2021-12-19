@@ -151,6 +151,12 @@ $When = (Get-Date).ToString('u')
             dump type info
         .example
             PS> iDump PsTypeNames_TypeDataDumpSummary -ArgList @(ls . -File )
+        .link
+            Get-TypeData
+        .link
+            about_Types.ps1xml
+        .link
+            https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-7.3
 
         #>
         function _getTypeData {

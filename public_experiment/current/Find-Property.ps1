@@ -73,10 +73,26 @@ function _get-ObjectProperty {
         [Parameter(
             Mandatory, Position = 0,
             ValueFromPipeline)]
-        [object]$InputObject
+        [object]$InputObject,
+
+        # don't sort/unique
+        [Parameter()]
+        [validateSet('PSObject')]
+        [string]$PropertyType = 'PSObject'
     )
     process {
-        $InputObject.psobject.properties
+        switch ($PropertyType) {
+            'DefaultDisplayPropertySet' {
+                'nyi'
+            }
+            'PSObject' {
+                $InputObject.psobject.properties
+            }
+            default {
+                $InputObject.psobject.properties
+            }
+        }
+
     }
 }
 

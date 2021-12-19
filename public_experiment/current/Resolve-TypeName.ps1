@@ -1,5 +1,16 @@
+#Requires -Version 7
 
-function Resolve-FullTypeName {
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Resolve-TypeName'
+    )
+    $experimentToExport.alias += @(
+        'FullName'
+    )
+}
+
+
+function Resolve-TypeName {
     <#
     .SYNOPSIS
         Resolve a type's FullName from an instance, a 'type', typename as a string, or using wildcards.
@@ -25,8 +36,8 @@ function Resolve-FullTypeName {
         'ConsoleColor' | FullName
     #>
 
-    [CmdletBinding( SupportsShouldProcess, PositionalBinding = $false)]
-    [Alias('Fullname', 'Resolve-TypeName')]
+    [CmdletBinding(  )]
+    [Alias('FullName')]
     [OutputType([String])]
 
     Param (
@@ -56,6 +67,18 @@ function Resolve-FullTypeName {
     }
 
     process {
+        $isAType = $inputObject -as 'type' -is 'type'
+        if (! $isAType ) {
+            $tinfo = $InputObject.GetType()
+        }
+        $tinfo = $inputObject -as 'type'
+        $tinfo = if ($InputObject -is 'type') {
+            $Input
+        }
+        # if )
+
+
+        Write-Warning 'jumping to old code'
 
         # type of type isn't useful here, so use typeinfo [RuntimeType] ?
         if ($InputObject -is 'type') {
@@ -91,4 +114,9 @@ function Resolve-FullTypeName {
     end {
         # $Output | Sort-Object -Unique # did not work.
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
