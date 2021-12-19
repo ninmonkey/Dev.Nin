@@ -146,19 +146,57 @@ $When = (Get-Date).ToString('u')
     }
 
     $state.PsTypeNames_TypeDataDumpSummary = {
-        $src = ($args[0] ?? $args) ?? (Get-Item .)
-        $td = @{}
+        <#
+        .synopsis
+            dump type info
+        .example
+            PS> iDump PsTypeNames_TypeDataDumpSummary -ArgList @(ls . -File )
 
-        $tnames = $src.pstypenames
-        $tnames | ForEach-Object {
-            $td[$_] = Get-TypeData -TypeName $_
+        #>
+        function _getTypeData {
+            param($InputObject)
+
+            $src = $InputObject
+            $td = @{}
+
+            $tnames = $src.pstypenames
+            $tnames | ForEach-Object {
+                $td[$_] = Get-TypeData -TypeName $_
+
+            }
+
+            $td.GetEnumerator() | ForEach-Object {
+                h1 $_.Key
+                $_.Value | s * | Format-List *
+
+                label 'member' 'default display property set'
+                $_
+            }
+            $td.members.keys
+            | str csv ' ' | label 'TD.members.keys'
+
+            $td | ForEach-Object defaultdisplaypropertyset
+            | str csv ' ' | label 'TD.DefaultDisplayPropertySet'
+
+            $td | ForEach-Object defaultdisplaypropertyset | ForEach-Object ReferencedProperties
+            | str csv ' ' | label 'TD.DefaultDisplayPropertySet.ReferencedProperties'
+
+
 
         }
+        $source = $args
+        $source ??= Get-Item .
+        $source
+        | Get-Unique -OnType
+        | ForEach-Object {
+            $source = $_
+            Label 'item' $source
+            _getTypeData -InputObject $source
 
-        $td.GetEnumerator() | ForEach-Object {
-            h1 $_.Key
-            $_.Value | s * | Format-List *
+
         }
+        # $src = ($args[0] ?? $args) ?? (Get-Item .)
+
     }
 
 } catch {
