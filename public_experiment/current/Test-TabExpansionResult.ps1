@@ -96,25 +96,51 @@ function Test-TabExpansionResult {
 
     $id = 0
     if ($Passthru) {
+
         TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
-        | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
         | Add-Member -NotePropertyName 'Id' ($id++) -PassThru
-        | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResultFull' -PassThru
+        # | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
+        # | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResultFull' -PassThru
+
     } else {
-        TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
-        | ForEach-Object CompletionMatches
-        | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
-        | Add-Member -NotePropertyName 'Id' ($id++) -PassThru
-        | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResult' -PassThru
+
+        $query = TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
+        $query.count
+        $query | ForEach-Object CompletionMatches
+        $mergeOther = $_ | New-HashtableFromObject
+        $meta = @{
+            PSTypeName = 'dev.TabExpandResult'
+            Query      = $CommandText
+            Id         = $id++
+        }
+        [pscustomobject]( Join-HashTable $meta $mergeOther )
+
+
+
+        # | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
+        # | Add-Member -NotePropertyName 'Id' -NotePropertyValue ($id++) -PassThru
+        # | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResult' -PassThru
+
     }
+
+    # "Id: $id"
 }
 <#
 example 1 returns files
 Test-TabExpansionResult 'ls . -f' 1
 #>
+@'
+left off:
+    - [ ] ask: add member psco, or, psco and merge object?
+    - [ ] 'dev.TabExpandResult'
+        should auto show as table
 
+'@ | Write-Warning
 
 if (! $experimentToExport) {
+    dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
+    $res = dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
+    $res.count
     if ($false) {
         0..3 | ForEach-Object {
             $CurColumn = $_
@@ -125,5 +151,26 @@ if (! $experimentToExport) {
             $CompleterMatch
         }
     }
+
+    h1 'fin'
+
+
     # ...
+    $CommandText = 'git s'
+    $res = TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
+    $CursorColumn = $null
+    $res.count
+    $res | ForEach-Object {
+        $merge = $_ | New-HashtableFromObject
+        $meta = @{
+            PSTypeName = 'dev.TabExpandResult'
+            Query      = $CommandText
+            Id         = $id++
+        }
+        [pscustomobject]( Join-HashTable $meta $Merge )
+    }
+    # | ForEach-Object CompletionMatches
+    # | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
+    # | Add-Member -NotePropertyName 'Id' -NotePropertyValue ($id++) -PassThru
+    # | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResult' -PassThru
 }
