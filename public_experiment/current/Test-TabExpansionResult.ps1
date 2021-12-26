@@ -105,15 +105,16 @@ function Test-TabExpansionResult {
     } else {
 
         $query = TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
-        $query.count
         $query | ForEach-Object CompletionMatches
-        $mergeOther = $_ | New-HashtableFromObject
-        $meta = @{
-            PSTypeName = 'dev.TabExpandResult'
-            Query      = $CommandText
-            Id         = $id++
+        | ForEach-Object {
+            $mergeOther = $_ | New-HashtableFromObject
+            $meta = @{
+                PSTypeName = 'dev.TabExpandResult'
+                Query      = $CommandText
+                Id         = $id++
+            }
+            [pscustomobject]( Join-HashTable $meta $mergeOther )
         }
-        [pscustomobject]( Join-HashTable $meta $mergeOther )
 
 
 
@@ -131,13 +132,18 @@ Test-TabExpansionResult 'ls . -f' 1
 #>
 @'
 left off:
-    - [ ] ask: add member psco, or, psco and merge object?
-    - [ ] 'dev.TabExpandResult'
-        should auto show as table
+    type should auto show as table
 
 '@ | Write-Warning
 
 if (! $experimentToExport) {
+    @(
+        dev->TestTabExpand -CommandText 'git st'
+        hr
+        dev->TestTabExpand -CommandText 'git s' ) | Format-Table -AutoSize
+
+    return
+
     dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
     $res = dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
     $res.count
