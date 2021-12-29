@@ -118,13 +118,10 @@ function New-HashtableFromObject {
         $filteredNames | ForEach-Object {
             $curName = $_
             $targetObj = $InputObject.psobject.properties
-            $hash[ $curName ] = ($targetObj[ $curName ])?.Value
+            $hash[ $curName ] = ($targetObj[ $curName ])?.Value # needs verbose null test if PS5
             # $hash[ $curName ] = $InputObject.psobject.properties[ $curName ].Value
         }
-        # $InputObject
-
         $hash
-
     }
 
     end {

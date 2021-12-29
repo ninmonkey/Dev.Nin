@@ -2,7 +2,7 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Out-Error'                
+        'Out-Error'
     )
     $experimentToExport.alias += @(
         'Pipe->Error'
@@ -21,7 +21,7 @@ function Out-Error {
         PS> Out-Error 4
     .example
         PS> $Error[0..3] | Out-Error
-        
+
     .example
         🐒>
     #>
@@ -42,14 +42,14 @@ function Out-Error {
         )]
         [object[]]$InputObject
     )
- 
+
     begin {
     }
     end {
         if ($Count -gt 0) {
 
         }
-        $template = @(            
+        $template = @(
             'Viewing: '
             '[{0}]' -f @(
                 if ($Count) {
@@ -57,7 +57,7 @@ function Out-Error {
                 } else {
                     'All'
                 }
-                
+
             )
             | Write-Color green
 
@@ -69,34 +69,34 @@ function Out-Error {
             ' errors'
         ) -join ''
 
-        $template | wi 
-             
+        $template | wi
+
         switch ($PSCmdlet.ParameterSetName) {
             'FromNewest' {
                 # $getErrorSplat['Newest'] = $count
                 $getErrorSplat['Newest'] = [math]::Min( $Count, $global:error.Count )
                 "${fg:red}"
-                Get-Error @getErrorSplat | less 
+                Get-Error @getErrorSplat | less
                 break
             }
             'FromInput' {
                 # $getErrorSplat['InputObject'] = $InputObject
-                # Get-Error @getErrorSplat 
+                # Get-Error @getErrorSplat
                 $InputObject
                 | Get-Error
                 | Less
                 break
             }
-            
+
             default {
                 throw "Unhandled ParameterSet: $($PSCmdlet.ParameterSetName)"
             }
-        }  
-    }    
+        }
+    }
 }
 
 
 if (! $experimentToExport) {
     # ...
- 
+
 }

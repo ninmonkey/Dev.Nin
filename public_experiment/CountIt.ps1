@@ -6,8 +6,6 @@ $experimentToExport.function += @(
     'Measure-ObjectCount'
 )
 $experimentToExport.alias += @(
-    'CountIt'
-    'Count'
     'Len'
 )
 function Measure-ObjectCount {
@@ -24,12 +22,17 @@ function Measure-ObjectCount {
     .outputs
           [int]
     #>
+
     [alias( 'CountIt', 'Count', 'Len')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         #Input from the pipeline
         [Parameter(Mandatory, ValueFromPipeline)]
-        [object[]]$InputObject
+        [object[]]$InputObject,
+
+        # do not count 'Blank' values
+        [Alias('IgnoreNull')]
+        [switch]$IgnoreBlank
     )
     begin {
         $objectList = [List[object]]::new()
@@ -40,10 +43,15 @@ function Measure-ObjectCount {
         }
     }
     end {
-        try {
-            $objectList | Measure-Object | ForEach-Object Count
-        } catch {
-            $PSCmdlet.WriteError( $_ )
+        if ( $IgnoreBlank) {
+            $objectList
+            | Dev.Nin\Where-IsNotBlank
+            | Measure-Object | ForEach-Object Count
+            return
         }
+        $objectList
+        | Measure-Object | ForEach-Object Count
+
+
     }
 }

@@ -401,24 +401,30 @@ function Invoke-VSCodeVenv {
         if (! $CodeBin) {
             throw 'Did not find any code-insider instances' ; return;
         }
-        try {
-            $DataDir = Get-Item -ea stop $DataDir
+
+        if ( [string]::IsNullOrWhiteSpace( $DataDir )) {
+            try {
+                $DataDir = Get-Item -ea stop $DataDir
+            } catch {
+                Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
+                Write-Debug 'falling back to implicit default path'
+            }
         }
-        catch {
-            Write-Error -ea continue "Invalid $dataDir = '$dataDir'. $_"
-            Write-Warning 'falling back to implicit default path'
-        }
-        try {
-            $AddonDir = Get-Item -ea stop $AddonDir
-        }
-        catch {
-            Write-Error -ea continue "Invalid $AddonDir = '$AddonDir'. $_"
-            Write-Warning 'falling back to implicit default path'
+
+
+        if ($null -ne $AddonDir) {
+            try {
+                $AddonDir = Get-Item -ea stop $AddonDir
+            } catch {
+                Write-Error -ea continue "Invalid $AddonDir = '$AddonDir'. $_"
+                Write-Debug 'falling back to implicit default path'
+            }
         }
 
 
         try {
-            $target = Get-Item -ea ignore $TargetPath
+            # $target = Get-Item -ea ignore $TargetPath
+            $target = Get-Item -ea Stop $TargetPath
         }
         catch {
             Write-Error -ea stop 'Invalid Path'

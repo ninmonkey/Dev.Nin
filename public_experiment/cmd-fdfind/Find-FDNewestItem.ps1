@@ -175,6 +175,11 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
         )]
         [string[]]$ItemType,
 
+        # max depth, $Null or 0 are interpreted as recurse all
+        [Alias('MaxDepth')]
+        [parameter(Position = 4)]
+        [string]$Depth,
+
         # base path to use, optionally from pipeline, else cwd
         [Alias('Regex')]
         [parameter(Position = 1)]
@@ -196,7 +201,13 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
         # show urls or other misc notes
         [ALias('--help', 'Manpage')] # todo: future: Link or show markdown docs
         [Parameter()]
-        [switch]$Help
+        [switch]$Help,
+
+        # show urls or other misc notes
+        # [ALias('')] # todo: future: Link or show markdown docs
+        [Parameter()]
+        [switch]$IgnoreHidden
+
 
         # [Parameter(
         #     Position = 1)]
@@ -206,6 +217,7 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
 
     begin {
         $binFd = Get-NativeCommand 'fd'
+        Write-Warning 'next: '
     }
     process {
         if ($Help) {
@@ -270,25 +282,25 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
 
         # $query | format-dict
         $fdArgs = @(
-            if ($true) {
+            if (! $IgnoreHidden) {
                 '--hidden'
             }
-            if ($true) {
-                '-d', '5'
+            if ($Depth) {
+                '--max-depth', $Depth
             }
             $QueryExtension | ForEach-Object {
-                '-e', $_
+                '--extension', $_
             }
             if (! $Env:NO_COLOR) {
                 $ColorModeParam = switch ($Color) {
                     'Always' {
-                        '--color=always' 
+                        '--color=always'
                     }
                     'Never' {
-                        '--color=never' 
+                        '--color=never'
                     }
                     'Auto' {
-                        '--color=auto' 
+                        '--color=auto'
                     }
                     default {
                         '--color=always'
@@ -308,9 +320,11 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
                     '.'
                 }
                 '--'
+                # $BasePath
 
-                $QueryRootDir
-                | Join-String -DoubleQuote
+                # $QueryRootDir
+                $BasePath
+                # | Join-String -DoubleQuote
 
             }
         )
@@ -323,11 +337,11 @@ For -x/--exec, you can control the number of parallel jobs by using the -j/--thr
             FinalArgs       = $fdArgs | Join-String -sep ' ' -op "$BinFd "
         }
 
-        $dmeta | format-dict | Write-Information
+        $dmeta | format-dict | Join-String -sep "`n" | Write-Information
 
-        $binFd | Str prefix 'Bin: ' | Write-Debug
+        $binFd | Str prefix 'Bin: ' | Join-String | Write-Debug
 
-        $fdArgs | Join-String -sep ' ' -op "$BinFd " | Write-Color 'blue' | Write-Information
+        $fdArgs | Join-String -sep ' ' -op "$BinFd " | Write-Color 'blue' | Join-String -sep "`n" | Write-Information
         # 'invoke: ' | Write-Color orange | write-infomr
         & $binFd @fdArgs
         # @(

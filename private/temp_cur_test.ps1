@@ -10,8 +10,8 @@ Import-Module 'dev.nin' -Force
 hr
 & {
     $RunTest = @{
-        'Resolve-TypeName'         = $false
-        'Resolve-TypeNamePester'   = $true
+        'Resolve-TypeName'         = $true
+        'Resolve-TypeNamePester'   = $false
         'Code-Insider'             = $false
         'GotoError'                = $false
         'New-Sketch'               = $false
@@ -22,7 +22,7 @@ hr
     }
     if ($RunTest.'Resolve-TypeName') {
         'hashtable' | Resolve-TypeName
-    (Get-Item . ) | ResolveTypeName
+    (Get-Item . ) | Resolve-TypeName
 
         [Text.ASCIIEncoding] | Resolve-TypeName
         [ASCIIEncoding] | resolve-typename

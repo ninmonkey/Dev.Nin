@@ -3,6 +3,9 @@
         {
             "name": "Dev.Nin",
             "path": "."
+        },
+        {
+            "path": "..\\Mini.Examples\\Parsing Native Apps\\DOS"
         }
     ],
     "settings": {
@@ -81,11 +84,70 @@
     },
     "tasks": {
         "version": "2.0.0",
+        "inputs": [
+            {
+                "id": "savedCurrentFilename",
+                "default": "${file}",
+                "description": "Select and safe a file for later",
+                "type": "promptString",
+            }
+        ],
         "tasks": [
             {
-                "label": "echo : can I import module?",
+                "label": "select filename from inputs",
                 "type": "shell",
-                "command": "echo Hello"
+                "command": "-C { echo ${input:savedCurrentFilename} }",
+                "problemMatcher": [],
+                "options": {
+                    "shell": {
+                        "executable": "pwsh",
+                        "args": [
+                            "-Nop",
+                            "-NoL"
+                        ]
+                    }
+                },
+            },
+            // {
+            //     "label": "select cur file?",
+            //     "type": "shell",
+            //     "command": "echo Hello",
+            //     "problemMatcher": []
+            // },
+            {
+                "label": "Show files",
+                "type": "shell",
+                // "command": "& pwsh -nop -nol -C {ls .}",
+                /*
+                currently runs:
+                    pwsh -nop -nol -C { gci -File -path C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin | % Fullname}
+
+                old verionss:
+                    pwsh -nop -nol -C { gci -path C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin }
+                    */
+                "command": "-C { gci -path ${workspaceFolder} }",
+                "detail": "experiment to list files with pwsh",
+                // "runOptions": {},
+                // "args": [{}],
+                "options": {
+                    "shell": {
+                        "executable": "pwsh",
+                        "args": [
+                            "-Nop",
+                            "-NoL"
+                        ]
+                    }
+                },
+                "runOptions": {},
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": true,
+                    "panel": "shared",
+                    "showReuseMessage": true,
+                    "clear": false
+                }
+                // "problemMatcher": []
             }
         ]
     }
