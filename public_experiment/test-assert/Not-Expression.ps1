@@ -5,9 +5,9 @@ if (! $DebugInlineToggle ) {
     )
     $experimentToExport.alias += @(
 
-        'Not',
+        # 'Not',
         'Not!',
-        'FlipBool',
+        # 'FlipBool',
         'Not¬'
     )
 

@@ -1,7 +1,7 @@
 #Requires -Version 7
 using namespace System.Collections.Generic
 using namespace System.Text
-
+# fix my default table cols
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Close-OpenWindow'
@@ -9,7 +9,7 @@ if ( $experimentToExport ) {
         'Get-WindowPosition'
         'Maximize-Window'
         'Minimize-Window'
-        'Restore-Window', 
+        'Restore-Window',
         'Set-WindowPosition'
     )
     $experimentToExport.alias += @(
@@ -20,7 +20,7 @@ if ( $experimentToExport ) {
         'Window->Minimize'
         'Window->Restore'
         'Window->SetPosition'
-        
+
     )
 }
 
@@ -117,33 +117,33 @@ function Get-OpenWindow {
         [string]$Name = '*'
     )
 
-    
+
     process {
         $handles = [List[IntPtr]]::new()
         $shellWindowhWnd = [WindowTools]::GetShellWindow()
-    
+
         $null = [WindowTools]::EnumWindows(
             {
                 param (
                     [IntPtr] $handle,
                     [int]    $lParam
                 )
-    
+
                 if ($handle -eq $shellWindowhWnd) {
                     return $true
                 }
-    
+
                 if (-not [WindowTools]::IsWindowVisible($handle)) {
                     return $true
                 }
-    
+
                 $handles.Add($handle)
-    
+
                 return $true
             },
             0
         )
-    
+
         foreach ($handle in $handles) {
             $titleLength = [WindowTools]::GetWindowTextLength($handle)
             if ($titleLength -gt 0) {
@@ -154,14 +154,14 @@ function Get-OpenWindow {
                     $titleLength + 1
                 )
                 $title = $titleBuilder.ToString()
-    
+
                 if ($title -like $Name) {
                     $processID = 0
                     $null = [WindowTools]::GetWindowThreadProcessId(
                         $handle,
                         [ref]$ProcessID
                     )
-    
+
                     [OpenWindow]@{
                         Title     = $title
                         Handle    = $handle

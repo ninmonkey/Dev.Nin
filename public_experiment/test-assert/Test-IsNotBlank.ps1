@@ -3,33 +3,57 @@ if (! $DebugInlineToggle ) {
     $experimentToExport.function += @(
         'Test-IsNotBlank'
     )
-    # $experimentToExport.alias += @(
-    #     'TextProcessing📚.IsNotBlank'
-        'Assert-IsNotBlank'
-    # )
+    $experimentToExport.alias += @(
+        #     'TextProcessing📚.IsNotBlank'
+        'Assert-IsNotBlank' # currently one function
+    )
 }
+
 
 function Test-IsNotBlank {
     <#
     .synopsis
         asserts, todo: Maybe throw ann error too?
+    .description
+        Returns true if [string] is "truthy"
     .link
         Where-IsNotBlank
+    .link
+        [string]::IsNullOrWhiteSpace
     .outputs
         boolean
     #>
-    [Alias('!Blank', 'TextProcessing📚.IsNotBlank',
-        'Validation🕵.IsNotBlank',
+    [Alias('
+        !Blank',
+        'text->IsNotBlank',
         'Assert-IsNotBlank'
+        # 'Validation🕵.IsNotBlank',
     )]
     [outputtype([bool])]
     [cmdletbinding()]
     param(
         # Input text line[s]
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, position = 0)]
-        [string[]]$Text
+        [AllowEmptyString()]
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [Parameter(
+            Mandatory, Position = 0,
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
+        [string[]]$InputText,
+
+        # throw exception?
+        [switch]$AlwaysThrow
     )
     process {
-        [string]::IsNullOrWhiteSpace( $InputText )
+        [bool]$IsBlank = [string]::IsNullOrWhiteSpace( $InputText )
+
+        if ($AlwaysThrow -and $IsBlank) {
+            Write-Error -ea stop -Message 'Value was blank' -TargetObject $InputText
+            return $false
+        }
+        ! $IsBlank
+        return
     }
 }
