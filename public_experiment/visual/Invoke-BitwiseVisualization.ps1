@@ -35,10 +35,15 @@ function _colorizeBits {
         | Should -be '␛[38;2;127;127;127m0␛[39m␛[38;2;127;127;127m0␛[39m␛[38;2;127;127;127m0␛[39m␛[38;2;229;229;229m1␛[39m.␛[38;2;127;127;127m0␛[39m␛[38;2;127;127;127m0␛[39m␛[38;2;127;127;127m0␛[39m␛[38;2;127;127;127m0␛[39m'
     #>
     param(
+        [AllowNull()]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string]$InputText
     )
     process {
+        # if($null -eq $InputText) {
+        if ([string]::IsNullOrWhiteSpace( $InputText )) {
+            return
+        }
         $InputText
         | hi -Pattern '1' -Color gray90
         | hi -Pattern '0' -Color gray50
@@ -150,11 +155,15 @@ function Invoke-BitwiseVisualization {
                 # } $OperandLeft -bor $OperandRight
 
                 $results = $OperandLeft, $OperandRight, $OperationResult | ForEach-Object {
-                    [int]$curOp = $_
+                    $curOp = $_
                     $renderObj = [ordered]@{
-                        Dec  = [int]$curOp
+                        Dec  = $curOp
                         # BitsRaw  = $curOp | bits
-                        Bits = [int]$curOp | bits | _colorizeBits
+                        Bits = TRY {
+                            $curOp | bits | _colorizeBits
+                        } catch {
+                            $curOp | bits
+                        }
                         # warning: order breaks render
                     }
                     if (! $Env:NoColor) {
@@ -428,4 +437,3 @@ if (! $experimentToExport) {
     #| Out-String | _colorizeBits | Out-String
     $render | s *
 }
-

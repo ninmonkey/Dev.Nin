@@ -125,6 +125,29 @@ $When = (Get-Date).ToString('u')
         # normal tables, but don't group
         | Get-Item | Format-Table -group { $true }
     }
+    $state.caeserCipher = {
+        <#
+        .synopsis
+            more of a wierd array operator example
+
+
+        .notes
+            # kind of, not really.  https://en.wikipedia.org/wiki/Caesar_cipher
+
+        #>
+
+        $chars = 'a'..'f'
+        $caeser_offset = 9
+        foreach ($i in 0..($chars.Length - 1)) {
+            @(
+                $i + $caeser_offset
+                $chars[$i]
+            ) | Join-String -sep ' = '
+            | ForEach-Object {
+                $_.padLeft(8)
+            }
+        }
+    }
     $state.Find_Pwsh_EncodedCommands = {
         <#
         .synopsis

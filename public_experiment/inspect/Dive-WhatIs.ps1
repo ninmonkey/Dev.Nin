@@ -6,9 +6,7 @@ if ( $experimentToExport ) {
 
     )
     $experimentToExport.alias += @(
-        'dw'
-
-        'Dive->WhatIsDump'
+        'Dump->WhatType'
 
     )
 }
@@ -34,8 +32,9 @@ function Dive-WhatIsDump {
 
     #>
     [Alias(
-        'dw',
-        'Dive->WhatIsDump'
+        # 'dw',
+        # 'Dive->WhatIsDump'
+        'Dump->WhatIs'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(

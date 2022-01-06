@@ -1,10 +1,14 @@
+#Requires -modules @{ModuleName='Pester';ModuleVersion='5.0.0'}
+#Requires -Version 7
+
+
 BeforeAll {
-    . "$PSScriptRoot/Test-IsNotBlank.ps1"
+    Import-Module Dev.Nin -Force
 }
 
 Describe 'Test-IsNotBlank' {
     BeforeAll {
-        $ErrorActionPreference = break
+
     }
     Describe 'Exceptions' {
         It 'Literal Empty' {
@@ -12,11 +16,11 @@ Describe 'Test-IsNotBlank' {
             { Test-IsNotBlank '' } | Should -Not -Throw
 
         }
-        It 'Literal Empty' {
+        It 'Literal Empty2' {
             Test-IsNotBlank '' | Should -Be $False
         }
     }
     It 'Basic' {
-        Test-IsNotBlank ' ' | Should -Be $True
+        Test-IsNotBlank ' ' | Should -Be $false
     }
 }

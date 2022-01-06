@@ -7,7 +7,7 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
     )
     $experimentToExport.alias += @(
         'Str'
-        '_dumpTNames'
+        'Dump->TNames'
         #
         #for the main command, i'm not sure if I want
         # 'Join-StringStyle'
@@ -55,7 +55,7 @@ function _dumpPsTypeName {
     see this to see how to map typeinfo to a string that's url
         <https://github.com/SeeminglyScience/ClassExplorer/blob/signature-query/src/ClassExplorer/SignatureWriter.cs>
     #>
-    [alias('_dumpTNames')]
+    [alias('Dump->TNames')]
     param(
         [alias('Target')]
         [parameter(position = 0, valueFromPipeline)]

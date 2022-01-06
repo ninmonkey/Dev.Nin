@@ -1,14 +1,13 @@
-# allows script to be ran alone, or, as module import
-if (! $DebugInlineToggle ) {
+#Requires -Version 7
+
+if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Test-IsNotBlank'
     )
     $experimentToExport.alias += @(
-        #     'TextProcessing📚.IsNotBlank'
         'Assert-IsNotBlank' # currently one function
     )
 }
-
 
 function Test-IsNotBlank {
     <#
@@ -16,10 +15,14 @@ function Test-IsNotBlank {
         asserts, todo: Maybe throw ann error too?
     .description
         Returns true if [string] is "truthy"
+
+        Assert-IsNotBlank is an alias to always use -AlwaysThrow
     .link
         Where-IsNotBlank
     .link
         [string]::IsNullOrWhiteSpace
+    .link
+        Dev.Nin\Assert-IsNotBlank
     .outputs
         boolean
     #>
@@ -43,10 +46,15 @@ function Test-IsNotBlank {
         )]
         [string[]]$InputText,
 
-        # throw exception?
+        # false values should always throw ?
         [switch]$AlwaysThrow
     )
     process {
+        # not worth a helper function to test which smart alias was used
+        if ($PSCmdlet.MyInvocation.InvocationName -eq 'Assert-IsNotBlank') {
+            $AlwaysThrow = $true
+        }
+
         [bool]$IsBlank = [string]::IsNullOrWhiteSpace( $InputText )
 
         if ($AlwaysThrow -and $IsBlank) {
@@ -56,4 +64,9 @@ function Test-IsNotBlank {
         ! $IsBlank
         return
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
