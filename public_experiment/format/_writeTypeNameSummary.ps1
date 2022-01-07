@@ -17,6 +17,8 @@ function _write-TypeNameSummary {
     <#
     .synopsis
         output type summary as text (future: as type)
+    .notes
+        todo: try: <https://github.com/SeeminglyScience/ClassExplorer/blob/c63507299527ceb85fe2893771bf98ed7d47ea26/src/ClassExplorer/SignatureWriter.cs#L478-L513>
     .description
         .uses nullstring symbol
 

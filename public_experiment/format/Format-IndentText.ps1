@@ -1,8 +1,9 @@
 $experimentToExport.function += @(
     'Format-IndentText'
+    'Format-UnindentText'
 )
 $experimentToExport.alias += @(
-    'Format-PredentIndent'
+    # 'Format-PredentIndent'
     # 'Format-Predent'
 )
 # $experimentFuncMetadata += @{
@@ -10,18 +11,51 @@ $experimentToExport.alias += @(
 #     Command = 'Format-IndentText'
 #     Tags    = 'TextProcessing📚', 'Style🎨' # todo: build, from function docstrings
 # }
+function Format-UnindentText {
+    <#
+    .synopsis
+         remove prefix depth of X
+    .notes
+        Future impl, should be a smart alias to Dev.Nin\Format-IndentText ?
+    .LINK
+        Dev.Nin\Format-IndentText
 
-function Format-IndentText { 
+    #>
+    [cmdletbinding()]
+    param(
+        # text to modify
+        [Parameter(Mandatory)]
+        [string[]]$InputText,
+
+        # takes absolute value of
+        [Parameter(Mandatory)]
+        [int]$Depth)
+
+    $Depth = [math]::Abs( $depth )
+
+    $replaceRegex = '^\ {{{0}}}' -f @(4 * $Depth)
+    Write-Debug $replaceRegex
+
+    $InputText -join "`n" -split '\r?\n' -replace $replaceRegex, ''
+
+}
+
+function Format-IndentText {
     <#
     .synopsis
         indent all text by X levels. Predent? Indent?
     .description
-        compare/merge with: 
+        compare/merge with:
             C:\Users\cppmo_000\SkyDrive\Documents\2021\powershell\My_Github\Ninmonkey.Console\public\Format-Predent.ps1
     .notes
         tags: TextProcessing📚, 'Style🎨'
+    .LINK
+        Ninmonkey.Console\Format-Predent
+    .LINK
+        Dev.Nin\Format-UnindentText
     #>
-    [Alias('Format-PredentText')]
+    # [Alias('Format-PredentText')]
+    [outputType('[System.String[]]', 'System.String')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # Level
@@ -47,9 +81,13 @@ function Format-IndentText {
     }
 
     process {
-        if ($Depth -le 0) {
+        if ($Depth -lt 0) {
+            Format-UnindentText -InputText $Text -Depth
+            return
+        }
+        if ($Depth -eq 0) {
             $Text
-            return                 
+            return
         }
         $predentSplat = @{
             OutputPrefix = $predentStr
@@ -60,6 +98,6 @@ function Format-IndentText {
         $Text
         | ForEach-Object { $_ -split '\r?\n' } # not needed? maybe it will be on newline embedded strings?
         | Join-String @predentSplat
-    }   
-    
+    }
+
 }

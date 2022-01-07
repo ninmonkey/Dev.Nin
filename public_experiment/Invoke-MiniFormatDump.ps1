@@ -5,12 +5,14 @@ $experimentToExport.function += @(
     'Invoke-MiniFormatDump'
 )
 $experimentToExport.alias += @(
-    'FormatDump'
+    'FormatDump',
+    'fDump'
 )
 
 try {
-    $script:__miniFormatDump ??= @{}
+    $script:__miniFormatDump = @{}
     $state = $script:__miniFormatDump ?? @{}
+    # $state = $script:__miniFormatDump ?? @{}
 
     $state.Help_PSTypeNames = {
         # param($TypeName)
@@ -33,6 +35,20 @@ PSTypeNames:
         $str_os
     }
 
+    # PowerQuery.EscapeForDocs = {
+    # $state.PowerQuery.EscapeForDocs = {
+    $state.'FormatTo.PqDocString' = {
+        param($Text)
+        <#
+        .synopsis
+            macro to convert PowerQuery sourcecode, escaped for use in documentation
+        .EXAMPLE
+            $PowerQueryString | fDump -ScriptName FormatTo.PqDocString
+        #>
+
+        $Text -join "`n" -replace '"', '""'
+
+    }
     $state.SortUnique = {
         param($Text)
         $Text ??= Get-Clipboard
@@ -59,7 +75,7 @@ function Invoke-MiniFormatDump {
 
     #>
     [Alias(
-        'FormatDump' #, 'FmDump'
+        'FormatDump', 'fDump' #, 'FmDump'
     )]
     [CmdletBinding(
         DefaultParameterSetName = 'InvokeTemplate')]
@@ -71,7 +87,7 @@ function Invoke-MiniFormatDump {
             ParameterSetName = 'InvokeTemplate'
         )]
         [ArgumentCompletions(
-            'Help_PSTypeNames', 'SortUnique'
+            'Help_PSTypeNames', 'SortUnique', 'FormatTo.PqDocString'
         )]
         [string]$ScriptName,
 
@@ -89,7 +105,7 @@ function Invoke-MiniFormatDump {
 
         # list commands
         [parameter(ParameterSetName = 'ListOnly')]
-        [switch]$List,
+        [switch]$List, # warning: stopped working
 
         # list commands
         [parameter()]
@@ -99,7 +115,7 @@ function Invoke-MiniFormatDump {
 
 
         # any  other params?
-        [Parameter()]
+        [Parameter(Position = 1, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [object[]]$ArgList
     )
@@ -123,8 +139,7 @@ function Invoke-MiniFormatDump {
         }
         $quoteModeSplat | Out-String | Write-Debug
         if ( $quoteModeSplat.keys.count -gt 0 ) {
-            Write-Error -Category No
-            '$quoteModeSplat'
+            Write-Error -Category NotImplemented -Message '$quoteModeSplat'
         }
 
         if ($List -or (! $ScriptName)) {
