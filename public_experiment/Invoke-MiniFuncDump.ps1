@@ -168,6 +168,25 @@ $When = (Get-Date).ToString('u')
         Get-Process pwsh | jstr -sep (hr 2) { $_.CommandLine -replace '\s-', "`n-" }
     }
 
+    $state.Get_MultilineHistory = {
+        <#
+        .synopsis
+            filter to show multi-line commmands only
+        .example
+            PS> iDump Get_MultilineHistory # -ArgList @(ls . -File )
+        .link
+        #>
+        param()
+        Get-History
+        | Where-Object { $_.CommandLine -match '\r?\n' }
+        # now extra fancy
+        | ForEach-Object CommandLine
+        | Sort-Object -Unique
+        | ForEach-Object { $_ -replace '\r?\n', "`n    " }
+        | Join-StringStyle hr
+
+    }
+
     $state.PsTypeNames_TypeDataDumpSummary = {
         <#
         .synopsis
