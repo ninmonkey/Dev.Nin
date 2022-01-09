@@ -8,8 +8,6 @@ if ( $experimentToExport ) {
     $experimentToExport.alias += @(
         'To->Hashtable'
         'ConvertTo-Hashtable'
-        # 'Filter->Hashtable',
-
     )
 }
 
@@ -18,6 +16,7 @@ function New-HashtableFromObject {
     .synopsis
         Quickly create a hashtable from selected properties, filtered by regex
     .description
+        #1 stable: move to Ninmonkey.Console
        .modes
 
         - default includes all properties
@@ -57,32 +56,35 @@ function New-HashtableFromObject {
         [Alias('RegexInclude')]
         [Parameter(
             # ParameterSetName = 'IncludeFilter',
-            Position = 0
-        )]
+            Position = 0)]
         [string[]]$IncludeProperty,
 
         # regex patterns to exclude names
         [Alias('RegexExclude')]
         [Parameter(
-            # ParameterSetName = 'IncludeFilter',
-            Position = 1
-        )]
-        # [Parameter(
-        #     Position = 0
-        # )]
-        [string[]]$ExcludeProperty
+            Position = 1)]
+        [string[]]$ExcludeProperty,
+
+
+        # Literal exclude is kind of redundant, so aliases for literal have no conflict?
+        # [Alias('LitProp', 'Prop', 'LitInclude')]
+        [Alias('Prop', 'LitInclude')]
+        [Parameter()]
+        [string[]]$LiteralInclude
     )
 
     begin {
+
     }
     process {
         $Hash = [ordered]@{}
-        $PropNames = $InputObject.psobject.properties.Name | Sort-Object -Unique
+        [string[]]$PropNames = $InputObject.psobject.properties.Name | Sort-Object -Unique
+        [string[]]$FilteredNames = @()
 
-        $PropNames | ForEach-Object {
-            $curName = $_
-
-        }
+        # wait what?
+        # $PropNames | ForEach-Object {
+        #     $curName = $_
+        # }
 
         $PropNames | str csv -sort | Write-Color gray | Join-String -op 'Initial Props: ' | Write-Debug
 
@@ -90,14 +92,17 @@ function New-HashtableFromObject {
             $filteredNames = $PropNames
         } else {
             # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
+            # $ErrorActionPreference = 'stop'
             $filteredNames = $PropNames | Where-Object {
                 $curName = $_
                 foreach ($pattern in $IncludeProperty) {
+                    #do I try catch on the innermost test?
                     if ($curName -match $Pattern) {
                         $true; return;
                     }
                 }
             }
+            # $ErrorActionPreference = 'stop'
         }
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Included Props: ' | Write-Debug
         if (! $ExcludeProperty ) {
@@ -114,12 +119,43 @@ function New-HashtableFromObject {
                 $true; return;
             }
         }
+
+        # literal include last
+        $LiteralInclude | ForEach-Object {
+            Write-Debug "iter: $_"
+            if ($PropNames -contains $_) {
+                $filteredNames += $_
+            }
+        }
+
+
+        if ($false) {
+            $filteredNames += @(
+                $LiteralInclude | Where-Object {
+                    $PropNames -contains $_
+                }
+            )
+        }
+        #     $PropNames | ?{ $_ -in $LitInclude }
+        # )
+        # $PropNames | Where-Object { $_ -in $LitInclude }
+        # $filteredNames | Sort-Object -Unique # future: get unique without sorting
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Excluded Props: ' | Write-Debug
+
+        h1 "$($FilteredNames.count)" | Write-Debug
+
         $filteredNames | ForEach-Object {
             $curName = $_
             $targetObj = $InputObject.psobject.properties
-            $hash[ $curName ] = ($targetObj[ $curName ])?.Value # needs verbose null test if PS5
-            # $hash[ $curName ] = $InputObject.psobject.properties[ $curName ].Value
+
+            # needs verbose null test if PS5
+            if ($targetObj.Name -notcontains $curName) {
+                Write-Error -ea continue -Message "Error reading property '$curName'" -TargetObject $targetObj
+            }
+            $hash[ $curName ] = ($targetObj[ $curName ])?.Value
+        }
+        if ($Hash.Keys.Count -eq 0) {
+            Write-Error -Message 'Zero Properties found'
         }
         $hash
     }
@@ -136,5 +172,10 @@ if (! $experimentToExport) {
     $h
     hr
     Get-Date | New-HashtableFromObject
+    <#
+    Import-Module Dev.Nin -Force
+    Err -Clear ; hr -fg magenta; br 2
+    Get-Date | New-HashtableFromObject 'name*'
+    #>
     # ...
 }

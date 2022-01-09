@@ -7,27 +7,35 @@ Describe 'New-HashtableFromObject' {
         $Now = Get-Date
     }
 
-    It 'DoesNotThrow' {
-        { Get-Date | New-HashtableFromObject -RegexInclude  'day', '.*year', 'kind' -ExcludeProperty '.*of.*'
-        } | Should -Not -Throw
-
+    It 'Default Properties are Equal' {
+        $hashKeyNames = $Now | New-HashtableFromObject | ForEach-Object Keys | Sort-Object
+        $objPropertyNames = $Now.psobject.properties.name | Sort-Object
+        $hashKeyNames | Should -Be $objPropertyNames -Because 'otherwise properties are missing'
     }
-    It 'IncludeProp' -Pending {
-        #  see : Dev.Nin\Assert-HashtableEqual
-        # Also need func to validate propery names, and values
-        # and the same on hashtables
-    }
-    It 'ExcludeProp' -Pending {
-
-    }
-    It 'Include + Exclude' -Pending {
-        newHashSplat = @{
-            # Debug           = $True
-            RegexInclude    = 'day', '.*year', 'kind'
-            ExcludeProperty = '.*of.*'
+    Describe 'Include Exclude Precedence Order' {
+        # expected: IncludeRegex, ExcludeRegex, LiteralInlude
+        BeforeAll {
+            $now = Get-Date
+            $DtExpectedProps = 'Date', 'DateTime', 'Day', 'DayOfWeek', 'DayOfYear', 'DisplayHint', 'Hour', 'Kind', 'Millisecond', 'Minute', 'Month', 'Second', 'Ticks', 'TimeOfDay', 'Year'
         }
-
-        $h = Get-Date | New-HashtableFromObject @newHashSplat
-
+        It 'Baseline Expected Names' {
+            $now | New-HashtableFromObject | ForEach-Object keys
+            | Should -BeIn $DtExpectedProps
+        }
+        It 'Step1: includeRegex' {
+            $now | New-HashtableFromObject -RegexInclude 'time'
+            | ForEach-Object keys
+            | Should -BeExactly 'DateTime', 'TimeOfDay'
+        }
+        It 'Step2: filterRegex' {
+            $now | New-HashtableFromObject -RegexInclude 'time' -ExcludeProperty '^date'
+            | ForEach-Object keys
+            | Should -BeExactly 'TimeOfDay'
+        }
+        It 'Step3: Include Literal' {
+            $now | New-HashtableFromObject -RegexInclude 'time' -ExcludeProperty '^date' -LiteralInclude 'DateTime'
+            | ForEach-Object keys
+            | Should -BeExactly 'TimeOfDay', 'DateTime'
+        }
     }
 }
