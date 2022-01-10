@@ -66,13 +66,13 @@ function Test-OneOrNone {
         $InputItem = [System.Collections.Generic.List[object]]::new()
     }
     process {
-        try {
-            $InputItem.Add( $InputObject )
-        }
-        catch {
-            # // any uncaught exceptions bubble up
-            $PSCmdlet.WriteError( $_ ) # with some information
-        }
+        # try {
+        $InputItem.Add( $InputObject )
+        # }
+        # catch {
+        # // any uncaught exceptions bubble up
+        # $PSCmdlet.WriteError( $_ ) # with some information
+        # }
         # $InputObject | ForEach-Object {
         # $InputItem.Add( $_ )
         # }

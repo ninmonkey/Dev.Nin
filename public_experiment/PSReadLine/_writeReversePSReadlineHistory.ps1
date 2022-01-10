@@ -1,6 +1,13 @@
-$experimentToExport.function += '_writeReverseHistory'
-# $experimentToExport.alias += 'LsSize'
-# tags: experiment, test
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        '_writeReverseHistory'
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
 
 
 function _writeReverseHistory {
@@ -26,4 +33,9 @@ function _writeReverseHistory {
         #     <# targetObject: #> $null)
         # # write-warning 'no-op: wip'
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

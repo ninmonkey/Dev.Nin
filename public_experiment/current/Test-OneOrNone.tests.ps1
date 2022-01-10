@@ -11,6 +11,9 @@ Describe 'Test-OneOrNone' {
     It 'Runs without error' {
         { 'a' | Test-OneOrNone } | Should -Not -Throw
     }
+    It 'basic pipe compare' {
+        Test-OneOrNone (Get-ChildItem .. | Select-Object -First 3) | Should -Be $False -Because 'need to rework expectations,l something is wrong.'
+    }
     Describe 'Mode: default' {
         # $ErrorActionPreference = 'break'
         'a', 'b' | Test-OneOrNone | Should -Be $false

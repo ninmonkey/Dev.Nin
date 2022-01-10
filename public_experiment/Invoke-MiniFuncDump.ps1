@@ -168,6 +168,47 @@ $When = (Get-Date).ToString('u')
         Get-Process pwsh | jstr -sep (hr 2) { $_.CommandLine -replace '\s-', "`n-" }
     }
 
+    $state.Command_DumpInfoPretty = {
+        # future, is the non-passhtru version
+        # $dbg = [ordered]@{
+        $dbg = [pscustomobject]@{
+            'relPSCommandPath'               = $PSCommandPath | To->RelativePath
+            'relPSScriptRoot'                = $PSScriptRoot | To->RelativePath
+            'PSBoundParameters'              = $PSBoundParameters
+            'PSCmdlet'                       = $PSCmdlet
+            'PSCommand'                      = $PSCommand
+            'PSCommandPath'                  = $PSCommandPath | Get-Item
+            'PSDefaultParameterValues'       = $PSDefaultParameterValues
+            'psEditor'                       = $psEditor
+            'PSNativeCommandArgumentPassing' = $PSNativeCommandArgumentPassing
+            'PSScriptRoot'                   = $PSScriptRoot | Get-Item
+        }
+
+        h1 'Top'
+        $dbg | Format-List
+
+        h1 'PSDefaultParameterValues'
+        $dbg.PSDefaultParameterValues | Sort-Hashtable -SortBy Key | format-dict
+
+    }
+    $state.Command_DumpInfo = {
+        # $dbg = [ordered]@{
+        $dbg = [pscustomobject]@{
+            'relPSCommandPath'               = $PSCommandPath | To->RelativePath
+            'relPSScriptRoot'                = $PSScriptRoot | To->RelativePath
+            'PSBoundParameters'              = $PSBoundParameters
+            'PSCmdlet'                       = $PSCmdlet
+            'PSCommand'                      = $PSCommand
+            'PSCommandPath'                  = $PSCommandPath | Get-Item
+            'PSDefaultParameterValues'       = $PSDefaultParameterValues
+            'psEditor'                       = $psEditor
+            'PSNativeCommandArgumentPassing' = $PSNativeCommandArgumentPassing
+            'PSScriptRoot'                   = $PSScriptRoot | Get-Item
+        }
+        $dbg
+
+    }
+
     $state.Get_MultilineHistory = {
         <#
         .synopsis
