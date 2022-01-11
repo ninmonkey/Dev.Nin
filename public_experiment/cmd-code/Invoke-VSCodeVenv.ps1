@@ -14,7 +14,17 @@ if ($experimentToExport) {
     )
 }
 
-
+$script:__venv ??= @{
+    ForceMode = 'insiders' # $null | 'code' | 'insiders'
+    Color     = @{
+        Fg      = '#66CCFF'
+        FgBold  = 'green'
+        FgBold2 = 'yellow'
+        FgDim   = 'gray60'
+        FgDim2  = 'gray40'
+        H1      = 'orange'
+    }
+}
 
 function __format_HighlightVenvPath {
     <#
@@ -181,7 +191,13 @@ function Invoke-VSCodeVenv {
         . - next:
             - [ ] argument transformation attribute:
                 supports [Path] or [VsCodeFilePath]
+            - [ ] disable shouldprocess when files <= 3
+            - [ ] disable shouldprocess when using folder + add?
+                or what is the case that causes a window to get replaced with a new workspace?
 
+        todo
+        - [ ] validate folders always default to new, and files default to re-use
+        - [ ] optionally collect full profile, would that make re-using require less confirmations?
 
         POC
             - [ ] code-venv -ResumeSession
@@ -335,26 +351,47 @@ function Invoke-VSCodeVenv {
         # $ParameterName]
     )
     begin {
+        # alias / namespace air qoutes
+        $state = $script:__venv
+        $color = $script:__venv.Color
 
     }
     process {
         # try {
 
         function  __printCodeArgs {
-            "execute: $codeBin" | Write-Color 'gray40'
+            # prints args as a csv
+            "execute: $codeBin" | Write-Color $Color.FgDim2
             | Write-Information
-            $CodeArgs | Join-String -sep ' ' | Write-Color 'gray40'
+            $CodeArgs | Join-String -sep ' ' | Write-Color $Color.FgDim2
             | Write-Information
         }
 
+        # cascade setting '$prioritizeInsidersBin'
+        # [1] saved state
         $maybeAlias = $PSCmdlet.MyInvocation.InvocationName
         $prioritizeInsidersBin = [bool]($maybeAlias -match 'Ivy|CodeI|CodeIVenv|CodeI-vEnv|Out-CodeIvEnv')
         $prioritizeInsidersBin = $prioritizeInsidersBin -or $true # always true, until config #
+
+        # [2] alias 'Ivy' chooses 'insider'
+        if ($script:__venv.forceMode) {
+            $ForceMode = $script:__venv.forceMode
+            if ($ForceMode -eq 'insiders') {
+                $prioritizeInsidersBin = $true
+            } elseif ($ForceMode -eq 'code') {
+                $prioritizeInsidersBin = $false
+            }
+            Write-Debug "Mode from config: $ForceMode"
+        }
+
+
+
+        # [3] you can always force a specific mode
+        # 1 and 2 work better when PSDefaultParameters doesn't specificy 'forcemode'
         if ($PSBoundParameters.containsKey('ForceMode')) {
             if ($ForceMode -eq 'insiders') {
                 $prioritizeInsidersBin = $true
-            }
-            elseif ($ForceMode -eq 'code') {
+            } elseif ($ForceMode -eq 'code') {
                 $prioritizeInsidersBin = $false
             }
             Write-Debug "ForceEdition: $ForceMode"
@@ -363,7 +400,9 @@ function Invoke-VSCodeVenv {
 
         # $CodeBin = Get-Item -ea stop 'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
         # first try default, else fallback
-        $splatSilent = @{'ErrorAction' = 'SilentlyContinue' }
+        $splatSilent = @{
+            'ErrorAction' = 'ignore' # 'SilentlyContinue'
+        }
         # wait-debugger
         $queryCodeBin = @(
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
@@ -385,8 +424,7 @@ function Invoke-VSCodeVenv {
         $CodeBin = @(
             if ($prioritizeInsidersBin) {
                 @( $queryCodeInsiderBin ; $queryCodeBin )
-            }
-            else {
+            } else {
                 @( $queryCodeBin ; $queryCodeInsiderBin ; )
             }
 
@@ -402,7 +440,9 @@ function Invoke-VSCodeVenv {
             throw 'Did not find any code-insider instances' ; return;
         }
 
-        if ( [string]::IsNullOrWhiteSpace( $DataDir )) {
+        if ( ! [string]::IsNullOrWhiteSpace( $DataDir )) {
+            # code was. I think that was an error during the cat shutdown
+            # if ( [string]::IsNullOrWhiteSpace( $DataDir )) {
             try {
                 $DataDir = Get-Item -ea stop $DataDir
             } catch {
@@ -412,7 +452,8 @@ function Invoke-VSCodeVenv {
         }
 
 
-        if ($null -ne $AddonDir) {
+        # if ($null -ne $AddonDir) {
+        if (! [string]::IsNullOrWhiteSpace($AddonDir)) {
             try {
                 $AddonDir = Get-Item -ea stop $AddonDir
             } catch {
@@ -425,8 +466,7 @@ function Invoke-VSCodeVenv {
         try {
             # $target = Get-Item -ea ignore $TargetPath
             $target = Get-Item -ea Stop $TargetPath
-        }
-        catch {
+        } catch {
             Write-Error -ea stop 'Invalid Path'
             # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
         }
@@ -441,8 +481,7 @@ function Invoke-VSCodeVenv {
 
                 hr
 
-            }
-            else {
+            } else {
                 @(
                     hr
 
@@ -466,7 +505,7 @@ function Invoke-VSCodeVenv {
             | Join-String -op (hr 2) -os (hr 2) -sep "`n"
 
             & $CodeBin @('--version')
-            | Join-String -sep ', ' -op (Write-Color orange -t 'Version: ')
+            | Join-String -sep ', ' -op (Write-Color $Color.FgBold2 -t 'Version: ')
 
             return
         }
@@ -533,18 +572,16 @@ function Invoke-VSCodeVenv {
                 }
                 Get-Item $Target | Join-String -DoubleQuote
             )
-        }
-        else {
+        } else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
-                'LineNumber? Y' | Write-Color green | wi
+                'LineNumber? Y' | Write-Color $Color.FgBold | wi
                 $CodeArgs += @(
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
-            }
-            else {
-                'LineNumber? Y' | Write-Color green | wi
+            } else {
+                'LineNumber? Y' | Write-Color $Color.FgBold | wi
                 $codeArgs += @(
                     '--goto'
                     '"{0}:{1}:{2}"' -f @(
@@ -603,6 +640,7 @@ function Invoke-VSCodeVenv {
 
 
             # h1 'here' write-host
+
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
                 @(
                     __printCodeArgs
@@ -618,11 +656,10 @@ function Invoke-VSCodeVenv {
 
         # hr
         if ($ResumeSession) {
-            Write-Color -t 'ResumeSession' 'green' | Write-Information
-        }
-        else {
-            Write-Color -t 'LoadItem: ' 'orange' | Write-Information
-            Write-Color -t $Target 'yellow' | Write-Information
+            Write-Color -t 'ResumeSession' $Color.FgBold | Write-Information
+        } else {
+            Write-Color -t 'LoadItem: ' $Color.H1 | Write-Information
+            Write-Color -t $Target $Color.FgBold2 | Write-Information
         }
         # hr
         $metaInfo += @{
