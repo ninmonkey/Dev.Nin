@@ -59,7 +59,7 @@ function showErr {
         $Target = $ErrorObject ?? $global:Error
         $deltaCount = (err? -PassThru).deltaCount
         if ($Recent) {
-            $target = $global:Error | Select-Object -Last $deltaCount
+            $target = $global:Error | Select-Object -First $deltaCount
         }
 
         $dbgInfo = @{
@@ -67,7 +67,7 @@ function showErr {
         }
         $dbgInfo | Write-Debug
         $Target
-        | ReverseIt
+        | ReverseIt # reverse here is to order them as descending
         | formatErr | str hr
     }
 
