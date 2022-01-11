@@ -145,7 +145,7 @@ $public = @(
     'Dev-GetManPage'
     'Dev-GetNameFrom'
     'Dev-GetNamedPath'
-    'Dev-FormatTabExpansionResult'
+
     'Dev-GetNewestItem'
 
     'Get-Exponentiation'
@@ -212,7 +212,7 @@ $functionsToExport = @(
     'Dev-GetNameFrom'
     'Dev-GetManPage'
     'Dev-GetNamedPath'
-    'Dev-FormatTabExpansionResult'
+
 
     'Get-Exponentiation'
     'Get-FunctionDebugInfo'

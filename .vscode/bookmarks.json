@@ -84,6 +84,16 @@
 					"label": "files.watcherExclude"
 				}
 			]
+		},
+		{
+			"path": "public_experiment/cmd-bat/Invoke-Hexyl.ps1",
+			"bookmarks": [
+				{
+					"line": 57,
+					"column": 0,
+					"label": ""
+				}
+			]
 		}
 	]
 }

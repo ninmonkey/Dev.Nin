@@ -148,6 +148,55 @@ $When = (Get-Date).ToString('u')
             }
         }
     }
+    $state.Table_GroupByMonth = {
+        <#
+        .synopsis
+            filter to show multi-line commmands only
+        .example
+            PS> $files = ls .
+            PS> iDump Table_GroupByDay -Arg $Files
+        .link
+        #>
+        param(
+            # $Args
+        )
+        $InputObject = Get-ChildItem . -Recurse
+
+        $tableByMonth = {
+            $when = $_.LastWriteTime
+            $when.Year, $when.Month
+        }
+
+        $InputObject
+        | Sort-Object LastWriteTime
+        | Format-Table -GroupBy $tableByMonth
+
+
+
+    }
+    $state.Table_GroupByDay = {
+        <#
+        .synopsis
+            filter to show multi-line commmands only
+        .example
+            PS> $files = ls .
+            PS> iDump Table_GroupByDay -Arg $Files
+        .link
+        #>
+        param(
+            # $Args
+        )
+        $InputObject = Get-ChildItem . -Recurse
+
+        $tableByDay = {
+            $when = $_.LastWriteTime
+            $when.Year, $when.Month, $When.Day
+        }
+
+        $InputObject
+        | Sort-Object LastWriteTime
+        | Format-Table -GroupBy $TableByDay
+    }
     $state.Find_Pwsh_EncodedCommands = {
         <#
         .synopsis
@@ -298,6 +347,8 @@ function Invoke-MiniFuncDump {
         1-liners or random one-offs not worth making a class
     .description
        .
+    .notes
+       - [ ] could add -UseInputFromPipeline option
     .example
           .
     .outputs

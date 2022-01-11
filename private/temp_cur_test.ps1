@@ -25,7 +25,10 @@ hr
     (Get-Item . ) | Resolve-TypeName
 
         [Text.ASCIIEncoding] | Resolve-TypeName
-        [ASCIIEncoding] | resolve-typename
+
+        # this one errors because it's not string
+        # [ASCIIEncoding] | resolve-typename
+        'ASCIIEncoding' | resolve-typename
     }
     if ($RunTest.'Resolve-TypeNamePester') {
         $invokePesterSplat = @{
