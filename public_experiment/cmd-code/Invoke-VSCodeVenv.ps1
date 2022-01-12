@@ -15,7 +15,7 @@ if ($experimentToExport) {
 }
 
 $script:__venv ??= @{
-    ForceMode = 'insiders' # $null | 'code' | 'insiders'
+    ForceMode = 'code' # default code, because of alias ivy   <$null | 'code' | 'insiders'>
     Color     = @{
         Fg      = '#66CCFF'
         FgBold  = 'green'
@@ -383,8 +383,6 @@ function Invoke-VSCodeVenv {
             }
             Write-Debug "Mode from config: $ForceMode"
         }
-
-
 
         # [3] you can always force a specific mode
         # 1 and 2 work better when PSDefaultParameters doesn't specificy 'forcemode'
