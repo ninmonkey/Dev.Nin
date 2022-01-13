@@ -45,14 +45,14 @@ function Invoke-NinFormatter {
         [AllowEmptyString()]
         [AllowNull()]
         [Parameter(
-            'FromParam',
+            ParameterSetName = 'FromParam',
             Mandatory, Position = 0
         )]
         [Parameter(
-            'FromPipeline',
+            ParameterSetName = 'FromPipeline',
             Mandatory, ValueFromPipeline
         )]
-        [string[]]$ScriptDefinition
+        [string[]]$ScriptDefinition,
 
         # # modify file in place
         # [alias('InputFile')]
@@ -61,9 +61,9 @@ function Invoke-NinFormatter {
         # )]
         # [string]$Path,
 
-        # # What's the current config?
-        # [Parameter(ParameterSetName = 'GetConfig')]
-        # [switch]$GetConfig,
+        # What's the current config?
+        [Parameter(ParameterSetName = 'GetConfig')]
+        [switch]$GetConfig
 
         # # replace original file with formatting
         # [Parameter(ParameterSetName = 'FromFile')]
@@ -123,19 +123,25 @@ function Invoke-NinFormatter {
     end {
         $FinalText = $ScriptDefinition | Join-String -sep "`n"
         $invokeFormatterSplat = @{
-            ScriptDefinition = $ScriptDefinition
+            ScriptDefinition = $FinalText -join "`n"
             # Settings = 'settings'
             # Range = 3, 4
         }
+        # Wait-Debugger
 
-        Write-Warning 'wip: formatting - rewrite'
+        # Write-Warning 'wip: formatting - rewrite'
         Invoke-Formatter @invokeFormatterSplat
 
 
+        if ('debug') {
+            $ScriptDefinition | Endcap🎨 Bold 'ScriptDef'
+            $FinalText | Endcap🎨 Bold 'FinalText'
+        }
 
-        return
+        # Wait-Debugger
+        # return
         $invokeFormatterSplat = @{
-            ScriptDefinition = $scriptContent -join "`n"
+            ScriptDefinition = $FinalText #$scriptContent -join "`n"
             # formatter requires path, while Invoke-ScriptAnalyzer doe
             Settings         = try {
 (Get-Item -ea stop $__ninConfig.Config.PSScriptAnalyzerSettings)?.FullName
@@ -159,21 +165,23 @@ function Invoke-NinFormatter {
                 EnvVarPath = $__ninConfig.Config.PSScriptAnalyzerSettings
             }
 
+            $x = 9
             # Wait-Debugger
             return
         }
 
         $invokeFormatterSplat | Format-dict | Write-Debug
+        Invoke-Formatter @invokeFormatterSplat
 
         # try {}
 
-        if ($WriteBack) {
-            if ($PSCmdlet.ShouldProcess("$($Path.Name)", 'Replace')) {
-                Invoke-Formatter @invokeFormatterSplat | Set-Content $Path
-                return
-            }
-        }
-        Invoke-Formatter @invokeFormatterSplat # -Range
+        # if ($WriteBack) {
+        #     if ($PSCmdlet.ShouldProcess("$($Path.Name)", 'Replace')) {
+        #         Invoke-Formatter @invokeFormatterSplat | Set-Content $Path
+        #         return
+        #     }
+        # }
+        # Invoke-Formatter @invokeFormatterSplat # -Range
     }
 }
 

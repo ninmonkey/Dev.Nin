@@ -48,6 +48,7 @@ function Get-RuneDetail {
             # Nyi        = 'Nyi?'
         }
         $Simplify = $true
+        # re-run-through before moving to nin
     }
     process {
         $InputText.EnumerateRunes()
@@ -81,7 +82,7 @@ function Get-RuneDetail {
                     GI_Category     = [Globalization.CharUnicodeInfo]::GetUnicodeCategory( $_.Value )
                     GI_DecimalDigit = [Globalization.CharUnicodeInfo]::GetDecimalDigitValue( $_.Value )
                     GI_DigitValue   = [Globalization.CharUnicodeInfo]::GetDigitValue( $_.Value )
-                    GI_NumericValue = [Globalization.CharUnicodeInfo]::GetNumericValue( $_.Value )
+                    # GI_NumericValue = [Globalization.CharUnicodeInfo]::GetNumericValue( $_.Value )
 
                 }
 
