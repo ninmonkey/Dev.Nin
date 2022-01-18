@@ -10,12 +10,13 @@ if ( $experimentToExport ) {
     )
 }
 
+
 function Dive-SubDirectory {
     <#
     .synopsis
         Stuff
     .description
-        - [ ] todo
+        todo: #6 and #1
 
         special tab-complete syntax that's sugar for
 
@@ -40,11 +41,11 @@ function Dive-SubDirectory {
     [CmdletBinding()]
     param(
         [parameter(Mandatory , Position = 0, ValueFromRemainingArguments, ValueFromPipeline)]
-        [string]$Query
+        [string]$PathQuery
     )
 
     begin {
-        Write-Warning 'still WIP'
+
         function _writeDirChange {
             param(
                 $Destination
@@ -53,20 +54,33 @@ function Dive-SubDirectory {
                 Get-Location | ForEach-Object Name
                 $Destination.Name
             )
-            | write-color 'blue'
+            | Write-Color 'blue'
         }
     }
     process {
         # original logic
         # if only one dir, use it
-        $toplevel = Get-ChildItem . -Directory
-        if ($toplevel.count -eq 1) {
 
-            Push-Location $toplevel
-        }
-        Push-Location | Select-Object
     }
     end {
+        $toplevel = Get-ChildItem . -Directory
+        $found_dir = $toplevel | Where-Object { $_.Name -like $PathQuery }
+        if ($found_dir.count -eq 1) {
+            _writeDirChange -dest $found_dir.Name
+            Push-Location $found_dir
+            return
+        }
+
+        h1 'Matching path[s]'
+        $foundDir | To->RelativePath
+        return
+
+
+        # if ($toplevel.count -eq 1) {
+
+        #     Push-Location $toplevel
+        # }
+        # Push-Location | Select-Object
         <#
     # original:
     if ($toplevel.count -eq 1) {
@@ -85,4 +99,11 @@ function Dive-SubDirectory {
 
 if (! $experimentToExport) {
     # ...
+    #Import-Module Dev.Nin -Force
+    Push-Location 'G:\2021-github-downloads'
+    Get-ChildItem . -dir
+
+    go rust
+    $expected = 'G:\2021-github-downloads\Rust\'
+    Get-Location | Should -Be 'G:\2021-github-downloads\Rust'
 }
