@@ -13,14 +13,13 @@ if ( $experimentToExport ) {
     )
 }
 
-# finish me
+#
 function New-HashtableLookup {
     <#
     .SYNOPSIS
         look up key->value pairs, return/create hash,  optionally rename key
     .notes
-        name?
-        Dpair, Lookup, Prop, HashProp, pair? AttributePair, New
+        name? Dpair, Lookup, Prop, HashProp, pair? AttributePair, New
 
         call:
             $obj | Lookup Property
@@ -115,10 +114,7 @@ function New-HashtableFromObject {
     .synopsis
         Quickly create a hashtable from selected properties, filtered by regex
     .description
-    #
-        #1 stable: move to Ninmonkey.Console
-       .modes
-
+        stable: move to Ninmonkey.Console
         - default includes all properties
         - else -IncludeProperty only includes matching
 
@@ -185,31 +181,7 @@ function New-HashtableFromObject {
         $Hash = [ordered]@{}
         [string[]]$AllPropNames = $InputObject.psobject.properties.Name | Sort-Object -Unique
         [string[]]$FilteredNames = @()
-
-        # wait what?
-        # $AllPropNames | ForEach-Object {
-        #     $curName = $_
-        # }
-
         $AllPropNames | str csv -sort | Write-Color gray | Join-String -op 'Initial Props: ' | Write-Debug
-
-        # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
-        # $ErrorActionPreference = 'stop'
-        # if ($false) {
-        #     if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
-        #         $filteredNames = $AllPropNames
-        #     }
-        #     else {
-        #         $filteredNames = $AllPropNames | Where-Object {
-        #             $curName = $_
-        #             foreach ($pattern in $IncludeProperty) {
-        #                 if ($curName -match $Pattern) {
-        #                     $true; return;
-        #                 }
-        #             }
-        #         }
-        #     }
-        # }
 
         if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
             $filteredNames = $AllPropNames
@@ -234,22 +206,21 @@ function New-HashtableFromObject {
             }
         }
     
-        # $ErrorActionPreference = 'stop'
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Included Props: ' | Write-Debug
         
         if (! $ExcludeProperty -or (! [string]::IsNullOrEmpty($ExcludeProperty))) {
             $filteredNames = $filteredNames
         }
         else {
-            # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
+            # todo: refactor using AnyTrue or AnyFalse would simlify emitting more than one bool
             $filteredNames = $filteredNames | Where-Object {
                 $curName = $_
                 foreach ($pattern in $ExcludeProperty) {
                     if ($curName -match $Pattern) {
-                        $false; return;
+                        return $false
                     }
                 }
-                $true; return;
+                return $true
             }
         }
 
@@ -261,20 +232,7 @@ function New-HashtableFromObject {
             }
         }
 
-
-        if ($false) {
-            $filteredNames += @(
-                $LiteralInclude | Where-Object {
-                    $PropNames -contains $_
-                }
-            )
-        }
-        #     $PropNames | ?{ $_ -in $LitInclude }
-        # )
-        # $PropNames | Where-Object { $_ -in $LitInclude }
-        # $filteredNames | Sort-Object -Unique # future: get unique without sorting
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Excluded Props: ' | Write-Debug
-
         h1 "$($FilteredNames.count)" | Write-Debug
 
         $filteredNames | ForEach-Object {
