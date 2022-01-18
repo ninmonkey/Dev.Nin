@@ -3,23 +3,33 @@ function Edit-FunctionSource {
     .synopsis
         open script that declares function
     .description
+        find and open filepath for a function, jump to the exact line number
+
         currently only opens .ps1 scripts.
         see [Indented] for automatically viewing assemblies
+        move -> console
+    .notes
+        - could simply and refactor this function using
+            Dev.Nin\CmdtoFilepath
+            Dev.Nin\Resolve-CommandName
+
+
+        . # 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
     .outputs
         [InternalScriptExtent] or none
     .example
-    🐒> gcm *vscode* | editfunc -PassThru | % File | Sort -Unique
+        🐒> gcm *vscode* | editfunc -PassThru | % File | Sort -Unique
     .example
-    🐒> gcm -Module Dev.Nin | % Name | Out-Fzf -m
-    | EditFunc -PassThru
-    | % file | gi | ft Name, Directory
+        🐒> gcm -Module Dev.Nin | % Name | Out-Fzf -m
+        | EditFunc -PassThru
+        | % file | gi | ft Name, Directory
 
-        Name                     Directory
-        ----                     ---------
-        Edit-DevTodoList.ps1     C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
-        Format-RipGrepUrl.ps1    C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment
-        ConvertFrom-GistList.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
-        Dev-ExportFormatData.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+            Name                     Directory
+            ----                     ---------
+            Edit-DevTodoList.ps1     C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+            Format-RipGrepUrl.ps1    C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment
+            ConvertFrom-GistList.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
+            Dev-ExportFormatData.ps1 C:\Users\cppmo_000\Documents\2021\Powershell\My_Github\Dev.Nin\public
     .example
         # Find and open paths from a query
         PS> Get-CommandNameCompleter *sys* -PassThru | EditFunc -PassThru
@@ -27,8 +37,6 @@ function Edit-FunctionSource {
         PS> Get-Command 'Get-Enum*' | Edit-FunctionSource
         PS> Alias 'Br' | Edit-FunctionSource
         PS> 'Br', 'ls' | Edit-FunctionSource
-    .notes
-        . # 'See also: <G:\2020-github-downloads\powershell\github-users\chrisdent-Indented-Automation\Indented.GistProvider\Indented.GistProvider\private\GetFunctionInfo.ps1>'
     .link
         Edit-ModuleSource
     #>
@@ -42,8 +50,9 @@ function Edit-FunctionSource {
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
         [string[]]$FunctionName,
 
-        # Return paths only
+        # don't open VSCode, return the filepath
         [Parameter()][switch]$PassThru,
+
         # Return paths only
         [Parameter()][switch]$SkipPositionArgs = $false # until I can get the native args passing
     )

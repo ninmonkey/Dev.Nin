@@ -1,5 +1,17 @@
+#Requires -Version 7
 
-function Get-FunctionDebugInfo {
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Inspect-FunctionInfo'
+    )
+    $experimentToExport.alias += @(
+        'Inspect->FunctionInfo'
+    )
+}
+
+
+function Inspect-FunctionInfo {
+
     <#
     .synopsis
         wrapper to autoexport useful function stats
@@ -28,7 +40,7 @@ function Get-FunctionDebugInfo {
         [object]$PSCmdletInputObject,
 
         # Additional Hashtable info
-        [Alias('AdditionalInfo')]
+        [Alias('Inspect->FunctionInfo')]
         [Parameter(Position = 1)]
         [Hashtable]$HashInfo,
 
@@ -39,6 +51,7 @@ function Get-FunctionDebugInfo {
         [Parameter()][switch]$PassThru
     )
 
+    Write-Warning 'nyi: sketch'
     # $meta = [ordered]@{
     $meta = @{
         'ParameterSetName'                                         = $PSCmdletInputObject.ParameterSetName
@@ -131,3 +144,8 @@ if ($false) {
 # if ($isdebugTest) {
 #     'afds' | Dev-GetHelpFromType -PassThru
 # }
+
+
+if (! $experimentToExport) {
+    # ...
+}

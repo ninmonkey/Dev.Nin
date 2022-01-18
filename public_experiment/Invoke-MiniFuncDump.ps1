@@ -197,11 +197,27 @@ $When = (Get-Date).ToString('u')
         | Sort-Object LastWriteTime
         | Format-Table -GroupBy $TableByDay
     }
+    $state.Get_NinVerbs = {
+        <#
+        .synopsis
+            find nin-verbs using the delim '->'
+        .example
+            .
+        .link
+        #>
+        param(
+            # $Args
+        )
+
+        Get-Command -m (_enumerateMyModule)
+        | Where-Object name -Match '->' | Sort-Object Name
+        | ForEach-Object { $_ -split '->' | Select-Object -First 1 } | Sort-Object -Unique
+
+    }
     $state.Find_Pwsh_EncodedCommands = {
         <#
         .synopsis
             decode base64
-
         .notes
             See: Utility:
             [ArgumentCompleter([EncodingArgumentCompleter])]

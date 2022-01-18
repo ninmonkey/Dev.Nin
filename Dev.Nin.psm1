@@ -133,7 +133,7 @@ $public = @(
 
     # ...
     'Compare-StrictEqual'
-    'Get-FunctionDebugInfo'
+
 
     'Get-SavedList'
     'Get-SavedData'
@@ -215,7 +215,7 @@ $functionsToExport = @(
 
 
     'Get-Exponentiation'
-    'Get-FunctionDebugInfo'
+
     'Edit-FunctionSource'
 
 
