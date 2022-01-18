@@ -3,12 +3,111 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'New-HashtableFromObject'
+        'New-HashtableLookup'
 
     )
     $experimentToExport.alias += @(
         'To->Hashtable'
         'ConvertTo-Hashtable'
+        'Lookup'
     )
+}
+
+# finish me
+function New-HashtableLookup {
+    <#
+    .SYNOPSIS
+        look up key->value pairs, return/create hash,  optionally rename key
+    .notes
+        name?
+        Dpair, Lookup, Prop, HashProp, pair? AttributePair, New
+
+        call:
+            $obj | Lookup Property
+            <$obj> | Lookup <Property> [NewKeyName]
+            Lookup <$obj> <Property> [NewKeyName]
+
+        future:
+        - [ ] allow object to be param
+    .example
+        PS> ls . -File | New-HashtableLookup 'Length'
+
+    .example
+        PS> ls . -File | New-HashtableLookup 'Length' 'Size'
+    .example
+        # dynamic calculated colPS> ls . -File | New-HashtableLookup 'Length' 'Size'
+    .link
+        Dev.Nin\New-HashtableFromObject
+    .link
+        Dev.Nin\New-HashtableLookup
+    .link
+        Dev.Nin\Assert-HashtableEqual
+    .link
+        Dev.Nin\Sort-Hashtable
+    .outputs
+          [hashtable] or [Collections.Specialized.OrderedDictionary]
+
+    #>
+    # linter complains about type 'ordered' not being returned
+    # but [ordered] isn't a true data type in Pwsh, maybe a linter rule bug
+    # [outputtype('Collections.Specialized.OrderedDictionary')]
+
+    [alias('Lookup')]
+    [cmdletbinding()]
+    param(
+
+        # regex patterns to include property, otherwise you get all
+        [Parameter(
+            ParameterSetName = 'FromPipe',
+            Mandatory, ValueFromPipeline)]
+        [Parameter(
+            ParameterSetName = 'FromParam',
+            Mandatory, Position = 0)]
+        [string]$InputObject,
+
+        [Alias('Property', 'Name')]
+        [Parameter(
+            ParameterSetName = 'FromPipe',
+            Mandatory, Position = 0)]
+        [Parameter(
+            ParameterSetName = 'FromParam',
+            Mandatory, Position = 1)]
+        [string]$LiteralPropertyName,
+
+        # rename the key
+        # [Alias()]
+        [Parameter(
+            ParameterSetName = 'FromPipe',
+            Mandatory, Position = 1)]
+        [Parameter(
+            ParameterSetName = 'FromParam',
+            Mandatory, Position = 2)]
+        [string]$NewKeyName
+    )
+
+    begin {
+        '- [ ] finish by asking for group-object tips and hash key thingy
+        - [ ] dynamically generated calculated props' | Write-Warning
+    }
+    process {
+        $newKey = $NewKeyName ?? $LiteralPropertyName
+
+
+
+
+        # ! $hash1.ContainsKey('name')
+        # if(!($InputObject.))
+        # $newValue = $InputObject
+        $hash = @{}
+        $kvalue = $InputObject[$LiteralPropertyName]
+        @{
+            Key = $NewKeyName ?? $LiteralPropertyName
+        }
+    }
+    end {
+    }
+
+
 }
 
 function New-HashtableFromObject {
@@ -16,6 +115,7 @@ function New-HashtableFromObject {
     .synopsis
         Quickly create a hashtable from selected properties, filtered by regex
     .description
+    #
         #1 stable: move to Ninmonkey.Console
        .modes
 
@@ -34,6 +134,10 @@ function New-HashtableFromObject {
         Dev.Nin\Assert-HashtableEqual
     .link
         Dev.Nin\Sort-Hashtable
+    .link
+        Dev.Nin\New-HashtableFromObject
+    .link
+        Dev.Nin\New-HashtableLookup
     .outputs
           [hashtable] or [Collections.Specialized.OrderedDictionary]
 
@@ -44,6 +148,7 @@ function New-HashtableFromObject {
     [Alias('
         To->Hashtable',
         'ConvertTo-Hashtable'
+        # 'Dict' # defined in profile
     )]
     [outputtype('hashtable')]
     [CmdletBinding(PositionalBinding = $false)]
@@ -78,36 +183,64 @@ function New-HashtableFromObject {
     }
     process {
         $Hash = [ordered]@{}
-        [string[]]$PropNames = $InputObject.psobject.properties.Name | Sort-Object -Unique
+        [string[]]$AllPropNames = $InputObject.psobject.properties.Name | Sort-Object -Unique
         [string[]]$FilteredNames = @()
 
         # wait what?
-        # $PropNames | ForEach-Object {
+        # $AllPropNames | ForEach-Object {
         #     $curName = $_
         # }
 
-        $PropNames | str csv -sort | Write-Color gray | Join-String -op 'Initial Props: ' | Write-Debug
+        $AllPropNames | str csv -sort | Write-Color gray | Join-String -op 'Initial Props: ' | Write-Debug
 
-        if (! $IncludeProperty ) {
-            $filteredNames = $PropNames
-        } else {
-            # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
-            # $ErrorActionPreference = 'stop'
-            $filteredNames = $PropNames | Where-Object {
+        # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
+        # $ErrorActionPreference = 'stop'
+        # if ($false) {
+        #     if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
+        #         $filteredNames = $AllPropNames
+        #     }
+        #     else {
+        #         $filteredNames = $AllPropNames | Where-Object {
+        #             $curName = $_
+        #             foreach ($pattern in $IncludeProperty) {
+        #                 if ($curName -match $Pattern) {
+        #                     $true; return;
+        #                 }
+        #             }
+        #         }
+        #     }
+        # }
+
+        if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
+            $filteredNames = $AllPropNames
+        }
+        else {
+            $filteredNames = $AllPropNames | Where-Object {
                 $curName = $_
                 foreach ($pattern in $IncludeProperty) {
-                    #do I try catch on the innermost test?
-                    if ($curName -match $Pattern) {
-                        $true; return;
+                    if ($pattern -eq '*' -or [string]::IsNullOrEmpty($pattern) ) {
+                        return $true
                     }
+                    try {
+                        if ($curName -match $Pattern) {
+                            return $true
+                        }
+                    }
+                    catch {
+                        # no-op
+                    }                    
                 }
+                $false
             }
-            # $ErrorActionPreference = 'stop'
         }
+    
+        # $ErrorActionPreference = 'stop'
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Included Props: ' | Write-Debug
-        if (! $ExcludeProperty ) {
+        
+        if (! $ExcludeProperty -or (! [string]::IsNullOrEmpty($ExcludeProperty))) {
             $filteredNames = $filteredNames
-        } else {
+        }
+        else {
             # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
             $filteredNames = $filteredNames | Where-Object {
                 $curName = $_
