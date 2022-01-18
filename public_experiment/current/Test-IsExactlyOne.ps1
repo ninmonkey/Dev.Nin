@@ -15,6 +15,10 @@ function Test-IsExactlyOne {
     <#
         .SYNOPSIS
             is this exactly one result ?
+        .notes
+            future: Move to /ninmonkey/Testning
+
+
         #>
     [Alias(
         'IsExactlyOne',

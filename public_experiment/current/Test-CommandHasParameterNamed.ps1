@@ -17,6 +17,9 @@ function Test-CommandHasParameterNamed {
         sugar for:
             (Get-Command 'Set-PSReadLineOption'
             | ForEach-Object Parameters | ForEach-Object keys) -contains 'PredictionViewStyle'
+    .notes
+        future: move to ninmonkey/Testning
+
     .example
         Test-CommandHasParameterNamed -Command 'Microsoft.PowerShell.Management\Get-ChildItem' -Param 'Path'
     .example

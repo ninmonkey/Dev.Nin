@@ -135,7 +135,20 @@ function Get-VSCodeVenvOption {
     #>
     [OutputType([VSCodeVenvOption])]
     [cmdletbinding()]
-    param()
+    param(
+        # force defaults
+        [switch]$Reset
+    )
+
+    $defaultConfig = [VSCodeVenvOption]@{
+        DefaultBinPath      = 'code.cmd'
+        DefaultDataDir      = 'J:\vscode_datadir\code-dev\'
+        DefaultExtensionDir = 'J:\vscode_datadir\code-dev-addons\'
+    }
+
+    if ($reset ) {
+        return $defaultConfig
+    }
 
     'reading from: {0}' -f @($__code_venvState.ConfigVenvOption) | Write-Debug
     try {
@@ -146,11 +159,7 @@ function Get-VSCodeVenvOption {
     }
     catch {
         Write-Error -ea continue $_
-        $curConfig = [VSCodeVenvOption]@{
-            DefaultBinPath      = 'code.cmd'
-            DefaultDataDir      = 'J:\vscode_datadir\code-dev\'
-            DefaultExtensionDir = 'J:\vscode_datadir\code-dev-addons\'
-        }
+        $curConfig = $defaultConfig
     }
     $curCOnfig
 }

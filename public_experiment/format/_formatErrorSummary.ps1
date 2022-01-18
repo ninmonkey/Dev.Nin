@@ -6,9 +6,10 @@ if ( $experimentToExport ) {
     $experimentToExport.function += @(
         '_formatErrorSummarySingleLine'
         '_processErrorRecord'
+        'Inspect-ErrorType'
 
         #  testing
-        '__inspectErrorType'
+        'Inspect->ErrorType'
         'showErr'
         'formatErr'
     )
@@ -81,14 +82,15 @@ function showErr {
 
 #>
 }
-function __inspectErrorType {
+function Inspect-ErrorType {
     <#
     .synopsis
         internal inspection that generates
     .notes
         'ShowError() => formatErr()'
-        'formatErr() => __inspectErrorType()'
+        'formatErr() => Inspect-ErrorType()'
     #>
+    [Alias('Inspect->ErrorType')]
     [CmdletBinding()]
     param(
         # error
@@ -129,7 +131,7 @@ function __inspectErrorType {
         from:
             #Import-Module Dev.Nin -Force
             $Error | Get-Random -Count 3
-            | __inspectErrorType
+            | Inspect-ErrorType
             #| Sort-Hashtable -SortBy  Key
             | Format-Dict
             | out-string
@@ -145,7 +147,7 @@ function formatErr {
             $error | formatErr | str hr 1
     .notes
         'ShowError() => formatErr()'
-        'formatErr() => __inspectErrorType()'
+        'formatErr() => Inspect-ErrorType()'
     #>
     param(
         # err  obj
@@ -187,7 +189,7 @@ function formatErr {
             return
         }
 
-        $eInfo = $ErrorObject | __inspectErrorType
+        $eInfo = $ErrorObject | Inspect-ErrorType
         $einfo | Format-Table | Out-String | Write-Debug
 
         $prefixTypes = @(

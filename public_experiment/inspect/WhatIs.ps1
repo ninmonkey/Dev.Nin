@@ -4,22 +4,24 @@ if ( $experimentToExport ) {
         # 'Get-WhatObjectType' ?
         'What-TypeInfo'
     )
-    $experimentToExport.alias += @(        
+    $experimentToExport.alias += @(
         'WhatIs'
+        'Inspect->TypeInfo'
         # 'Find-ObjectProperty'
         # 'New-Sketch'
     )
 }
 # }
-    
-    
+
+
 function What-TypeInfo {
     <#
         .synopsis
             gives type info, in a longer form, it's for interactive use rather that WhatTypeIsObj
         .description
             .
-        .example            
+            #6 WIP
+        .example
         .link
             # Dev.Nin\_enumerateProperty
         .link
@@ -27,7 +29,7 @@ function What-TypeInfo {
         .link
             Ninmonkey.Console\What-ParameterInfo
         #>
-    [Alias('WhatIs')]
+    [Alias('WhatIs', 'Inspect->TypeInfo')]
     [cmdletbinding()]
     param(
         # any object
@@ -35,7 +37,7 @@ function What-TypeInfo {
         [AllowEmptyString()]
         [AllowNull()]
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [object]$InputObject    
+        [object]$InputObject
         # # preset column order, and to out-griview
         # [alias('oGv')]
         # [parameter()]
@@ -45,13 +47,13 @@ function What-TypeInfo {
         if ($null -eq $InputObject) {
             [pscustomobject]@{
                 PSTypeName = 'nin.WhatIsInfo'
-                Value      = $null 
+                Value      = $null
             }
-            return 
+            return
         }
         $obj = $InputObject
         $tinfo = ($InputObject)?.GetType()
-        
+
         $meta = [ordered]@{
             PSTypeName            = 'nin.WhatIsInfo'
             Type                  = $tinfo.Name
@@ -73,8 +75,8 @@ function What-TypeInfo {
 
         $meta.type | format-typename -Brackets
         $meta | format-typename -Brackets
-        
-        # Name = 
+
+        # Name =
         # FullName
 
         # $meta | Format-Dict | wi
@@ -85,16 +87,16 @@ function What-TypeInfo {
 maybe:
 
         $parsedInfo = [ordered]@{
-            PSTypeName        = 'nin.ParsedTypeName' 
+            PSTypeName        = 'nin.ParsedTypeName'
 
             duties:
                 external code/type has 'nin.TypeInfo' and other inspection
 
                 Format-TypeName:
-                    least amount of info, and dependencies as possible. 
-                    otherwise recursion 
+                    least amount of info, and dependencies as possible.
+                    otherwise recursion
 
-            # RenderName        = # plus, here, it's recursive. visual, maybe not? $tinfo | Format-TypeName -WithBrackets 
+            # RenderName        = # plus, here, it's recursive. visual, maybe not? $tinfo | Format-TypeName -WithBrackets
             FullName          = $tinfo.FullName
             Name              = $tinfo.Name # would be format style / compute some
             NameSpace         = $tinfo.NameSpace
@@ -105,14 +107,14 @@ maybe:
             [pscustomobject]$parsedInfo
             return
         }#>
-         
+
     }
 }
 
 if (! $experimentToExport ) {
 
-    # $res = What-TypeInfo (Get-Item . ) -infa Continue    
-    # $res | Format-List 
+    # $res = What-TypeInfo (Get-Item . ) -infa Continue
+    # $res | Format-List
     # hr
     # $sample = ((Get-Command ls).Parameters)
     # $tinfo = $sample.GetType()
@@ -123,7 +125,7 @@ if (! $experimentToExport ) {
     # WhatIs $sample | Format-List *
 
     $res = What-TypeInfo (Get-Item . )
-    $res | Format-List 
+    $res | Format-List
     hr
     $sample = ((Get-Command ls).Parameters)
     $tinfo = $sample.GetType()
