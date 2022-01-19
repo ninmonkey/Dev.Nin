@@ -71,7 +71,7 @@ $PSRL_experimentToExport.update_typeDataScriptBlock | ForEach-Object {
 }
 
 $PSRL_experimentToExport.PSReadLineKeyHandler | ForEach-Object {
-    throw 'this never getrs invoked'
+    # throw 'this never getrs invoked'
     $curSB = $_
     Write-Verbose 'Loading PSReadlineKeyHandler'
     try {
@@ -79,7 +79,6 @@ $PSRL_experimentToExport.PSReadLineKeyHandler | ForEach-Object {
     } catch {
         Write-Error -ea continue -Message 'PSReadlineKeyHandler Scriptblock failed' -Category InvalidResult
     }
-    throw 'Did I reach?'
 }
 
 $PSRL_experimentToExport.meta | Format-Table | Write-Information

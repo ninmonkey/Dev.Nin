@@ -364,7 +364,8 @@ function Invoke-MiniFuncDump {
     .description
        .
     .notes
-       - [ ] could add -UseInputFromPipeline option
+        - [ ] todo #6 refactor to microfunctions that don't have to be declared strangely ? or just a wrapper for the current args
+        - [ ] could add -UseInputFromPipeline option
     .example
           .
     .outputs

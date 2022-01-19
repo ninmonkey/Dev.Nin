@@ -50,10 +50,14 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
 
 function _dumpPsTypeName {
     <#
-        .synopsis quick hack for clipboard
+    .synopsis
+        dump a bunch of type info, as formatted text
     .description
     see this to see how to map typeinfo to a string that's url
         <https://github.com/SeeminglyScience/ClassExplorer/blob/signature-query/src/ClassExplorer/SignatureWriter.cs>
+    .EXAMPLE
+        PS> (ls . -file | f 1) | _dumpPsTypeName
+        PS> (gi .) | _dumpPsTypeName
     #>
     [alias('Dump->TNames')]
     param(
@@ -71,13 +75,21 @@ function _dumpPsTypeName {
     hr
     $tinfo = $InputObject.GetType()
     $tinfo.BaseType.FullName | label 'baseType.fullname'
+    [string]$tinfo.BaseType | label 'base [str]'
+    [string]$tinfo | label 'root [str]'
+
     $tinfo.psobject.psbase.TypeNameOfValue | label 'psobject->psbase->TypeNameOfValue'
     hr
     $TypeNames = $InputObject.PSTypeNames
+    # Wait-Debugger
 
     $str_op = @'
 <#
-PSTypeNames:
+$obj.PSTypeNames:
+'@
+    $str_op2 = @'
+<#
+$obj[0].PSTypeNames:
 '@
     $str_os = @'
 #>
@@ -86,6 +98,18 @@ PSTypeNames:
     $str_op
     $TypeNames | str str "`n" -SingleQuote -Sort -Unique
     | Format-IndentText -Depth 2
+
+    $str_op2
+    ($InputObject)?[0].PSTypeNames
+    | str str "`n" -SingleQuote -Sort -Unique
+    | Format-IndentText -Depth 2
+
+    if ($InputObject.count -gt 1) {
+        h1 'child'
+        # ($InputObject).pstypenames
+        @($InputObject)[0].pstypenames
+
+    }
     $str_os
 }
 
@@ -555,7 +579,8 @@ function Join-StringStyle {
         }
 
         $splat_JoinStyle | Format-Table
-        | Out-String # warning: infintie loop if I had use: # | str prefix '-Begin { .. }s final value "$splat_JoinStyle"'
+        | Out-String
+        # warning: infintie loop if I had use: # | str prefix '-Begin { .. }s final value "$splat_JoinStyle"'
         | Write-Debug
 
         # }
@@ -587,6 +612,7 @@ function Join-StringStyle {
         # }
     }
     end {
+        # Wait-Debugger
         # single/double are exlusive
         if ($DoubleQuote) {
             $splat_JoinStyle['DoubleQuote'] = $true
@@ -601,7 +627,11 @@ function Join-StringStyle {
         if ($Unique) {
             $sort_splat['Unique'] = $True
             $Sort = $true
+
         }
+
+        # $x = ($InputLines | Join-String @splat_JoinStyle) | Write-Host
+        # $x.GetType().FullName | Write-Host
 
         $finalRender = if ($sort) {
             $InputLines | Sort-Object @sort_splat
@@ -610,7 +640,17 @@ function Join-StringStyle {
             $InputLines | Join-String @splat_JoinStyle
         }
 
-        Write-Output -NoEnumerate ($finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep '')
+
+        if ($true) {
+            $finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep ''
+        } else {
+            # Maybe this is causing the unwanted list wrapped value
+            Write-Output -NoEnumerate (
+                $finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep ''
+            )
+            # Do not remember why it was used/required
+        }
+
 
         # }
         # catch {

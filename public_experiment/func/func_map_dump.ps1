@@ -48,13 +48,14 @@ function _mapUriQueryDict {
 }
 
 function _mapUrlDecode {
-    #  [en/de]code html urls
+    #  encode html urls
     process {
         [System.Web.HttpUtility]::UrlDecode( $_ )
     }
+
 }
 function _mapUrlEncode {
-    #  [en/de]code html urls
+    #  decode html urls
     process {
         [System.Web.HttpUtility]::UrlEncode( $_ )
     }
@@ -83,6 +84,6 @@ if (! $experimentToExport) {
 
     h1 'functions in script (dynamic path)'
     lsfunc -Path $PSCommandPath
-     | % Name | sort -Unique | str csv -SingleQuote
-     #| cl
+    | ForEach-Object Name | Sort-Object -Unique | str csv -SingleQuote
+    #| cl
 }
