@@ -641,6 +641,7 @@ function Join-StringStyle {
         }
 
 
+        # Maybe this is causing the unwanted list wrapped value
         if ($true) {
             $finalRender | Join-String -op $OutputPrefix -os $OutputSuffix -sep ''
         } else {

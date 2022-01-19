@@ -55,7 +55,7 @@ function New-HashtableLookup {
         # input object or hashtable
         [Parameter( ParameterSetName = 'FromPipe', Mandatory, ValueFromPipeline)]
         [Parameter( ParameterSetName = 'FromParam', Mandatory, Position = 0)]
-        [string]$InputObject,
+        [object]$InputObject,
 
         # literal property name
         [Alias('Property', 'Name')]
@@ -75,10 +75,26 @@ function New-HashtableLookup {
         - [ ] dynamically generated calculated props' | Write-Warning
     }
     process {
+        $hash = @{}
         $FinalKeyName = $NewKeyName ?? $LiteralPropertyName
-        $newProp = $InputObject[ $LiteralPropertyName ]
-        $newProp ??= $InputObject.$LiteralPropertyName
-        $hash.add( $FinalKeyName, $newProp )
+
+        $dbg = [ordered]@{
+            NewKeyName          = $NewKeyName
+            LiteralPropertyName = $LiteralPropertyName
+            FinalKeyName        = $FinalKeyName
+        }
+        $dbg | Out-Default | Out-String | Write-Debug
+
+        $newValue = $InputObject[ $LiteralPropertyName ]
+        $dbg['NewProp1'] = $newValue
+        $newValue ??= $InputObject.$LiteralPropertyName
+        $dbg['NewProp2'] = $newValue
+        $dbg['FinalKeyName'] = $FinalKeyName
+        $dbg['LastValue'] = $newValue
+        $dbg | Out-Default | Write-Debug
+        # $dbg | dict | Out-String | Write-Debug
+
+        $hash.add( $FinalKeyName, $newValue )
         return $hash
     }
     end {
@@ -93,4 +109,6 @@ if (! $experimentToExport) {
     }
     $source2 = Get-Date
     $Source3 = Get-Item .
+
+    Get-Date | dict -LiteralInclude 'DayOfWeek'
 }
