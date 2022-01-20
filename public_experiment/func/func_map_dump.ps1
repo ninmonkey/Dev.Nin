@@ -8,6 +8,7 @@ if ( $experimentToExport ) {
         '_mapUriQueryDict'
         '_mapUrlDecode'
         '_mapUrlEncode'
+        '_mapFormatProcessName'
     )
     $experimentToExport.alias += @(
         # 'A'
@@ -61,6 +62,19 @@ function _mapUrlEncode {
     }
 }
 
+function _mapFormatProcessName {
+    <#
+    .synopsis
+        cleanup the [system.Diagnostics.Process]'s formatting for ToString()
+    .description
+        "System.Diagnostics.Process (explorer)" => "explorer"
+    #>
+    process {
+        ForEach-Object {
+            $_ -replace '^System.Diagnostics.Process ', '' -replace '[()]', ''
+        }
+    }
+}
 
 if (! $experimentToExport) {
     # ...

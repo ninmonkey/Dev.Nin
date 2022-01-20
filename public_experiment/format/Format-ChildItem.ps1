@@ -1,13 +1,15 @@
-#Requires -Version 7.0.0
+#Requires -Version 7.0
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'Format-ChildItemSummary'
-)
-$experimentToExport.alias += @(
-    'Summarize.Filepath' # ?
-    'LsNew'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Format-ChildItemSummary'
+    )
+    $experimentToExport.alias += @(
+        'LsNew'
+        'Summarize.Filepath' # ?
+    )
+}
 
 
 function Format-ChildItemSummary {
@@ -205,4 +207,9 @@ function Format-ChildItemSummary {
             }
         }
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

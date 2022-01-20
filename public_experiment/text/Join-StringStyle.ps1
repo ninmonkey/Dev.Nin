@@ -3,11 +3,10 @@
 if (! $DebugInlineToggle -and $ExperimentToExport) {
     $experimentToExport.function += @(
         'Join-StringStyle'
-        '_dumpPsTypeName'
+
     )
     $experimentToExport.alias += @(
         'Str'
-        'Dump->TNames'
         #
         #for the main command, i'm not sure if I want
         # 'Join-StringStyle'
@@ -46,73 +45,6 @@ if (! $DebugInlineToggle -and $ExperimentToExport) {
 
     # )
 }
-
-
-function _dumpPsTypeName {
-    <#
-    .synopsis
-        dump a bunch of type info, as formatted text
-    .description
-    see this to see how to map typeinfo to a string that's url
-        <https://github.com/SeeminglyScience/ClassExplorer/blob/signature-query/src/ClassExplorer/SignatureWriter.cs>
-    .EXAMPLE
-        PS> (ls . -file | f 1) | _dumpPsTypeName
-        PS> (gi .) | _dumpPsTypeName
-    #>
-    [alias('Dump->TNames')]
-    param(
-        [alias('Target')]
-        [parameter(position = 0, valueFromPipeline)]
-        [object]$InputObject
-    )
-
-    # $TInfo = $InputObject -as 'type'
-    # if ($InputObject -is 'type') {
-    #     $Target = $inputObject.GetTypeInfo()
-    # }
-    # $TypeName | Write-Debug
-    # $TypeName -as [type] | Write-Debug
-    hr
-    $tinfo = $InputObject.GetType()
-    $tinfo.BaseType.FullName | label 'baseType.fullname'
-    [string]$tinfo.BaseType | label 'base [str]'
-    [string]$tinfo | label 'root [str]'
-
-    $tinfo.psobject.psbase.TypeNameOfValue | label 'psobject->psbase->TypeNameOfValue'
-    hr
-    $TypeNames = $InputObject.PSTypeNames
-    # Wait-Debugger
-
-    $str_op = @'
-<#
-$obj.PSTypeNames:
-'@
-    $str_op2 = @'
-<#
-$obj[0].PSTypeNames:
-'@
-    $str_os = @'
-#>
-'@
-
-    $str_op
-    $TypeNames | str str "`n" -SingleQuote -Sort -Unique
-    | Format-IndentText -Depth 2
-
-    $str_op2
-    ($InputObject)?[0].PSTypeNames
-    | str str "`n" -SingleQuote -Sort -Unique
-    | Format-IndentText -Depth 2
-
-    if ($InputObject.count -gt 1) {
-        h1 'child'
-        # ($InputObject).pstypenames
-        @($InputObject)[0].pstypenames
-
-    }
-    $str_os
-}
-
 
 
 function Join-StringStyle {
