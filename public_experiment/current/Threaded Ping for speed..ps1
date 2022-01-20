@@ -24,7 +24,7 @@ if ($False) {
         [rgbcolor]'LightSlateGray'
         [rgbcolor]'Honeydew2'
         [rgbcolor]'Turquoise1'
-        [rgbcfolor]'#FFA500'
+        [rgbcolor]'#FFA500'
         [rgbcolor]'Bisque2'
         [rgbcolor]'Gray55'
         [rgbcolor]'MediumSpringGreen'

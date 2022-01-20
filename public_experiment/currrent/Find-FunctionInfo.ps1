@@ -2,10 +2,10 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'F'
+        'Find-FunctionInfo'
     )
     $experimentToExport.alias += @(
-        # 'A'
+        'Inspect->ScriptFunc'
     )
 }
 

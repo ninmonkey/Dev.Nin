@@ -13,102 +13,6 @@ if ( $experimentToExport ) {
     )
 }
 
-#
-function New-HashtableLookup {
-    <#
-    .SYNOPSIS
-        look up key->value pairs, return/create hash,  optionally rename key
-    .notes
-        name? Dpair, Lookup, Prop, HashProp, pair? AttributePair, New
-
-        call:
-            $obj | Lookup Property
-            <$obj> | Lookup <Property> [NewKeyName]
-            Lookup <$obj> <Property> [NewKeyName]
-
-        future:
-        - [ ] allow object to be param
-    .example
-        PS> ls . -File | New-HashtableLookup 'Length'
-
-    .example
-        PS> ls . -File | New-HashtableLookup 'Length' 'Size'
-    .example
-        # dynamic calculated colPS> ls . -File | New-HashtableLookup 'Length' 'Size'
-    .link
-        Dev.Nin\New-HashtableFromObject
-    .link
-        Dev.Nin\New-HashtableLookup
-    .link
-        Dev.Nin\Assert-HashtableEqual
-    .link
-        Dev.Nin\Sort-Hashtable
-    .outputs
-          [hashtable] or [Collections.Specialized.OrderedDictionary]
-
-    #>
-    # linter complains about type 'ordered' not being returned
-    # but [ordered] isn't a true data type in Pwsh, maybe a linter rule bug
-    # [outputtype('Collections.Specialized.OrderedDictionary')]
-
-    [alias('Lookup')]
-    [cmdletbinding()]
-    param(
-
-        # regex patterns to include property, otherwise you get all
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Mandatory, ValueFromPipeline)]
-        [Parameter(
-            ParameterSetName = 'FromParam',
-            Mandatory, Position = 0)]
-        [string]$InputObject,
-
-        [Alias('Property', 'Name')]
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Mandatory, Position = 0)]
-        [Parameter(
-            ParameterSetName = 'FromParam',
-            Mandatory, Position = 1)]
-        [string]$LiteralPropertyName,
-
-        # rename the key
-        # [Alias()]
-        [Parameter(
-            ParameterSetName = 'FromPipe',
-            Mandatory, Position = 1)]
-        [Parameter(
-            ParameterSetName = 'FromParam',
-            Mandatory, Position = 2)]
-        [string]$NewKeyName
-    )
-
-    begin {
-        '- [ ] finish by asking for group-object tips and hash key thingy
-        - [ ] dynamically generated calculated props' | Write-Warning
-    }
-    process {
-        $newKey = $NewKeyName ?? $LiteralPropertyName
-
-
-
-
-        # ! $hash1.ContainsKey('name')
-        # if(!($InputObject.))
-        # $newValue = $InputObject
-        $hash = @{}
-        $kvalue = $InputObject[$LiteralPropertyName]
-        @{
-            Key = $NewKeyName ?? $LiteralPropertyName
-        }
-    }
-    end {
-    }
-
-
-}
-
 function New-HashtableFromObject {
     <#
     .synopsis
@@ -126,6 +30,15 @@ function New-HashtableFromObject {
             - [ ] auto-sort key names
     .example
         PS> ls .  | select -first 1 | % gettype | New-HashtableFromObject
+    .example
+        PS> get-date | dict Hour, day\b
+        🐒> get-date | dict Hour, day\b
+
+            Name      Value
+            ----      -----
+            Day       19
+            Hour      10
+            TimeOfDay 10:06:17.6551716
     .link
         Dev.Nin\Assert-HashtableEqual
     .link
@@ -183,35 +96,38 @@ function New-HashtableFromObject {
         [string[]]$FilteredNames = @()
         $AllPropNames | str csv -sort | Write-Color gray | Join-String -op 'Initial Props: ' | Write-Debug
 
-        if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
-            $filteredNames = $AllPropNames
+        if ($LiteralInclude.count -gt 0) {
+            Write-Warning 'Regex works, mixing Literal needs a rework, otherwise regex started with all props, and literal didn''t '
+            $AllPropNames = @()
         }
-        else {
+
+        if (! $IncludeProperty -or ([string]::IsNullOrEmpty($IncludeProperty))) {
+            $filteredNames = $AllPropNames | Where-Object { ! [string]::IsNullOrEmpty($_) }
+        } else {
             $filteredNames = $AllPropNames | Where-Object {
                 $curName = $_
                 foreach ($pattern in $IncludeProperty) {
-                    if ($pattern -eq '*' -or [string]::IsNullOrEmpty($pattern) ) {
+                    if ($pattern -eq '*' -or $pattern -eq [string]::Empty -or [string]::IsNullOrEmpty($pattern) ) {
                         return $true
                     }
                     try {
                         if ($curName -match $Pattern) {
                             return $true
                         }
-                    }
-                    catch {
+                    } catch {
                         # no-op
-                    }                    
+                    }
                 }
                 $false
             }
         }
-    
+
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Included Props: ' | Write-Debug
-        
+
+        # todo: if foreach->try swallows errors, then throw it here
         if (! $ExcludeProperty -or (! [string]::IsNullOrEmpty($ExcludeProperty))) {
             $filteredNames = $filteredNames
-        }
-        else {
+        } else {
             # todo: refactor using AnyTrue or AnyFalse would simlify emitting more than one bool
             $filteredNames = $filteredNames | Where-Object {
                 $curName = $_
@@ -227,7 +143,8 @@ function New-HashtableFromObject {
         # literal include last
         $LiteralInclude | ForEach-Object {
             Write-Debug "iter: $_"
-            if ($PropNames -contains $_) {
+            # if ($PropNames -contains $_) {
+            if ($AllPropNames -contains $_) {
                 $filteredNames += $_
             }
         }
@@ -243,6 +160,9 @@ function New-HashtableFromObject {
             if ($targetObj.Name -notcontains $curName) {
                 Write-Error -ea continue -Message "Error reading property '$curName'" -TargetObject $targetObj
             }
+            <# check for
+                > index operation failed; the array index evaluated to null
+            #>
             $hash[ $curName ] = ($targetObj[ $curName ])?.Value
         }
         if ($Hash.Keys.Count -eq 0) {

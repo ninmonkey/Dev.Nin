@@ -26,13 +26,56 @@ function New-HashtableLookup {
 
         future:
         - [ ] allow object to be param
+        - [ ] finish by asking for group-object tips and hash key thingy
+
+
+        - [ ] use for dynamically formatting calculated properties
     .example
         PS> ls . -File | New-HashtableLookup 'Length'
+            Name Value
+            ---- -----
+            Size 158
 
     .example
-        PS> ls . -File | New-HashtableLookup 'Length' 'Size'
+        PS> ls . -file | Lookup 'Length' -NewKeyName 'Size'
+
+            Name Value
+            ---- -----
+            Size 158
+            Size 4128
+            Size 1046
+            Size 253
+
     .example
-        # dynamic calculated colPS> ls . -File | New-HashtableLookup 'Length' 'Size'
+        PS>
+        🐒> ls . -file | select -First 4 | %{
+        $hash1 = $_ | Lookup 'Length' -NewKeyName 'Size'
+        $hash2 = $_ | Lookup 'LastWriteTime' -NewKeyName 'Updated'
+        $merged = Join-Hashtable $hash1 $hash2
+        $merged
+        } | ft -AutoSize
+
+            Name    Value
+            ----    -----
+            Updated 4/11/2021 4:51:46 PM
+            Size    158
+            Updated 10/9/2021 6:16:03 PM
+    .example
+        PS>
+            ls . -file | select -First 4 | %{
+            $hash1 = $_ | Lookup 'Length' -NewKeyName 'Size'
+            $hash2 = $_ | Lookup 'LastWriteTime' -NewKeyName 'Updated'
+            $merged = Join-Hashtable $hash1 $hash2
+            $merged
+            } | %{ [pscustomobject]$_  }
+
+                Updated               Size
+                -------               ----
+                4/11/2021 4:51:46 PM   158
+                10/9/2021 6:16:03 PM  4128
+                4/28/2021 10:01:59 PM 1046
+    .example
+        (ls . -file)[0] | Lookup 'Length' -NewKeyName 'Size'
     .link
         Dev.Nin\New-HashtableFromObject
     .link
@@ -44,13 +87,16 @@ function New-HashtableLookup {
     .outputs
           [hashtable] or [Collections.Specialized.OrderedDictionary]
 
+
     #>
     # linter complains about type 'ordered' not being returned
     # but [ordered] isn't a true data type in Pwsh, maybe a linter rule bug
     # [outputtype('Collections.Specialized.OrderedDictionary')]
 
     [alias('Lookup')]
-    [cmdletbinding(DefaultParameterSetName = 'FromParam')]
+    [OutputType('System.Collections.Hashtable')]
+    [cmdletbinding(DefaultParameterSetName = 'FromPipe')]
+    # [cmdletbinding(DefaultParameterSetName = 'FromParam')]
     param(
         # input object or hashtable
         [Parameter( ParameterSetName = 'FromPipe', Mandatory, ValueFromPipeline)]
@@ -71,30 +117,41 @@ function New-HashtableLookup {
     )
 
     begin {
-        '- [ ] finish by asking for group-object tips and hash key thingy
-        - [ ] dynamically generated calculated props' | Write-Warning
+
     }
     process {
         $hash = @{}
-        $FinalKeyName = $NewKeyName ?? $LiteralPropertyName
+        if ( [string]::IsNullOrWhiteSpace( $NewKeyName ) ) {
+            $FinalKeyName = $LiteralPropertyName
+        } else {
+            $FinalKeyName = $NewKeyName
+        }
 
         $dbg = [ordered]@{
             NewKeyName          = $NewKeyName
             LiteralPropertyName = $LiteralPropertyName
             FinalKeyName        = $FinalKeyName
         }
-        $dbg | Out-Default | Out-String | Write-Debug
+        # $dbg | Out-Default | Out-String | Write-Debug
 
-        $newValue = $InputObject[ $LiteralPropertyName ]
-        $dbg['NewProp1'] = $newValue
+        $newValue = $InputObject[ $LiteralPropertyName ] ?? "`u{2400}"
+        # $dbg['NewProp1'] = $newValue
         $newValue ??= $InputObject.$LiteralPropertyName
-        $dbg['NewProp2'] = $newValue
-        $dbg['FinalKeyName'] = $FinalKeyName
-        $dbg['LastValue'] = $newValue
-        $dbg | Out-Default | Write-Debug
+        $newValue ??= "`u{2400}"
+
+        # $dbg['NewProp2'] = $newValue
+        # $dbg['FinalKeyName'] = $FinalKeyName
+        # $dbg['LastValue'] = $newValue
         # $dbg | dict | Out-String | Write-Debug
 
-        $hash.add( $FinalKeyName, $newValue )
+        $FinalValue = $InputObject[$FinalKeyName] ?? (
+            $InputObject.PsObject.Properties
+            | Where-Object Name -EQ $LiteralPropertyName
+            | ForEach-Object Value
+        )
+        # $dbg['FinalValue'] = $FinalValue
+        # $dbg | Out-Default | Write-Debug
+        $hash.add( $FinalKeyName, $FinalValue )
         return $hash
     }
     end {
@@ -103,12 +160,15 @@ function New-HashtableLookup {
 
 if (! $experimentToExport) {
     # ...
+    $now = Get-Date
     $source1 = [pscustomobject]@{
         Species = 'Cat'
         Name    = 'Henry'
     }
-    $source2 = Get-Date
+    $source2 = $now
     $Source3 = Get-Item .
 
-    Get-Date | dict -LiteralInclude 'DayOfWeek'
+    $now | dict -LiteralInclude 'Day' -ea continue
+    h1 'this has null key names'
+    $now | Lookup -LiteralPropertyName Day -Debug
 }
