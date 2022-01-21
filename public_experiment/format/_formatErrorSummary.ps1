@@ -57,6 +57,7 @@ function showErr {
         [Parameter()][switch]$Recent,
 
         # max results limit
+        [Alias('Limit')]
         [Parameter()]
         [int]$MaxLimit
 

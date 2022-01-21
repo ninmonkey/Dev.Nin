@@ -57,6 +57,12 @@ function Join-StringStyle {
     .notes
         future:
             - [ ] prefix/suffix on itself
+            -
+
+
+                Join-ScriptblockBySep, something like
+                    $error[0..3] | Inspect->ErrorType
+                    | Str hr
 
 
             - [ ] optional parameter name, so you could use
@@ -227,7 +233,7 @@ function Join-StringStyle {
         [AllowEmptyString()]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         # [object[]]$InputObject,
-        [string[]]$InputObject,
+        [object[]]$InputObject,
 
         # if not validateset, use as the actual join?
         [Parameter(Position = 0)] #
