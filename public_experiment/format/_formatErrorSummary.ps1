@@ -24,6 +24,8 @@ function showErr {
         view and hide errors easier in the term
     .notes
         'ShowError() => formatErr()'
+    .example
+        🐒> showErr -Max 3
 
     .example
         🐒> showErr -Recent
@@ -53,6 +55,7 @@ function showErr {
         [object]$ErrorObject,
 
         # show recent only
+        # future arg: recent meaning time as well, not just counts
         [Alias('ShowRecent')]
         [Parameter()][switch]$Recent,
 
@@ -60,7 +63,6 @@ function showErr {
         [Alias('Limit')]
         [Parameter()]
         [int]$MaxLimit
-
     )
     process {
         $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
@@ -96,6 +98,8 @@ function Inspect-ErrorType {
     .notes
         'ShowError() => formatErr()'
         'formatErr() => Inspect-ErrorType()'
+
+        - [ ] compare with MapFuncDump and FormatDumps to compare or merge
     #>
     [Alias('Inspect->ErrorType')]
     [CmdletBinding()]
