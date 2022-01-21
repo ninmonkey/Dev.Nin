@@ -477,6 +477,7 @@ function _formatErrorSummarySingleLine {
 }
 
 
+# Get-ChildItem
 
 
 function _processErrorRecord {
@@ -509,7 +510,7 @@ function _processErrorRecord {
         $Str = @{
             JoinNewline = ' ◁ ' | New-Text -fg 'gray60' | ForEach-Object tostring            # '… …◁'
         }
-        function _processException {
+        function _inner_processException {
             <#
             .synopsis
                 convert Exception to [dev.nin.ExceptionSummary]
@@ -563,7 +564,7 @@ function _processErrorRecord {
     process {
 
         if ($InputObject -is 'Exception') {
-            _processException $InputObject
+            _inner_processException $InputObject
         } elseif ($InputObject -is [Management.Automation.ErrorRecord]) {
             _processErrorRecord $InputObject
         } else {
