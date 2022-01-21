@@ -164,5 +164,6 @@ if ($DebugEnableInlineTest) {
     $Sample | Compare-SharedMemberTypes -IgnoreShared -Mode FindMember
     $Sample | Compare-SharedMemberTypes -Mode Properties
 
+
     # $Sample | Compare-SharedMemberTypes -IgnoreShared -Mode GetMember
 }
