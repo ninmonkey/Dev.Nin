@@ -1,13 +1,17 @@
-#Requires -Version 7.0
+#Requires -Version 7
 
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Invoke-MiniFormatDump'
 
-$experimentToExport.function += @(
-    'Invoke-MiniFormatDump'
-)
-$experimentToExport.alias += @(
-    'FormatDump',
-    'fDump'
-)
+    )
+    $experimentToExport.alias += @(
+        'FormatDump'
+        'fDump'
+        # 'A'
+    )
+}
+
 
 try {
     $script:__miniFormatDump = @{}
@@ -33,6 +37,89 @@ PSTypeNames:
         | Dev.Nin\Join-StringStyle str "`n" -SingleQuote -Sort -Unique
         | Dev.Nin\Format-IndentText -Depth 2
         $str_os
+    }
+    $state.'FormatTo.ColorBytes' = {
+        param($Text)
+        <#
+        .synopsis
+            dynamically generate rows and cols
+        .EXAMPLE
+            .
+        #>
+        process {
+            # h1 '_formatColorBytes'
+            # $Text | _formatColorBytes
+            write-warning 'get impl. from: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer_format_prototype\Compare-EncodedText.ps1>'
+
+        }
+    }
+    $state.'FormatTo.Colors' = {
+        param($Text)
+        <#
+        .synopsis
+            dynamically generate rows and cols
+        .EXAMPLE
+            .
+        #>
+        process {
+            # h1 '_formatColorBytes'
+            # $Text | _formatColorBytes
+
+            $_color = @{
+                BytesFg     = 'gray60'
+                BytesZeroFg = 'gray30'
+            }
+            # transform to instances
+            $_color.Keys.clone() | ForEach-Object {
+                $key = $_
+                $Value = $_color[ $key ]
+                $_color[ $key ] = [rgbcolor]$Value
+            }
+
+            $text = $_color.Values
+
+
+            h1 '_formatDictItem_ColorSingle'
+            $Text | _FormatDictItem_ColorSingle
+
+            h1 '_format_HslColorString -Compress'
+            $Text | _format_HslColorString -AlignMode Compress
+
+            h1 '_format_HslColorString -Perfect'
+            $Text | _format_HslColorString -AlignMode Perfect
+        }
+    }
+    $state.'FormatTo.GridsOfRandom' = {
+        param($Text)
+        <#
+        .synopsis
+            dynamically generate rows and cols
+        .EXAMPLE
+            .
+        #>
+
+        RepeatIt 3 {
+            RepeatIt 3 {
+                'a'..'e'
+                | str ul
+            } | str Csv
+        }
+
+        RepeatIt 3 {
+            RepeatIt 3 {
+                'a'..'e'
+                | str csv
+            } | str ul
+        }
+
+        h1 'dotnet "unicode", utf-16-le'
+        [Text.Encoding]::GetEncoding( 'utf-16le' ).GetBytes( 'hi world' )
+        | ForEach-Object {
+            $_.ToString('D3').PadLeft(3)
+        } | str str ' '
+
+
+
     }
 
     # PowerQuery.EscapeForDocs = {
@@ -173,4 +260,9 @@ function Invoke-MiniFormatDump {
     }
     end {
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
