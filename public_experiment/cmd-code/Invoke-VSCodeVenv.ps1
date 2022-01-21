@@ -15,6 +15,7 @@ if ($experimentToExport) {
 }
 
 $script:__venv ??= @{
+    # ForceMode = 'insiders' # $null | 'code' | 'insiders'
     ForceMode = 'code' # default code, because of alias ivy   <$null | 'code' | 'insiders'>
     Color     = @{
         Fg      = '#66CCFF'
@@ -157,7 +158,7 @@ code --help:
 
     Troubleshooting
     -v --version                       Print version.
-    --verbose                          Print verbose output (implies --wait).
+--verbose                          Print verbose output (implies --wait).
     --log <level>                      Log level to use. Default is 'info'.
                                         Allowed values are 'critical', 'error',
                                         'warn', 'info', 'debug', 'trace', 'off'.
@@ -262,6 +263,7 @@ function Invoke-VSCodeVenv {
                 use: File
                 #>
 
+        # Target file or Directory to open
         # [Alias('Path', 'PSPath', 'File')]
         [Alias('Path')] #, 'PSPath')]
         [Parameter(
@@ -383,6 +385,8 @@ function Invoke-VSCodeVenv {
             }
             Write-Debug "Mode from config: $ForceMode"
         }
+
+
 
         # [3] you can always force a specific mode
         # 1 and 2 work better when PSDefaultParameters doesn't specificy 'forcemode'
@@ -635,9 +639,12 @@ function Invoke-VSCodeVenv {
                     # | write-color magenta
                 }
             }
+            if (Test-IsDirectory -ea ignore $targetPath) {
+                # noop
+            } else {
+                $ConfirmPreference = 'None'
+            }
 
-
-            # h1 'here' write-host
 
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
                 @(
@@ -645,7 +652,7 @@ function Invoke-VSCodeVenv {
                     hr
                     $strTarget | Join-String -op '$strTarget: '
                     $StrOperation | Join-String -op '$strOperation: '
-                    $codeArgs | Join-String -sep ' ' -op '***args***'
+                    $codeArgs | Join-String -sep ' ' -op 'shouldProc? CodeArgs: '
                 )
                 | Write-Debug
                 Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden

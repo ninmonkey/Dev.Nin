@@ -156,6 +156,12 @@ function Invoke-BitwiseVisualization {
 
                 $results = $OperandLeft, $OperandRight, $OperationResult | ForEach-Object {
                     $curOp = $_
+                    if ([string]::IsNullOrWhiteSpace($curOp)) {
+                        return
+                    }
+                    if ($curOp -eq [string]::Empty) {
+                        return
+                    }
                     $renderObj = [ordered]@{
                         Dec  = $curOp
                         # BitsRaw  = $curOp | bits
