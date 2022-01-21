@@ -9,11 +9,11 @@ if ( $experimentToExport ) {
         'Inspect-ErrorType'
 
         #  testing
-        'Inspect->ErrorType'
         'showErr'
         'formatErr'
     )
     $experimentToExport.alias += @(
+        'Inspect->ErrorType'
         # ''
     )
 }
@@ -54,22 +54,28 @@ function showErr {
 
         # show recent only
         [Alias('ShowRecent')]
-        [Parameter()][switch]$Recent
+        [Parameter()][switch]$Recent,
+
+        # max results limit
+        [Parameter()]
+        [int]$MaxLimit
+
     )
     process {
-        $Target = $ErrorObject ?? $global:Error
+        $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
         $deltaCount = (err? -PassThru).deltaCount
         if ($Recent) {
-            $target = $global:Error | Select-Object -First $deltaCount
+            $MaxLimit = $deltaCount
         }
 
-        $dbgInfo = @{
-
+        if ($MaxLimit) {
+            $results = $target | Select-Object -First $MaxLimit
+            | ReverseIt
+        } else {
+            $results = $target
+            | ReverseIt
         }
-        $dbgInfo | Write-Debug
-        $Target
-        | ReverseIt # reverse here is to order them as descending
-        | formatErr | str hr
+        $results | Dev.Nin\formatErr | str hr
     }
 
     <#

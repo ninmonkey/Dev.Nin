@@ -61,6 +61,7 @@ function Test-HasNewError {
 
     #>
     [Alias('Err?')]
+    [OutputType([System.Collections.Hashtable], [System.boolean])]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # Change nothing, just reset 'LastCount' to 0
