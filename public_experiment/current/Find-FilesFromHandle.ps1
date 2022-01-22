@@ -88,10 +88,33 @@ function Find-FileFromHandle {
             | [-s]
         ]
         [-p <process>|<pid>] [name] [-nobanner]
+
+
+    examples of original invoke:
+        always add '-nobanner'
+
+        handle64 windowsapps
+
+        handle64 -p 39144 windowsapps # 130
+        handle64 -p 39144 windowsapps # 70
+
+        process (real fast)
+            handle64 -p 3914
+
+        process + pattern (fast)
+            handle64 -p 39144 msmdsrv4
+
+        pattern (slow)
+            handle64 msmdsrv
+
+        handle64 msmdsrv
+
 '@
         }
 
-
+        if (! $HandleId -and ! $ProcessId) {
+            Write-Warning 'Queries without -Handle or -Proccess are slow'
+        }
 
         [object[]]$mdArgs = @(
             if ($HandleId) {
@@ -101,13 +124,13 @@ function Find-FileFromHandle {
                 #exclusive?
                 '-p'
                 $ProcessId
-
             }
             if ( ! [string]::IsNullOrWhiteSpace($Pattern) ) {
                 $Pattern
             }
-            '-nobanner'
 
+
+            '-nobanner'
         )
 
         $mdArgs | Str sep ' ' | write-color 'orange' | Label 'handle args:' | wi
@@ -121,13 +144,22 @@ if (! $experimentToExport) {
     # ...
     hr -fg magenta
     Find->FromHandle -help
-    $pbi ??= Get-Process 'msmdsrv'
+    $pbi ??= Get-Process 'msmdsrv' -infa continue
+    $handles = $pbi.Handles
 
     hr -fg magenta
+    h1 'Process: all'
     Find->FromHandle -ProcessId $pbi.Id -infa continue
-    $handles = $pbi.Handles
+
+    # hr -fg magenta
+    # h1 'Process: all'
+    # Find->FromHandle -ProcessId $pbi.Id -infa continue
+
+
+    h1 'Handle /w name'
+    hr -fg magenta
+    Find->FromHandle -HandleId 2057 -Name msmdrv -infa continue
+
     $pbi.Id | Label 'pid'
     $handles | Label 'handles'
-    hr -fg magenta
-
 }
