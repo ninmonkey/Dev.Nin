@@ -2,38 +2,38 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        '_mapStripNSPrefix'
+        '_mapFormatProcessName'
+        '_mapFormatShortName'
         '_mapStripNSPrefix'
         '_mapUri'
         '_mapUriQueryDict'
         '_mapUrlDecode'
         '_mapUrlEncode'
-        '_mapFormatProcessName'
     )
     $experimentToExport.alias += @(
-        # 'A'
+
     )
 }
 function _mapStripNSPrefix {
-    # from 1-liner func mapping examples
+    # strip namespace system  : 1-liner
     process {
         $_ -replace 'System\.', ''
     }
 }
 
 function _mapUri {
-    # from 1-liner func mapping examples
+    # $obj => [uri] func mapping examples : 1-liner
     process {
         ForEach-Object { [uri]$_ }
     }
 }
-function _mapShortTypeName {
+function _mapFormatShortName {
     <#
     .synopsis
         get type, and strip common prefixes. nothing else. nothing
     .example
-        PS> (gi . ) | _mapShortTypeName
-            'Hashtable' | _mapShortTypeName
+        PS> (gi . ) | _mapFormatShortName
+            'Hashtable' | _mapFormatShortName
     .link
         Ninmonkey.Console\Format-TypeName
     #>
@@ -53,7 +53,7 @@ function _mapShortTypeName {
 function _mapUriQueryDict {
     <#
         .synopsis
-            more than [uri], sugar for parsing  ([uri]$url).Query to a dict
+            inspect query string params as dict. It's more than [uri], sugar for parsing  ([uri]$url).Query to a dict
     #>
     process {
 
@@ -72,14 +72,14 @@ function _mapUriQueryDict {
 }
 
 function _mapUrlDecode {
-    #  encode html urls
+    # Decode html urls : 1-liner
     process {
         [System.Web.HttpUtility]::UrlDecode( $_ )
     }
 
 }
 function _mapUrlEncode {
-    #  decode html urls
+    # encode html urls : 1-liner
     process {
         [System.Web.HttpUtility]::UrlEncode( $_ )
     }

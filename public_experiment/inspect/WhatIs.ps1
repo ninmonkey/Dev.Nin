@@ -2,10 +2,12 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         # 'Get-WhatObjectType' ?
-        'What-TypeInfo'
+        'Get-WhatTypeInfo'
+        'Get-WhatIsShortName'
     )
-    $experimentToExport.alias += @(
-        'WhatIs'
+    $experimentToExport.alias +=
+    @(
+        'ShortName'
         'Inspect->TypeInfo'
         # 'Find-ObjectProperty'
         # 'New-Sketch'
@@ -14,7 +16,27 @@ if ( $experimentToExport ) {
 # }
 
 
-function What-TypeInfo {
+function Get-WhatIsShortName {
+    <#
+    .synopsis
+        basic test-type , shortname
+    .example
+        ,@(,'a'), 0.3, 'a', (gi .), (get-date), @{}, [ordered]@{} | whatAmI
+    #>
+    [Alias('ShortName')]
+    param(
+        [parameter(ValueFromPipeline, Position = 0, Mandatory)]$InputObject
+    )
+    process {
+        $InputObject | _mapFormatShortName
+
+        # $InputObject.GetType().FullName -replace 'System.Collections\.', '' -replace '^System\.', ''
+        # $InputObject.GetType().Name
+    }
+}
+
+
+function Get-WhatTypeInfo {
     <#
         .synopsis
             gives type info, in a longer form, it's for interactive use rather that WhatTypeIsObj
@@ -29,7 +51,7 @@ function What-TypeInfo {
         .link
             Ninmonkey.Console\What-ParameterInfo
         #>
-    [Alias('WhatIs', 'Inspect->TypeInfo')]
+    [Alias('Inspect->TypeInfo')]
     [cmdletbinding()]
     param(
         # any object
