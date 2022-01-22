@@ -71,6 +71,9 @@ function Invoke-ToastAlarm {
         # Silent?
         [Parameter()][switch]$Silent,
 
+        # new transform attribute: null, relativeTs, or DateTime
+        [Parameter()][object]$ExpirationTime,
+
         # Repeat automatically? (currently until kill)
         [Parameter()][switch]$Repeat
     )
@@ -88,10 +91,35 @@ function Invoke-ToastAlarm {
                 Text  = "$Message`n🐒"
                 Sound = 'Alarm3'
             }
+            # ExpirationTime = $ExpirationTime ?? ((Get-Date) +    (RelativeTs '5m'))
+
+            if ($null -ne $ExpirationTime) {
+                # this block should be transformation type
+                switch ($ExpirationTime.GetType().Name) {
+                    'DateTime' {
+                        $splat_Toast['ExpirationTime'] = $ExpirationTime
+                    }
+                    'string' {
+                        $maybeRelTs = RelativeTs $ExpirationTime
+
+                        $maybeRelTs -is 'timespan'
+                        $maybeRelTs | Should -BeOfType 'timespan'
+                        $finalExpire = ((Get-Date)) + (RelativeTs $maybeRelTs)
+                        $splat_Toast['ExpirationTime'] = $ExpirationTime
+                    }
+                    default {
+                    }
+                }
+            }
+
+
             if ($Silent) {
                 $splat_Toast.Remove('Sound')
                 $splat_Toast.Add('Silent', $true)
             }
+
+            $PSBoundParameters | format-dict | wi
+            $splat_Toast | format-dict | wi
 
 
             New-BurntToastNotification @splat_Toast
