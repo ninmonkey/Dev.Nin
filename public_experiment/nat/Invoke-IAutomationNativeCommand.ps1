@@ -1,11 +1,22 @@
+#Requires -Version 7
 
-$experimentToExport.function += @(
-    'Invoke-IndentedNativeCommand'
-)
-$experimentToExport.alias += @(
-    'NativeCommand'
-)
-function Invoke-IndentedNativeCommand {
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Invoke-IAutomationNativeCommand'
+    )
+    $experimentToExport.alias += @(
+
+    )
+}
+
+
+# $experimentToExport.function += @(
+#     'Invoke-IAutomationNativeCommand'
+# )
+# $experimentToExport.alias += @(
+
+# )
+function Invoke-IAutomationNativeCommand {
     <#
     .SYNOPSIS
         Invoke a native command (.exe) as a new process.
@@ -22,9 +33,11 @@ function Invoke-IndentedNativeCommand {
 
         Run the git command to clone repo-uri. Raise a terminating error if the command fails.
     .link
-        Invoke-NativeCommand
+        Ninmonkey.Console\Invoke-NativeCommand
     .link
-        Get-NativeCommand
+        Ninmonkey.Console\Get-NativeCommand
+    .link
+        https://github.com/indented-automation
     #>
 
     [alias('NativeCommand')]
@@ -62,9 +75,13 @@ function Invoke-IndentedNativeCommand {
             while (-not $process.StandardError.EndOfStream) {
                 Write-Error $process.StandardError.ReadToEnd()
             }
-        }
-        catch {
+        } catch {
             Write-Error -ErrorRecord $_
         }
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

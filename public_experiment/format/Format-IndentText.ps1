@@ -1,11 +1,15 @@
-$experimentToExport.function += @(
-    'Format-IndentText'
-    'Format-UnindentText'
-)
-$experimentToExport.alias += @(
-    # 'Format-PredentIndent'
-    # 'Format-Predent'
-)
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Format-IndentText'
+        'Format-UnindentText'
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
+
 # $experimentFuncMetadata += @{
 #     # metadataRecord
 #     Command = 'Format-IndentText'
@@ -49,6 +53,8 @@ function Format-IndentText {
             C:\Users\cppmo_000\SkyDrive\Documents\2021\powershell\My_Github\Ninmonkey.Console\public\Format-Predent.ps1
     .notes
         tags: TextProcessing📚, 'Style🎨'
+    .example
+
     .LINK
         Ninmonkey.Console\Format-Predent
     .LINK
@@ -60,11 +66,8 @@ function Format-IndentText {
     param(
         # Level
         [Alias('IndentLevel', 'Level')]
-        [Parameter(
-            Mandatory,
-            Position = 0
-        )]
-        [int]$Depth,
+        [Parameter(Position = 0 )]
+        [int]$Depth = 1,
 
         [Alias('Line')]
         [AllowEmptyString()]
@@ -73,8 +76,13 @@ function Format-IndentText {
         [string]$Text,
 
         # For non-default indentation
+        # todo: requires completions attribute (even if it's still static)
+        # using
+        #       label = 'LiteralTab' ; value = "`n"
+        #       label = '4Space' ; value = "    "
         [Parameter()]
-        [string]$IndentString = '  '
+        # [ArgumentCompletions('  ', '    ', "`t")]
+        [string]$IndentString = '    '
     )
     begin {
         $predentStr = $IndentString * $Depth
@@ -100,4 +108,9 @@ function Format-IndentText {
         | Join-String @predentSplat
     }
 
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

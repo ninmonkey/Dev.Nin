@@ -27,6 +27,29 @@ function _mapUri {
         ForEach-Object { [uri]$_ }
     }
 }
+function _mapShortTypeName {
+    <#
+    .synopsis
+        get type, and strip common prefixes. nothing else. nothing
+    .example
+        PS> (gi . ) | _mapShortTypeName
+            'Hashtable' | _mapShortTypeName
+    .link
+        Ninmonkey.Console\Format-TypeName
+    #>
+    [outputType('System.String')]
+    param(
+        # pass any of these: [1] objects, [2] type instance, [3] typename as string
+        [parameter(ValueFromPipeline, Position = 0, Mandatory)]$InputObject
+    )
+    process {
+        # only use GetType() as the final test, otherwise types as string ex: 'hashtable' => string
+        $tinfo = $InputObject -is 'type' ? $InputObject : $InputObject -as 'type'
+        $tinfo ??= $InputObject.GetType()
+        ($tinfo)?.FullName -replace 'System.Collections\.', '' -replace '^System\.', ''
+    }
+}
+
 function _mapUriQueryDict {
     <#
         .synopsis
