@@ -5,7 +5,7 @@ if ( $experimentToExport ) {
         'Where-MatchAnyText'
     )
     $experimentToExport.alias += @(
-        '?RegexAnyStr',
+        # '?RegexAnyStr',
         '?MatchAnyStr'
     )
 }
@@ -20,8 +20,8 @@ function Where-MatchAnyText {
     #>
     [Alias(
         # '?RegexAnyStr', '?RegexAny🔍', '?StrAny',
-        '?MatchAnyStr',
-        '?RegexAnyStr'
+        # '?RegexAnyStr'
+        '?MatchAnyStr'
     )]
     [cmdletbinding()]
     param(
@@ -32,6 +32,7 @@ function Where-MatchAnyText {
         [string[]]$Pattern,
 
         # sample text
+        # future: todo: make InputText an array
         [Alias('Text')]
         [Parameter(Mandatory, Position = 1, ValueFromPipeline)]
         [string]$InputText
@@ -55,5 +56,6 @@ function Where-MatchAnyText {
         }
     }
 }
-if ( ! $experimentToExport ) {
+if (! $experimentToExport) {
+
 }
