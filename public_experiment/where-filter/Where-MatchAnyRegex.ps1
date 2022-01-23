@@ -2,23 +2,27 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         # 'Get-WhatObjectType' ?
-        'Where-MatchAnyRegex'
+        'Where-MatchAnyText'
     )
-    $experimentToExport.alias += @(        
-        '?RegexAny',
-        '?RegexAny🔍'        
+    $experimentToExport.alias += @(
+        '?RegexAnyStr',
+        '?MatchAnyStr'
     )
 }
 # }
-    
-function Where-MatchAnyRegex {
+
+function Where-MatchAnyText {
     <#
     .synopsis
         When you want to filter for any match, and you don't care which matched
+    .notes
+        the "right" name might be 'Test-MatchAnyText'
     #>
-
-
-    [Alias('?RegexAny', '?RegexAny🔍')]
+    [Alias(
+        # '?RegexAnyStr', '?RegexAny🔍', '?StrAny',
+        '?MatchAnyStr',
+        '?RegexAnyStr'
+    )]
     [cmdletbinding()]
     param(
 

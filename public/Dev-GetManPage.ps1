@@ -144,6 +144,7 @@
             & $cmdBin --help
             | rg "$($Regex.BaseFlagRegex)|`$"
             | rg -i "$($Regex.BaseFlagRegex)" --color=always
+            | less
             return
         }
         Get-Content $manPage
