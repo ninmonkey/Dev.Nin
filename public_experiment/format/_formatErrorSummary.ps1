@@ -17,7 +17,6 @@ if ( $experimentToExport ) {
         # ''
     )
 }
-
 function showErr {
     <#
     .synopsis
@@ -64,6 +63,12 @@ function showErr {
         [Parameter()]
         [int]$MaxLimit
     )
+    begin {
+        $Config = @{
+
+            # ArrowDown = '🠯', '▽' # '🠯', '▽', '⇩▼▽🠯'''
+        }
+    }
     process {
         $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
         $deltaCount = (err? -PassThru).deltaCount
@@ -79,6 +84,16 @@ function showErr {
             | ReverseIt
         }
         $results | Dev.Nin\formatErr | str hr
+
+        $splat_FormatSortOrder = @{
+            Label   = 'Newest'
+            Order   = 'Desc'
+            Options = @{FormatMode = 'HighlightName' }
+        }
+
+        _write-FormatSortOrder @splat_FormatSortOrder
+
+
     }
 
     <#

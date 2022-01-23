@@ -2,7 +2,7 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Get-HelpOnline'                
+        'Get-HelpOnline'
     )
     $experimentToExport.alias += @(
         'ho'
@@ -21,7 +21,7 @@ function Get-HelpOnline {
         PS> Get-HelpOnline 4
     .example
         PS> $Error[0..3] | Get-HelpOnline
-        
+
     .example
         🐒>
     #>
@@ -37,16 +37,16 @@ function Get-HelpOnline {
         Write-Warning "wip: '$PSCommandPath'"
     }
     process {
-        
+
         try {
             $InputObject
             | Resolve-CommandName
             | help -Online
-            return 
+            return
         } catch [System.Management.Automation.PSInvalidOperationException] {
             'todo: Try fallback'
             $_.Exception.ToString()
-            Write-Error $_             
+            Write-Error $_
         }
 
         "maybe it's a type?"

@@ -7,7 +7,7 @@ if ($experimentToExport) {
     )
     $experimentToExport.alias += @(
         'Out-Bat'
-        'Bat🐒'
+        # 'Bat🐒'
         'Batman'
     )
 
@@ -31,18 +31,17 @@ $metadata_manpage = @(
 function Out-BatHighlight {
     <#
     .synopsis
-        When you want to clone a list of repos from someone
+        The primary minimal 'bat' wrapper
     .description
-        tags: gh, github, cli, clone, util
-        Desc
+
     .notes
         others:
-            --diff
-    .outputs
 
+    .link
+        Dev.Nin\Out-BatHighlight
+    .link
+        Dev.Nin\Invoke-Batman
     #>
-
-
     [Alias('Out-Bat', 'Bat🐒')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -151,6 +150,10 @@ function Invoke-Batman {
             . todo: refactor batman, this func is bat, batman will invoke this func
         .example
             PS> batman 'ls'
+        .link
+            Dev.Nin\Out-BatHighlight
+        .link
+            Dev.Nin\Invoke-Batman
         #>
     # [outputtype( [string[]] )]
     [Alias('Batman')]

@@ -135,6 +135,16 @@ function Find-FileFromHandle {
 
         $mdArgs | Str sep ' ' | write-color 'orange' | Label 'handle args:' | wi
 
+        $StarTime = Get-Date
+        'invoke =>'
+        $endTime = Get-Date
+        $delta = ($endTime - $StarTime)
+
+        if ( $Delta.TotalSeconds -gt 1.5) {
+            'was slow, play toast'
+        }
+        $delta.TotalSeconds | Label 'TotalSeconds'
+
     }
     end {
     }
@@ -163,3 +173,5 @@ if (! $experimentToExport) {
     $pbi.Id | Label 'pid'
     $handles | Label 'handles'
 }
+
+# finish me

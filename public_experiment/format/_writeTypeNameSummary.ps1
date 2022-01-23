@@ -1,3 +1,14 @@
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'F'
+    )
+    $experimentToExport.alias += @(
+        # 'A'
+    )
+}
+
 if (! $badInlineDebug) {
     $experimentToExport.function += @(
         '_write-TypeNameSummary'
@@ -30,14 +41,14 @@ function _write-TypeNameSummary {
         [object]$InputObject
     )
     begin {
-        [hashtable]$Templates = @{}
-        $Template.Parent = @'
+        [hashtable]$Template = @{}
+        $Template['Parent'] = @'
 ## Parent
 Type        = {0}
 PSTypeNames = {1}
 '@
 
-        $Template.Child = @'
+        $Template['Child'] = @'
 FirstChild  = {1}
 ChildTypes  = {0}
 '@
@@ -48,17 +59,21 @@ ChildTypes  = {0}
 
     process {
         $one = $InputObject
-        $meta.ParentType = $one.GetType() | Format-TypeName -Brackets
+        $meta.ParentType = $one.GetType() | ?NotBlank
+        | Format-TypeName -Brackets
 
         $meta.ParentTypeNames = $one.pstypenames | ForEach-Object { $_ -as 'type' }
-        | Sort-Object | Format-TypeName -Brackets
+        | Sort-Object | ?NotBlank
+        | Format-TypeName -Brackets
 
 
         Write-Verbose 'this test should not fail, if it does, fix this code'
         $meta.Parent_Count = $one.count ?? $nullStr
         $meta.Parent_Length = $one.length ?? $nullStr
-        $meta.FirstChild_Type = @($one)[0]?.GetType() | Format-TypeName -Brackets -NullStr
-        $meta.FirstChild_Type = @($one)[0]?.PSTypeNames | Format-TypeName -Brackets -NullStr
+        $meta.FirstChild_Type = @($one)[0]?.GetType() | ?NotBlank
+        | Format-TypeName -Brackets -NullStr
+        $meta.FirstChild_Type = @($one)[0]?.PSTypeNames | ?NotBlank
+        | Format-TypeName -Brackets -NullStr
 
         [pscustomobject]$meta
 
@@ -94,10 +109,14 @@ ChildTypes  = {0}
     }
 }
 
-if ( $badInlineDebug) {
+
+if (! $experimentToExport) {
     # $null | Format-typename
     $now = Get-Date
     'first try: $now | _writeTypeNameSummary'
     $now | _write-TypeNameSummary
     'first try: _writeTypeNameSummary $now'
 }
+
+
+# ...

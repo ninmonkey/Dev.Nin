@@ -4,7 +4,8 @@ $experimentToExport.function += @(
     'Find-FDNewestItem'
 )
 $experimentToExport.alias += @(
-    'newestItem🔎', 'findNewest'
+    'newestItem🔎',
+    'findNewest'
     # 'newestCode' # potential optional smart alias?
 )
 [hashtable]$__helpText = @{}
@@ -30,6 +31,7 @@ enum FiletypeEnum {
         https://github.com/sharkdp/fd#using-fd-with-fzf
         https://github.com/junegunn/fzf#tips
 '@
+
 function Find-FDNewestItem {
     <#
     .synopsis

@@ -15,6 +15,7 @@ if ( $experimentToExport ) {
 
 $__moduleMetaData_DidError ??= @{
     LastCount = 0 #$global:error.count
+    # LastTime  = get-date
 }
 
 function Test-HasNewError {

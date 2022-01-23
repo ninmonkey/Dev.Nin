@@ -18,6 +18,7 @@ function New-DevFileSketchItem {
         create and open a new file, like
             C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-07
     .description
+    # what am i? ##6
         create a new file name using the pattern
 
         future:

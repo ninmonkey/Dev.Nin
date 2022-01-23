@@ -1,12 +1,58 @@
-$experimentToExport.function += @(
-    # 'ConvertFrom-ScriptExtent'
-    'New-VsCodeFilepath'
-)
-$experimentToExport.alias += @(
-    # 'ConvertTo-VsCodeFilepath'
-    # 'Format-ScriptExtentToVscodeFilepath'
-)
+#Requires -Version 7
 
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        # 'ConvertFrom-ScriptExtent'
+        'New-VsCodeFilepath'
+        '_renderVsCodeGotoPath'
+
+    )
+    $experimentToExport.alias += @(
+        # 'ConvertTo-VsCodeFilepath'
+        # 'Format-ScriptExtentToVscodeFilepath'
+
+    )
+}
+$sample = 'C:\Users\cppmo_000\SkyDrive\Documents\2021\dotfiles_git\powershell\Ninmonkey.Profile\Ninmonkey.Profile.psm1:964'
+$regex = @'
+(?x)
+    (?<First>^.*)
+    (?<Line>\d+$)
+'@
+
+function _renderVsCodeGotoPath {
+    <#
+    .synopsis
+        creates a string containing filepath, optional line, optional column
+    #>
+    [OutputType('System.String')]
+    param(
+        [Alias('Name', 'PSPath')]
+        [parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
+        [object]$InputObject,
+
+        [Parameter(Position = 1)]
+        [int]$Line,
+
+        [Parameter(Position = 2)]
+        [int]$Column
+    )
+    process {
+
+        $Render = @(
+            $Path
+            if ($Line) {
+                ":$Line"
+            }
+            if ($Column) {
+                ":$Column"
+            }
+        ) | Join-String -DoubleQuote -sep ''
+        $Render
+
+    }
+
+}
 
 class VsCodeFilePath {
     [string]$Path
@@ -27,8 +73,30 @@ class VsCodeFilePath {
         #         $Meta.StartColumnNumber
         #     )
         # )
+        $TemplateStrGo = '--goto '
+        # $TemplateStrPath = @(
+        #     @(
+        #         $This.Path.ToString()
+        #         if ($This.Line) {
+        #             ":$This.Line"
+        #         }
+        #         if ($This.Column) {
+        #             ":$This.Column"
+        #         }
 
-        return ('"{0}"' -f $This.Path.ToString())
+        #     ) | Join-String -DoubleQuote -sep ''
+
+        # )
+        # '"{0}{1}{2}"' -f @(
+        #     # $Path
+        #     $Target.FullName
+        #     if($Path)
+        #     $LineNumber ?? 0
+        #     $ColumnNumber ?? 0
+        # )
+
+        $render = ('"{0}"' -f $This.Path.ToString())
+        return $render
     }
 }
 # function ConvertTo-VsCodeFilepath {
@@ -40,6 +108,14 @@ function New-VSCodeFilepath {
        .
         code --help synatx:
             # actual use: --goto <file:line[:character]>
+    .notes
+        todo checklist: convert from:
+        - [ ] text filepath with columns
+        - [ ] convertFrom RipGrep output (--json)
+        - [ ] ScriptBlock / ScriptExtent
+            see existing: Dev.Nin\ConvertFrom-ScriptExtent
+        - [ ] Exception/ErrorRecord
+
     .example
           .
     .outputs
@@ -60,8 +136,13 @@ function New-VSCodeFilepath {
         [object]$InputObject
     )
 
-    begin {}
+    begin {
+    }
     process {
+        # maybe path with numbers?
+        # $path
+
+        # TryFor line numbers
         if (Test-IsDirectory $InputObject) {
             Write-Error "'$InputObject' is a directory"
             return
@@ -78,7 +159,8 @@ function New-VSCodeFilepath {
         [pscustomobject]$meta
 
     }
-    end {}
+    end {
+    }
 }
 
 
@@ -173,5 +255,11 @@ function ConvertFrom-ScriptExtent {
             }
         }
     }
-    end {}
+    end {
+    }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
