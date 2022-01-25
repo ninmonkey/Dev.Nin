@@ -4,7 +4,7 @@ $experimentToExport.function += @(
     'Write-Endcap'
 )
 $experimentToExport.alias += @(
-    'Endcap🎨'
+    'Endcap'
 )
 # $experimentFuncMetadata += @{
 #     # metadataRecord
@@ -23,7 +23,7 @@ function Write-Endcap {
             ␊
             <-
     #>
-    [Alias('Endcap🎨')]
+    [Alias('Endcap')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # Text array/list

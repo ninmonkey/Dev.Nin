@@ -3,14 +3,11 @@
         {
             "name": "Dev.Nin",
             "path": "."
-        },
-        {
-            "path": "..\\Mini.Examples\\Parsing Native Apps\\DOS"
         }
     ],
     "settings": {
-        "editor.fontSize": 17,
-        "terminal.integrated.fontSize": 16,
+        "editor.fontSize": 15, // 17,
+        "terminal.integrated.fontSize": 12, // 16,
         "snippets.viewer.sortSnippetsByName": true,
         "markdownlint.config": {
             "MD028": false,

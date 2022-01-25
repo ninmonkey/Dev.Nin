@@ -2,13 +2,18 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        # 'ConvertFrom-ScriptExtent'
         'New-VsCodeFilepath'
+        'Convert-VsCodeFilepathFromErrorRecord'
+        # old ?
+        # 'ConvertFrom-ScriptExtent'
         '_renderVsCodeGotoPath'
 
     )
     $experimentToExport.alias += @(
-        # 'ConvertTo-VsCodeFilepath'
+
+        'To->ScriptExtentFromError' # => Convert-ScriptExtentFromErrorRecord
+        'To-VsCodePath' # =>  New-VSCodeFilepath
+        # 'Convert-VsCodeFilepathFromErrorRecord'
         # 'Format-ScriptExtentToVscodeFilepath'
 
     )
@@ -99,7 +104,7 @@ class VsCodeFilePath {
         return $render
     }
 }
-# function ConvertTo-VsCodeFilepath {
+# function Convert-VsCodeFilepathFromErrorRecord {
 function New-VSCodeFilepath {
     <#
     .synopsis
@@ -164,7 +169,40 @@ function New-VSCodeFilepath {
 }
 
 
-function ConvertFrom-ScriptExtent {
+
+function Convert-ScriptExtentFromErrorRecord {
+    <#
+    .synopsis
+        Convert errors to ScriptExtent ( for vs code )
+    .example
+        PS> $Sample = 'System.Management.Automation.Language.InternalScriptExtent'
+    .notes
+    #>
+    [Alias(
+        'To->ScriptExtentFromError'
+        # 'Format-ScriptExtentToVscodeFilepath'
+
+    )]
+    [OutputType([System.Management.Automation.Language.ScriptExtent])]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+        # input objects
+        [Alias('ErrorRecord')]
+        [Parameter(Mandatory, Position = 0)]
+        [ErrorRecord]$InputObject
+        # [object]$InputObject
+    )
+    process {
+        if ($true) {
+
+        }
+
+        Write-Error "Failed to convert from error: '$InputObject'"
+    }
+}
+
+
+function old_ConvertFrom-ScriptExtent {
     <#
     .synopsis
         convert type 'script extent' to vs code's filepath
@@ -188,8 +226,8 @@ function ConvertFrom-ScriptExtent {
 
     #>
     [Alias(
-        'ConvertTo-VsCodeFilepath',
-        'Format-ScriptExtentToVscodeFilepath'
+        'To-VsCodePath'
+        # 'Format-ScriptExtentToVscodeFilepath'
 
     )]
     [OutputType([string])]
@@ -226,6 +264,9 @@ function ConvertFrom-ScriptExtent {
             #>
 
         switch ($InputObject.GetType()) {
+            [System.Management.Automation.ErrorRecord] {
+                Write-Warning 'from ErrorRecord'
+            }
             [System.Management.Automation.Language.InternalScriptExtent] {
                 'do normal' | Write-Warning
             }

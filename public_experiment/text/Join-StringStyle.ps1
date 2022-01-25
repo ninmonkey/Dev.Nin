@@ -287,7 +287,10 @@ function Join-StringStyle {
 
         # DoubleQuotes instead of single quotes, if used in the formatter
         [Parameter()] #
-        [Switch]$DoubleQuote
+        [Switch]$DoubleQuote,
+
+        # generate the string using a SB
+        [ScriptBlock]$ScriptBlockFormat
 
         # # By Property name, else param: Foreground [rgbcolor]
         # [Alias('Fg', 'Color', 'ForegroundColor')]
@@ -501,6 +504,7 @@ function Join-StringStyle {
             'UL' {
                 $splat_JoinStyle.Separator = "`n- "
                 $splat_JoinStyle.OutputPrefix = "`n- "
+
             }
             'Checklist' {
                 $splat_JoinStyle.Separator = "`n- [ ] "
@@ -508,7 +512,7 @@ function Join-StringStyle {
             }
             default {
                 $splat_JoinStyle.Separator = ' ' # or user's -sep
-                Write-Warning "using generic case on with  not reach, unhandled '$SmartAlias' case"
+                Write-Debug "${PSCommandPath} using generic case on with  not reach, unhandled '$SmartAlias' case"
                 # Write-Error 'should never reach'
             }
         }
@@ -537,7 +541,12 @@ function Join-StringStyle {
             if ($null -eq $_) {
                 $InputLines.Add( '␀' )
             } else {
-                $InputLines.Add( $_ )
+                if (! $ScriptBlockFormat) {
+                    $InputLines.Add( $_ )
+                } else {
+                    $render = & $ScriptBlock $InputLines
+                    $InputLines.Add( $Render )
+                }
             }
             # need to validate this is equivalent or better: $InputLines.AddRange( $InputObject )
             # todo: stringbuffer, and profile performance.

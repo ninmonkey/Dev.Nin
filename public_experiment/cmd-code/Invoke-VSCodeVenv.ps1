@@ -210,7 +210,7 @@ function Invoke-VSCodeVenv {
     .link
         VsCodeFilePath
     .link
-        ConvertTo-VsCodeFilepath
+        Convert-VsCodeFilepathFromErrorRecord
     .link
         ConvertFrom-ScriptExtent
     .example
