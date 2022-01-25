@@ -1,24 +1,42 @@
 ﻿#Requires -Version 7
 
 if ( $experimentToExport ) {
-    return
     $experimentToExport.function += @(
-        # 'Invoke-RunOncePerDay'
+        'Invoke-RunOncePerDay'
     )
     $experimentToExport.alias += @(
         # 'A'
     )
 }
-[list[object]]$___throttleInvoke ??= [list[object]]::new()
+[list[ThrottledTaskInfo]]$script:___throttleTaskList = [list[ThrottledTaskInfo]]::new()
 
-class ThrottledTask {
+Write-Warning "how do I add type to user session?`n => '$PSCommandPath'"
+class ThrottledTaskInfo {
+    <#
+    .synopsis
+        Describes a throttled task
+    .notes
+        future propertiesd
+
+            [bool]Enabled
+            [datetime]LastRuntime
+    #>
+    # misc name
     [string]$Name
+
+    # misc description
     [string]$Description
+
+    # Actual task code
     [ScriptBlock]$ScriptBlock
+
+    # required throttle time since last run
     [timespan]$MinimumThrottleTime
+
+    # filepath to task instance
     [IO.FileInfo]$Source #null is valid. [string]::empty is not
 
-    ThrottledTask($Name, $Description, $RelativeTimeSpan, $ScriptBlock) {
+    ThrottledTaskInfo($Name, $Description, $RelativeTimeSpan, $ScriptBlock) {
         $this.Name = $Name
         $this.Description = $Description
         $this.ScriptBlock = $ScriptBlock
@@ -35,7 +53,12 @@ class ThrottledTask {
         }
     }
     [string]ToString() {
-        return '{0}: {1}' -f @($this.Name, $this.Description)
+        return "{0}: {1}`n{2}`n{3}" -f @(
+            $this.Name
+            $this.MinimumThrottleTime
+            $this.Description
+            $this.Source
+        )
     }
 }
 
@@ -58,6 +81,12 @@ function Invoke-RunOncePerDay {
         # [Alias('y')]
         [parameter(Position = 0, ValueFromPipeline)]
         [object]$InputObject,
+
+        # [Alias('y')]
+        [parameter(ParameterSetName = 'OnlyListAll')]
+        [switch]$ListAll,
+
+
 
         # extra options
         [Parameter()][hashtable]$Options
@@ -83,6 +112,27 @@ function Invoke-RunOncePerDay {
         $PSBoundParameters | Format-dict #-title 'PSBoundParameters'
     }
     process {
+        switch ($PSCmdlet.ParameterSetName) {
+            'OnlyListAll' {
+                'listing  .... wip ... '
+                $AppSourcePath = Get-Item -ea stop Join-Path $PSScriptRoot 'throttledTasks'
+
+                Get-ChildItem $AppSourcePath *.ps1
+                | Where-Object Name -NotMatch '\.tests.ps1$'
+
+                hr
+                'Registered...'
+                $script:___throttleTaskList | Format-Table -auto
+
+                break
+            }
+
+            default {
+
+                # throw "Unhandled ParameterSet: $($PSCmdlet.ParameterSetName)"
+            }
+        }
+        throw 'NYI'
         if ($WhatIfPreference) {
             '-WhatIf'
         } else {
@@ -96,5 +146,5 @@ function Invoke-RunOncePerDay {
 if (! $experimentToExport) {
     # ...
     Invoke-RunOncePerDay -whatif
-    [ThrottledTask]::new('a', 'b', { 'no-op' })
+    [ThrottledTaskInfo]::new('a', 'b', { 'no-op' })
 }
