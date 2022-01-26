@@ -3,21 +3,21 @@ if ($experimentToExport) {
         'Lazy-InvokeScriptBlock'
         'Lazy-Invoke'
     )
-    $experimentToExport.alias += @(        
+    $experimentToExport.alias += @(
     )
 }
 
 function Lazy-InvokeScriptBlock {
     <#
     .synopsis
-        invoke if 
+        cache results of scriptblocks, or, lazilyInvokeScriptBlock
     .description
-        personal profile adds verb: Lazy        
+        personal profile adds verb: Lazy
     .notes
         .
         future:
             Invoke-Conditional
-    .example   
+    .example
             PS> Verb-Noun -Options @{ Title='Other' }
         #>
     # [outputtype( [string[]] )]
@@ -27,27 +27,29 @@ function Lazy-InvokeScriptBlock {
         # docs
         # [Alias('y')]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [object]$InputObject, 
-    
+        [object]$InputObject,
+
         # extra options
         [Parameter()][hashtable]$Options
     )
     begin {
         Write-Debug 'already have a cache func or not?'
         Write-Error -CategoryActivity NotImplemented -m 'NYI: wip: LazyInvokeScriptBlock'
-        [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})       
+        [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
         [hashtable]$Config = @{
             AlignKeyValuePairs = $true
             Title              = 'Default'
             DisplayTypeName    = $true
         }
-        $Config = Join-Hashtable $Config ($Options ?? @{})        
+        $Config = Join-Hashtable $Config ($Options ?? @{})
     }
-    process {}
-    end {}
+    process {
+    }
+    end {
+    }
 }
 
 if (!$experimentToExport) {
-    
+
 
 }

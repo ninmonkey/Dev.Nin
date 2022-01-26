@@ -18,9 +18,10 @@
 $ErrorActionPreference = 'stop'
 # & {
 
-try {
+# try {
+if ($true) {
     # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
+    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
     | Where-Object { $_.Name -ne '__init__.ps1' }
     | Where-Object {
         # are these safe? or will it alter where-object?
@@ -34,7 +35,7 @@ try {
     $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Debug
-} catch {
+    # } catch {
     Write-Warning "warning: $_"
     Write-Error "Error: $_"
     # $PSCmdlet.ThrowTerminatingError( $_ )

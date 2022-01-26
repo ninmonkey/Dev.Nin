@@ -1,17 +1,18 @@
 if ($experimentToExport) {
     $experimentToExport.function += @(
         'Lazy-ImportModule'
-        'Dump'
+        'DumpAsJq'
         '_lazyImportIsStale'
     )
     $experimentToExport.alias += @(
         'LazyImport🐢'
-        'jq_dump'
-        # '?LazyImport'
+        'Dump->AsJQ'
+        'Jq->Dump'
         'Test-IsLazyImportStale'
+        # '?LazyImport'
     )
     #     }
-
+    # 'do me'
 }
 # https://github.com/PowerShell/PSScriptAnalyzer#suppressing-rules
 
@@ -33,7 +34,7 @@ $out | label out
 
 $round = [datetime]::ParseExact($out, 'o', $null)
 #>
-function _lazyImportIsStale {
+function _lazyImportIsStale_iter0 {
     <#
     .synopsis
         watch a single file for changes
@@ -164,12 +165,12 @@ function _lazyImportIsStale {
     }
 }
 
-function Dump {
+function DumpAsJq {
     <#
     .synopsis
         just dump an object, to get an idea of the shape
     #>
-    [Alias('jq_dump')]
+    [Alias('Jq->Dump', 'Dump->AsJQ')]
     [cmdletbinding()]
     param(
         [Parameter(Position = 0, ValueFromPipeline, Mandatory)]

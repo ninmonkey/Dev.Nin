@@ -4,32 +4,36 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Pick->Member'
-        'Help->Topics'
-        'Pipe->Pick'
+        # confirmed
+        'Out-MinimalPicker'
+        'Pipe-Pick'
+        'Pick-Member'
+        #rest
     )
     $experimentToExport.alias += @(
-        'Pick'
-        'Out->Picker'
-        'pm', 'pickProp' # Pick->Member
+        # confirmed
+        'Pick', # Pipe-Pick
+        'Out->Picker'       # Pipe-Pick
+        'pm', 'pickProp', 'Pick->Member'    # Pick-Member
+        #rest
     )
 }
 
 
 
-function Out->Picker {
+function Out-MinimalPicker {
     <#
     .synopsis
-        Throw in a pipeline to quickly filter, also saves as $picker, if needed
+        redundant? Throw in a pipeline to quickly filter, also saves as $picker, if needed
     .description
     #>
     end {
-        $global:picks ??= $Input | fzf -m
-        $global:picks
+        $global:picker ??= $Input | fzf -m
+        $global:picker
     }
 }
 
-function Pick->Member {
+function Pick-Member {
     <#
     .synopsis
         You choose a property, like '.Name', then populate with values
@@ -79,7 +83,7 @@ function Pick->Member {
 
     #>
     [Alias(
-        'pm', 'pickProp'
+        'pm', 'pickProp', 'Pick->Member'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -113,7 +117,7 @@ function Pick->Member {
 
 
 
-function Pipe->Pick {
+function Pipe-Pick {
     <#
     .synopsis
         Throw in a pipeline to quickly filter, also saves as $picker, if needed

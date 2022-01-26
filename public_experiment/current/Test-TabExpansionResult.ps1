@@ -126,17 +126,19 @@ function Test-TabExpansionResult {
     }
 }
 
-@'
+if (! $experimentToExport) {
+
+    @'
 left off:
     type should auto show as table
 
     'Todo
     [ ] -> Ensure ResultType is visible as  table column ;
     [ ] - If ListItemText and Completion are equal, visually DIM the text on display
-'@ | Write-Warning
+'@
 
 
-@'
+    @'
 🐒> Test-TabExpansionResult '*json*' | ft -AutoSize ListItemText, CompletionTex
 
         ListItemText      CompletionText           Query    ResultType ToolTip
@@ -146,8 +148,6 @@ left off:
         ConvertTo-Json    ConvertTo-Json           *json*      Command …
         Format-PrettyJson Format-PrettyJson        *json*      Command …
 '@
-
-if (! $experimentToExport) {
     # @(
     #     dev->TestTabExpand -CommandText 'git st'
     #     hr

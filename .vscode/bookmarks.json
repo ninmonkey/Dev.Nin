@@ -94,6 +94,21 @@
 					"label": ""
 				}
 			]
+		},
+		{
+			"path": "public_experiment/cmd-code/Invoke-VSCodeVenv.ps1",
+			"bookmarks": [
+				{
+					"line": 16,
+					"column": 21,
+					"label": "$script:__venv  = state "
+				},
+				{
+					"line": 360,
+					"column": 4,
+					"label": "venv process {...}"
+				}
+			]
 		}
 	]
 }
