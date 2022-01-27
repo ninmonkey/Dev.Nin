@@ -2,17 +2,22 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
+        # confirmed
         'New-VsCodeFilepath'
+
+        '_renderVsCodeGotoPath'
+
+        # rest
         'Convert-VsCodeFilepathFromErrorRecord'
         # old ?
         # 'ConvertFrom-ScriptExtent'
-        '_renderVsCodeGotoPath'
 
     )
     $experimentToExport.alias += @(
 
         'To->ScriptExtentFromError' # => Convert-ScriptExtentFromErrorRecord
         'To-VsCodePath' # =>  New-VSCodeFilepath
+        To->VSCodeFilepath
         # 'Convert-VsCodeFilepathFromErrorRecord'
         # 'Format-ScriptExtentToVscodeFilepath'
 
@@ -78,7 +83,7 @@ class VsCodeFilePath {
         #         $Meta.StartColumnNumber
         #     )
         # )
-        $TemplateStrGo = '--goto '
+        # $TemplateStrGo = '--goto '
         # $TemplateStrPath = @(
         #     @(
         #         $This.Path.ToString()
@@ -127,12 +132,14 @@ function New-VSCodeFilepath {
           [string | None]
 
     #>
-    [Alias('VsCodePath'
+    [Alias(
+        'VsCodePath',
+        'To->VSCodeFilepath'
         # ,'ConvertTo-VSCodePath'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
-        [Alias('PSPath', 'Path', 'Name')]
+        [Alias('PSPath', 'Path', 'Name', 'ScriptExtent')]
         [Parameter(
             Mandatory, Position = 0,
             ValueFromPipeline,
@@ -258,6 +265,7 @@ function old_ConvertFrom-ScriptExtent {
     }
     process {
 
+        # me
         <#
                 ScriptBlock.Ast.Extent
                     check type from editfunc

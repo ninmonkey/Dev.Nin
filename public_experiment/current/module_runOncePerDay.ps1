@@ -8,9 +8,7 @@ if ( $experimentToExport ) {
         # 'A'
     )
 }
-[list[ThrottledTaskInfo]]$script:___throttleTaskList = [list[ThrottledTaskInfo]]::new()
 
-Write-Warning "how do I add type to user session?`n => '$PSCommandPath'"
 class ThrottledTaskInfo {
     <#
     .synopsis
@@ -112,6 +110,8 @@ function Invoke-RunOncePerDay {
         $PSBoundParameters | Format-dict #-title 'PSBoundParameters'
     }
     process {
+        Write-Warning 'left off here'
+        Write-Warning 'static rack manager? <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes?view=powershell-7.1#example-using-static-attributes-and-methods>'
         switch ($PSCmdlet.ParameterSetName) {
             'OnlyListAll' {
                 'listing  .... wip ... '
@@ -144,6 +144,8 @@ function Invoke-RunOncePerDay {
 }
 
 if (! $experimentToExport) {
+    Write-Warning "how do I add type to user session?`n => '$PSCommandPath'"
+    [list[ThrottledTaskInfo]]$script:___throttleTaskList = [list[ThrottledTaskInfo]]::new()
     # ...
     Invoke-RunOncePerDay -whatif
     [ThrottledTaskInfo]::new('a', 'b', { 'no-op' })

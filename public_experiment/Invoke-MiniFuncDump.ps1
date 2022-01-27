@@ -106,12 +106,30 @@ $When = (Get-Date).ToString('u')
             Get-Date | str prefix 'date: '
         )
         | str nl 1
-        # | Add-Content "$Env:UserProfile\SkyDrive\Documents\2021\profile_dump\recent-folders.log"
+        # | Add-Content \"$Env:UserProfile\SkyDrive\Documents\2021\profile_dump\recent-folders.log"
 
         $stream | Add-Content "${Env:TempNin}\recent-folders.log"
         $stream | str hr -op "wrote:`n"
     }
 
+    $state.FindPBIX_Instance = {
+        @'
+    See:
+        See also: https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-get-information-about-files-folders-and-drives
+
+    handles from file:
+        https://www.codeproject.com/Articles/18975/Listing-Used-Files
+'@
+        $pbi = Get-Process '*msmdsrv*'
+        $pbix | ForEach-Object {
+            $curPs = $_
+            $curPS | s Path, CommandLine, MainModule, *path*, *file* -ea ignore
+            | Format-List
+
+            ($curPS).CommandLine -replace '^.*\-n\s+' -replace '\s+-s\s+.*$'
+
+        }
+    }
     $state.SortUnique = {
         Get-Clipboard
         #| ForEach-Object { $_ -replace "'", '' }
@@ -174,7 +192,7 @@ $When = (Get-Date).ToString('u')
 
 
     }
-    $state.Table_GroupByDay = {
+    $state.Table_GroupByDay_iter0 = {
         <#
         .synopsis
             filter to show multi-line commmands only
@@ -196,6 +214,47 @@ $When = (Get-Date).ToString('u')
         $InputObject
         | Sort-Object LastWriteTime
         | Format-Table -GroupBy $TableByDay
+    }
+    $state.Table_GroupByDay = {
+        <#
+        .synopsis
+            fixed calculate property for tables, vs version: iter0
+        .example
+            PS> iDump Table_GroupByDay -Arg '.'
+
+        .link
+        #>
+        param(
+            [string]$Path
+        )
+        $Path ??= '.'
+        $SbGroupByDay = @{
+            Name       = 'When'
+            Expression = {
+                $when = $_.LastWriteTime
+                $when.Year, $when.Month, $When.Day
+            }
+        }
+
+        $InputObject = Get-ChildItem $Path -Depth 2
+        $InputObject | Sort-Object LastWriteTime
+        | Format-Table -GroupBy $SBTableGroupProp
+
+        # Get-ChildItem . | Sort-Object LastWriteTime -des
+        # | f 50
+        # | Format-Table -GroupBy $SbByDay
+        # #        | Format-Table -GroupBy @{
+        # ## name = 'when'
+        # #expression =  { $_.LastWriteTIme }
+        # #}#
+
+        # $InputObject
+        # | Sort-Object $tableByDay
+        # | f 50
+        # | Format-Table -GroupBy @{
+        #     name       = 'when'
+        #     expression = { $_.LastWriteTIme }
+        # }
     }
     $state.Get_NinVerbs = {
         <#
@@ -326,6 +385,7 @@ $When = (Get-Date).ToString('u')
                 label 'member' 'default display property set'
                 $_
             }
+
             $td.members.keys
             | str csv ' ' | label 'TD.members.keys'
 
@@ -387,7 +447,7 @@ function Invoke-MiniFuncDump {
         [ArgumentCompletions(
             'Tree', 'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
             'Find_Ps1Within2Weeks',
-            'ListMyCommands', 'Alarm_asBase64', 'ExportFolders'
+            'ListMyCommands', 'Alarm_asBase64', 'ExportFolders', 'FindPBIX_Instance'
         )]
         [string]$ScriptName,
 

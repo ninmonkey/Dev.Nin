@@ -2,10 +2,13 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Help->Topics'
-        'Help->JsonSchema'
+        'Help-Topics'
+        'Help-JsonSchema'
+        # '_findExamples'
     )
     $experimentToExport.alias += @(
+        'Help->Topics'
+        'Help->JsonSchema'
     )
 }
 
@@ -14,7 +17,7 @@ if ( $experimentToExport ) {
 
 # ${function:Help->Topic}
 # New-Item -Name Help->JsonSchema -Value {
-function Help->JsonSchema {
+function Help-JsonSchema {
     <#
     future: create 'help <topic> instead of individual commands (at least user facing.)
     #>
@@ -37,7 +40,7 @@ enum helpSourceKind {
     Cheatsheet
 }
 
-function Help->Topics {
+function Help-Topics {
     <#
     .synopsis
         Stuff
@@ -49,6 +52,7 @@ function Help->Topics {
         Ninmonkey.Console\Get-ObjectTypeHelp
 
     #>
+    [Alias('Help->Topics')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # What kind?

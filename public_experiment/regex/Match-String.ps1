@@ -21,6 +21,7 @@ function __test-Match {
         [Parameter()]
         [switch]$NotMatching
     )
+    throw "NYI: '$PSCommandPath'"
 
 }
 function Match-String {
@@ -28,6 +29,9 @@ function Match-String {
     .synopsis
         simplify matching regex in the pipeline
     .description
+
+       todo: debug, is not working
+
        This is for cases where you had to use
 
        ... | ?{ $_ -match $regex } | ...
@@ -219,38 +223,35 @@ function Match-String {
         # Write-warning 'Colorize NYI' -Category NotImplemented
     }
     process {
-        try {
-            $InputObject
-            | Where-Object {
-                switch ($PSCmdlet.ParameterSetName) {
-                    'MatchOnProperty' {
-                        Write-Debug "Match on Property '$Property'"
-                        if ($InputObject.$Property -match $MatchPattern) {
-                            $true
-                            return
-                        }
-                        else {
-                            $false
-                            return
-                        }
+        # try { #remove catch
+        $InputObject
+        | Where-Object {
+            switch ($PSCmdlet.ParameterSetName) {
+                'MatchOnProperty' {
+                    Write-Debug "Match on Property '$Property'"
+                    if ($InputObject.$Property -match $MatchPattern) {
+                        $true
+                        return
+                    } else {
+                        $false
+                        return
                     }
-                    default {
-                        Write-Debug "Match on Text '$InputObject'"
-                        if ($InputObject -match $MatchPattern) {
-                            $true
-                            return
-                        }
-                        else {
-                            $false
-                            return
-                        }
+                }
+                default {
+                    Write-Debug "Match on Text '$InputObject'"
+                    if ($InputObject -match $MatchPattern) {
+                        $true
+                        return
+                    } else {
+                        $false
+                        return
                     }
                 }
             }
         }
-        catch {
-            $PSCmdlet.WriteError( $_ )
-        }
+        # } catch {
+        # $PSCmdlet.WriteError( $_ ) # probably the problem here <--
+        # }
     }
     end {
         # I think null values enumerated will work?
