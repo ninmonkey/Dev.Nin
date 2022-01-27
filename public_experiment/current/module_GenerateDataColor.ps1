@@ -1,47 +1,59 @@
 #Requires -Version 7
 
-
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        '_colorDump_Gray'
+        'New-ColorFromTemplate'
     )
     $experimentToExport.alias += @(
-        'Color->Gray' # _colorDump_Gray
+        'cDump' #New-ColorFromTemplate
+        'Color->Template'
 
     )
 }
-<#
-parent
-    'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\current\module_GenerateDataColor.ps1'
-    public_experiment/current/module_GenerateColor/generateTask_grays.ps1
-#>
 
-function _colorDump_Gray {
-    # // function c_gray {
-    [Alias('Color->Gray')]
+function __importSubdirColors {
+    # foreach($file in '')
+    . (Get-Item (Join-Path $PSSCriptRoot 'module_GenerateColor/colors_gray.ps1'))
+}
+
+
+function New-ColorFromTemplate {
+    <#
+
+        see also:
+    .link
+        New-ColorFromTemplate
+
+    #>
+    [alias('cDump',
+        'Color->Template'
+    )]
     param(
-        # value [0, 100] , future: if not an int, assume  0..1.0
-        [ValidateRange(0, 100)]
-        [parameter(ValueFromPipeline)]
-        [int]$Percent
-        # [ValidateRange(0.0, 1.0)]
-        # [parameter(ValueFromPipeline)]
-        # [int]$Percent,
+
+        # auto create from files
+        [parameter(Position = 0)]
+        [ValidateSet('Gray')]
+        [string]$TemplateName,
+
+        # values to pass to inner queries
+        [Alias('Args')]
+        [parameter(Position = 1, ValueFromPipeline)]
+        [string[]]$ArgumentList
     )
-    # process {
-
     process {
-        $Ratio = $Percent / 100
-        $Gray = 255 * $ratio
-        [rgbcolor]::new($Gray, $Gray, $Gray)
+        switch ($TemplateName) {
+            'Gray' {
+                # '_colorDump_Gray '
+                Color->Gray $Args
+            }
+            default {
+            }
+        }
     }
-
-    # $x = .8 * 255
-    # $c = [RgbColor]::new( $x, $x, $x)
-    # $c | ForEach-Object tostring
 }
-
 
 if (! $experimentToExport) {
     # ...
+} else {
+    __importSubdirColors
 }

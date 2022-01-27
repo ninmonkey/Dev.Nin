@@ -5,7 +5,7 @@ if ( $experimentToExport ) {
         # confirmed
         'New-VsCodeFilepath'
 
-        '_renderVsCodeGotoPath'
+        # '_renderVsCodeGotoPath'
 
         # rest
         'Convert-VsCodeFilepathFromErrorRecord'
@@ -17,52 +17,52 @@ if ( $experimentToExport ) {
 
         'To->ScriptExtentFromError' # => Convert-ScriptExtentFromErrorRecord
         'To-VsCodePath' # =>  New-VSCodeFilepath
-        To->VSCodeFilepath
+        'To->VSCodeFilepath'
         # 'Convert-VsCodeFilepathFromErrorRecord'
         # 'Format-ScriptExtentToVscodeFilepath'
 
     )
+    #     $sample = 'C:\Users\cppmo_000\SkyDrive\Documents\2021\dotfiles_git\powershell\Ninmonkey.Profile\Ninmonkey.Profile.psm1:964'
+    #     $regex = @'
+    # (?x)
+    #     (?<First>^.*)
+    #     (?<Line>\d+$)
+    # '@
 }
-$sample = 'C:\Users\cppmo_000\SkyDrive\Documents\2021\dotfiles_git\powershell\Ninmonkey.Profile\Ninmonkey.Profile.psm1:964'
-$regex = @'
-(?x)
-    (?<First>^.*)
-    (?<Line>\d+$)
-'@
 
-function _renderVsCodeGotoPath {
-    <#
-    .synopsis
-        creates a string containing filepath, optional line, optional column
-    #>
-    [OutputType('System.String')]
-    param(
-        [Alias('Name', 'PSPath')]
-        [parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
-        [object]$InputObject,
+# function _renderVsCodeGotoPath {
+#     <#
+#     .synopsis
+#         creates a string containing filepath, optional line, optional column
+#     #>
+#     [OutputType('System.String')]
+#     param(
+#         [Alias('Name', 'PSPath')]
+#         [parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName)]
+#         [object]$InputObject,
 
-        [Parameter(Position = 1)]
-        [int]$Line,
+#         [Parameter(Position = 1)]
+#         [int]$Line,
 
-        [Parameter(Position = 2)]
-        [int]$Column
-    )
-    process {
+#         [Parameter(Position = 2)]
+#         [int]$Column
+#     )
+#     process {
 
-        $Render = @(
-            $Path
-            if ($Line) {
-                ":$Line"
-            }
-            if ($Column) {
-                ":$Column"
-            }
-        ) | Join-String -DoubleQuote -sep ''
-        $Render
+#         $Render = @(
+#             $Path
+#             if ($Line) {
+#                 ":$Line"
+#             }
+#             if ($Column) {
+#                 ":$Column"
+#             }
+#         ) | Join-String -DoubleQuote -sep ''
+#         $Render
 
-    }
+#     }
 
-}
+# }
 
 class VsCodeFilePath {
     [string]$Path
