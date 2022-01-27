@@ -35,12 +35,24 @@ function New-ColorFromTemplate {
         [ValidateSet('Gray')]
         [string]$TemplateName,
 
+        # list options
+        [switch]$ListTemplates,
+
         # values to pass to inner queries
         [Alias('Args')]
         [parameter(Position = 1, ValueFromPipeline)]
         [string[]]$ArgumentList
     )
     process {
+        if ($ListTemplates) {
+            @(
+                'Color->Gray'
+                'Color->EnumerateGradient'
+            )
+            | Sort-Object -Unique
+            return
+        }
+
         switch ($TemplateName) {
             'Gray' {
                 # '_colorDump_Gray '
