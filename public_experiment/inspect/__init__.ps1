@@ -15,7 +15,7 @@
     'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
-$ErrorActionPreference = 'stop'
+# $ErrorActionPreference = 'stop'
 # & {
 
 # try {
@@ -37,7 +37,7 @@ if ($true) {
     | Write-Debug
     # } catch {
     Write-Warning "warning: $_"
-    Write-Error "Error: $_"
+    # Write-Error "Error: $_"
     # $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
@@ -50,16 +50,16 @@ $sortedFiles
     | Write-Debug
     # are these safe? or will it alter where-object?
     # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-    try {
-        . $curFile
-    } catch {
-        Write-Error -Message 'bad' -ErrorRecord $_
-        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+    # try {
+    . $curFile
+    # } catch {
+    # Write-Error -Message 'bad' -ErrorRecord $_
+    # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
-        #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # $PSCmdlet.WriteError( $_ )
-    }
+    #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # $PSCmdlet.WriteError( $_ )
+    # }
 }
 
 
@@ -82,11 +82,11 @@ if ($experimentToExport['variable']) {
 $experimentToExport.update_typeDataScriptBlock | ForEach-Object {
     $curSB = $_
     Write-Verbose 'Loading TypeData'
-    try {
-        . $curSB
-    } catch {
-        Write-Error -ea continue -Message 'LoadingTypeData Scriptblock failed' -Category InvalidResult
-    }
+    # try {
+    . $curSB
+    # } catch {
+    # Write-Error -ea continue -Message 'LoadingTypeData Scriptblock failed' -Category InvalidResult
+    # }
 }
 
 $experimentToExport.meta | Write-Information

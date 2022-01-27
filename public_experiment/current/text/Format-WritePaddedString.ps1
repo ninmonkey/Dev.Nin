@@ -9,31 +9,6 @@ if ( $experimentToExport ) {
     )
 }
 
-function _whyIsthisHere_Get-ConsoleInfo {
-    <#
-    scraped from: todo: refactor to external mini utility
-        Write-PromptDetectParent_iter0
-        _Write-PromptForBugReport
-    #>
-    param()
-    end {
-        $meta = @{
-            PSTypeName = 'DevNin.ConsoleInfo'
-            Width      = $host.ui.RawUI.WindowSize.Width
-        }
-
-
-        $chunk = @()
-        $template = "TermName: {0}`nIsVsCode: {1}`nIsPSIT: {2}"
-        $chunk += $template -f @(
-            $__ninConfig.Terminal.CurrentTerminal
-        ($__ninConfig.Terminal.IsVSCode) ? 'Y' : 'N'
-        ($__ninConfig.Terminal.IsVSCodeAddon_Terminal) ? 'Y' : 'N'
-        ) | Join-String
-        $chunk | Join-String -os "`n"
-    }
-
-}
 function Format-WritePaddedText {
     <#
         .synopsis

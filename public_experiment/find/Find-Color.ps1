@@ -1,12 +1,16 @@
+#Requires -Version 7
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'Find-Color'
-    'ColorTool🎨-FindColor'
-)
-# $experimentToExport.alias += @(
-#     'joinStr'
-# )
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+
+        'Find-Color'
+        'ColorTool🎨-FindColor'
+    )
+    $experimentToExport.alias += @(
+
+    )
+}
 
 function Find-Color {
     <#
@@ -53,5 +57,11 @@ find-color 'alm', 'pink','moun' | _format_RgbColorString
     process {
         $ColorCache | ?Str $Regex -Property 'X11ColorName'
     }
-    end {}
+    end {
+    }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
