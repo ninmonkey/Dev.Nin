@@ -50,8 +50,14 @@ function _dumpColorspace {
 
 
     .example
+            gi bg:\ | Color->Colorspace -ea break
+            ls bg: | Get-Random -Count 1 | Color->Colorspace -ea break
+    .example
             $r | Iter->Prop | sort TypeNameOfValue, Name
             | Ft TypeNameOfValue, Name, Value, *  -AutoSize
+    .example
+        $InputObject | Iter->Prop
+        | ft name, Value, typenameofvalue, @{n='real'; e={$_.value.GetType().Name} }
 
     .link
         PoshCode.Pansies.RgbColor
@@ -90,6 +96,7 @@ function _dumpColorspace {
             )
             process {
                 $meta = @{
+                    # can any of these throw?
                     PSTypeName           = 'DevNin.ColorSpaceResult'
                     # templated: to<IColorSpace>
                     #    $red.to<T>()
@@ -119,17 +126,24 @@ function _dumpColorspace {
         }
     }
     process {
-        throw 'left here'
-        # can any of these throw?
+
+        <#
+        other types
+            Management.Automation.ProviderInfo
+        #>
 
         Write-Debug "=> type: '$($InputObject.GetType().FullName)'"
         switch ($InputObject.GetType().Name ) {
+            'PoshCode.Pansies.Provider.RgbColorProviderRoot' {
+                break
+            }
             'PoshCode.Pansies.Provider.RgbColorDrive' {
-                'Input is not a color, is a [PoshCode.Pansies.Provider.RgbColorDrive]'
-                return
+                # 'Input is not a color, is a [PoshCode.Pansies.Provider.RgbColorDrive]'
+                break
             }
             'PoshCode.Pansies.RgbColor' {
                 __processColor $InputObject
+                break
             }
             default {
                 Write-Error "Unhandled type: '$($InputObject.GetType().FullName)'"

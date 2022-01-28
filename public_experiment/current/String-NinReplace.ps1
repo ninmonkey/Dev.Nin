@@ -32,18 +32,28 @@ function String-NinReplace {
         Ninmonkey.Console\ConvertFrom-NumberedFilepath
 
     #>
+    [Alias('StrReplace', '-replace')]
     [CmdletBinding()]
     param(
-        [parameter(Mandatory)]
-        [Parameter(Mandatory, Position = 0)]
-        [string]$Name
+        # source text
+        [parameter(Mandatory, ValueFromPipeline)]
+        [string]$InputText,
+
+        # regex pattern
+        [Alias('Regex')]
+        [parameter(Mandatory, Position = 0)]
+        [string]$Pattern,
+
+
+        [parameter(Position = 1)]
+        [string]$ReplacementString = [string]::Empty
     )
 
     begin {
-        throw 'finish me, make sure to all null piping'
+
     }
     process {
-
+        $InputText | ForEach-Object { $_ -replace $Pattern, $ReplacementString }
     }
     end {
     }
