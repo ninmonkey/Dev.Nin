@@ -67,21 +67,23 @@ function showErr {
 
         [list[object]]$errorList = [list[object]]::new()
 
-        Write-Warning "Left off, here $PSCommandPath"
+
     }
     process {
         $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
-
+        $errorList.add( $Target )
+    }
+    end {
         $deltaCount = (err? -PassThru).deltaCount
         if ($Recent) {
             $MaxLimit = $deltaCount
         }
 
         if ($MaxLimit) {
-            $results = $target | Select-Object -First $MaxLimit
+            $results = $errorList | Select-Object -First $MaxLimit
             | ReverseIt
         } else {
-            $results = $target
+            $results = $errorList
             | ReverseIt
         }
         $results | Dev.Nin\formatErr | str hr
@@ -93,8 +95,6 @@ function showErr {
         }
 
         _write-FormatSortOrder @splat_FormatSortOrder
-
-
     }
 
     <#
