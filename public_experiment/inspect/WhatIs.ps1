@@ -52,6 +52,7 @@ function Get-WhatTypeInfo {
             Ninmonkey.Console\What-ParameterInfo
         #>
     [Alias('Inspect->TypeInfo')]
+    [OutputTYpe('System.String')]
     [cmdletbinding()]
     param(
         # any object

@@ -16,6 +16,13 @@ function New-NinPSCustomObject {
         .notes
             .
         .example
+            Normally you can't pipe raw strings to FW , and use columns
+            🐒> 'a'..'z' | obj | fw -Column 5
+
+a             b             c             d            e
+f             g             h             i            j
+k             l             m             n            o
+        .example
             PS> @{name='cat'} | Obj
         .example
             PS> # some types are a round trip
@@ -30,13 +37,31 @@ function New-NinPSCustomObject {
     [cmdletbinding()]
     param(
         # hastable[s]
+        # switched to obj, so strings auto coerce easier
+        [Alias('Hashtable')]
         [parameter(Mandatory, Position = 0, ValueFromPipeline)]
-        [hashtable]$InputHashTable
+        [object]$InputObject
+
     )
     begin {
     }
     process {
-        [pscustomobject]$InputHashTable
+        if ($InputObject -is 'hashtable') {
+            $InputObject['PSTypeName'] = 'DevNin.Obj'
+        }
+        # future
+        # should include when the input is an object?
+        switch ($InputObject.GetType().FullName) {
+            { 'System.String' -or 'System.Char' } {
+                [pscustomobject]@{
+                    PSTypeName = 'DevNin.StringObject'
+                    Name       = $InputObject
+                }
+            }
+            default {
+                [pscustomobject]$InputObject
+            }
+        }
     }
     end {
     }
