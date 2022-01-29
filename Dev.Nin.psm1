@@ -58,7 +58,6 @@ $private = @(
 
     # quick experiments
     '_dig'
-    '_mini_experiment'
     '_test_encodedecode'
     '_Lsd'
 

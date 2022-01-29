@@ -5,7 +5,8 @@ $experimentToExport.function += @(
     'Get-UnicodeCategoryHelp'
 )
 $experimentToExport.alias += @(
-   'Help-UnicodeCategories'
+    'Help->UnicodeCategories'
+    'Ref->UnicodeRegexCategory'
 )
 
 function Get-UnicodeCategoryHelp {
@@ -54,7 +55,9 @@ function Get-UnicodeCategoryHelp {
     scraped from <https://docs.microsoft.com/en-us/dotnet/api/system.globalization.unicodecategory?view=net-5.0#fields>
     [Globalization.UnicodeCategory] maappin
 #>
-    [Alias('Help-UnicodeCategories')]
+    [Alias(
+        'Help->UnicodeCategories', 'Ref->UnicodeRegexCategory'
+    )]
     [cmdletbinding()]
     param()
     $_GI_UniCatMapping = @(

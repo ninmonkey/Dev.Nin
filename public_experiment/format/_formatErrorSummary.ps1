@@ -64,13 +64,14 @@ function showErr {
         [int]$MaxLimit
     )
     begin {
-        $Config = @{
 
-            # ArrowDown = '🠯', '▽' # '🠯', '▽', '⇩▼▽🠯'''
-        }
+        [list[object]]$errorList = [list[object]]::new()
+
+        Write-Warning "Left off, here $PSCommandPath"
     }
     process {
         $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
+
         $deltaCount = (err? -PassThru).deltaCount
         if ($Recent) {
             $MaxLimit = $deltaCount

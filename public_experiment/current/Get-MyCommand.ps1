@@ -1,4 +1,15 @@
-﻿
+﻿#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Get-MyCommand'
+    )
+    $experimentToExport.alias += @(
+        'MyGcm'
+    )
+}
+
+
 function Get-MyCommand {
     <#
     .synopsis
@@ -8,7 +19,7 @@ function Get-MyCommand {
     .link
         Ninmonkey.Console\_enumerateMyModule
     #>
-    [Alias('gcmMy')]
+    [Alias('MyGcm')]
     param(
         # switch
         [Parameter()]
@@ -45,4 +56,9 @@ function Get-MyCommand {
     }
 
     $Results | Format-Wide -GroupBy Source
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

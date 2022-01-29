@@ -1,12 +1,16 @@
-$experimentToExport.function += @(
-    'Get-CommandNameCompleter'
-)
-$experimentToExport.alias += @(
-    # 'ValidArgCommand'
-    'MyGcm🐒'
-    # 'Completer.Command'
-    'Completer.CommandNin🐒'
-)
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Get-CommandNameCompleter'
+
+    )
+    $experimentToExport.alias += @(
+        # 'ValidArgCommand' ?
+        'Completions->CommandName'
+
+    )
+}
 
 function Get-CommandNameCompleter {
     <#
@@ -81,9 +85,7 @@ function Get-CommandNameCompleter {
         either [string] or [Management.Automation.CommandInfo] with -passthru
     #>
     [Alias(
-        'ValidArgCommand', 'Completer.Command',
-        'Completer.CommandNin🐒', # smart alias
-        'MyGcm🐒' # smart alias
+        'Completions->CommandName'
     )]
     [CmdletBinding(PositionalBinding = $false)]
     param(
@@ -94,10 +96,6 @@ function Get-CommandNameCompleter {
         [Parameter()]
         [ValidateSet('Provider', 'Get-Command')]
         [string]$QuerySource,
-
-
-
-
 
         # Match module names
         # [alias('IgnoreAlias')]
@@ -116,9 +114,9 @@ function Get-CommandNameCompleter {
     )
 
     begin {
-        if ($PSCmdlet.MyInvocation.InvocationName -in @('MyGcm🐒', 'Completer.CommandNin🐒')) {
-            $ModuleName += _enumerateMyModule
-        }
+        # if ($PSCmdlet.MyInvocation.InvocationName -in @('MyGcm🐒', 'Completer.CommandNin🐒')) {
+        #     $ModuleName += _enumerateMyModule
+        # }
     }
     process {
         if ($QuerySource -eq 'Get-Command') {
@@ -143,8 +141,8 @@ function Get-CommandNameCompleter {
         $select_funcs = Get-ChildItem function:
 
         if (! [string]::IsNullOrWhiteSpace($Name)) {
-            $select_funcs = $select_funcs | Where-Object Name -Like "*$Name*"
-            $select_alias = $select_alias | Where-Object Name -Like "*$Name*"
+            $select_funcs = $select_funcs | Where-Object Name -Match $Name
+            $select_alias = $select_alias | Where-Object Name -Match $Name
         }
         if ($IgnoreDrives) {
             # Testing name for a full match is intended
@@ -176,7 +174,8 @@ function Get-CommandNameCompleter {
         $select_funcs.Name
     }
 
-    end {}
+    end {
+    }
 }
 
 # hr
@@ -185,3 +184,8 @@ function Get-CommandNameCompleter {
 # hr
 # Get-CommandNameCompleter sysinternal
 # Get-Module | Where-Object { $_.ExportedCmdlets | ForEach-Object { if ($_.name -match 'nin') { $true } } }
+
+
+if (! $experimentToExport) {
+    # ...
+}

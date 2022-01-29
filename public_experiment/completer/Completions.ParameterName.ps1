@@ -8,8 +8,8 @@ if ( $experimentToExport ) {
     )
     $experimentToExport.alias += @(
 
-        'Completions->CmdParamName'
-        'Completions->CmdParamSets'
+        'Completions->CmdParamName' # Completions-CommandParameterName
+        'Completions->CmdParamSets' # Completions-CommandParameterSets
     )
 }
 
@@ -67,6 +67,7 @@ function Completions-CommandParameterSets {
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Alias('Name')]
+
         [Parameter( Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string]$InputObject
     )

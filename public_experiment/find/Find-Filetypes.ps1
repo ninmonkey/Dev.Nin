@@ -1,13 +1,18 @@
+#Requires -Version 7
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'Find-Filetype'
-    'Get-FileTypeExtension'
-)
-$experimentToExport.alias += @(
-    'LsExt'
-    'Completion->FileExtensionType'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Find-Filetype'
+        'Get-FileTypeExtension'
+
+    )
+    $experimentToExport.alias += @(
+        'LsExt' # Find-FileType
+        'Completions->FileExtensionType' # Get-FileTypeExtension
+
+    )
+}
 
 function _get-ExtensionsList {
     param(
@@ -37,6 +42,9 @@ function Find-FileType {
     .notes
         todo:
         - [ ]
+
+        add auto-completion by filetype lookups
+
     .link
         Dev.Nin\Find-FDNewestItem
     .link
@@ -67,8 +75,9 @@ function Find-FileType {
     )
 
     begin {
+        'todo next: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters?view=powershell-7.2#dynamic-validateset-values-using-classes
 
-        Write-Warning 'next: use arg completer to populate'
+        next: use arg completer to populate' | Write-Debug
 
     }
     process {
@@ -85,7 +94,7 @@ function Find-FileType {
             'f'
         )
         [string[]]$finalArgs_list = $arg_default + $arg_extList
-        'invoke'
+        # 'invoke'
         $finalArgs_list | Join-String -sep ' ' -op 'invoke: fd '
         Invoke-NativeCommand 'fd' -ArgumentList $finalArgs_list
 
@@ -126,7 +135,7 @@ function Get-FileTypeExtension {
 
     #>
     [Alias(
-        'Completion->FileExtensionType'
+        'Completions->FileExtensionType'
     )]
     [OutputType( [string[]] )]
     [CmdletBinding(PositionalBinding = $false)]
@@ -163,4 +172,9 @@ function Get-FileTypeExtension {
     }
     end {
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

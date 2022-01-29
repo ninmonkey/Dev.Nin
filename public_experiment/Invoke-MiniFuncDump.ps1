@@ -143,6 +143,33 @@ $When = (Get-Date).ToString('u')
         # normal tables, but don't group
         | Get-Item | Format-Table -group { $true }
     }
+    $state.FindAllNamespaces = {
+        <#
+            .synopsis
+                Similar  to find-namespace
+            .link
+                ClassExplorer\Find-Namespace
+        #>
+
+        & {
+            $search1 = Find-Namespace | ForEach-Object FullName | Sort-Object -Unique
+            $search2 = Find-Type | ForEach-Object Namespace | Sort-Object -Unique
+
+            $queries = $search1, $search2 | Sort-Object { $_.Count } -Descending
+            $delta = $queries[0] | Where-Object {
+                $_ -notin $queries[1]
+            }
+
+            $delta | str ul
+            $delta | len | label 'Delta'
+            $search1 | len | Label 'Find-Namespace'
+            $search2 | len | Label 'Find-Type'
+            'Missing values, grouped on root'
+            $delta | Group-Object { $_ -split '\.' | Select-Object -First 1 }
+
+        }
+
+    }
     $state.caeserCipher = {
         <#
         .synopsis

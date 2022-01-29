@@ -2,17 +2,19 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Pipe->Newest'
+        'Pipe-Newest'
     )
     $experimentToExport.alias += @(
-        # 'A'
+        # 'Pipe->Newest'
+
     )
 }
 
 # todo: Make Pipe->Newest (which is a filter
 
-function Pipe->Newest {
-    throw 'NYI. Verb Peek-> is essentially composable filters or maps'
+function Pipe-Newest {
+
+    'NYI. Verb Peek-> is essentially composable filters or maps'
 }
 
 if (! $experimentToExport) {

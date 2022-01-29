@@ -1,10 +1,14 @@
+#Requires -Version 7
 
-$experimentToExport.function += @(
-    'Get-PropertyNameCompleter'
-)
-$experimentToExport.alias += @(
-    'Completer.PropName'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Get-PropertyNameCompleter'
+    )
+    $experimentToExport.alias += @(
+        'Completions->PropName' # Get-PropertyNameCompleter
+    )
+}
+
 
 function Get-PropertyNameCompleter {
     <#
@@ -18,19 +22,26 @@ function Get-PropertyNameCompleter {
           [string | None]
 
     #>
-    [Alias('Completer.PropName')]
+    [Alias('Completions->PropName')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         [Parameter( Mandatory, Position = 0, ValueFromPipeline)]
         [object]$InputObject
     )
 
-    begin {}
+    begin {
+    }
     process {
         $InputObject | IterProp
         | ForEach-Object Name | Sort-Object -Unique
     }
-    end {}
+    end {
+    }
 }
 
 # Write-Error 'nyi paste'
+
+
+if (! $experimentToExport) {
+    # ...
+}
