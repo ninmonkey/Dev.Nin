@@ -22,7 +22,7 @@ function _Test-IsVSCodePoshHistory {
                     "request": "launch",
                     "script": "Invoke-pester",
                     "args": [
-                        "-Path 'public\\ConvertFrom-LiteralPath.tests.ps1'",
+                        "-Path 'public\\ConvertTo-VariablePath.tests.ps1'",
                     ],
                     "cwd": "${workspaceFolder}"
                 },

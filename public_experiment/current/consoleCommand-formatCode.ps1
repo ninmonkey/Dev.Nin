@@ -17,7 +17,7 @@ Set-PSReadLineKeyHandler -Chord ctrl+shift+l -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert($newStr)
 }
 
-# function ConvertFrom-LiteralPath {
+# function ConvertTo-VariablePath {
 #     <#
 #     .synopsis
 #         attempt to transform literal paths into an EnvironmentVariable path
@@ -32,7 +32,7 @@ Set-PSReadLineKeyHandler -Chord ctrl+shift+l -ScriptBlock {
 #     .notes
 #         do this first
 #     .example
-#         PS> ConvertFrom-LiteralPath 'C:\Users\cppmo_000\Documents\2021'
+#         PS> ConvertTo-VariablePath 'C:\Users\cppmo_000\Documents\2021'
 #     .notes
 #         .
 #     #>

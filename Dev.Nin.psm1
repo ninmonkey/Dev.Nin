@@ -290,7 +290,7 @@ $aliasesToExport = @(
     'nMan'
     'ParamInfo'
     'SelectProp' # Select-ObjectProperty
-    'PathTovars'  # ConvertFrom-LiteralPath
+    # 'PathTovars'  ConvertTo-VariablePathh
     # 'Alarm' # _toastTimer
 
     # newest experiments

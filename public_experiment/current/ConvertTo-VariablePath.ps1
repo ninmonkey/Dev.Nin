@@ -2,15 +2,15 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'ConvertFrom-LiteralPath'
+        'ConvertTo-VariablePath'
         # below?
     )
     $experimentToExport.alias += @(
-        'To->VariablePath' # ConvertFrom-LiteralPath
+        'To->VariablePath' # ConvertTo-VariablePath
     )
 }
 
-function ConvertFrom-LiteralPath {
+function ConvertTo-VariablePath {
     <#
     .synopsis
         attempt to transform literal paths into an EnvironmentVariable path
@@ -25,7 +25,7 @@ function ConvertFrom-LiteralPath {
     .notes
         do this first
     .example
-        PS> ConvertFrom-LiteralPath 'C:\Users\cppmo_000\Documents\2021'
+        PS> ConvertTo-VariablePath 'C:\Users\cppmo_000\Documents\2021'
     .notes
         .
     #>
@@ -72,22 +72,25 @@ function ConvertFrom-LiteralPath {
     }
     process {
 
-        $comparePath = Resolve-Path $LiteralPath -ea ignore
-        $comparePath ??= $LiteralPath
-        Write-Debug "comparePath: $comparePath"
+        $targetPath = Resolve-Path $LiteralPath -ea ignore
+        Write-Debug "literal match: '$LiteralPath' => '$targetPath'"
+        $targetPath ??= Get-Item $LiteralPath -ea ignore
+        $targetPath ??= $LiteralPath
+
+        Write-Debug "comparePath: $targetPath"
 
         $Pattern.GetEnumerator() | ForEach-Object {
             $curMap = $_
             $curPattern = $curMap.Value.Pattern
             $curReplace = $curMap.Value.Replacement
             Write-Debug "curPat: $($curPattern)"
-            if ($comparePath -match $curPattern ) {
-                $finalText = $comparePath -replace $Pattern, $Replacement
+            if ($targetPath -match $curPattern ) {
+                Wait-Debugger
+                $finalText = $targetPath -replace $Pattern, $Replacement
                 $finalText
                 return
             }
         }
-
         # repeat eval for simplicity
         # if ($comparePath -match $Pattern.UserProfilePrefix.Pattern ) {
         #     $finalText = $comparePath -replace $Pattern.UserProfilePrefix.Pattern, $Pattern.UserProfilePrefix.Replacement
@@ -96,9 +99,25 @@ function ConvertFrom-LiteralPath {
         #     Write-Debug "try: $($Pattern.UserProfilePrefix.Pattern)"
         #     return
         # }
-        $finalText
-        Write-Error 'No matches'
-        return
+
+        #
+        #
+        #
+        # temp hacks, hardcode the most
+        $reTarget = (relit "$Env:UserProfile" )
+        if ($targetPath -match $reTarget) {
+            $finalText = $targetPath -replace $reTarget, '${Env:UserProfile}'
+            return $finalText
+        }
+
+        Write-Debug "`${FinalText}  '$FinalText'"
+        if ( Test-IsNotBlank $finalText ) {
+            Write-Debug "`${FinalText} was not blank: '$FinalText'"
+            return $finalText
+        }
+
+        Write-Error "No matches for '$LiteralPath'" -TargetObject $LiteralPath
+        return $LiteralPath
     }
     end {
     }
