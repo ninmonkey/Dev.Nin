@@ -130,6 +130,26 @@ $When = (Get-Date).ToString('u')
 
         }
     }
+    $state.LoremIpsum_HexColumn = {
+        <#
+        .synopsis
+            silly auto-wrapping text experiment
+        .example
+            PS>
+            efc5da  2bcea7  1ae5df  562389  70d6b4
+            3520eb  4651d7  4f312d  c27b0f  17d963
+            7be6c3  dbe384  940bd7  e47dc9  a1d64c
+        #>
+
+        RepeatIt 105 {
+            $alphaHex = 'a'..'f' + 0..9
+            $alphaHex | Get-Random -Count 6
+            | str str '' #-op '0x'
+        }
+        | obj | Format-Wide -AutoSize
+
+
+    }
     $state.SortUnique = {
         Get-Clipboard
         #| ForEach-Object { $_ -replace "'", '' }
