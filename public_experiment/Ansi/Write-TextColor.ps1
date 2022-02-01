@@ -55,6 +55,12 @@ function Write-TextColor {
             Mandatory, Position = 0,
             ValueFromPipelineByPropertyName
         )]
+        # todo: argcompletions with tooltips (which themselves can show color)
+        [ArgumentCompletions(
+            'gray20', 'gray30', 'gray50', 'gray80', 'white', 'black',
+            'DarkOrange3', 'OrangeRed3'
+
+        )]
         [PoshCode.Pansies.RgbColor]
         $ForegroundColor,
 
