@@ -10,6 +10,8 @@ Import-Module 'dev.nin' -Force
 hr
 & {
     $RunTest = @{
+        'EarlyQuit'                = $true
+        'GhRepoList'               = $true
         'Resolve-TypeName'         = $true
         'Resolve-TypeNamePester'   = $false
         'Code-Insider'             = $false
@@ -20,6 +22,15 @@ hr
         'Format-Dict.CustomConfig' = $false # 📌 best
         'RegexTestFilepath'        = $false
     }
+    if ($RunTest.GhRepoList) {
+        Invoke-GHConeRepo -
+    }
+
+    if ($RunTest.EarlyQuit) {
+        $RunTest | format-dict
+        return
+    }
+
     if ($RunTest.'Resolve-TypeName') {
         'hashtable' | Resolve-TypeName
     (Get-Item . ) | Resolve-TypeName

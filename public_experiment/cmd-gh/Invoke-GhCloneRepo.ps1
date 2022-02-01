@@ -113,11 +113,16 @@ function Invoke-GHCloneRepo {
 
         # separator
         [Parameter()]
-        [string]$Separator = '⁞',
+        [string]$Separator = '/',
+        # '⁞' ,
 
         # RepoName
         [Parameter(Mandatory, Position = 1)]
-        [string[]]$RepoName
+        [string[]]$RepoName,
+
+        # don't actually invoke
+        [Alias('TestOnly')]
+        [switch]$WhatIf = $true
 
     )
 
@@ -143,8 +148,29 @@ function Invoke-GHCloneRepo {
                 "${OwnerName}/${RepoName}"
                 "${OwnerName}/${RepoName}"
             )
-            "gh '$path"
             Write-Host 'double check'
+            'invoking....'
+            "gh '$path"
+
+            # 'color⁞mattbierner⁞vscode-color-info'
+            $strQuerySrc = "${OwnerName}/${RepoName}"
+            $strExport = "${basePath}/${OwnerName}/${RepoName}"
+            $finalCommand_render = "repo clone $strQuerySrc $strExport"
+            $GhArgs = @(
+                'repo'
+                'clone'
+                $srcQuerySrc
+                $strExport
+            )# | JOin-string -sep ' '
+            # final command
+            $finalCommand | Join-String -sep ' ' -op 'gh ' | Write-Information
+
+            $binGh = Get-NativeCommand -CommandName 'gh' -ea stop
+            if (! $WhatIf) {
+                & $binGh @GhArgs
+            }
+
+            # $finalCommand = "H $finalCommand | join-string -sep ' '
         }
     }
     end {

@@ -5,7 +5,8 @@ $experimentToExport.function += @(
     '_enumerateProperty_gh_repoList'
 )
 $experimentToExport.alias += @(
-    'Gh_RepoList🐒'
+    'Gh->RepoList' # 'Invoke-GHRepoList'
+
 
 )
 function _enumerateProperty_gh_repoList {
@@ -78,7 +79,7 @@ function Invoke-GHRepoList {
     .link
         Dev.Nin\_enumerateProperty_gh_repoList
     #>
-    [Alias('Gh_RepoList🐒')]
+    [Alias('Gh->RepoList')]
     [CmdletBinding()]
     param (
         [ALias('Owner')]
@@ -88,11 +89,11 @@ function Invoke-GHRepoList {
             'Ninmonkey',
             'Jaykul', 'JustinGrote', 'SeeminglyScience', 'StartAutomating')]
         [string]$GitRepoOwner,
-            
+
         # because it caches, set limit to 999
         [Parameter()]
         [uint]$Limit = 999, # 30,
-    
+
         # see: gh repo list --help
         [Parameter(Position = 1)]
         [ValidateSet('Archived', 'NotArchived', 'Fork', 'Private', 'Public', 'Source')]
@@ -121,10 +122,10 @@ function Invoke-GHRepoList {
         [Parameter()]
         [switch]$SkipAutoConvertFromJson,
 
-        # return full json (skip jq) 
+        # return full json (skip jq)
         [Parameter()]
         [switch]$PassThru
-        
+
     )
     end {
         $Color = @{
@@ -155,22 +156,22 @@ function Invoke-GHRepoList {
         $Flags | ForEach-Object {
             $mapping = switch ($_) {
                 'Archived' {
-                    '--archived' 
-                } 
+                    '--archived'
+                }
                 'NotArchived' {
-                    '--no-archived' 
-                } 
+                    '--no-archived'
+                }
                 'Fork' {
-                    '--fork' 
-                } 
+                    '--fork'
+                }
                 'Private' {
-                    '--private' 
-                } 
+                    '--private'
+                }
                 'Public' {
-                    '--public' 
-                } 
+                    '--public'
+                }
                 'Source' {
-                    '--source' 
+                    '--source'
                 }
                 default {
                 }
@@ -178,11 +179,11 @@ function Invoke-GHRepoList {
             if ($mapping) {
                 $GhArgs += $mapping
             }
-        }        
+        }
         $GhArgs += @(
             "--json=$propList"
         )
-        
+
 
         $propList
         | Join-String -sep ', ' -SingleQuote | Write-Color $Color.FG
@@ -198,7 +199,7 @@ function Invoke-GHRepoList {
         | wi
         $GhArgs | Join-String -sep ' ' -op 'gh: ' | Write-Debug
 
-        
+
         if (! $cache.ContainsKey($GitRepoOwner)) {
             Write-Debug 'key not in cache, downloading...'
             $binResponse = & gh $GhArgs
@@ -209,34 +210,33 @@ function Invoke-GHRepoList {
                 $fullpath = Join-Path $DestBase $Name
                 Write-Debug "Attempting to save cache to: '$FullPath'"
                 Set-Content -Path $fullpath -Value $binResponse
-                Write-Information "Response Cache save to: '$Fullpath'" 
+                Write-Information "Response Cache save to: '$Fullpath'"
             } catch {
                 Write-Error -ea continue -Exception $_ -m "Error writing cached value to '$fullpath'"
             }
-            
+
         } else {
             Write-Debug 'reading cached values...'
         }
 
-        if ($PassThru) {            
+        if ($PassThru) {
             $cache[$GitRepoOwner]
             | jq
             return
         }
-        
+
         if ($SkipAutoConvertFromJson) {
             $cache[$GitRepoOwner]
             | jq @($JQQuery)
         } else {
             $cache[$GitRepoOwner]
             | jq @($JQQuery)
-            | ConvertFrom-Json #-Depth         
-            | Sort-Object $SortBy -Descending   
+            | ConvertFrom-Json #-Depth
+            | Sort-Object $SortBy -Descending
         }
-        
-        
-         
+
+
+
 
     }
 }
-
