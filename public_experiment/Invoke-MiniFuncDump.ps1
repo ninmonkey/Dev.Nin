@@ -398,6 +398,34 @@ $When = (Get-Date).ToString('u')
         | Join-StringStyle hr
 
     }
+    $state.Color_DumpAnimatedAnsiFW = {
+        h1 'basic'
+        $i = 0
+        RepeatIt 3 {
+            $i++
+            Get-ColorWheel -Count 100 -HueStep 56
+            | _write-AnsiBlock -NoName | obj | Format-Wide -AutoSize ##(30 + $i)
+        }
+        hr -fg magenta
+        h1 'more involved'
+        $maxLoops = 3 ; $loopCount = 0
+        $hueStep = Get-Random -Maximum 120 -Minimum 0
+        $wheelSteps = Get-Random -Maximum 300 -Minimum 100
+        $sleep = 0.1
+
+        while ($loopCount++ -lt $maxLoops) {
+            #  h1 $loopCount
+
+            Get-ColorWheel -Count $wheelSteps -HueStep $hueStep
+            | _write-AnsiBlock -NoName | obj | Format-Wide -AutoSize
+
+            $loopCount++; Start-Sleep $sleep
+        }
+    }
+    $state.Color_DumpAnsiFw = {
+        Get-ChildItem fg:\
+        | _write-AnsiBlock -NoName | obj | Format-Wide -AutoSize
+    }
 
     $state.PsTypeNames_TypeDataDumpSummary = {
         <#

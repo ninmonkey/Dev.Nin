@@ -25,9 +25,17 @@ function Get-WhatIsShortName {
     #>
     [Alias('ShortName')]
     param(
-        [parameter(ValueFromPipeline, Position = 0, Mandatory)]$InputObject
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [parameter(ValueFromPipeline, Position = 0, Mandatory)]
+        $InputObject
     )
     process {
+        if ($null -eq $InputObject) {
+            return
+        }
+
         $InputObject | _mapFormatShortName
 
         # $InputObject.GetType().FullName -replace 'System.Collections\.', '' -replace '^System\.', ''
