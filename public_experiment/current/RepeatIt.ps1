@@ -48,42 +48,79 @@ function Invoke-RepeatScriptBlock {
 
 
         # string or scriptblock to join
+        [Alias('SeparatorScriptBlock')]
         [Parameter(Position = 2)]
         [object]$SeparatorObject,
 
+        <#
+        #4 , #6
+        # this would allow me to pipeline results, instead of evaluating everything, and then pipe
+        this may be the place to use SteppablePipeline?
+        Something like
+
+            # if this could to pipe line
+            & $ScriptBlock | & $PipeToScriptblock
+
+            # instead of
+            (& $ScriptBlock) | & $PipeToScriptBlock
+
+
+
+        #>
         [switch]$PipeToScriptblock
     )
 
     begin {
-        
+
 
     }
     process {
-        if ($PipeToScriptblock -and $SeparatorObject -is 'scriptblock') { 
-            write-debug 'Pipe output to next
-            failed examples:
-            RepeatIt 3 { 0..4 } { $args.GetType() } -PipeToScriptblock -Debug
-        '
-            write-debug 'not finished param, validate what a better way to pipe to a 2nd block is'
-            write-warning 'need the equiv of a any args func'
-            foreach ($i in 1..$count) {
-                $result = & $ScriptBlock
-                & $PipeToScriptblock                
-                # & $ScriptBlock | & $PipeToScriptblock
-            }
+
+        $i..$Count | ForEach-Object {
+            & $ScriptBlock
+
             return
-        } else {
-            foreach ($i in 1..$count) {
-                & $ScriptBlock
-                
-                if ($SeparatorObject -is 'string') {
-                    $SeparatorObject
-                }
-                elseif ($SeparatorObject -is 'scriptblock') {
-                    & $ScriptBlock
-                }    
-            }
-            return
+            #     if ($false) {
+            #         if ($PipeToScriptblock -and $SeparatorObject -is 'scriptblock') {
+            #             Write-Debug 'Pipe output to next
+            #     failed examples:
+            #     RepeatIt 3 { 0..4 } { $args.GetType() } -PipeToScriptblock -Debug
+            # '
+            #             Write-Debug 'not finished param, validate what a better way to pipe to a 2nd block is'
+            #             Write-Warning 'need the equiv of a any args func'
+            #             foreach ($i in 1..$count) {
+            #                 $result = & $ScriptBlock
+            #                 & $PipeToScriptblock
+            #                 # & $ScriptBlock | & $PipeToScriptblock
+            #             }
+            #         }
+            #         return
+            #     } else {
+            #         if ($true -and 'new pipeline test mode') {
+            #             $i..$Count | ForEach-Object {
+            #                 $i = $_
+            #                 if ($SeparatorObject -is 'ScriptBlock') {
+            #                     & $ScriptBlock | & $PipeToScriptblock
+            #                     # or
+            #                 } else {
+            #                     & $ScriptBlock | Join-String -sep $SeparatorObject
+
+            #                 }
+            #             }
+            #             return
+            #         } else {
+            #             foreach ($i in 1..$count) {
+            #                 & $ScriptBlock
+
+            #                 if ($SeparatorObject -is 'string') {
+            #                     $SeparatorObject
+            #                 } elseif ($SeparatorObject -is 'scriptblock') {
+            #                     & $ScriptBlock
+            #                 }
+            #             }
+            #             return
+            #         }
+            #     }
         }
     }
     end {
