@@ -1,10 +1,13 @@
-$experimentToExport.function += @(
-    'Find-CustomArgumentCompleter'
-)
-$experimentToExport.alias += @(
-    # 'getCompleterDent'
-    'DevTool💻-GetArgumentCompleter'
-)
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Find-CustomArgumentCompleter'
+    )
+    $experimentToExport.alias += @(
+        'DevTool💻-GetArgumentCompleter'
+    )
+}
 
 function Find-CustomArgumentCompleter {
     <#
@@ -61,8 +64,7 @@ function Find-CustomArgumentCompleter {
             'NativeArgumentCompleters',
             [System.Reflection.BindingFlags]'NonPublic, Instance'
         )
-    }
-    else {
+    } else {
         $argumentCompletersProperty = $internalExecutionContext.GetType().GetProperty(
             'CustomArgumentCompleters',
             [System.Reflection.BindingFlags]'NonPublic, Instance'
@@ -87,4 +89,9 @@ function Find-CustomArgumentCompleter {
             }
         }
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
