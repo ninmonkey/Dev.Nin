@@ -4,15 +4,86 @@ if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Invoke-GHCloneRepo'
         'Invoke-GHCloneRepoWithSymbol'
+        'Find-GhRepoName'
     )
     $experimentToExport.alias += @(
         # 'GhRepoClone'
         'Gh->CloneRepo'
         'Gh->CloneRepoLabeled' # Invoke-GHCloneRepoWithSymbol
+        'Gh->RepoName' # 'Find-GhRepoName'
     )
 }
 
+function Find-GhRepoName {
+    <#
+        .synopsis
+            get the name of an existing repo
+        .notes
+            future:
+                - [ ] if 'Gh Repo View' fails
+                    then 'reflog'? has the source/remote/local name
+                - [ ] test on gists
+                    that one displays name /w reflog
+        .example
+            🐒> GH->RepoName -Path '.'
 
+                ninmonkey/Dev.Nin
+
+
+            🐒> GH->RepoName -Path '.' -Prefix 'color'
+
+                color⁞ninmonkey⁞Dev.Nin
+
+    #>
+    [Alias('GH->RepoName')]
+    param(
+        # Where to test?
+        [parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string]$Path,
+
+        # use 'color' or whichever
+        [parameter(Position = 1, ValueFromPipeline)]
+        [string]$Prefix
+
+        # future,may involve directory symbol names
+
+        # # output formatting
+        # [parameter(Position=1, ValueFromPipeline)]
+        # [ValidateSet('Default', 'Prefix')]
+        # [String]$OutputMode
+    )
+    process {
+        $Path | Write-Debug
+        $OriginalPath = Get-Item .
+        try {
+            $SearchRoot = Get-Item $Path -ea stop
+            Push-Location $SearchRoot -StackName 'devNin.FindGh'
+
+            $c ??= gh repo view --json='nameWithOwner,name,owner'
+            $d = $c | From->Json -AsHashtable
+
+            if ( [string]::IsNullOrWhiteSpace($Prefix) ) {
+                return $d['nameWithOwner']
+            }
+
+            $newname = $d['nameWithOwner'] -replace '/', '⁞'
+            $final = @( $prefix ; $newname ) | Join-String -sep '⁞'
+            $final
+
+
+
+            Pop-Location -StackName 'devNin.FindGh'
+        } catch {
+            Write-Error -Exception $_ -Message "'$Path'$ Failed, moving back to '$OriginalPath'"
+            Set-Location -Path $OriginalPath
+
+        }
+    }
+    end {
+        Set-Location -Path $OriginalPath # rudundant is most cases, but since it's git path related
+    }
+
+}
 
 function Invoke-GHCloneRepoWithSymbols {
     <#

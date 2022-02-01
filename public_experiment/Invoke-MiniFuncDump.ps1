@@ -70,9 +70,9 @@ $Env:PAGER ??= 'less' # todo: autodetect 'bat' or 'less', fallback  on 'git less
             $cmd = $_
             $mappedColor = $color_for_devnin = $ColorMapping | Where-Object { $_.ModuleName -eq $cmd.Module.Name } | ForEach-Object color
             @(
-                $cmd.Name | write-color $mappedColor
+                $cmd.Name | Write-Color $mappedColor
 
-                $cmd.Module.Name | write-color gray50
+                $cmd.Module.Name | Write-Color gray50
             ) | Join-String
 
         } | str hr
@@ -84,12 +84,43 @@ $Env:PAGER ??= 'less' # todo: autodetect 'bat' or 'less', fallback  on 'git less
             $cmd = $_
             $mappedColor = $color_for_devnin = $ColorMapping | Where-Object { $_.ModuleName -eq $cmd.Module.Name } | ForEach-Object color
             @(
-                $cmd.Name | write-color $mappedColor
+                $cmd.Name | Write-Color $mappedColor
                 ' '
-                $cmd.Module.Name | write-color gray50
+                $cmd.Module.Name | Write-Color gray50
             ) | Join-String
 
         } | str nl | Sort-Object
+    }
+    $state.Find_QualifiedCommandNames_Color = {
+        $Color_mapping = @'
+            [{
+                "ModuleName": "Dev.Nin",
+                "Color": "#FEA500"
+            },
+            {
+                "ModuleName": "Ninmonkey.Console",
+                "Color": "#FF0067"
+            },
+            {
+                "ModuleName": "Ninmonkey.Profile",
+                "Color": "#0000FF"
+            }
+            ]
+'@ | ConvertFrom-Json
+        $color_for_devnin = [rgbcolor]'#FEA500'
+        hr -fg magenta
+        $g = iDump Find_DevNinVerbUsage_Group #| Get-Random -Count 10
+        $g.Group | Sort-Object Name | ForEach-Object {
+            $cmd = $_
+            $mappedColor = $Color_mapping | Where-Object { $_.ModuleName -eq $cmd.Module.Name } | ForEach-Object color
+            @(
+                $cmd.Name | Write-Color $mappedColor
+                ' '
+                $cmd.Module.Name | Write-Color gray50
+            ) | Join-String
+
+        } | str nl | Sort-Object
+
     }
     $state.Find_DevNinVerbUsage_colorsMapping = {
 
