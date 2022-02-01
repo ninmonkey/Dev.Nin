@@ -59,6 +59,97 @@ $Env:PAGER ??= 'less' # todo: autodetect 'bat' or 'less', fallback  on 'git less
         } | Tee-Object -var 'last'
 
     }
+    $state.Find_ResolveQualifiedCommands = {
+        Get-Command -Module (_enumerateMyModule) -ea ignore | Sort-Object Name | Where-Object Name -Match '->'
+        | resCmd -q -ea ignore | ForEach-Object Name | Sort-Object -Unique
+        | obj | Format-Wide -AutoSize
+    }
+    $state.Find_DevNinVerbUsage_UsingMappedColors = {
+        $g = iDump Find_DevNinVerbUsage_Group
+        $g.Group | ForEach-Object {
+            $cmd = $_
+            $mappedColor = $color_for_devnin = $ColorMapping | Where-Object { $_.ModuleName -eq $cmd.Module.Name } | ForEach-Object color
+            @(
+                $cmd.Name | write-color $mappedColor
+
+                $cmd.Module.Name | write-color gray50
+            ) | Join-String
+
+        } | str hr
+
+        hr
+
+        $g = iDump Find_DevNinVerbUsage_Group
+        $g.Group | Sort-Object Name | ForEach-Object {
+            $cmd = $_
+            $mappedColor = $color_for_devnin = $ColorMapping | Where-Object { $_.ModuleName -eq $cmd.Module.Name } | ForEach-Object color
+            @(
+                $cmd.Name | write-color $mappedColor
+                ' '
+                $cmd.Module.Name | write-color gray50
+            ) | Join-String
+
+        } | str nl | Sort-Object
+    }
+    $state.Find_DevNinVerbUsage_colorsMapping = {
+
+        function _colorsMapping {
+            $Map = @{
+                ModuleNames = $g.group.source | Sort-Object -Unique
+            }
+
+            $grads = Get-Gradient -StartColor orange -EndColor blue -Width ($Map.ModuleNames.count)
+            #$Map += @{
+            #
+            #}
+            $ColorMapping
+            $Map | Format-Table -AutoSize # Format-HashTable
+
+            $ColorMapping = 0..($Map.ModuleNames.count - 1) | ForEach-Object {
+                [pscustomobject]@{
+                    ModuleName = $Map.ModuleNames[ $_ ]
+                    Color      = $grads[ $_ ]
+                }
+
+                #    @{   Module = $Map.ModuleNames[ $_ ] ;
+                #     $Map.gr
+            }
+            $ColorMapping
+            #[hashtable]$NameToColor = $Map.ModuleNames
+            # example use
+            #$color_for_devnin = $ColorMapping | ? ModuleName -eq 'dev.nin' |  % color
+
+        }
+        _colorsMapping
+    }
+    $state.Find_DevNinVerbUsage_GroupSummary = {
+        $sbGroupOn = { $_ -split '->' | Select-Object -First 1 }
+        $g =
+        Get-Command -Module (_enumerateMyModule) | Sort-Object Name | Where-Object Name -Match '->'
+        | Group-Object $sbGroupOn
+        | Sort-Object Count -Descending
+        $g | ForEach-Object {
+            $cur = $_
+            $cur.Group.Name -replace '^.*->', ''
+            # as array
+            | str csv -Unique ' ' | Join-String -op '{ ' -os ' }'
+        }
+    }
+    $state.Find_DevNinVerbUsage_Group = {
+        $sbGroupOn = { $_ -split '->' | Select-Object -First 1 }
+        Get-Command -Module (_enumerateMyModule) | Sort-Object Name | Where-Object Name -Match '->'
+        | Group-Object $sbGroupOn
+        | Sort-Object Count -Descending
+    }
+    $state.Find_DevNinVerbUsage_Count = {
+        function _find-DevNinVerbUsage {
+            # super inefficient
+            Get-Command -Module (_enumerateMyModule) | Sort-Object Name | Where-Object Name -Match '->'
+            | ForEach-Object { $_ -split '->' | Select-Object -First 1 } | Group-Object -NoElement | Sort-Object Count -Descending
+        }
+        _find-DevNinVerbUsage
+    }
+
     $state.Alarm_asBase64 = {
         # [1] save: [2021-12-03] -> invoke alarm subprocess
         # todo: save to: console command palette command
@@ -520,9 +611,10 @@ function Invoke-MiniFuncDump {
             ParameterSetName = 'InvokeCommand'
         )]
         [ArgumentCompletions(
-            'Tree', 'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
-            'Find_Ps1Within2Weeks',
-            'ListMyCommands', 'Alarm_asBase64', 'ExportFolders', 'FindPBIX_Instance'
+            'Alarm_asBackground_iter0', 'Alarm_asBase64', 'caeserCipher', 'Color_DumpAnimatedAnsiFW', 'Color_DumpAnsiFw', 'Command_DumpInfo', 'Command_DumpInfoPretty', 'ExportFolders', 'Find_DevNinVerbUsage_Count', 'Find_DevNinVerbUsage_Group', 'Find_DevNinVerbUsage_GroupSummary', 'Find_Ps1Within2Weeks', 'Find_Pwsh_EncodedCommands', 'Find_ResolveQualifiedCommands', 'FindAllNamespaces', 'FindPBIX_Instance', 'Get_MultilineHistory', 'Get_NinVerbs', 'HistoryFastPrint', 'ListMyCommands', 'LoremIpsum_HexColumn', 'MiniBitsConverter', 'Pager_GetEnvVars', 'PsTypeNames_TypeDataDumpSummary', 'Pwsh_ShowRunningArgs', 'SortUnique', 'Table_GroupByDay', 'Table_GroupByDay_iter0', 'Table_GroupByMonth', 'Tree'
+            # 'Tree', 'HistoryFastPrint', 'MiniBitsConverter', 'Pager_GetEnvVars',
+            # 'Find_Ps1Within2Weeks',
+            # 'ListMyCommands', 'Alarm_asBase64', 'ExportFolders', 'FindPBIX_Instance'
         )]
         [string]$ScriptName,
 
@@ -546,7 +638,7 @@ function Invoke-MiniFuncDump {
         $state = $script:__miniFuncDump
 
         if ($List -or (! $ScriptName)) {
-            $state.keys
+            $state.keys | Sort-Object -Unique
             return
         }
 
@@ -575,5 +667,11 @@ function Invoke-MiniFuncDump {
 
     }
     end {
+        if ($List) {
+            Write-Warning 'future:
+            [1] make all names ArgumentCompletions, automatically
+            [2] completer **tooltips** show the __doc__ str for that function.
+        '
+        }
     }
 }

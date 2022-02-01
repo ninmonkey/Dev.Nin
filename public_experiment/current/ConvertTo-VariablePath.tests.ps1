@@ -18,7 +18,7 @@ Describe 'ConvertTo-VariablePath' {
         { 'sfa3vqfsdf23' | ConvertTo-VariablePath -ea stop }
         | Should -Throw -Because 'Invalid Path'
     }
-
+    ##
     Describe 'Static Paths' {
         BeforeAll {
             [object[]]$samples ??= Get-Item "$Env:USERPROFILE"

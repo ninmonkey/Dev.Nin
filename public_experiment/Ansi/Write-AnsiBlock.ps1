@@ -73,7 +73,8 @@ function Write-AnsiBlock {
         $nulls are converted into "␀"
 
         see: <https://github.com/PoshCode/Pansies/blob/master/Source/Pansies.format.ps1xml>
-        see: <C:\Users\cppmo_000\Documents\2021\Powershell\buffer\2021-09\Colors>
+        see: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer\2021-09\Colors>
+        see: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer_prototypes\ANSI color\AnimatedAnsi-Powershell-random-letters-like-matrix.2022-01.ps1>
     .example
         PS>
         [rgbcolor]'green' | _write-AnsiBlock | Format-ControlChar
