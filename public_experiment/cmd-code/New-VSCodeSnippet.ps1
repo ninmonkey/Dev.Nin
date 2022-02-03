@@ -34,6 +34,8 @@ function New-VSCodeSnippet {
     <#
     .synopsis
         helps with most wrapping; quick hack, not best practices
+    .notes
+        todo: verify this command works
     #>
     [CmdletBinding(PositionalBinding = $false)]
     param(

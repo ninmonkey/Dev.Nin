@@ -1,7 +1,7 @@
-Write-Warning "run --->>>> '$PSCommandPath'"
-
-"run --->>>> '$PSCommandPath'" #| Write-TExtColor white -bg black
+"run --->>>> '$PSCommandPath'" | Write-Color 'gray80' -bg 'gray30'
 | Write-Warning
+
+
 if ($experimentToExport) {
     $experimentToExport.function += @(
         'Invoke-VSCodeVenv'
@@ -32,6 +32,9 @@ function __format_HighlightVenvPath {
     .synopsis
         colorizes breadcrumb to emphasize version number
     .example
+        obsolete
+
+
         'J:\vscode_port\VSCode-win32-x64-1.62.0-insider\bin\code-insiders.cmd'
         | __format_HighlightVenvPath
         | Format-ControlChar
@@ -405,6 +408,7 @@ function Invoke-VSCodeVenv {
         $splatSilent = @{
             'ErrorAction' = 'ignore' # 'SilentlyContinue'
         }
+        #6 WIP
         # wait-debugger
         $queryCodeBin = @(
             # Explicitly tries 'code[insiders].cmd' to bypass any global handler aliases.
@@ -415,6 +419,7 @@ function Invoke-VSCodeVenv {
             Get-Command @splatSilent 'code.cmd' -All -CommandType Application
             Get-Command @splatSilent 'code' -All -CommandType Application
 
+
         )
         $queryCodeInsiderBin = @(
             Get-Command 'code-insiders.cmd' -CommandType Application @splatSilent
@@ -423,12 +428,41 @@ function Invoke-VSCodeVenv {
             Get-Item @splatSilent 'C:\Program Files\Microsoft VS Code Insiders\bin\code-insiders.cmd'
             Get-Item @splatSilent "${Env:LOCALAPPDATA}\Programs\Microsoft VS Code Insiders\bin\code-insiders.cmd"
         )
-        $CodeBin = @(
-            if ($prioritizeInsidersBin) {
-                @( $queryCodeInsiderBin ; $queryCodeBin )
-            } else {
-                @( $queryCodeBin ; $queryCodeInsiderBin ; )
+
+        $overridePath = Get-Item -ea ignore (Join-Path $Env:UserProfile '.dev-nin/vscode/global-override.json')
+        $global_override = Get-Content $overridePath | ConvertFrom-Json -AsHashtable
+        $forceInsiders = $global_override['DefaultBinPath'] -match 'code-insiders' # null becomes false
+
+        # final test, global override, to force (unless it isn't installed)
+        if ($global_override.Contains('DefaultBinpath')) {
+            $Path = $global_override['DefaultBinPath']
+
+            switch -regex ($Path) {
+                'code-insiders' {
+                    $prioritizeInsidersBin = $true
+                    break
+                }
+                'code' {
+                    $prioritizeInsidersBin = $false
+                    break
+                }
+                # otherwise don't mutate previous conditions
+                default {
+                    Write-Warning "Unhandled 'DefaultBinPath' value '${Path}' from '${overridePath}'"
+                    break
+
+                }
             }
+            $CodeBin = @(
+                if ($prioritizeInsidersBin) {
+                    @( $queryCodeInsiderBin ; $queryCodeBin )
+                } else {
+                    @( $queryCodeBin ; $queryCodeInsiderBin ; )
+
+                }
+
+
+
 
         ) | Select-Object -First 1
         if ($CodeBinPath) {

@@ -4,18 +4,103 @@ if ( $experimentToExport ) {
         # 'Get-WhatObjectType' ?
         'Get-WhatTypeInfo'
         'Get-WhatIsShortName'
+        'Get-WhatGenericTypeInfo' # to make
     )
     $experimentToExport.alias +=
     @(
         'ShortName'
         'Inspect->TypeInfo'
+        'Inspect->Interface' # 'Get-WhatInterfaceTypeInfo'
+
+        'Inspect->GenericInfo' # to make
         # 'Find-ObjectProperty'
         # 'New-Sketch'
     )
 }
 # }
 
+function Resolve-TypeInfo {
 
+    <#
+    .SYNOPSIS
+        Resolve a typeInfo instance, or else error
+    .description
+        If type isn't found, error'ClassExplorer\Find-Type'
+    .notes
+        future:
+            - [ ] optionally run output through [Format-TypeName] to strip extra 'AssemblyQualifiedName' info
+
+        refactor / share code for
+            Dev.Nin\ResolveTypeInfo
+            Dev.Nin\ResolveTypeName
+
+
+
+           # $target = (Get-Item . | ForEach-Object GetTYpe )
+        try {
+            # this implicityly catches strings, in all cases ?
+            $target = $InputObject
+            $isType = $target -as 'type' -is 'type'
+            # wont this lose pstypenames, if added?
+            #       $target -as 'type' -is 'type'
+
+            $tinfo = $isType ? $target -as 'type' : $target.GetType()
+        } catch {
+            if ($_ -match 'unable to find type') {
+                (Find-Type  ) | Assert-OneOrNone
+            }
+
+        }
+        $tinfo
+    #>
+    throw "nyi: $PSCommandPath"
+    #6 WIP
+}
+
+function Get-WhatGenericTypeInfo {
+    #6  nyi
+    [Alias('Inspect->GenericInfo')]
+    [cmdletbinding()]
+    param(
+    )
+    #6 WIP
+    "nyi: $PSCommandPath"
+}
+function Get-WhatInterfaceTypeInfo {
+    <#
+    .synopsis
+        inspect interfaces of type
+    .example
+        ,@(,'a'), 0.3, 'a', (gi .), (get-date), @{}, [ordered]@{} | whatAmI
+        #6
+    #>
+    [Alias(
+        'What->Interface'
+    )]
+    param(
+        #6
+        # (new issue): custom argument transformations
+        #    ->resolveTypeInfo ->resolveTypeName ->resolveValidCommandName
+        [AllowEmptyString()]
+        [AllowNull()]
+        [parameter(ValueFromPipeline, Position = 0, Mandatory)]
+        $InputObject
+    )
+    begin {
+        Write-Error "Finish: $PSCommandPath"
+    }
+    process {
+        if ($null -eq $InputObject) {
+            return
+        }
+        $tinfo = $InputObject | Resolve-TypeName
+
+        $InputObject | _mapFormatShortName
+
+        # $InputObject.GetType().FullName -replace 'System.Collections\.', '' -replace '^System\.', ''
+        # $InputObject.GetType().Name
+    }
+}
 function Get-WhatIsShortName {
     <#
     .synopsis
@@ -74,6 +159,9 @@ function Get-WhatTypeInfo {
         # [parameter()]
         # [switch]$OutGridView
     )
+    begin {
+        # Write-Error "Finish: $PSCommandPath"
+    }
     process {
         if ($null -eq $InputObject) {
             [pscustomobject]@{
