@@ -453,17 +453,14 @@ function Invoke-VSCodeVenv {
 
                 }
             }
-            $CodeBin = @(
-                if ($prioritizeInsidersBin) {
-                    @( $queryCodeInsiderBin ; $queryCodeBin )
-                } else {
-                    @( $queryCodeBin ; $queryCodeInsiderBin ; )
+        }
+        $CodeBin = @(
+            if ($prioritizeInsidersBin) {
+                @( $queryCodeInsiderBin ; $queryCodeBin )
+            } else {
+                @( $queryCodeBin ; $queryCodeInsiderBin ; )
 
-                }
-
-
-
-
+            }
         ) | Select-Object -First 1
         if ($CodeBinPath) {
             $CodeBin = Get-Command $CodeBinPath
@@ -737,10 +734,10 @@ function Invoke-VSCodeVenv {
         # catch {
         #     $PSCmdlet.WriteError( $_ )
         # }
+
+
+
     }
-
-
-
 
     end {
         Write-Debug 'checklist:
