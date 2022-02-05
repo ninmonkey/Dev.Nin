@@ -3,6 +3,7 @@
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Invoke-FdFindItem'
+        'Get-SmartAlias'
     )
     $experimentToExport.alias += @(
         'FindD' # 📁
@@ -59,6 +60,10 @@ function Invoke-FdFindItem {
     <#
     .synopsis
         wrapper ontop of 'fdfind', which is fast
+    .notes
+        - next:
+            - [ ] a quick, simple way to search by date modified   | wrapper will invoke this func
+
     .description
 
         .
@@ -141,12 +146,28 @@ function Invoke-FdFindItem {
             }
         }
 
-        $old_fdArgs = @(
+        $toPipe = $SelectedTypes | str csv ' ' -OutputPrefix 'selected types: '
+        | Join-String # else write-debug errors
+
+        #| Write-Debug
+
+        $toPipe | Write-Debug
+
+        [object[]]$fdArgs = @(
+            $selectedTypes | ForEach-Object {
+                '--type', $_.ToString() # it seemed to coerce to string correctly, but, just to be clear
+            }
+        )
+
+        $fdArgs += @(
+
             if ($File) {
-                '-t', 'f'
+                '-t',
+                [FdFindFiletypeKind]::file
             }
             if ($Directory) {
-                '-t', '-d'
+                '-t',
+                [FdFindFiletypeKind]::directory
             }
             if ($MaxDepth) {
                 '-d', 4
@@ -156,26 +177,23 @@ function Invoke-FdFindItem {
             if ($Regex) {
                 $Regex
             }
-            '--color=always'
-        )
-
-        [object[]]$fdArgs = @(
-            $selectedTypes | ForEach-Object {
-                '--type', $_.ToString() # it seemed to coerce to string correctly, but, just to be clear
+            if (! $Env:NO_COLOR ) {
+                '--color', 'always'
             }
         )
 
-        $fdArgs += @(
-            '--color', 'always'
-        )
 
 
-        $fdArgs | Join-String -sep ' ' -op 'Invoke-Fd args: '
-        | Write-Information
-        | Write-Color magenta
+        Format-NativeCommandArgs -ArgList $fdArgs -Name 'fd-find'
+        Format-NativeCommandArgs -ArgList $fdArgs
 
-        $fdArgs | str csv | Join-Before { h1 'stuff' }
-        | wi
+        # $fdArgs | Join-String -sep ' ' -op 'Invoke-Fd args: '
+        # | Write-Color pink
+        # | Write-Information
+
+        # $fdArgs | str csv | Join-Before { h1 'stuff' }
+        # | Write-Color orange
+        # | wi
 
         if ($Test) {
             return
@@ -195,6 +213,14 @@ function Invoke-FdFindItem {
 
 if (! $experimentToExport) {
     $PSDefaultParameterValues['Invoke-FDFindItem:Infa'] = 'continue'
+    err -Clear
+
+    hr
+    #$ErrorActionPreference = 'break'
+    findf -Test -infa Continue -MaxDepth 2 -Debug -Verbose -ea stop
+    #$ErrorActionPreference = 'stop'
+
+    return
     # $InformationPreference = ''
     findf -infa Continue
     | f 4
