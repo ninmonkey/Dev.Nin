@@ -433,30 +433,12 @@ function Invoke-VSCodeVenv {
         )
 
         $overridePath = Get-Item -ea ignore (Join-Path $Env:UserProfile '.dev-nin/vscode/global-override.json')
-        $global_override = Get-Content $overridePath | ConvertFrom-Json -AsHashtable
-        $forceInsiders = $global_override['DefaultBinPath'] -match 'code-insiders' # null becomes false
-
-        # final test, global override, to force (unless it isn't installed)
-        if ($global_override.Contains('DefaultBinpath')) {
-            $Path = $global_override['DefaultBinPath']
-
-            switch -regex ($Path) {
-                'code-insiders' {
-                    $prioritizeInsidersBin = $true
-                    break
-                }
-                'code' {
-                    $prioritizeInsidersBin = $false
-                    break
-                }
-                # otherwise don't mutate previous conditions
-                default {
-                    Write-Warning "Unhandled 'DefaultBinPath' value '${Path}' from '${overridePath}'"
-                    break
-
-                }
-            }
+        $global_override = Get-Content $overridePath | ConvertFrom-Json -AsHashtable -ea ignore
+        if ($null -ne $global_override) {
+            $forceInsiders = $global_override['DefaultBinPath'] -match 'code-insiders' # null becomes false
         }
+
+
         $CodeBin = @(
             if ($prioritizeInsidersBin) {
                 @( $queryCodeInsiderBin ; $queryCodeBin )
@@ -468,6 +450,39 @@ function Invoke-VSCodeVenv {
         if ($CodeBinPath) {
             $CodeBin = Get-Command $CodeBinPath
         }
+
+        # final test, global override, to force (unless it isn't installed)
+        if ($global_override.Contains('DefaultBinpath')) {
+            Write-Warning '🦎 contains key'
+            $Path = $global_override['DefaultBinPath']
+            try {
+                $CodeBinPath = Get-Item -ea stop $global_override['DefaultBinPath']
+                Write-Warning '🦎 CodeBinPath?'
+            } catch {
+                Write-Error -Message 'Found Config, but Path failed' -Exception $_ -Category 'InvalidData' -ea Stop
+                # $PSCmdlet.WriteError(
+                # <# errorRecord: #> $_)
+            }
+            Write-Warning "🦎 CodeBinPath? $CodeBinPath"
+
+            # switch -regex ($Path) {
+            #     'code-insiders' {
+            #         $prioritizeInsidersBin = $true
+            #         break
+            #     }
+            #     'code' {
+            #         $prioritizeInsidersBin = $false
+            #         break
+            #     }
+            #     # otherwise don't mutate previous conditions
+            #     default {
+            #         Write-Warning "Unhandled 'DefaultBinPath' value '${Path}' from '${overridePath}'"
+            #         break
+
+            #     }
+            # }
+        }
+
 
         # if($prioritizeInsidersBin)
 
@@ -499,13 +514,18 @@ function Invoke-VSCodeVenv {
         }
 
 
+        # try {
+        # $target = Get-Item -ea ignore $TargetPath
         try {
-            # $target = Get-Item -ea ignore $TargetPath
             $target = Get-Item -ea Stop $TargetPath
-        } catch {
-            Write-Error -ea stop 'Invalid Path'
-            # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
+        } catch [Management.Automation.ItemNotFoundException] {
+            Write-Error -m "Invalid fileplath: '$TAargetPath'" -ea stop
+
         }
+        # } catch {
+        # Write-Error -ea stop 'Invalid Path'
+        # Write-Error -ErrorRecord $_ 'Invalid path' # todo: research best method
+        # }
 
         @(
             if (Test-IsDirectory $TargetPath) {
@@ -594,7 +614,7 @@ function Invoke-VSCodeVenv {
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
                 __printCodeArgs | wi
-                # Final, Actual invoke here. You don't want it to be a
+                #  Actual invoke here. You don't want it to be a
                 # child process of the shell, which will kill it when the parent ies.
                 # Also, that would spam log output
                 Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
@@ -693,6 +713,10 @@ function Invoke-VSCodeVenv {
                     $codeArgs | Join-String -sep ' ' -op 'shouldProc? CodeArgs: '
                 )
                 | Write-Debug
+
+                #  Actual invoke here. You don't want it to be a
+                # child process of the shell, which will kill it when the parent ies.
+                # Also, that would spam log output
                 # Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
             }
         }
@@ -704,21 +728,23 @@ function Invoke-VSCodeVenv {
             Write-Color -t $Target $Color.FgBold2 | Write-Information
         }
         # hr
+
         $metaInfo += @{
-            BinCode       = $CodeBin
-            DataDir       = $DataDir
-            AddonDir      = $AddonDir
-            Target        = $Target
-            codeArgs      = $CodeArgs
-            ResumeSession = $ResumeSession
-            BoundParams   = $PSBoundParameters
-            ParameterSet  = $PSCmdlet.ParameterSetName
-            RemainingArgs = $RemainingArgs
-            PSCommandPath = $PSCommandPath
-            MaybeAlias    = $MaybeAlias
-            PSScriptRoot  = $PSScriptRoot
-            ForceMode     = $ForceMode
-            OverridePath  = $overridePath
+            BinCode                     = $CodeBin
+            DataDir                     = $DataDir
+            AddonDir                    = $AddonDir
+            Target                      = $Target
+            codeArgs                    = $CodeArgs
+            ResumeSession               = $ResumeSession
+            BoundParams                 = $PSBoundParameters
+            ParameterSet                = $PSCmdlet.ParameterSetName
+            RemainingArgs               = $RemainingArgs
+            PSCommandPath               = $PSCommandPath
+            MaybeAlias                  = $MaybeAlias
+            PSScriptRoot                = $PSScriptRoot
+            ForceMode                   = $ForceMode
+            GlobalOverride_ForceInsider = $forceInsiders
+            OverridePath                = $overridePath
         }
 
 
@@ -749,6 +775,9 @@ function Invoke-VSCodeVenv {
     }
 
     end {
+        # $metaInfo | Format-Table -auto | Out-String | Write-Debug
+        $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'"
+        | Out-String | Write-Debug
         Write-Debug 'checklist:
     - [ ] open file (append to session)
     - [ ] and from pipeline
@@ -758,8 +787,5 @@ function Invoke-VSCodeVenv {
     - [ ] --inspect-brk-extensions <port>
     - [ ] --status
     - [ ] --verbose'
-        # $metaInfo | Format-Table -auto | Out-String | Write-Debug
-        $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'"
-        | Out-String | Write-Debug
     }
 }

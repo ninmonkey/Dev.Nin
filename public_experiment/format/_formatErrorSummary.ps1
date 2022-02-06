@@ -23,6 +23,10 @@ function showErr {
         view and hide errors easier in the term
     .notes
         'ShowError() => formatErr()'
+
+        todo first:
+            - [ ] add numbers, so a full list will match $error[index]
+
     .example
         🐒> showErr -Max 3
 
