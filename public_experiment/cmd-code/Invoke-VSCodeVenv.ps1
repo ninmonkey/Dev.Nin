@@ -452,7 +452,7 @@ function Invoke-VSCodeVenv {
         }
 
         # final test, global override, to force (unless it isn't installed)
-        if ($global_override.Contains('DefaultBinpath')) {
+        if ($global_override.Contains('DefaultBinPath')) {
             Write-Warning '🦎 contains key'
             $Path = $global_override['DefaultBinPath']
             try {
@@ -778,6 +778,7 @@ function Invoke-VSCodeVenv {
         # $metaInfo | Format-Table -auto | Out-String | Write-Debug
         $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'"
         | Out-String | Write-Debug
+        $metaInfo | Sort-Hashtable -SortBy Key |  Ft -AutoSize
         Write-Debug 'checklist:
     - [ ] open file (append to session)
     - [ ] and from pipeline
