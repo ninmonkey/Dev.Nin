@@ -1,15 +1,93 @@
 #Requires -Version 7
+using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Filter-IsDirectory'
         'Filter-SkipPropertyType'
+        'Filter-Newest'
     )
     $experimentToExport.alias += @(
         '?IsDir'            # 'Filter-IsDirectory'
         'Filter->IsDir'     # 'Filter-IsDirectory'
         'Filter->SkipPropType' # 'Filter-SkipPropertyType'
+
+
+        'Filter->Newest'  # 'Filter-Newest'
+        '?Newest'    # 'Filter-Newest'
     )
+}
+
+function Filter-Newest {
+    <#
+        .synopsis
+            include or exclude directories
+        .notes
+            default is to sort
+            assumes LastModified property
+            .
+        .example
+            PS> Filter-Newest -InputObject (ls -file)  -Since '2d'
+        #>
+    [outputtype( '[object]' )]
+    [Alias(
+        '?Newest', 'Filter->Newest'
+    )]
+    [cmdletbinding()]
+    param(
+        # what to pipe
+        [parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [object]$InputObject,
+
+        # Cutoff date the test
+        #5 : unclear on the best name
+        [Alias('RelativeTimeString', 'Last', 'Ago', 'Within')]
+        [ArgumentCompletions('36h', '10m', '1m', '3d', '90d')]
+        [string]$Since
+    )
+    begin {
+        [List[object]]$items = [list[object]]::new()
+        $dateCuttoff = (Get-Date) - (RelativeTs $Since)
+        "Cutoff: $dateCuttoff" | Write-Debug
+        # Wait-Debugger
+        $dbg = [ordered]@{
+            CutOff      = $dateCuttoff
+            TypesAdded  = @()
+            KeptList    = @()
+            RemovedList = @()
+        }
+    }
+    process {
+        $dbg['TypesAdded'] += $InputObject.GetType().Nmae
+        $items.add( $InputObject)
+    }
+    end {
+        $items
+        | ForEach-Object {
+            @{
+                Type           = $_.GetType().FullName | ShortName
+                LastWriteTime  = $curObj.LastWriteTime
+                IsKeptByCutoff = $curObj.LastWriteTime -gt $dateCuttoff
+            } | format-dict | Write-Debug
+
+            $dbg['KeptList'] += @(
+                @{
+                    Type           = $_.GetType().FullName | ShortName
+                    LastWriteTime  = $curObj.LastWriteTime
+                    IsKeptByCutoff = $curObj.LastWriteTime -gt $dateCuttoff
+                }
+            )
+
+
+            if ($curObj.LastWriteTime -gt $dateCuttoff) {
+
+                $curObj
+            } else {
+                return
+            }
+        }
+        $global:glob_dbg = $dbg
+    }
 }
 
 function Filter-IsDirectory {
