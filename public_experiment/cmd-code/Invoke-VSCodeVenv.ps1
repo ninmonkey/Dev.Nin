@@ -16,7 +16,7 @@ if ($experimentToExport) {
 
 $script:__venv ??= @{
     # ForceMode = 'insiders' # $null | 'code' | 'insiders'
-    ForceMode = 'code' # default code, because of alias ivy   <$null | 'code' | 'insiders'>
+    ForceMode = $null # 'code' # default code, because of alias ivy   <$null | 'code' | 'insiders'>
     Color     = @{
         Fg      = '#66CCFF'
         FgBold  = 'green'
@@ -190,7 +190,10 @@ function Invoke-VSCodeVenv {
     .synopsis
         quick hack to work around one drive bug
     .description
-        .
+        .this was a sketch, it needs a rewrite
+            use
+                'code-venv' for 'code'
+                'ivy' for 'code-insiders'
     .notes
         . - next:
             - [ ] argument transformation attribute:
@@ -591,6 +594,9 @@ function Invoke-VSCodeVenv {
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
                 __printCodeArgs | wi
+                # Final, Actual invoke here. You don't want it to be a
+                # child process of the shell, which will kill it when the parent ies.
+                # Also, that would spam log output
                 Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
                 return
             }
@@ -642,7 +648,7 @@ function Invoke-VSCodeVenv {
 
                 ) | Write-Debug
             }
-
+            # Wait-Debugger
             if ($false) {
                 if (! $Env:NoColor) {
 
@@ -676,8 +682,9 @@ function Invoke-VSCodeVenv {
                 $ConfirmPreference = 'None'
             }
 
-
+            label 'which' $CodeBin
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
+
                 @(
                     __printCodeArgs
                     hr
@@ -686,11 +693,10 @@ function Invoke-VSCodeVenv {
                     $codeArgs | Join-String -sep ' ' -op 'shouldProc? CodeArgs: '
                 )
                 | Write-Debug
-                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
+                # Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
             }
         }
 
-        # hr
         if ($ResumeSession) {
             Write-Color -t 'ResumeSession' $Color.FgBold | Write-Information
         } else {
@@ -709,7 +715,10 @@ function Invoke-VSCodeVenv {
             ParameterSet  = $PSCmdlet.ParameterSetName
             RemainingArgs = $RemainingArgs
             PSCommandPath = $PSCommandPath
+            MaybeAlias    = $MaybeAlias
             PSScriptRoot  = $PSScriptRoot
+            ForceMode     = $ForceMode
+            OverridePath  = $overridePath
         }
 
 
@@ -729,7 +738,7 @@ function Invoke-VSCodeVenv {
             #$codeArgs
             $metaInfo
         }
-        $zed = 4
+
 
         # catch {
         #     $PSCmdlet.WriteError( $_ )
@@ -749,7 +758,8 @@ function Invoke-VSCodeVenv {
     - [ ] --inspect-brk-extensions <port>
     - [ ] --status
     - [ ] --verbose'
-        $metaInfo | Format-Table | Out-String | Write-Debug
-        $metaInfo | Format-Dict | Out-String | Write-Debug
+        # $metaInfo | Format-Table -auto | Out-String | Write-Debug
+        $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'"
+        | Out-String | Write-Debug
     }
 }

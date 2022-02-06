@@ -109,7 +109,7 @@ function _write-GitDefaultPromptStatus {
     }
 
     # This has to be *after* the call to Write-VcsStatus, which populates $global:GitStatus
-    Set-WindowTitle $global:GitStatus $IsAdmin
+    # Set-WindowTitle $global:GitStatus $IsAdmin
 
     # If prompt timing enabled, write elapsed milliseconds
     if ($settings.DefaultPromptEnableTiming) {

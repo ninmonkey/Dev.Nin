@@ -98,7 +98,9 @@ function Invoke-GHCloneRepoWithSymbols {
 
     #>
     [Alias('Gh->CloneRepoLabeled')]
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding(
+        # PositionalBinding = $false
+    )]
     param(
         # RootPath
         [Alias('Path')][Parameter()]

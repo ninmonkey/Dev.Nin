@@ -85,7 +85,6 @@ function ConvertTo-VariablePath {
             $curReplace = $curMap.Value.Replacement
             Write-Debug "curPat: $($curPattern)"
             if ($targetPath -match $curPattern ) {
-                Wait-Debugger
                 $finalText = $targetPath -replace $Pattern, $Replacement
                 $finalText
                 return
