@@ -454,12 +454,15 @@ function Invoke-VSCodeVenv {
         # final test, global override, to force (unless it isn't installed)
         if ($global_override.Contains('DefaultBinPath')) {
             Write-Warning '🦎 contains key'
-            $Path = $global_override['DefaultBinPath']
             try {
-                $CodeBinPath = Get-Item -ea stop $global_override['DefaultBinPath']
+                $Path = $global_override['DefaultBinPath']
+                # $CodeBinPath = Get-Item -ea stop $global_override['DefaultBinPath']
+                $CodeBinPath = Get-Command $path -CommandType Application -ea stop
                 Write-Warning '🦎 CodeBinPath?'
             } catch {
-                Write-Error -Message 'Found Config, but Path failed' -Exception $_ -Category 'InvalidData' -ea Stop
+                # Write-Error -Message 'Found Config, but Path failed' -Exception $_ -Category 'InvalidData' -ea Stop
+                Write-Error -Message '🐜 -> errRecord Found Config, but Path failed' -Category 'InvalidData' -ea Stop -TargetObject $Path
+                throw "🐛throw -> 'Found Config, but Path failed';`n$_"
                 # $PSCmdlet.WriteError(
                 # <# errorRecord: #> $_)
             }
