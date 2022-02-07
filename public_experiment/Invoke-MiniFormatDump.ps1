@@ -49,7 +49,7 @@ PSTypeNames:
         process {
             # h1 '_formatColorBytes'
             # $Text | _formatColorBytes
-            write-warning 'get impl. from: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer_format_prototype\Compare-EncodedText.ps1>'
+            Write-Warning 'get impl. from: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer_format_prototype\Compare-EncodedText.ps1>'
 
         }
     }
@@ -88,6 +88,59 @@ PSTypeNames:
             h1 '_format_HslColorString -Perfect'
             $Text | _format_HslColorString -AlignMode Perfect
         }
+    }
+    $state.'Test_Font_Color_Semantics' = {
+        param($Text)
+        <#
+        .synopsis
+            dynamically generate rows and cols
+        .EXAMPLE
+            .
+        #>
+        $C = @{
+            fgBright2 = 'gray0'
+            fgBright  = 'gray80'
+            fg        = 'gray70'
+            FgDim     = 'Gray50'
+            FgDim2    = 'Gray30'
+            FgDim3    = 'Gray1'
+        }
+        $Style = @{
+            'Clear'   = @{
+                fg = 'clear'
+                bg = 'clear'
+            }
+            'Glow'    = @{
+                fg = 'gray70'
+            }
+            'DimGlow' = @{
+                fg = 'gray30'
+                bg = 'gray15'
+            }
+        }
+        $styleDimGlow = $Style.DimGlow
+        $styleGlow = $style.Glow
+
+
+        h1 'Dim glow'
+
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        h1 'glow + FgDim3'
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        Get-Date | Write-Color -fg $Style.Glow.fg -bg $c.FgDim
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        Get-Date | Write-Color -fg $Style.Glow.fg -bg $c.FgDim2
+        Get-Date | Write-Color -fg $Style.Glow.fg -bg $c.FgDim3
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        Get-Date | Write-Color -fg $Style.Glow.fg -bg $c.FgDim2
+
+        h1 'glow + FgDim2'
+        Get-Date | Write-Color -fg $Style.DimGlow.fg -bg $Style.DimGlow.bg
+        Get-Date | Write-Color -fg $Style.Glow.fg -bg $c.FgDim2
+
+        h1 'clear'
+        'none'
     }
     $state.'FormatTo.GridsOfRandom' = {
         param($Text)
@@ -174,7 +227,7 @@ function Invoke-MiniFormatDump {
             ParameterSetName = 'InvokeTemplate'
         )]
         [ArgumentCompletions(
-            'Help_PSTypeNames', 'SortUnique', 'FormatTo.PqDocString'
+            'Help_PSTypeNames', 'SortUnique', 'FormatTo.PqDocString', 'Test_Font_Color_Semantics'
         )]
         [string]$ScriptName,
 
