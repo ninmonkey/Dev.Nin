@@ -1,13 +1,20 @@
+#Requires -Version 7
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'ShortenString'
-    'ShortenStringJoin'
-)
-$experimentToExport.alias += @(
-    'AbbrStr'
-    'TruncateString'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'ShortenString'
+        'ShortenStringJoin'
+        'Format-ShortenStringMiddle'
+
+    )
+    $experimentToExport.alias += @(
+        'AbbrStr'
+        'TruncateString'
+        'ShortenStringMiddle'
+
+    )
+}
 
 function ShortenStringJoin {
     <#
@@ -48,8 +55,7 @@ function ShortenStringJoin {
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
-        }
-        else {
+        } else {
             $maxLength
         }
         $Str = @{
@@ -69,7 +75,91 @@ function ShortenStringJoin {
         $accum
     }
 }
+function Format-ShortenStringMiddle {
+    <#
+    .synopsis
+        shorten strings, if needed, from the center
 
+    .notes
+        todo:
+            #1 #2 #8 #6
+        - [ ] merge into one shared, func for git://Ninmonkey\Marking
+        - this should be a helper function not commandlet
+        - is not ShortenStringCenter , because that would imply it's centered both ways
+    .link
+        Dev.Nin\ShortString
+    .link
+        Dev.Nin\ShortStringMiddle
+    .link
+        Dev.Nin\ShortStringJoin
+    #>
+    [Alias('ShortenStringMiddle')]
+    [cmdletbinding(
+        DefaultParameterSetName = 'StringFromPipe', PositionalBinding = $false)]
+    # [Alias('ShortenStringMiddle')]
+    param(
+
+        <# (copied 'Format-ControlChar')
+        Why did I use: these?
+            [AllowEmptyString], [AllowEmptyCollection], [AllowNull]
+
+
+        Null is allowed for the user's conveinence.
+        allowing null makes it easier for the user to pipe, like:
+            'gc' without -raw or '-split' on newlines
+            will normally pipe empty or empty-whitespace
+        #>
+        # Input text
+        [Alias('Text')]
+        [Parameter(
+            Mandatory, ParameterSetName = 'StringFromPipe',
+            ValueFromPipeline)]
+        [Parameter(
+            Mandatory, ParameterSetName = 'StringFromParam',
+            Position = 0)]
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [string]$InputText,
+
+        # Max number of chars
+        [Parameter(
+            ParameterSetName = 'StringFromPipe',
+            Position = 0)]
+        # [ValidateRange('NonNegative')]
+        # [ValidateRange( ([Management.Automation.ValidateRangeKind]'nonnegative') ]
+        [Parameter(
+            ParameterSetName = 'StringFromParam',
+            Position = 1)]
+        [uint] # post, why exactly does the enum fail on parapset2 but not paramset 1?
+        $MaxLength, # = 120 80,
+    )
+    begin {
+        $MaxLength = if ($MaxLength -eq 0) {
+            [console]::WindowWidth - 1
+        } else {
+            $maxLength
+        }
+    }
+
+    Process {
+        $actualLen = $InputText.Length
+        if ( [string]::IsNullOrWhiteSpace( $InputText ) ) {
+            $InputText
+            return
+        }
+        if ( $actualLen -le $MaxLength ) {
+            $InputText
+            return
+        } else {
+            if ($FromEnd) {
+                $InputText.Substring( $inputText.Length - $MaxLength)
+            } else {
+                $InputText.Substring(0, ( $MaxLength ) )
+            }
+        }
+    }
+}
 function ShortenString {
     <#
     .synopsis
@@ -125,8 +215,7 @@ function ShortenString {
     begin {
         $MaxLength = if ($MaxLength -eq 0) {
             [console]::WindowWidth - 1
-        }
-        else {
+        } else {
             $maxLength
         }
     }
@@ -140,14 +229,17 @@ function ShortenString {
         if ( $actualLen -le $MaxLength ) {
             $InputText
             return
-        }
-        else {
+        } else {
             if ($FromEnd) {
                 $InputText.Substring( $inputText.Length - $MaxLength)
-            }
-            else {
+            } else {
                 $InputText.Substring(0, ( $MaxLength ) )
             }
         }
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
