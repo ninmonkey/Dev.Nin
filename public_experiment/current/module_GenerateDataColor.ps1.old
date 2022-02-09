@@ -14,37 +14,39 @@ if ( $experimentToExport ) {
 # . (Get-Item (Join-Path $PSSCriptRoot 'module_GenerateColor/colors_gray.ps1'))
 #     . (Get-Item (Join-Path $PSSCriptRoot 'module_GenerateColor/colors_colorspace.ps1'))
 
-Write-Warning "LEFT HERE $PSCOmamandPath"
-if ($true -and 'hardcoded') {
-    'colors_gray', 'colors_colorspaces' | ForEach-Object {
-        $curScript = $_
-        $fullpath = (Join-Path $PSSCriptRoot "module_GenerateColor/${curScript}.ps1")
-        if (! (Test-Path $fullpath)) {
-            Write-Error "Missing file: '$fullpath'"
+function __importSubdirColors {
+    if ($true -and 'hardcoded') {
+        'colors_gray', 'colors_colorspaces' | ForEach-Object {
+            $curScript = $_
+            $fullpath = (Join-Path $PSSCriptRoot "module_GenerateColor/${curScript}.ps1")
+            if (! (Test-Path $fullpath)) {
+                Write-Error "Missing file: '$fullpath'"
+            }
+            . (Get-Item $fullPath)
         }
-        . (Get-Item $fullPath)
+    } else {
+        # 'colors_gray', 'colors_colorspaces'
+        $subModulePath = Join-Path $PSSCriptRoot 'module_GenerateColor'
+        throW "loadSub '$PSCommandPath'"
+
     }
-} else {
-    # 'colors_gray', 'colors_colorspaces'
-    $subModulePath = Join-Path $PSSCriptRoot 'module_GenerateColor'
-    throW "loadSub '$PSCommandPath'"
-
-    # Get-ChildItem $subModulePath -Recurse:$false *.ps1 | ForEach-Object {
-
-    # } ?{
-    #     $_.Name -notmatch 'tests.ps1$'
-    # } | sort '__init__'
-    # | ForEach-Object {
-    #     $curScript = $_
-
-    #     $fullpath = (Join-Path $PSSCriptRoot "module_GenerateColor/${curScript}.ps1")
-    #     if (! (Test-Path $fullpath)) {
-    #         Write-Error "Missing file: '$fullpath'"
-    #     }
-    #     . (Get-Item $fullPath)
-    # }
-
 }
+# Get-ChildItem $subModulePath -Recurse:$false *.ps1 | ForEach-Object {
+
+# } ?{
+#     $_.Name -notmatch 'tests.ps1$'
+# } | sort '__init__'
+# | ForEach-Object {
+#     $curScript = $_
+
+#     $fullpath = (Join-Path $PSSCriptRoot "module_GenerateColor/${curScript}.ps1")
+#     if (! (Test-Path $fullpath)) {
+#         Write-Error "Missing file: '$fullpath'"
+#     }
+#     . (Get-Item $fullPath)
+# }
+
+
 
 # function __importSubdirColors {
 #     # return # test -nop
@@ -119,7 +121,7 @@ function New-ColorFromTemplate {
 # }
 Write-Warning "validate color->Colorspace is exporting. src: '$PSCommandPath'"
 if ( $experimentToExport ) {
-    Write-Warning '     importing...'
+    Write-Warning "     importing...'$PSCommandPath'"
     __importSubdirColors
 } else {
     Write-Warning '     [error] failed !'
