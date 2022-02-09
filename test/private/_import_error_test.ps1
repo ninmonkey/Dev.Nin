@@ -1,4 +1,5 @@
 # Import-Module Dev.nin -Force -ea break -Debug -Verbose
+Import-Module Dev.nin -Force -ea break
 
 # 'running: _import_error_test.ps1'
 
