@@ -28,6 +28,33 @@ function Get-DevSavedColor {
     PS>
         Get-SavedColor
         Get-SavedColor -name 'yellow'
+    .example
+         PS> Get-DevSavedColo -PassThru
+             > Get-DevSavedColor
+
+            Name        Value
+            ----        -----
+            Green       #0FE831
+            Blue        #418AFF
+            ...
+            Yellow      #EBCB8B
+
+    .example
+         PS> Get-DevSavedColor
+            # renders FG and BG samples
+            Green Green
+            Blue Blue
+            ....
+            Yellow Yellow
+    .example
+         PS> # partial matches #2
+          > Get-DevSavedColor -ColorName blu
+            # renders FG and BG samples
+
+            Blue Blue
+            Blue2 Blue2
+            LightBlue LightBlue
+            GreenBright GreenBright
 
     .NOTES
     future:
@@ -40,13 +67,11 @@ function Get-DevSavedColor {
         # PassThru
         [Parameter()][switch]$PassThru,
 
-        # List All
+        # removes color filters, same thing as not passing a name
         [Parameter()][switch]$All,
 
         # color name
-        [Parameter(
-            ParameterSetName = 'fromName', Position = 0
-        )]
+        [Parameter(ParameterSetName = 'fromName', Position = 0)]
         [Alias('Name')]
         [string[]]$ColorName
     )

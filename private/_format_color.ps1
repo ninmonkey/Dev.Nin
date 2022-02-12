@@ -1,5 +1,6 @@
 using namespace PoshCode.Pansies
 
+# todo: consolidate colors
 function _format_HslColorString {
     <#
     .synopsis
