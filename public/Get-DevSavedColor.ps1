@@ -16,8 +16,76 @@ $dev_colors = @{
 } | Sort-Hashtable -SortBy Value
 #| ForEach-Object GetEnumerator | Sort-Object Key
 
+[hashtable]$script:__colorGroup = @{
+    DevColors = $script:dev_colors
+}
+
+$InlineJson = @'
+{
+  "Other": {
+    "Object": "    ",
+    "BackgroundColor": "gray60",
+    "ForegroundColor": "gray30"
+  },
+  "BrightBold": {
+    "Object": "    ",
+    "BackgroundColor": "gray60",
+    "ForegroundColor": "gray30"
+  },
+  "Darkest": {
+    "Object": "    ",
+    "BackgroundColor": "gray20",
+    "ForegroundColor": "gray10"
+  },
+  "dimText": {
+    "BackgroundColor": "gray30",
+    "ForegroundColor": "gray60"
+  }
+}
+'@ | ConvertFrom-Json -AsHashtable
+
+$joinHashtableSplat = @{
+    BaseHash  = $script:__colorGroup
+    OtherHash = $InlineJson
+}
+
+$script:__colorGroup = Join-Hashtable @joinHashtableSplat -MutateLeft
+
+# should be mutate left instead of assignment?
+# $script:__colorGroup =
+
+function Get-DevSavedColorGroup {
+    <#
+    .SYNOPSIS
+    colors
+
+    .DESCRIPTION
+    Long description
+
+    .EXAMPLE
+    PS>
+        Get-SavedColor
+        Get-SavedColor -name 'yellow'
+    .example
+    #>
+    param(
+        [switch]$List
+    )
+
+    if ($List) {
+        return $script:__colorGroup
+    }
+
+    Write-Warning 'key access NYI'
+}
+
+
+Export-ModuleMember -Function @(
+    'Get-DevSavedColorGroup'
+)
+
 function Get-DevSavedColor {
-    <#X
+    <#
     .SYNOPSIS
     colors
 

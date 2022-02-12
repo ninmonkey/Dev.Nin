@@ -4,14 +4,14 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'pprint_array'
+        'pprint_list'
     )
     $experimentToExport.alias += @(
-        # ''
+        'pp.List' # ''
     )
 }
 
-function pprint_array {
+function pprint_list {
     <#
     .synopsis
         pretty print array, with colored to distinguish foldable region
@@ -19,7 +19,20 @@ function pprint_array {
         'low level' means  minimal dependencies
     .notes
         requires: Pansies
+        todo:
+            - [ ] very first line is missing part of the prefix
+        #2, #8
+
+    .example
+            $all_files = Get-ChildItem .
+            $selectedFiles = $all_files | Select-Object -First 14
+
+            pprint_list -Items $selectedFiles #-label '....'
+
+            $selectedFiles | ForEach-Object Name | pprint_list -label 'go 2'
     #>
+    [Alias('pp.List')]
+    [cmdletbinding()]
     param(
         [Alias('Items')]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
@@ -66,12 +79,28 @@ function pprint_array {
         # $strArrayHeader.Remove( ('object')
 
         $strArrayHeader = $strPrefixArray
+        $strOutPrefix = @(
+            # "${strPrefixArray}"
+            "${bg:gray20}"
+            "${Label}"
+            "${bg:\gray30}"
+            "= [`n"
+            "${fg:clear}${bg:clear}"
+            # now a regular line prefix
+            "${strPrefixArray}"
+        ) -join ''
 
         $joinStringSplat = @{
             Separator    = "`n${strPrefixArray}"
             # OutputPrefix = "${strPrefixArray}SortedImports = [`n"
-            OutputPrefix = "${strPrefixArray}${bg:gray20}${Label}${bg:\gray30} = [`n${fg:clear}${bg:clear}"
-            OutputSuffix = "`n]"
+            OutputPrefix = $strOutPrefix
+            # OutputSuffix = "`n]"
+            OutputSuffix = @(
+                "${bg:\gray30}"
+                "`n]"
+                "${fg:\clear}"
+                "${bg:\clear}"
+            ) -join ''
             Property     = {
                 $_propName = $null
                 $target = ($_propName) ? ($_.$_propName) : ($_)
@@ -95,17 +124,30 @@ function pprint_array {
     }
 }
 
-$Error.clear()
-$all_files = Get-ChildItem . -Depth 2
-$selectedFiles = $all_files | Select-Object -First 14
-
-pprint_array -Items $selectedFiles #-label '....'
-
-$selectedFiles
-| To->RelativePath
-| pprint_array -label 'go 2'
 
 
 if (! $experimentToExport) {
+    # Example usage
+    $Error.clear()
+    $all_files = Get-ChildItem . -Depth 2
+    $selectedFiles = $all_files | Select-Object -First 14
+
+    pprint_list -Items $selectedFiles -Label 'Ful6lPath'
+
+    $selectedFiles
+    | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
+    | pprint_list -label 'Test Super long wrapping -- with ending'
+
+    $selectedFiles
+    | ForEach-Object { $_.FullName * 3 | Join-String }
+    | pprint_list -label 'Test Super long wrapping -- No End'
+
+    $selectedFiles
+    | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
+    | pprint_list -label 'Name_Only '
+
+    $selectedFiles
+    | To->RelativePath
+    | pprint_list -label 'Name_Only '
     # ...
 }

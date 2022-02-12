@@ -112,6 +112,7 @@ if (! $false) {
     _enumerateColorGradient -Set -Gradient ($gradients.Greenish)
     _testIt
 
+    Write-Warning 'Early quit'
     return
     $files ??= Get-ChildItem ~ -Depth 3
     $files | Get-Random -Count 20 | ForEach-Object {
@@ -125,6 +126,7 @@ if (! $false) {
     }
     hr 2
 
+    Write-Warning 'Early quit'
     return
     0..6 | ForEach-Object {
         "x: $_ "
@@ -141,6 +143,7 @@ if (! $false) {
 
     Write-Color -t 'hi world' -fg (_enumerateColorGradient) -infa Continue -Debug -Verbose
     hr
+    Write-Warning 'Early quit'
     return
     Get-ChildItem . -File -d 3 | ForEach-Object {
         $cur = $_
