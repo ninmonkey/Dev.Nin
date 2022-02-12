@@ -4,9 +4,9 @@ if ( $experimentToExport ) {
     $experimentToExport.function += @(
         # 'Get-WhatObjectType' ?
         'Get-TimeStuff'
-        
+
     )
-    $experimentToExport.alias += @(                      
+    $experimentToExport.alias += @(
         'seconds',
         'minutes',
         'hours',
@@ -17,7 +17,7 @@ if ( $experimentToExport ) {
     )
 }
 # }
-    
+
 function Resolve-RelativeTime {
     <#
     .synopsis
@@ -28,7 +28,7 @@ function Resolve-RelativeTime {
           .
     .outputs
           [string | None]
-    
+
     #>
     [Alias(
         'Future⌚', 'Past⌚',
@@ -41,13 +41,13 @@ function Resolve-RelativeTime {
         [Parameter(Mandatory, Position = 0)]
         [object]$InputObject
     )
-    
+
     begin {
     }
     process {
         Write-Error -Category NotImplemented -m "nyi: '$PSCommandPath'"
         $now = [datetime]::Now
-       
+
     }
     end {
     }
@@ -149,33 +149,33 @@ function Get-TimeStuff {
             Get-Alias -Definition 'Get-TimeStuff' | ForEach-Object Name | Sort-Object -Unique
         }
         if ($PSBoundParameters.Moment -in @('Ago')) {
-            $direction = -1 
+            $direction = -1
         } else {
-            $direction = 1 
+            $direction = 1
         }
     }
     process {
         switch -Wildcard ($MyInvocation.InvocationName) {
             'second*' {
-                $instant = $Reference.AddSeconds($Amount * $direction) 
+                $instant = $Reference.AddSeconds($Amount * $direction)
             }
             'minute*' {
-                $instant = $Reference.AddMinutes($Amount * $direction) 
+                $instant = $Reference.AddMinutes($Amount * $direction)
             }
             'hour*' {
-                $instant = $Reference.AddHours($Amount * $direction) 
+                $instant = $Reference.AddHours($Amount * $direction)
             }
             'day*' {
-                $instant = $Reference.AddDays($Amount * $direction) 
+                $instant = $Reference.AddDays($Amount * $direction)
             }
             'week*' {
-                $instant = $Reference.AddDays(7 * $Amount * $direction) 
+                $instant = $Reference.AddDays(7 * $Amount * $direction)
             }
             'month*' {
-                $instant = $Reference.AddMonths($Amount * $direction) 
+                $instant = $Reference.AddMonths($Amount * $direction)
             }
             'year*' {
-                $instant = $Reference.AddYears($Amount * $direction) 
+                $instant = $Reference.AddYears($Amount * $direction)
             }
             default {
                 throw (findMyAlias | Sort-Object | Join-String -sep ', ' -op 'Use aliases, not the command name!: ')
@@ -184,14 +184,14 @@ function Get-TimeStuff {
 
         if (-not $PSBoundParameters.Moment) {
             if (($timespan = $Reference - $instant) -lt 0) {
-                $timespan *= -1 
+                $timespan *= -1
             }
             $timespan
         } else {
             if ($As -in 'dt', 'datetime') {
-                $instant 
+                $instant
             } elseif ($As -in 'dto', 'datetimeoffset') {
-                $instant -as [System.DateTimeOffset] 
+                $instant -as [System.DateTimeOffset]
             }
         }
     }
@@ -205,9 +205,9 @@ if ( ! $experimentToExport ) {
     4 | months ago | ForEach-Object tostring
     hr
 
-    1 | minutes ago 
+    1 | minutes ago
 
     RelativeTs 1d | Past⌚
-    RelativeTs 1d | Future⌚ 
+    RelativeTs 1d | Future⌚
 
 }
