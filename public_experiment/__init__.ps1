@@ -37,7 +37,9 @@ try {
 
 
 } catch {
-    Write-Warning "Exception: $_"
+    throw "'$PSCommandPath' => '$_'"
+    # Write-Warning "Exception: $_"
+    # Write-Warning "Exception: $_"
     # $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
 }
 
