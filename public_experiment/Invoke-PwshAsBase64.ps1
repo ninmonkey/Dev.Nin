@@ -136,7 +136,7 @@ function Invoke-PwshAsBase64 {
         Start-Process @startSplat
 
         $ScriptBlock | bat -l ps1 | Write-Information
-        $EncodedCommand | Endcap🎨 Bold | Write-Information
+        $EncodedCommand | Endcap Bold | Write-Information
     }
 
     # "'$PSCommandPath': Alarm_asBackground: Starts repeating timer, at 15m"

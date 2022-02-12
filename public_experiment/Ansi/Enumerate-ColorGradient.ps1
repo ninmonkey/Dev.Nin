@@ -25,9 +25,9 @@ function _enumerateColorGradient {
     .synopsis
         Cycles through a color gradient
     .example
-        0..100 | %{ 
+        0..100 | %{
             $c = _enumerateColorGradient
-            (get-date).ToLongTimeString() | Write-color $c 
+            (get-date).ToLongTimeString() | Write-color $c
             sleep 0.3
         }
     .outputs
@@ -72,7 +72,7 @@ function _enumerateColorGradient {
     }
 }
 
-if (! $experimentToExport) {
+if (! $false) {
     # ...
 
     # $state | format-dict -Options @{'PrefixLabel' = 'state' } | Write-Color 'magenta'
@@ -88,7 +88,7 @@ if (! $experimentToExport) {
     # Write-Debug $script:__localMeta.lastIndex
     function _testIt {
 
-        $files = Get-ChildItem ~ | s -First 30
+        $files = Get-ChildItem ~ | Select-Object -First 30
 
         $files | ForEach-Object {
             $cur = $_
@@ -112,20 +112,20 @@ if (! $experimentToExport) {
     _enumerateColorGradient -Set -Gradient ($gradients.Greenish)
     _testIt
 
-    return 
+    return
     $files ??= Get-ChildItem ~ -Depth 3
-    $files | Get-Random -Count 20 | ForEach-Object { 
+    $files | Get-Random -Count 20 | ForEach-Object {
         $cur = $_
 
         $c = _enumerateColorGradient
         @(
-            $c | Write-AnsiBlock -NoName         
+            $c | Write-AnsiBlock -NoName
             $cur.Name
         ) | str csv $cur
     }
     hr 2
 
-    return 
+    return
     0..6 | ForEach-Object {
         "x: $_ "
         $c = _enumerateColorGradient -Debug
@@ -141,7 +141,7 @@ if (! $experimentToExport) {
 
     Write-Color -t 'hi world' -fg (_enumerateColorGradient) -infa Continue -Debug -Verbose
     hr
-    return 
+    return
     Get-ChildItem . -File -d 3 | ForEach-Object {
         $cur = $_
         $Cur.name
@@ -152,6 +152,6 @@ if (! $experimentToExport) {
         | Write-Color 'red'
         # | Write-Color (_nextColor -ea stop) -t $_
     }
-    | s -First 20
+    | Select-Object -First 20
     | str csv
 }

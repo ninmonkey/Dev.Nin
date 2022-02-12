@@ -1,12 +1,29 @@
-﻿
-function Select-ObjectProperty {
+﻿#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Select-ObjectProperty_test'
+
+    )
+    $experimentToExport.alias += @(
+
+    )
+}
+
+
+function Select-ObjectProperty_test {
     <#
     .synopsis
         select properties of an object using 'Out-Fzf'
+    .notes
+        compare to:
+        Ninmonkey.Console\Select-NinProperty
+    .link
+        Ninmonkey.Console\Select-NinProperty
     .link
         Where-FzfSelectObject
     #>
-    [Alias('SelectProp')]
+    # [Alias('SelectProp')]
     [cmdletbinding()]
     param(
         # Object
@@ -15,7 +32,8 @@ function Select-ObjectProperty {
         [object]$InputObject
     )
 
-    begin {}
+    begin {
+    }
     process {
 
         $PropList = $InputObject.psobject.properties.Name
@@ -30,17 +48,23 @@ function Select-ObjectProperty {
 
         $InputObject | Select-Object -Property $SelectedProps
     }
-    end { }
+    end {
+    }
 }
 
-if ($DebugRunTests) {
-    { 4 | Select-ObjectProperty }
-    | Should -Throw -Because 'no psobject.properties on [int]'
-    Hr
-    '4' | Select-ObjectProperty
-}
+if (! $experimentToExport) {
+    if ($DebugRunTests) {
+        { 4 | Select-ObjectProperty }
+        | Should -Throw -Because 'no psobject.properties on [int]'
+        Hr
+        '4' | Select-ObjectProperty
+    }
 
-# Get-ChildItem . | Select-Object -First 1 | Select-ObjectProperty
-# @() | Select-ObjectProperty
-# @(3) | Select-ObjectProperty
-# $null | Select-ObjectProperty
+    # Get-ChildItem . | Select-Object -First 1 | Select-ObjectProperty
+    # @() | Select-ObjectProperty
+    # @(3) | Select-ObjectProperty
+    # $null | Select-ObjectProperty
+
+
+    # ...
+}

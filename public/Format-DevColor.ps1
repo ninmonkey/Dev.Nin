@@ -9,6 +9,7 @@ function Format-DevColor {
         Get-DevSavedColor -PassThru
             | % value | _format_HslColorString
     .notes
+    todo: refactor or move to /colors module
 
     Casting **appears** to work, like parameter type [hslcolor]
         coerces into HSL from RGB Automatically
@@ -73,7 +74,9 @@ function Format-DevColor {
             }
 
 
-            default { throw "MissingFormatMode: $FormatMode" }
+            default {
+                throw "MissingFormatMode: $FormatMode"
+            }
         }
     }
 }
@@ -84,7 +87,7 @@ if ($false) {
 
     $aColor | Format-DevColor 'RenderTest'
     $aColor | Format-DevColor 'VerboseRender'
+    hr
 
 
 }
-hr

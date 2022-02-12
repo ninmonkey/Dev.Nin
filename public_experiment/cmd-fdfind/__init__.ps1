@@ -1,11 +1,4 @@
 
-
-
-
-return
-
-
-
 [hashtable]$script:experimentToExport ??= @{
     'function'                   = @()
     'alias'                      = @()
@@ -18,7 +11,7 @@ return
 }
 # $ErrorActionPreference = 'stop'
 # & {
-# Wait-Debugger
+
 # try {
 # Don't dot tests, don't call self.
 $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
