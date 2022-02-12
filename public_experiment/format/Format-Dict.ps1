@@ -154,6 +154,8 @@ function Format-Dict {
             ValueFromPipeline
         )][object]$InputObject, # instead, whichever type allows most dict types
 
+        [alias('Title')]
+        [parameter()][String]$ConfigTitle,
         # extra options
         [Parameter()]
         [hashtable]$Options
@@ -161,6 +163,9 @@ function Format-Dict {
     begin {
         $ColorType = @{
             'KeyName' = 'SkyBlue'
+            Fg        = 'gray80'
+            FgDim     = 'gray50'
+            FgDim2    = 'gray30'
         }
 
         $ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
@@ -177,7 +182,7 @@ function Format-Dict {
         }
         $Config = Join-Hashtable $Config ($Options ?? @{})
         $Config.JoinOuter = @{
-            OutputPrefix = "`n{0} = {{`n" -f @($Config.Title ?? 'Dict')
+            OutputPrefix = "`n${fg:\gray30}{0} = {{`n" -f @($Config.Title ?? 'Dict')
         }
 
         $Template = @{
@@ -236,7 +241,7 @@ function Format-Dict {
                 $typeNameStr ?? ' ' # todo: replace with Invoke-Template
             )
             # OutputPrefix = $Config.JoinOuter.OutputPrefix
-            OutputSuffix = "`n}" # was: "`n}`n"
+            OutputSuffix = "${fg:clear}`n}" # was: "`n}`n"
         }
         # if ($false) {
         #     if ($Config.DisplayTypeName) {

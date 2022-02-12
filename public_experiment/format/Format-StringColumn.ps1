@@ -1,14 +1,21 @@
 using namespace Management.Automation
+#Requires -Version 7
 
-$experimentToExport.function += @(
-    'Format-StringColumn'
-)
-# $experimentToExport.alias += @(
-#     ''
-# )
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+
+        'Format-StringColumn'
+    )
+    $experimentToExport.alias += @(
+
+    )
+}
+
+
 function Format-StringColumn {
+    # refactor after 'Dev.Nin\PadLeft
 
-
+    # test this
     <#
     .synopsis
         temp dev command to simplify pretty print
@@ -39,6 +46,7 @@ function Format-StringColumn {
         [Parameter()]
         [string]$Separator = ' '
     )
+    # what am I?
 
     begin {
         $all_list = @()
@@ -106,4 +114,9 @@ if ($false) {
     H1 'sep " "'
     43..31 | Format-StringColumnAlign -sep ' ' -Width 6
     43..31 | Format-StringColumnAlign -sep ' ' -Width -6
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

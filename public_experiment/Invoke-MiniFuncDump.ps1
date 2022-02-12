@@ -91,6 +91,40 @@ $Env:PAGER ??= 'less' # todo: autodetect 'bat' or 'less', fallback  on 'git less
 
         } | str nl | Sort-Object
     }
+    $state.Find_PBI_Port_msmdsrv = {
+        # auto detect server PBI is using, if local, using log
+        $LogPath = Get-Item -ea stop "$Env:UserProfile\Microsoft\Power BI Desktop Store App\AnalysisServicesWorkspaces\AnalysisServicesWorkspace_8cf15377-4578-4675-a6ba-0be4b6202e00\Data\msmdsrv.log"
+
+        $XmlConfigPath = Get-Item -ea continue "$Env:UserProfile\Microsoft\Power BI Desktop Store App\AnalysisServicesWorkspaces\AnalysisServicesWorkspace_8cf15377-4578-4675-a6ba-0be4b6202e00\Data\msmdsrv.ini"
+        $xml = [xml]$XmlConfigPath
+        C:\Users\cppmo_000\Microsoft\Power BI Desktop Store App\AnalysisServicesWorkspaces\AnalysisServicesWorkspace_5126d807-3732-4717-a85a-75509b015bb7\Data\msmdsrv.ini
+        $Regex = @{
+            IsPortConfigLine = 'listen'
+            KeyValueDelim    = '\s+=\s+'
+            IgnoreProperty   = ' Message: Started listening on TCPIP: Status'
+        }
+        $LogState = Get-Content $LogPath | Where-Object { $_ -match $Regex.IsPortConfigLine }
+        $LogState | ForEach-Object {
+            $meta = @{}
+            $_ -split ',' | ForEach-Object {
+
+                $Key, $Value = $_ -split $Regex.KeyValueDelim
+                #       $key | label key ; $value | label $value
+                if ($key -match $Regex.IgnoreProperty) {
+                    return
+                }
+                $meta[ $Key ] = $Value
+            }
+            [pscustomobject]$meta
+
+        } | Format-Table -AutoSize
+
+        h1 'Paths'
+        $LogPath | label 'Log'
+        $XmlConfigPath | Label 'Xml "Ini" Config'
+
+
+    }
     $state.Find_QualifiedCommandNames_Color = {
         $Color_mapping = @'
             [{

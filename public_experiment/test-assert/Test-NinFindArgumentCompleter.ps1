@@ -1,6 +1,8 @@
 $experimentToExport.function += 'Test-NinFindArgumentCompleter'
 $experimentToExport.alias += @(
-    'DevTool💻-GetHiddenArgumentCompleter'
+    'DevTool->💻-GetHiddenArgumentCompleter'
+    'Dev->GetArgCompleter[ImpliedReflection]'
+    'Dev->GetArgCompleter_ImpliedReflection'
 )
 
 
@@ -12,7 +14,11 @@ function Test-NinFindArgumentCompleter {
         .
 
     #>
-    [alias('DevTool💻-GetHiddenArgumentCompleter')]
+    [alias(
+        'DevTool->💻-GetHiddenArgumentCompleter',
+        'Dev->GetArgCompleter[ImpliedReflection]',
+        'Dev->GetArgCompleter_ImpliedReflection'
+    )]
     [CmdletBinding(
         PositionalBinding = $false,
         ConfirmImpact = 'High',

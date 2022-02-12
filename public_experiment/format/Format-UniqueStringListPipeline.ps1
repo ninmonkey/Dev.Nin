@@ -15,12 +15,13 @@ function Format-UniqueStringListPipeline {
     .synopsis
         reads clipboard, distinct sort, writes to clipboard
     .description
+        most of the code works better using 'Dev.Nin\str csv -Unique'
         When you have a list of text, you need to make sure it's sorted and distinct
     .example
         PS>
 
         fix cmd 'str csv' then refactor this
-        
+
         copyh:
         Format-UniqueStringListPipeline
     .notes

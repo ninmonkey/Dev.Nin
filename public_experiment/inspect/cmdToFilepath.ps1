@@ -5,7 +5,7 @@ if ( $experimentToExport ) {
         'cmdToFilepath'
     )
     $experimentToExport.alias += @(
-        # 'A'
+
     )
 }
 
@@ -23,13 +23,16 @@ function cmdToFilepath {
     #>
     param(
         # names as text/gcm/whatever
-        [Alias('FunctionName')]
+        # [Alias('FunctionPathName')]
         [AllowNull()]
         [AllowEmptyString()]
         [parameter(Mandatory, Position = 0 , ValueFromPipeline)]
         $InputObject
     )
     process {
+        if ($Null -eq $inputScript) {
+            return
+        }
         $CleanNames = $InputObject | Remove-AnsiEscape
         Get-Command $CleanNames | editfunc -PassThru -ea continue | ForEach-Object file
     }

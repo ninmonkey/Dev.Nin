@@ -6,7 +6,8 @@ if ( $experimentToExport ) {
         'Format-UnindentText'
     )
     $experimentToExport.alias += @(
-        # 'A'
+        'Indent'
+        'Unindent'
     )
 }
 
@@ -20,11 +21,12 @@ function Format-UnindentText {
     .synopsis
          remove prefix depth of X
     .notes
-        Future impl, should be a smart alias to Dev.Nin\Format-IndentText ?
+        Future impl will be obsolete, , should be a smart alias to Dev.Nin\Format-IndentText ?
     .LINK
         Dev.Nin\Format-IndentText
 
     #>
+    [Alias('Unindent')]
     [cmdletbinding()]
     param(
         # text to modify
@@ -85,7 +87,10 @@ function Format-IndentText {
         [string]$IndentString = '    '
     )
     begin {
-        $predentStr = $IndentString * $Depth
+        if ($Depth -lt 0) {
+            return
+        }
+        $predentStr = $IndentString * $Depth # negative throws exception
     }
 
     process {

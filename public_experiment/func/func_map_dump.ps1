@@ -13,7 +13,14 @@ if ( $experimentToExport ) {
     $experimentToExport.alias += @(
 
     )
+
+    # # experiment: test whether functions are not matching
+    # $funcNames = lsFunc -Path .\func_map_dump.ps1 | ForEach-Object Name
+    # (lsFunc -Path .\func_map_dump.ps1 | ForEach-Object Name) | Where-Object {
+    #     $z -notcontains $_
+    # }
 }
+
 function _mapStripNSPrefix {
     # strip namespace system  : 1-liner
     process {
@@ -40,9 +47,17 @@ function _mapFormatShortName {
     [outputType('System.String')]
     param(
         # pass any of these: [1] objects, [2] type instance, [3] typename as string
-        [parameter(ValueFromPipeline, Position = 0, Mandatory)]$InputObject
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [Parameter(ValueFromPipeline, Position = 0, Mandatory)]
+        $InputObject
     )
     process {
+        if ($null -eq $InputObject) {
+            return
+        }
+
         # only use GetType() as the final test, otherwise types as string ex: 'hashtable' => string
         $tinfo = $InputObject -is 'type' ? $InputObject : $InputObject -as 'type'
         $tinfo ??= $InputObject.GetType()
@@ -54,6 +69,8 @@ function _mapUriQueryDict {
     <#
         .synopsis
             inspect query string params as dict. It's more than [uri], sugar for parsing  ([uri]$url).Query to a dict
+
+
     #>
     process {
 
