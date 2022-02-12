@@ -1,7 +1,14 @@
-if (! $DebugInlineToggle ) {
-    $experimentToExport.function += 'Find-ExampleModuleManifest'
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Find-ExampleModuleManifest'
+
+    )
     $experimentToExport.alias += @(
-        'Find-ModuleMetadata', 'Example🔖-ModuleManifest'
+        'Find-ModuleMetadata' # 'Find-ExampleModuleManifest'
+        'Example🔖-ModuleManifest' # 'Find-ExampleModuleManifest'
+
     )
 }
 
@@ -98,6 +105,7 @@ function Find-ExampleModuleManifest {
     }
 }
 
-if ($DebugInlineToggle) {
+
+if (! $experimentToExport) {
     Find-ExampleModuleManifest pansies, classexplorer
 }

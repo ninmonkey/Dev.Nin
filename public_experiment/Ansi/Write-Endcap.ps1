@@ -42,12 +42,15 @@ function Write-Endcap {
         # Optional Theme/mode
         [Alias('Style', 'Theme')]
         [Parameter(Position = 0)]
-        [ArgumentCompletionsAttribute('Bold', 'Basic', 'Spartan')]
+        [ArgumentCompletionsAttribute('Bar', 'Bold', 'Basic', 'Spartan')]
         [string]$OutputFormat = 'Spartan'
 
 
     )
     begin {
+        # '—'
+        # '➟
+
         $Template = @{
             StrPrefix   = '<----- Start: {0}'
             StrSuffix   = '<----- End: {0}'
@@ -58,6 +61,8 @@ function Write-Endcap {
             'fg' = 'green4'
             'bg' = 'lightgreen'
         }
+        $Template | Write-Debug
+        $writeColorSplat | Write-Debug
         switch ($OutputFormat) {
             'Bold' {
                 $Template = @{
@@ -67,6 +72,20 @@ function Write-Endcap {
                 $writeColorSplat = @{
                     'fg' = 'green4'
                     'bg' = 'lightgreen'
+                }
+                break
+            }
+            'Bar' {
+                # blue is nice too  '▂' * 5 | write-color -bg 'gray30' -fg 'lightblue'
+                $Template = @{
+                    StrPRefix = ('▂' * 15) + '{0}'
+                    | write-color -bg 'gray30' -fg 'gray50' | ForEach-Object tostring
+                    StrSuffix = ('▂' * 15) + '<----- End: {0}'
+                    | write-color -bg 'gray30' -fg 'gray50' | ForEach-Object tostring
+                }
+                $writeColorSplat = @{
+                    'fg' = 'gray50'
+                    'bg' = 'gray30'
                 }
                 break
             }

@@ -13,20 +13,9 @@ using namespace System.Collections.Generic
 }
 $ErrorActionPreference = 'stop'
 
-# refactor
-class DevNinExperimentalExport {
-    [List[object]]$Function
-    [List[object]]$Alias
-    [List[object]]$Cmdlet
-    [List[object]]$Variable
-    [List[scriptblock]]$TypeDataInit
-    # [List[object]]$Meta
-    # [List[object]]$ExperimentFuncMetadata
-}
-
-
-# tod
-[DevNinExperimentalExport]$DevExport = [DevNinExperimentalExport]::new()
+# refactor to use:
+# class DevNinExperimentalExport {
+  write-debug "Finish re-write '$PSCommandPath' of DevNinExperimentalExport"
 
 
 # & {

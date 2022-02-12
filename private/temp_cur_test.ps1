@@ -4,30 +4,50 @@
 # hest explicit
 
 # $ErrorActionPreference = 'stop'
-Import-Module 'dev.nin' -Force
+$importModuleSplat = @{
+    Force   = $true
+    Verbose = $true
+    # Debug = $true
+    Name    = 'dev.nin'
+}
+
+# Import-Module @importModuleSplat #-ea break
+
+$origPrompt = Get-Item function:prompt
+function prompt {
+    "$($global:error.count)`n($pwd)`ndev.nin> "
+}
 
 'tests?'
 hr
+$RunTest = @{
+    'SkipEverything'           = $true
+    'EarlyQuit'                = $true #  like SkipEverything but more
+    'GhRepoList'               = $true
+    'Resolve-TypeName'         = $true
+    'Resolve-TypeNamePester'   = $false
+    'Code-Insider'             = $false
+    'GotoError'                = $false
+    'New-Sketch'               = $false
+    'Format-Dict'              = $false
+    'Format-Dict.Verbose'      = $false
+    'Format-Dict.CustomConfig' = $false # 📌 best
+    'RegexTestFilepath'        = $false
+}
+$runTest | Format-Table
+
+if ($RunTest.'SkipEverything') {
+    'SkipEverything: Early Quit'
+    return
+}
+
 & {
-    $RunTest = @{
-        'EarlyQuit'                = $true
-        'GhRepoList'               = $true
-        'Resolve-TypeName'         = $true
-        'Resolve-TypeNamePester'   = $false
-        'Code-Insider'             = $false
-        'GotoError'                = $false
-        'New-Sketch'               = $false
-        'Format-Dict'              = $false
-        'Format-Dict.Verbose'      = $false
-        'Format-Dict.CustomConfig' = $false # 📌 best
-        'RegexTestFilepath'        = $false
-    }
     if ($RunTest.GhRepoList) {
-        Invoke-GHConeRepo -
+        # Invoke-GHConeRepo -
     }
 
     if ($RunTest.EarlyQuit) {
-        $RunTest | format-dict
+        $RunTest | Format-Table  #format-dict
         return
     }
 

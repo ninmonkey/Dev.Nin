@@ -1,4 +1,4 @@
-﻿
+﻿using namespace system.collections.generic
 
 # eaiser to manage and filter, especially a dynamic set, in one place
 [hashtable]$script:__metaPrivateExperimental = @{
@@ -13,7 +13,7 @@ function Get-ModuleMetadata {
     .description
         Desc
     .example
-        
+
     .outputs
         type any
     #>
