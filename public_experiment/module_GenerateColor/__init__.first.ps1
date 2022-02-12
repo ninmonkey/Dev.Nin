@@ -23,8 +23,11 @@ the "Real" module init is in:
         RootInitPath = Get-Item $PSCommandPath
     }
     $__nancy.AnimationFrames = @{
-        BlockSequence        = 0x2586..0x258f | Convert-CharFromCodepoint
-        BlockSequenceAndBack = @(0x2586..0x258f) + @(0x258f..0x2586) | Convert-CharFromCodepoint
+        BlockSequence        = 'WIP: quick hack disabled' # until import order is resolved
+        BlockSequenceAndBack = 'WIP: quick hack disabled' # until import order is resolved
+
+        # BlockSequence        = 0x2586..0x258f | Convert-CharFromCodepoint
+        # BlockSequenceAndBack = @(0x2586..0x258f) + @(0x258f..0x2586) | Convert-CharFromCodepoint
     }
     $__nancy.Delimiter = @(
         '▸', '⇢', '⁞', '┐', '⇽', '▂'
