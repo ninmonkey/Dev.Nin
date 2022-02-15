@@ -99,7 +99,7 @@ function Test-WriteColorSampleMessage {
 
         [parameter(position = 1)]
         [ArgumentCompletions(
-            '{0}: status message: {1}.'
+            '"{0}: status message: {1}"'
         )]
         [String]$Template
 

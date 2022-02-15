@@ -13,7 +13,7 @@
 # $ErrorActionPreference = 'stop'
 # & {
 
-"$PSCommandPath : test module auto loader" * 10 | Write-Warning
+# "$PSCommandPath : test module auto loader" * 10 | Write-Warning
 . (Get-Item -ea stop (Join-Path $PSScriptRoot '__init__.first.ps1'))
 
 # return

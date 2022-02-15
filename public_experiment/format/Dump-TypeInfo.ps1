@@ -121,6 +121,9 @@ function _dumpPsTypeName {
     # $TypeName -as [type] | Write-Debug
     hr
     $tinfo = $InputObject.GetType()
+    if (($null -eq $tinfo) -or ($null -eq $InputObject)) {
+        return
+    }
     $tinfo.BaseType.FullName | label 'baseType.fullname'
     [string]$tinfo.BaseType | label 'base [str]'
     [string]$tinfo | label 'root [str]'
@@ -158,6 +161,9 @@ $obj[0].PSTypeNames:
 
     }
     $str_os
+
+    # interfaces
+
 }
 
 

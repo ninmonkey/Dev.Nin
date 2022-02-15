@@ -9,6 +9,27 @@ if ( $experimentToExport ) {
     )
 }
 
+$script:__nameItExampleSB = @{
+    Months = {
+        $templates = $(
+            'ThisQuarter'
+            'q1', 'q3', 'q3', 'q4'
+            'Today', 'Tomorrow', 'Yesterday'
+            'February', 'April', 'October'
+        )
+
+        foreach ($template in $templates) {
+            $template | ForEach-Object {
+                [PSCustomObject]@{
+                    Template = $_
+                    Result   = Invoke-Generate "$_"
+                }
+            }
+        }
+    }
+}
+
+
 
 function Example-NameIt {
     <#
@@ -22,7 +43,7 @@ function Example-NameIt {
     # Requires -Module NameIt
     Import-Module NameIt
 
-    $lines = @'
+    $SingleLineExample = @'
 ig '[color es]' -Count 3 -Culture (Get-Culture 'es-us')
 ig '[color es]' -Count 3 -Culture (Get-Culture 'es')
 ig '[noun]' -count 3
@@ -35,13 +56,23 @@ ig '[randomdate]' # a random date in my culture format
 ig "[randomdate '1/1/2000']" # a random date from 1 Jan 2000 onward
 ig "[randomdate '1/1/2000' '12/31/2000']"  # a random date in the year 2000
 ig "[randomdate '1/1/2000' '12/31/2000' 'dd MMM yyyy']"  # a random date in 2000 with a custom format
+
 '@
+
     if ($PassThru) {
-        $lines; return
+        Join-Hashtable $script:__nameItExampleSB -OtherHash @{SingleLine = $SingleLineExample }
+        return
+    }
+
+    $script:__nameItExampleSB.GetEnumerator() | ForEach-Object {
+        hr -fg magenta
+        h1 $_.Key
+
+        & $_.Value
     }
 
     # {
-    #     $lines | SplitStr -SplitStyle Newline
+    #     $SingleLineExample | SplitStr -SplitStyle Newline
     #     | ForEach-Object -Begin { $count = 0; -proc } {
     #         # hr 2
     #         h1 "${count}"
@@ -81,7 +112,7 @@ ig "[randomdate '1/1/2000' '12/31/2000' 'dd MMM yyyy']"  # a random date in 2000
 
     }
 
-    _invokeCheatsheetExpression $lines
+    _invokeCheatsheetExpression $SingleLineExample
 }
 
 # Example-NameIt

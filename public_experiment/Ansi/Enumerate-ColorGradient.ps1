@@ -24,6 +24,9 @@ function _enumerateColorGradient {
     <#
     .synopsis
         Cycles through a color gradient
+    .notes
+        see: <C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\buffer_prototypes\ANSI color\libAnsiNin\AnimateGradientEnumerator.ps1>
+
     .example
         0..100 | %{
             $c = _enumerateColorGradient
@@ -72,7 +75,7 @@ function _enumerateColorGradient {
     }
 }
 
-if (! $false) {
+if ($false) {
     # ...
 
     # $state | format-dict -Options @{'PrefixLabel' = 'state' } | Write-Color 'magenta'

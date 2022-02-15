@@ -5,7 +5,7 @@ if ( $experimentToExport ) {
         'New-DevFileSketchItem'
     )
     $experimentToExport.alias += @(
-        'New->Sketch'
+        'New->Sketch' # 'New-DevFileSketchItem'
 
     )
 }
@@ -61,7 +61,7 @@ function New-DevFileSketchItem {
         # todo:minimal: note: year is hard coded
         $Config = @{
             # Root Path. Could Change language
-            DocsRoot = Get-Item -ea stop "$Env:UserProfile\SkyDrive\Documents\2021"
+            DocsRoot = Get-Item -ea stop "$Env:UserProfile\SkyDrive\Documents\2022"
             # $Env:UserProfile\SkyDrive\Documents\2021\Powershell\buffer\2021-07
         }
 
@@ -108,7 +108,7 @@ function New-DevFileSketchItem {
             throw "Location not implemented: '$Location' not in $($LocationPath.Keys)"
         }
         # $NewItemPath = $LocationPath['$']
-        # $x = 20
+
         $target = @( 'foo.ps1' | Write-Color green) | Join-String
         $operation = @( 'c:\foo\bar' | Write-Color pink) | Join-String
         # $target = 'target' ; $operation = 'operation'
@@ -134,6 +134,7 @@ function New-DevFileSketchItem {
 
     }
     end {
+        Write-Error 'NYI'
     }
 }
 

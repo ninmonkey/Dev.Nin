@@ -2,10 +2,11 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Out-Error'
+        'Out-Error'  # is 'Out-Error' and 'Pipe->Error'
     )
     $experimentToExport.alias += @(
-        'Pipe->Error'
+        'Pipe->Error'       # is 'Out-Error' and 'Pipe->Error'
+        'pErr'
     )
 }
 
@@ -16,7 +17,9 @@ function Out-Error {
     .description
         .
     .notes
-        .
+        todo:
+            - [ ] If no inputs, get '$Errors' #6 WIP
+
     .example
         PS> Out-Error 4
     .example
@@ -27,7 +30,12 @@ function Out-Error {
     #>
 
     [Alias('Pipe->Error')]
-    [CmdletBinding(PositionalBinding = $false, DefaultParameterSetName = 'FromInput')]
+    [OutputType(
+        [String]
+    )]
+    [CmdletBinding(
+        # PositionalBinding = $false,
+        DefaultParameterSetName = 'FromInput')]
     param(
         [alias('Max')]
         [Parameter(
@@ -44,6 +52,10 @@ function Out-Error {
     )
 
     begin {
+        [object[]]$errorList = @()
+    }
+    process {
+        $errorList.Add( $InputObject)
     }
     end {
         if ($Count -gt 0) {
@@ -83,6 +95,7 @@ function Out-Error {
                 # $getErrorSplat['InputObject'] = $InputObject
                 # Get-Error @getErrorSplat
                 $InputObject
+                | ?NotBlank
                 | Get-Error
                 | Less
                 break

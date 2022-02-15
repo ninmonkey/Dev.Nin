@@ -1,7 +1,7 @@
 function __getDirectChildFolders {
     <#
     .synopsis
-        Find all folders at a single depth ( direct descendant)
+        (not actually used) Find all folders at a single depth ( direct descendant)
     .description
         sugar for:
             Get-ChildItem -Directory
@@ -22,7 +22,7 @@ function __getDirectChildFolders {
 function __getAutoloadChildItem {
     <#
     .synopsis
-        find child scripts to run, with common filters
+        (not actually used) find child scripts to run, with common filters
     .example
         __getAutoloadChildItem -path 'public_autoloader'
     #>

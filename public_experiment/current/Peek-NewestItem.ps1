@@ -2,9 +2,9 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'old_Peek->NewestItem'
-        'Peek->NewestItem'
-        'Pipe->Peek2'
+        # 'old_Peek->NewestItem'
+        'Peek-NewestItem'
+        # 'Pipe-Peek2'
     )
     <#
 
@@ -15,18 +15,9 @@ if ( $experimentToExport ) {
 
 
     $experimentToExport.alias += @(
-
-        <#
-        currently:
-            fn      old_Peek->NewestItem
-
-            fn      Peek->NewestItem
-                alias: Pipe->PeekNewest
-
-            fn      Pipe->Peek2
-
-
-        #>
+        'Peek->NewestItem' # 'Peek-NewestItem'
+        'Pipe->Peek2' # 'Pipe-Peek2'
+        # 'Out->Peek' # 'Pipe-Peek2
     )
     # old batch of names
     # functions
@@ -40,55 +31,61 @@ if ( $experimentToExport ) {
 }
 
 
-function old_Peek->NewestItem {
-    <#
-    .synopsis
-        find newest, preview them in bat
-    .description
-        .
-    .notes
-        future:
-            - [ ]
-    .example
-        🐒>
-    #>
-    # [alias(
-    #     'Str', 'JoinStr',
-    #     'Csv', 'NL',
-    #     'Prefix', 'Suffix',
-    #     'QuotedList', #single/double
-    #     'UL', 'Checklist'
-    # )]
-    # [OutputType([String])]
-    # [Alias('Peek')]
-    [CmdletBinding(PositionalBinding = $false)]
-    param(
+# function Peek->NewestItem {
+#     <#
+#     .synopsis
+#         find newest, preview them in bat
+#     .description
+#         .
+#     .notes
+#         future:
+#             - [ ]
+#     .example
+#         🐒>
+#     #>
+#     # [alias(
+#     #     'Str', 'JoinStr',
+#     #     'Csv', 'NL',
+#     #     'Prefix', 'Suffix',
+#     #     'QuotedList', #single/double
+#     #     'UL', 'Checklist'
+#     # )]
+#     # [OutputType([String])]
+#     # [Alias('Peek')]
+#     [CmdletBinding(PositionalBinding = $false)]
+#     param(
 
-    )
+#     )
 
-    begin {
-    }
-    process {
-        $OutputMode = 'newest'
-        Write-Information "Mode: '$OutputMode'"
-        switch ($OutputMode) {
-            'newest' {
-                _Peek-NewestItem
-            }
-            default {
-                throw "Unhandled mode: '$outputMode'"
-            }
-        }
-    }
-    end {
-    }
-}
-function Peek->NewestItem {
+#     begin {
+#     }
+#     process {
+#         $OutputMode = 'newest'
+#         Write-Information "Mode: '$OutputMode'"
+#         switch ($OutputMode) {
+#             'newest' {
+#                 _Peek-NewestItem
+#             }
+#             default {
+#                 throw "Unhandled mode: '$outputMode'"
+#             }
+#         }
+#     }
+#     end {
+#     }
+# }
+
+function Peek-Invoke {
     <#
     .synopsis
         find files, like an EverythingSearch, but also preview them in Bat
     .description
-       basic idea is
+       Maybe this is Peek.Preview and Filter->Newest or ?Newest comes
+       todo:
+        - [ ] #6 #1
+        - [ ] fix naming: 'bad name, does not represent function.'
+            Newest should be a filter like
+            ?Newest
     .example
           .
     .outputs
@@ -101,16 +98,27 @@ function Peek->NewestItem {
     .link
         Dev.Nin\Find-FDNewestItem
     .link
-        Dev.Nin\Peek-NewestItem
+        Dev.Nin\Peek-Invoke
     .link
         Dev.Nin\Find-DevFdFind
     .link
         Dev.Nin\Invoke-FdFind
     #>
 
-    # [Alias('Pipe->PeekNewest')]
-    [CmdletBinding(PositionalBinding = $false)]
+    [Alias(
+        'Peek-Invoke'
+        # 'Pipe->PeekNewest'
+    )]
+    [CmdletBinding()]
     param(
+        [Parameter(
+            ParameterSetName = 'FromPipeline',
+            Mandatory, ValueFromPipeline
+        )]
+        [object]$InputObject,
+
+
+
         [Parameter(Position = 0)]
         [ArgumentCompletions(
             '2weeks', '2days', '2hours'
@@ -125,8 +133,22 @@ function Peek->NewestItem {
 
     )
     begin {
+
     }
     process {
+        <# old version uses
+
+                fd -e ps1 $whatStr $When --color=always
+                | fzf -m --preview "$previewCommand"
+
+                $previewCommand = 'bat --color=always --style=numbers --line-range=:200 {}' #| Join-String -SingleQuote
+                51   │
+
+                otes
+                #$search | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
+                d -e ps1 --color=always | fzf -m --preview 'bat --color=always --style=numbers --line-range=:50 {}'
+
+        #>
         $binFd = Get-NativeCommand 'fd'
         $binFzf = Get-NativeCommand 'fzf'
         $previewCommand = 'bat --color=always --style=numbers --line-range=:200 {}' #| Join-String -SingleQuote
@@ -139,15 +161,16 @@ function Peek->NewestItem {
                 '--changed-within'
             }
         }
-        fd -e ps1 $whatStr $When --color=always
-        | fzf -m --preview "$previewCommand"
+
+        & fd.exe -e ps1 $whatStr $When --color=always
+        | & fzf.exe -m --preview "$previewCommand"
     }
     end {
     }
 }
 
 
-function Pipe->Peek2 {
+function Pipe-Peek2 {
     <#
     .synopsis
         peek
@@ -167,6 +190,7 @@ function Pipe->Peek2 {
 
     #>
     [Alias(
+        'Pipe->Peek2' # 'Pipe-Peek2
         # 'Out->Peek'
     )]
     [CmdletBinding(PositionalBinding = $false)]
@@ -249,7 +273,6 @@ function Pipe->Peek2 {
 }
 
 
-if (! $experimentToExport) {
-    # ...
-    Get-ChildItem -File . | First 3 | _PeekAfterJoinLinesMaybe
-}
+# if (! $experimentToExport) {
+
+# }

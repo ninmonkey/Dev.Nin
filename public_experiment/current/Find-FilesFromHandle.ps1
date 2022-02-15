@@ -8,12 +8,16 @@ if ( $experimentToExport ) {
         'Find->FromHandle'
     )
 }
+# finish me
 
 function Find-FileFromHandle {
     <#
         .synopsis
             .
         .notes
+        see also:
+                <https://github.com/microsoft/vscode-windows-process-tree/blob/main/src/process_commandline.cc>
+
         docs:
             usage: handle [[-a [-l]] [-u] | [-c <handle> [-y]] | [-s]] [-p <process>|<pid>] [name] [-nobanner]
                 -a         Dump all handle information.
@@ -38,6 +42,8 @@ function Find-FileFromHandle {
                 handle64 -p 39144 msmdsrv4
             pattern (slow)
                 handle64 msmdsrv
+
+
         .example
             PS> Verb-Noun -Options @{ Title='Other' }
         #>

@@ -1,6 +1,12 @@
-﻿# rename self to __init__.ps1 for my brain?
+﻿
 
+
+if (!( $null -eq $script:experimentToExport)) {
+    Write-Warning 'Already exists!🦎'
+    throw 'Already exists!🦎'
+}
 # eaiser to manage and filter, especially a dynamic set, in one place
+# this was the only one that didn't use optional
 [hashtable]$script:experimentToExport = @{
     'function'                   = @()
     'alias'                      = @()
@@ -13,9 +19,12 @@
 }
 
 try {
+    . (Join-Path $PSScriptRoot '__init__.first.ps1')
+
     # Don't dot tests, don't call self.
     $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
     | Where-Object { $_.Name -ne '__init__.ps1' }
+    | Where-Object { $_.Name -ne '__init__.first.ps1' }
     | Where-Object {
         # are these safe? or will it alter where-object?
         # Write-Debug "removing test: '$($_.Name)'"

@@ -1,10 +1,15 @@
+#Requires -Version 7
 using namespace System.Collections.Generic
-if (! $DebugEnableInlineTest) {
-    $experimentToExport.function += 'Compare-SharedMemberTypes'
-    $experimentToExport.alias += 'findCommonMembers'
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Compare-SharedMemberTypes'
+    )
+    $experimentToExport.alias += @(
+        'findCommonMembers'
+
+    )
 }
-
-
 
 # | ForEach-Object {
 #     $_ | Fm
@@ -100,6 +105,7 @@ function Compare-SharedMemberTypes {
                 | Sort-Object Count -desc
                 | ForEach-Object {
                     [pscustomobject]@{
+                        PSTypeName  = 'DevNin.Compare-SharedMemberTypes'
                         ShareCount  = $_.Count
                         MemberName  = $_.Name
                         TypeName    = $_.Group.Name | Select-Object -First 1
@@ -153,7 +159,7 @@ function Compare-SharedMemberTypes {
     }
 }
 
-if ($DebugEnableInlineTest) {
+if (! $experimentToExport) {
     $sample = [System.Management.Automation.ApplicationInfo], [System.Management.Automation.FunctionInfo], [System.Management.Automation.AliasInfo]
     $sample2 = [int], [float]
     Compare-SharedMemberTypes -InputObject ([int], [float], [decimal])

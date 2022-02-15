@@ -3,7 +3,7 @@ using namespace Management.Automation
 $experimentToExport.function += @(
     'Invoke-TestTabExpansionResults'
 )
-$experimentToExport.alias += @(    
+$experimentToExport.alias += @(
     'DevTool💻-Params-TestTabExpansionResults' # actual command
     'Example🔖-TestTabExpansionResults' # example usage
 )
@@ -15,7 +15,7 @@ function Invoke-TestTabExpansionResults {
     .description
         .
     .notes
-        tags: 
+        tags:
             'DevTool💻, 'Example🔖'
         todo:
         - [ ] custom type: nicer output with lists
@@ -37,9 +37,8 @@ function Invoke-TestTabExpansionResults {
         1..($InputScript.Length) | ForEach-Object {
             $curCol = $_
             try {
-                $res = (TabExpansion2 -inputScript $InputScript -cursorColumn $curCol -ea break)
-            }
-            catch {
+                $res = (TabExpansion2 -inputScript $InputScript -cursorColumn $curCol -ea stop)
+            } catch {
                 Write-Warning "Error: $_"
                 $res = $null ?? "[`u{2400}]" # do not quit
             }
@@ -56,7 +55,9 @@ function Invoke-TestTabExpansionResults {
                 ListItemText   = $resMatch.ListItemText ?? "[`u{2400}]"
                 ResultType     = $resMatch.ResultType ?? "[`u{2400}]"
                 ToolTip        = $resMatch.ToolTip ?? "[`u{2400}]"
-                Matching       = if ($res) { $(res)?.CompletionMatches.Matching ?? "[`u{2400}]" }
+                Matching       = if ($res) {
+                    $(res)?.CompletionMatches.Matching ?? "[`u{2400}]" 
+                }
                 Object         = $res ?? "[`u{2400}]"
             }
         }
@@ -71,12 +72,12 @@ function Invoke-TabCompletionColumnResultsExample {
         example usage, only export alias
     #>
     [Alias(
-        # 'DevTool💻-Params-TestTabExpansionResults', 
+        # 'DevTool💻-Params-TestTabExpansionResults',
         'Example🔖-TestTabExpansionResults'
     )]
     [CmdletBinding()]
     param()
-    
+
     $res = (TabExpansion2 -inputScript ('[regex]::new') -cursorColumn 12)
     $res | Format-List
     Hr
@@ -97,4 +98,3 @@ function Invoke-TabCompletionColumnResultsExample {
     $FormatEnumerationLimit = 4
 
 }
-

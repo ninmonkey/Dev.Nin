@@ -135,10 +135,7 @@ left off:
     'Todo
     [ ] -> Ensure ResultType is visible as  table column ;
     [ ] - If ListItemText and Completion are equal, visually DIM the text on display
-'@
 
-
-    @'
 🐒> Test-TabExpansionResult '*json*' | ft -AutoSize ListItemText, CompletionTex
 
         ListItemText      CompletionText           Query    ResultType ToolTip
@@ -148,46 +145,46 @@ left off:
         ConvertTo-Json    ConvertTo-Json           *json*      Command …
         Format-PrettyJson Format-PrettyJson        *json*      Command …
 '@
-    # @(
-    #     dev->TestTabExpand -CommandText 'git st'
-    #     hr
-    #     dev->TestTabExpand -CommandText 'git s' ) | Format-Table -AutoSize
-
-    # return
-
-    # dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
-    # $res = dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
-    # $res.count
-    # if ($false) {
-    #     0..3 | ForEach-Object {
-    #         $CurColumn = $_
-    #         $result = Test-TabExpansionResult 'ls . -f' -CursorColumn $CurColumn
-    #         $result | Format-Table
-    #         $x = 1 + 34
-    #         $CompleterMatch = $result | Select-Object -ExpandProperty 'CompletionMatches' | Tee-Object -var 'LastCompleterMatch'
-    #         $CompleterMatch
-    #     }
-    # }
-
-    # h1 'fin'
-
-
-    # # ...
-    # $CommandText = 'git s'
-    # $res = TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
-    # $CursorColumn = $null
-    # $res.count
-    # $res | ForEach-Object {
-    #     $merge = $_ | New-HashtableFromObject
-    #     $meta = @{
-    #         PSTypeName = 'dev.TabExpandResult'
-    #         Query      = $CommandText
-    #         Id         = $id++
-    #     }
-    #     [pscustomobject]( Join-HashTable $meta $Merge )
-    # }
-    # # | ForEach-Object CompletionMatches
-    # # | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
-    # | Add-Member -NotePropertyName 'Id' -NotePropertyValue ($id++) -PassThru
-    # | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResult' -PassThru
 }
+# @(
+#     dev->TestTabExpand -CommandText 'git st'
+#     hr
+#     dev->TestTabExpand -CommandText 'git s' ) | Format-Table -AutoSize
+
+# return
+
+# dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
+# $res = dev->TestTabExpand -CommandText 'git s' | Format-Table -AutoSize
+# $res.count
+# if ($false) {
+#     0..3 | ForEach-Object {
+#         $CurColumn = $_
+#         $result = Test-TabExpansionResult 'ls . -f' -CursorColumn $CurColumn
+#         $result | Format-Table
+#         $x = 1 + 34
+#         $CompleterMatch = $result | Select-Object -ExpandProperty 'CompletionMatches' | Tee-Object -var 'LastCompleterMatch'
+#         $CompleterMatch
+#     }
+# }
+
+# h1 'fin'
+
+
+# # ...
+# $CommandText = 'git s'
+# $res = TabExpansion2 -inputScript $CommandText -cursorColumn $CursorColumn -options $null
+# $CursorColumn = $null
+# $res.count
+# $res | ForEach-Object {
+#     $merge = $_ | New-HashtableFromObject
+#     $meta = @{
+#         PSTypeName = 'dev.TabExpandResult'
+#         Query      = $CommandText
+#         Id         = $id++
+#     }
+#     [pscustomobject]( Join-HashTable $meta $Merge )
+# }
+# # | ForEach-Object CompletionMatches
+# # | Add-Member -NotePropertyName 'Query' $CommandText -PassThru
+# | Add-Member -NotePropertyName 'Id' -NotePropertyValue ($id++) -PassThru
+# | Add-Member -NotePropertyName 'PSTypeName' 'dev.TabExpandResult' -PassThru

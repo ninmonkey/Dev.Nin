@@ -27,9 +27,16 @@ function Out-MinimalPicker {
         redundant? Throw in a pipeline to quickly filter, also saves as $picker, if needed
     .description
     #>
+    # [cmdletbinding()]
+    # param()
+
     end {
         $global:picker ??= $Input | fzf -m
         $global:picker
+
+        # 'saved $global:picker = {0}' -f @(
+        #     $global:picker | Str csv ' '
+        # ) | Write-Information
     }
 }
 
@@ -110,6 +117,7 @@ function Pick-Member {
         }
     }
     end {
+
         $valueList | Sort-Object -Unique
     }
 }

@@ -53,7 +53,7 @@ function Invoke-RepeatScriptBlock {
         [object]$SeparatorObject,
 
         <#
-        #4 , #6
+        #4 , #6 WIP : Add optional sleep on iterations
         # this would allow me to pipeline results, instead of evaluating everything, and then pipe
         this may be the place to use SteppablePipeline?
         Something like
@@ -116,6 +116,7 @@ function Invoke-RepeatScriptBlock {
             #                     $SeparatorObject
             #                 } elseif ($SeparatorObject -is 'scriptblock') {
             #                     & $ScriptBlock
+
             #                 }
             #             }
             #             return
