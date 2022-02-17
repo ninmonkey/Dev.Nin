@@ -20,25 +20,47 @@
 
 # try {
 if ($true) {
-    # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
-    | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object {
-        # are these safe? or will it alter where-object?
-        # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$'
-    }
-    $filteredFiles
-    | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
-    | Write-Debug
+    <#
+        # todo: unify import
+        Find all *.ps1
+        exclude special: '__init__' styl
+        exclude *.tests.ps1
+    #>
+    # Find-ItemsToAutoload -BasePath 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment'
+    "1] Validate all functions are being loaded; `n2] find->replace on all '__init__.ps1' files '$PSCommandPath'"
+    | write-color 'magenta' | Write-Warning
 
-    $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
-    $sortedFiles | Join-String -sep "`n  - " -op "SortedImports = [`n" -SingleQuote FullName -os "]`n`n"
-    | Write-Debug
-    # } catch {
-    Write-Warning "warning: $_"
-    # Write-Error "Error: $_"
-    # $PSCmdlet.ThrowTerminatingError( $_ )
+    $filteredFiles = Find-ItemsToAutoload -BasePath $PSScriptRoot
+    $filteredFiles
+    | ForEach-Object {
+        $curScript = $_
+        . $curScript
+    }
+
+    # modify load order
+    $sortedFiles = $filteredFiles
+    | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+
+    if ($false) {
+
+        # Don't dot tests, don't call self.
+        $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
+        | Where-Object { $_.Name -ne '__init__.ps1' }
+        | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
+
+        $filteredFiles
+        | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+        | Write-Debug
+
+        $sortedFiles = $filteredFiles
+        | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+        $sortedFiles | Join-String -sep "`n  - " -op "SortedImports = [`n" -SingleQuote FullName -os "]`n`n"
+        | Write-Debug
+        # } catch {
+        # Write-Warning "warning: $_"
+        # Write-Error "Error: $_"
+        # $PSCmdlet.ThrowTerminatingError( $_ )
+    }
 }
 
 $sortedFiles

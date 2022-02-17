@@ -2,7 +2,7 @@
 
 
 if (!( $null -eq $script:experimentToExport)) {
-    Write-Warning 'Already exists!🦎'
+    # Write-Warning 'Already exists!🦎'
     throw 'Already exists!🦎'
 }
 # eaiser to manage and filter, especially a dynamic set, in one place

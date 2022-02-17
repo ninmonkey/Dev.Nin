@@ -1,12 +1,15 @@
-$experimentToExport.function += @(
-    # '_format-AnsiForFzf'
-    # 'Write-AnsiBlock'
-    # 'New-VtEscapeClearSequence'
-    'Remove-AnsiEscape'
-)
-$experimentToExport.alias += @(
-    'StripAnsi'
-)
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Remove-AnsiEscape'
+
+    )
+    $experimentToExport.alias += @(
+        'StripAnsi' # 'Remove-AnsiEscape'
+    )
+}
+
 function Remove-AnsiEscape {
     <#
     .synopsis
@@ -48,4 +51,9 @@ function Remove-AnsiEscape {
         }
 
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

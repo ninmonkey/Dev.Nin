@@ -32,6 +32,7 @@ function _formatColorNameTooltip {
         ) | Join-String
     }
 }
+# Write-Warning "ToEnable: '$PSCommandPath'"
 
 # Get-ColorArgumentCompleter ?
 function Get-ColorNameArgumentCompletion {

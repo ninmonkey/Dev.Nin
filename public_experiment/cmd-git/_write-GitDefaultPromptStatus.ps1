@@ -9,7 +9,7 @@ if ( $experimentToExport ) {
     )
 }
 
-New-Alias 'Find->MyGitDir' -Value 'posh-git\Get-GitDirectory' -Description 'shorthand to find your current repo'
+Set-Alias 'Find->MyGitDir' -Value 'posh-git\Get-GitDirectory' -Description 'shorthand to find your current repo'
 
 function _write-GitDefaultPromptStatus {
     <#

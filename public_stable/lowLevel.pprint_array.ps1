@@ -48,7 +48,7 @@ function pprint_list {
         [List[object]]$allItems = [list[object]]::new()
         $CStyle = @{}
 
-
+        # todo: consolidate colors
         # too bright
         $CStyle.BrightBold = $prefixTextSplat = @{
             ForegroundColor = 'gray30'
