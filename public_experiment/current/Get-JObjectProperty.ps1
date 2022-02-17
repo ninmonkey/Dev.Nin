@@ -51,7 +51,7 @@ function Get-JObjectProperty {
 
         [Parameter(Position = 0)]
         [ArgumentCompletions(
-            "'Value', 'Name'",
+            "'Value', 'Name'", # future: maybe 7.2 attr would let me build strings off of a list
             "'Name', 'Value'"
 
         )]
@@ -71,7 +71,12 @@ function Get-JObjectProperty {
         # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
         [hashtable]$Config = @{
             NullStr         = "`u{2400}"
+
+
+            # half working
             UniqueType      = $True
+
+            # == NYI == #6
             IncludeProperty = @(
                 'Name'
                 'Value'
@@ -79,10 +84,10 @@ function Get-JObjectProperty {
                 # 'MemberType'
             ) # | Sort-Object -Unique
         }
-        [list[object]]$items = [list[object]]::new()
+        [list[object]]$objectList = [list[object]]::new()
         $Config = Join-Hashtable $Config ($Options ?? @{})
 
-        KeyList = @{
+        $KeyList = @{
             'Type_Order' = @(
                 'MemberType'
                 'Value'
@@ -104,45 +109,56 @@ function Get-JObjectProperty {
     }
     end {
         if ($Config.UniqueType) {
-            $Target = $curObject | Get-Unique -OnType
+            $Target = $objectList | Get-Unique -OnType
         } else {
-            $Target = $curObject
+            $Target = $objectList
         }
         if ($PassThru) {
             $target.psobject.properties | ForEach-Object {
-                $_ | Select-Object $KeyList.IncludeProperty
+                $_ | Select-Object $Config.IncludeProperty
             }
             return
         }
 
         $objectList | ForEach-Object {
             $curObject = $_
+            # $_.GetType() | Format-TypeName -Brackets | Write-Host
+            $curObject.psobject.properties | ForEach-Object {
+                $Value = $_.Value
+                $ValueStr = $Value ?? $Config.NullStr
+                $Type = if ($null -eq $Value) {
+                    '[{0}]' -f $Config.NullStr
+                } else {
+                    $Value.GetType() | Format-TypeName -Brackets
+                }
+
+                $ValueStr = switch ($Value) {
+                    {
+                        $_ -is 'string' -and $_ -eq [string]::Empty
+                    } {
+                        '␠'
+                    }
+                    { $null -eq $_ } {
+                        '[{0}]' -f $Config.NullStr
+                    }
+                    default {
+                        # $Value ## no longer wanted, refactor into the format display
+                        $Value.GetType() | Format-TypeName -WithBrackets
+                    }
+                }
+
+
+
+                $meta = @{
+                    PsTypeName  = 'JmPropList'
+                    Name        = $_.Name
+                    Value       = $ValueStr # todo: return value if not being formatted
+                    Type        = $Type
+                    TypeOfValue = $_.TypeNameOfValue | Format-TypeName -WithBrackets
+                }
+                [pscustomobject]$meta
+            } | Sort-Object -p $Config.SortBy
         }
-
-
-        # $_.GetType() | Format-TypeName -Brackets | Write-Host
-        $target.psobject.properties | ForEach-Object {
-            $Value = $_.Value
-            $ValueStr = $Value ?? $Config.NullStr
-            $Type = if ($null -eq $Value) {
-                '[{0}]' -f $Config.NullStr
-            } else {
-                $Value.GetType() | Format-TypeName -Brackets
-            }
-
-
-
-            $meta = @{
-                PsTypeName  = 'JmPropList'
-                Name        = $_.Name
-                Value       = $ValueStr
-                Type        = $Type
-                TypeOfValue = $_.TypeNameOfValue | Format-TypeName -WithBrackets
-            }
-
-
-            [pscustomobject]$meta
-        } | Sort-Object -p $Config.SortBy
 
     }
 }
