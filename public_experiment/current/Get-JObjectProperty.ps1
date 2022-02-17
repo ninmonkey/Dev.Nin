@@ -19,13 +19,26 @@ function Get-JObjectProperty {
         ls . | select -first 1 | PropList | ft Type, TypeOfValue, Name, Value
     .notes
         future:
+            - [ ] normal props
+                render dark
+
+        very soon, pull advanced functionality to Get-NinOBject
+        more broad, reusable, simple logic here
+
+            - [ ] formating.ps1xml
             - [ ] automatically filter by " | Get-Unique -OnType"
             - [ ] left--align "value" column
             - [ ] max widths on columns
 
-        to align column:
-        - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7.1>
-        - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-7.1>
+        # future: argument completions to control talbe order
+            <#
+            $Props = 'Name', 'Value', 'Type', 'TypeOfValue'
+
+
+
+    to align column:
+    - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7.1>
+    - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-7.1>
 
     #>
     [Alias('jProp')]
@@ -34,11 +47,42 @@ function Get-JObjectProperty {
         [object]$InputObject,
 
         # custom object
-        [Parameter()][switch]$PassThru
-    )
+        [Parameter()][switch]$PassThru,
 
+        [Parameter(Position = 0)]
+        [ArgumentCompletions(
+            "'Value', 'Name'",
+            "'Name', 'Value'"
+
+        )]
+        [string[]]$SortBy,
+
+
+
+        [Parameter()][switch]$IgnoreBasic,
+        [Parameter()][switch]$IgnoreLongTypes,
+        # [Parameter()][switch]$IgnoreNull,
+        # [Parameter()][switch]$IgnoreWhite,
+
+        # extra options
+        [Parameter()][hashtable]$Options
+    )
     begin {
-        $KeyList = @{
+        # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
+        [hashtable]$Config = @{
+            NullStr         = "`u{2400}"
+            UniqueType      = $True
+            IncludeProperty = @(
+                'Name'
+                'Value'
+                'TypeNameOfValue'
+                # 'MemberType'
+            ) # | Sort-Object -Unique
+        }
+        [list[object]]$items = [list[object]]::new()
+        $Config = Join-Hashtable $Config ($Options ?? @{})
+
+        KeyList = @{
             'Type_Order' = @(
                 'MemberType'
                 'Value'
@@ -49,32 +93,44 @@ function Get-JObjectProperty {
                 'IsInstance'
             ) # | Sort-Object -Unique
 
-            'Default'    = @(
-                'Name'
-                'Value'
-                'TypeNameOfValue'
-                # 'MemberType'
-            ) # | Sort-Object -Unique
         }
+
+
 
     }
 
     process {
+        $objectList.Add( $InputObject )
+    }
+    end {
+        if ($Config.UniqueType) {
+            $Target = $curObject | Get-Unique -OnType
+        } else {
+            $Target = $curObject
+        }
         if ($PassThru) {
-            $InputObject.psobject.properties | ForEach-Object {
-                $_ | Select-Object $KeyList.Default
+            $target.psobject.properties | ForEach-Object {
+                $_ | Select-Object $KeyList.IncludeProperty
             }
             return
         }
+
+        $objectList | ForEach-Object {
+            $curObject = $_
+        }
+
+
         # $_.GetType() | Format-TypeName -Brackets | Write-Host
-        $InputObject.psobject.properties | ForEach-Object {
+        $target.psobject.properties | ForEach-Object {
             $Value = $_.Value
-            $ValueStr = $Value ?? "`u{2400}"
+            $ValueStr = $Value ?? $Config.NullStr
             $Type = if ($null -eq $Value) {
-                "[`u{2400}]"
+                '[{0}]' -f $Config.NullStr
             } else {
                 $Value.GetType() | Format-TypeName -Brackets
             }
+
+
 
             $meta = @{
                 PsTypeName  = 'JmPropList'
@@ -86,7 +142,7 @@ function Get-JObjectProperty {
 
 
             [pscustomobject]$meta
-        } | Sort-Object Name, Value
+        } | Sort-Object -p $Config.SortBy
 
     }
 }
