@@ -1,6 +1,6 @@
 $experimentToExport.function += @(
     'Test-AllTrue'
-    'Test-AnyTrue'
+    'Test-AnyTrue' #6 #1
 )
 $experimentToExport.alias += @(
     # 'All' # breaks pester

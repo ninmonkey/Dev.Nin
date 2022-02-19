@@ -6,8 +6,10 @@ if ( $experimentToExport ) {
         'Filter-IsDirectory'
         'Filter-SkipPropertyType'
         'Filter-Newest'
+        'Filter-UniqueType'
     )
     $experimentToExport.alias += @(
+        'Filter->UniqueType' # 'Filter-UniqueType'
         '?IsDir'            # 'Filter-IsDirectory'
         'Filter->IsDir'     # 'Filter-IsDirectory'
         'Filter->SkipPropType' # 'Filter-SkipPropertyType'
@@ -90,6 +92,30 @@ function Filter-Newest {
     }
 }
 
+function Filter-UniqueType {
+    [Alias('Filter->UniqueType')]
+    param()
+    <#
+        .synopsis
+            filter to distinct types, outputs objects
+        .description
+            sugar for
+                ... | Get-Unique -OnType
+
+            to:ninmonkey.console
+            .
+        .example
+            PS> Verb-Noun -Options @{ Title='Other' }
+            Get-Item . | jProp -PassThru | ForEach-Object { ($_.Value) } | ?NotBlank | Get-Unique -OnType | len
+            Get-Item . | jProp -PassThru | ForEach-Object { ($_.Value) } | Filter->UniqueType | len
+        #>
+    end {
+        $Input | Where-IsNotBlank | Get-Unique -OnType
+    }
+}
+
+#gi . | jProp -PassThru | % TypeNameOfValue | sort -Unique
+
 function Filter-IsDirectory {
     <#
         .synopsis
@@ -100,6 +126,8 @@ function Filter-IsDirectory {
             Pipe->
                 could mean sort
                 could mean transform
+
+        export:ninmonkey.console
             .
         .example
             PS> Verb-Noun -Options @{ Title='Other' }

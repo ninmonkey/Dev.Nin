@@ -195,6 +195,21 @@ function Invoke-VSCodeVenv {
                 'code-venv' for 'code'
                 'ivy' for 'code-insiders'
     .notes
+        - ***  main ***
+        #6 #8
+            minimal rewrite, has overrides:
+
+                - [1] explicit based on alias used
+                    code, codei, ivy  -- vs invoke-VscodeVevn / code-venv
+                - [2] Env Var  $ENV:Code_vEnvForce = 'code' | 'code-insiders'
+                - [3] global config .json
+                - [4] parameter -ForceCode / -ForceInsider
+
+            Other functions, like 'editfunc' will invoke 'vscode-venv' , **not** codee or code-insider
+
+
+
+
         . - next:
             - [ ] argument transformation attribute:
                 supports [Path] or [VsCodeFilePath]
@@ -379,7 +394,7 @@ function Invoke-VSCodeVenv {
         # [1] saved state
         $maybeAlias = $PSCmdlet.MyInvocation.InvocationName
         $prioritizeInsidersBin = [bool]($maybeAlias -match 'Ivy|CodeI|CodeIVenv|CodeI-vEnv|Out-CodeIvEnv')
-        $prioritizeInsidersBin = $prioritizeInsidersBin -or $true # always true, until config #
+        # $prioritizeInsidersBin = $prioritizeInsidersBin -or $true # always true, until config #
 
         # [2] alias 'Ivy' chooses 'insider'
         if ($script:__venv.forceMode) {
@@ -447,18 +462,24 @@ function Invoke-VSCodeVenv {
 
             }
         ) | Select-Object -First 1
+        # Wait-Debugger
         if ($CodeBinPath) {
-            $CodeBin = Get-Command $CodeBinPath
+            $CodeBin = Get-Command $CodeBinPath -CommandType Application
+            | Select-Object -First 1
         }
 
         # final test, global override, to force (unless it isn't installed)
         if ($global_override.Contains('DefaultBinPath')) {
-            Write-Warning '🦎 contains key'
+            # will refactor this
+            # Write-Warning '🦎 contains key'
             try {
+                '$global_override => trying: "{0}"' -f @(
+                    $global_override['DefaultBinPath']
+                ) | Write-Verbose
                 $Path = $global_override['DefaultBinPath']
                 # $CodeBinPath = Get-Item -ea stop $global_override['DefaultBinPath']
                 $CodeBinPath = Get-Command $path -CommandType Application -ea stop
-                Write-Warning '🦎 CodeBinPath?'
+                # Write-Warning '🦎 CodeBinPath?'
             } catch {
                 # Write-Error -Message 'Found Config, but Path failed' -Exception $_ -Category 'InvalidData' -ea Stop
                 Write-Error -Message '🐜 -> errRecord Found Config, but Path failed' -Category 'InvalidData' -ea Stop -TargetObject $Path
@@ -466,7 +487,9 @@ function Invoke-VSCodeVenv {
                 # $PSCmdlet.WriteError(
                 # <# errorRecord: #> $_)
             }
-            Write-Warning "🦎 CodeBinPath? $CodeBinPath"
+            # Wait-Debugger
+            # Write-Warning "🦎 CodeBinPath? $CodeBinPath"
+
 
             # switch -regex ($Path) {
             #     'code-insiders' {
@@ -485,6 +508,7 @@ function Invoke-VSCodeVenv {
             #     }
             # }
         }
+        '🦎 -> ended'
 
 
         # if($prioritizeInsidersBin)
@@ -720,7 +744,7 @@ function Invoke-VSCodeVenv {
                 #  Actual invoke here. You don't want it to be a
                 # child process of the shell, which will kill it when the parent ies.
                 # Also, that would spam log output
-                # Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
+                Start-Process -path $CodeBin -args $codeArgs -WindowStyle Hidden
             }
         }
 
@@ -774,7 +798,7 @@ function Invoke-VSCodeVenv {
         # }
 
 
-
+        '🐱‍🐉 end of: process {..}'
     }
 
     end {

@@ -35,6 +35,55 @@ $formatData = @(
 # write-error ('.' * 120 | Join-string -op '  error')
 
 
+function Find-ItemsToAutoload {
+    <#
+    .synopsis
+        unify autoloading import logic
+    .description
+        Find all *.ps1
+        exclude special: '__init__' styl
+        exclude *.tests.ps1
+    .notes
+        todo: test whether $PSScriptRoot returns the
+            path of the file invoking this function
+            or the path of this function, which was invoked?
+    #>
+    param(
+        # set a path, fallback to PScriptRoot
+        [Parameter(Position = 0)]
+        $BasePath
+    )
+    try {
+        $BasePath ??= $PSScriptRoot
+        $RootDir = Get-Item -ea stop $BasePath
+
+        $getChildItemSplat = @{
+            File   = $true
+            Path   = Get-Item -ea stop $RootDir
+            Filter = '*.ps1'
+        }
+    } catch {
+        Write-Error "PathNotFound: '$BasePath'"
+        return
+    }
+
+    $RootDir | Write-Debug
+
+    $filteredFiles = Get-ChildItem @getChildItemSplat
+    | Where-Object { $_.Name -ne '__init__.ps1' }
+    | Where-Object { $_.Name -ne '__init__.first.ps1' }
+    | Where-Object { $_.Name -match '\.ps1$' }
+    | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
+    | Where-Object {
+        $pathSelf = $PSCommandPath | Get-Item
+        $_.FullName -ne $pathSelf.FullName
+    }
+
+    $filteredFiles
+}
+
+Export-ModuleMember -Function 'Find-ItemsToAutoload'
+
 $formatData_BuiltIn = @(
     'FileListing'
 )
@@ -321,8 +370,8 @@ if ($__Config.Enable_Import_PublicExperiment_Dir) {
         $initFiles = $subdirs | ForEach-Object {
             Get-ChildItem $_ -Filter '__init__.ps1'
         } #| ForEach-Object fullname
-        $initFiles | ForEach-Object {
-            Write-Debug "Loading subdir init: '$_'"
+        $initFiles | ForEach-Object -ea break {
+            Write-Debug "`n    === `n`n`n  Loading subdir init: '$_'"
             . $_
         }
     }
