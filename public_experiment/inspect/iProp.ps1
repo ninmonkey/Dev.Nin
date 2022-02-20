@@ -192,6 +192,7 @@ function iProp {
                     if ($curProp.TypeNameStr -match '[␀]' -or $curProp.ValueStr -match '[␀]') {
                         return
                     }
+
                 }
 
                 if ($PropertyNamePattern) {

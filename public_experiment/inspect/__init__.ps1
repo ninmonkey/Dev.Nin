@@ -31,59 +31,66 @@ if ($true) {
     | write-color 'magenta' | Write-Warning
 
     $filteredFiles = Find-ItemsToAutoload -BasePath $PSScriptRoot
-    $filteredFiles
-    | ForEach-Object {
-        $curScript = $_
-        . $curScript
-    }
-
+    # | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
     # modify load order
     $sortedFiles = $filteredFiles
     | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
 
-    if ($false) {
-
-        # Don't dot tests, don't call self.
-        $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
-        | Where-Object { $_.Name -ne '__init__.ps1' }
-        | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
+    if ($true) {
 
         $filteredFiles
-        | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
-        | Write-Debug
+        | ForEach-Object {
+            $curScript = $_
+            . $curScript
+        }
 
-        $sortedFiles = $filteredFiles
-        | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
-        $sortedFiles | Join-String -sep "`n  - " -op "SortedImports = [`n" -SingleQuote FullName -os "]`n`n"
-        | Write-Debug
+
+        # if ($false) {
+
+        # # Don't dot tests, don't call self.
+        # $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
+        # | Where-Object { $_.Name -ne '__init__.ps1' }
+        # | Where-Object { $_.Name -notmatch '\.tests\.ps1$' }
+
+        # $filteredFiles
+        # | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+        # | Write-Debug
+
+        # $sortedFiles = $filteredFiles
+        # | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+        # $sortedFiles | Join-String -sep "`n  - " -op "SortedImports = [`n" -SingleQuote FullName -os "]`n`n"
+        # | Write-Debug
         # } catch {
         # Write-Warning "warning: $_"
         # Write-Error "Error: $_"
         # $PSCmdlet.ThrowTerminatingError( $_ )
+        # }
+    } else {
+
+
+        $sortedFiles
+        | ForEach-Object {
+            $curFile
+            $curFile = $_
+
+            $curFile | Join-String -op 'CurFile: ' FullName
+            | Write-Debug
+            # are these safe? or will it alter where-object?
+            # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
+            try {
+                . $curFile
+            } catch {
+                # Write-Error -Message 'bad' -ErrorRecord $_
+                # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+
+                #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+                # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+                $PSCmdlet.WriteError( $_ )
+            }
+        }
+
     }
 }
-
-$sortedFiles
-| ForEach-Object {
-    $curFile
-    $curFile = $_
-
-    $curFile | Join-String -op 'CurFile: ' FullName
-    | Write-Debug
-    # are these safe? or will it alter where-object?
-    # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-    try {
-        . $curFile
-    } catch {
-        # Write-Error -Message 'bad' -ErrorRecord $_
-        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
-
-        #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        $PSCmdlet.WriteError( $_ )
-    }
-}
-
 
 
 $experimentToExport | Join-String -op 'ExperimentToExport' | Write-Debug

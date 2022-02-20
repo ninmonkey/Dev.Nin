@@ -1,11 +1,13 @@
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'New-TypeInfo'
-)
-$experimentToExport.alias += @(
-    'asType'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'New-TypeInfo'
+    )
+    $experimentToExport.alias += @(
+        'asType'
+    )
+}
 
 function New-TypeInfo {
     <#
@@ -27,7 +29,8 @@ function New-TypeInfo {
         [object]$InputObject
     )
 
-    begin {}
+    begin {
+    }
     process {
         if ($_ -is 'type') {
             Write-Debug "Already a type: $InputObject"
@@ -40,5 +43,6 @@ function New-TypeInfo {
         }
         $typeInstance
     }
-    end {}
+    end {
+    }
 }

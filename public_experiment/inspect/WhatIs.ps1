@@ -3,12 +3,14 @@ if ( $experimentToExport ) {
     $experimentToExport.function += @(
         # 'Get-WhatObjectType' ?
         'Get-WhatTypeInfo'
-        'Get-WhatIsShortName'
+        'Get-WhatIsShortTypeName'
         'Get-WhatGenericTypeInfo' # to make
+        'Get-WhatIsShortPSTypeName'
     )
     $experimentToExport.alias +=
     @(
-        'ShortName'
+        'ShortName' #  'Get-WhatIsShortTypeName'
+        'ShortPSTypeName' # 'Get-WhatIsShortPSTypeName'
         'Inspect->TypeInfo'
         'Inspect->Interface' # 'Get-WhatInterfaceTypeInfo'
 
@@ -75,7 +77,8 @@ function Get-WhatInterfaceTypeInfo {
         #6
     #>
     [Alias(
-        'What->Interface'
+        'Inspect->Interface'
+        # 'What->Interface'
     )]
     param(
         #6
@@ -87,12 +90,21 @@ function Get-WhatInterfaceTypeInfo {
         $InputObject
     )
     begin {
-        Write-Error "Finish: $PSCommandPath"
+        Write-Warning "Finish: '$PSCmdlet' at '$PSCommandPath'"
     }
     process {
         if ($null -eq $InputObject) {
             return
         }
+
+        if ('tempWorkAround-assumestype') {
+            [pscustomobject]@{
+                FullName     = $_.GetType().FullName
+                IsDisposable = $_ -is [System.IDisposable]
+            }
+            return
+        }
+
         $tinfo = $InputObject | Resolve-TypeName
 
         $InputObject | _mapFormatShortName
@@ -101,12 +113,16 @@ function Get-WhatInterfaceTypeInfo {
         # $InputObject.GetType().Name
     }
 }
-function Get-WhatIsShortName {
+function Get-WhatIsShortTypeName {
     <#
     .synopsis
-        basic test-type , shortname
+        Minimize output from GetType().FullName
     .example
         ,@(,'a'), 0.3, 'a', (gi .), (get-date), @{}, [ordered]@{} | whatAmI
+    .link
+        Dev.Nin\Get-WhatIsShortPSTypeName
+    .link
+        Dev.Nin\Get-WhatIsShortTypeName
     #>
     [Alias('ShortName')]
     param(
@@ -121,10 +137,54 @@ function Get-WhatIsShortName {
             return
         }
 
-        $InputObject | _mapFormatShortName
+        $InputObject.GetType() | _mapFormatShortName
+        # $InputObject | _mapFormatShortName
+    }
+}
 
-        # $InputObject.GetType().FullName -replace 'System.Collections\.', '' -replace '^System\.', ''
-        # $InputObject.GetType().Name
+function Get-WhatIsShortPSTypeName {
+    <#
+    .synopsis
+        Minimize output from x.PSTypeNames
+    .example
+
+    .link
+        Dev.Nin\Get-WhatIsShortPSTypeName
+    .link
+        Dev.Nin\Get-WhatIsShortTypeName
+    #>
+    [Alias('ShortPSTypeName')]
+    param(
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [AllowNull()]
+        [parameter(ValueFromPipeline, Position = 0, Mandatory)]
+        $InputObject
+    )
+    begin {
+        $Config = @{
+            RegexIgnoreList = @(
+                'System.MarshalByRefObject'
+                'System.Object'
+            ) | RegexLiteral
+        }
+    }
+    process {
+        if ($null -eq $InputObject) {
+            return
+        }
+
+        $InputObject.PSTypeNames
+        | Where-Object {
+            foreach($re in $Config.RegexIgnoreList) {
+                if($_ -match $re) {
+                    return $false
+                }
+            }
+            return $true
+
+        }
+        | _mapFormatShortName
     }
 }
 
