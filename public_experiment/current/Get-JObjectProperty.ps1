@@ -83,6 +83,15 @@ function Get-JObjectProperty {
                 'TypeNameOfValue'
                 # 'MemberType'
             ) # | Sort-Object -Unique
+
+            # == NYI ==
+            # limit long names instead of removing them.
+            MaxTypenameWidth = 50 # [$null | 0 | 50]
+            IgnoreBasicTypes = @(
+                'String', 'Int'
+            )
+
+            # == NYI == $KeyList
         }
         [list[object]]$objectList = [list[object]]::new()
         $Config = Join-Hashtable $Config ($Options ?? @{})
@@ -114,7 +123,21 @@ function Get-JObjectProperty {
             $Target = $objectList
         }
         if ($PassThru) {
-            $target.psobject.properties | ForEach-Object {
+            # | ?{
+            #     if(! $IgnoreBasic) {
+            #         return $true;
+            #     }
+
+            #     foreach($t_name in $Config.IgnoreBasicTypes){
+            #         if($_ -is $t_name) {
+            #             return $false;
+            #         }
+            #     }
+            #     return $true;
+
+            # }
+            $target.psobject.properties
+            | ForEach-Object {
                 $_ | Select-Object $Config.IncludeProperty
             }
             return
@@ -142,8 +165,9 @@ function Get-JObjectProperty {
                         '[{0}]' -f $Config.NullStr
                     }
                     default {
+                        $Value
                         # $Value ## no longer wanted, refactor into the format display
-                        $Value.GetType() | Format-TypeName -WithBrackets
+                        # $Value.GetType() | Format-TypeName -WithBrackets
                     }
                 }
 
@@ -152,7 +176,8 @@ function Get-JObjectProperty {
                 $meta = @{
                     PsTypeName  = 'JmPropList'
                     Name        = $_.Name
-                    Value       = $ValueStr # todo: return value if not being formatted
+                    Value       = $_.Value # Valueformatted
+                    ValueStr       = $ValueStr # todo: return value if not being formatted
                     Type        = $Type
                     TypeOfValue = $_.TypeNameOfValue | Format-TypeName -WithBrackets
                 }

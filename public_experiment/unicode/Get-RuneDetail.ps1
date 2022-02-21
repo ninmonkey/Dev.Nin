@@ -1,14 +1,17 @@
-Using namespace system.text
-# using namespace globalization
+#Requires -Version 7
+Using namespace system.text;
+using namespace globalization;
 
-$experimentToExport.function += @(
-    'Get-RuneDetail'
-)
-$experimentToExport.alias += @(
-    'Uni->RuneInfo'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Get-RuneDetail'
 
+    )
+    $experimentToExport.alias += @(
+        'Uni->RuneInfo' # 'Get-RuneDetail'
 
+    )
+}
 
 function Get-RuneDetail {
     <#
@@ -107,4 +110,9 @@ if ($false) {
     H1 'last: explicit test'
     $res | Select-Object RuneStr, CodeHex, RuneOnRenderTest, Name, UniCategory | Format-Table -AutoSize
 
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

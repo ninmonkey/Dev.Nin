@@ -9,9 +9,6 @@ if ( $experimentToExport ) {
 
     )
 }
-# C:\Users\cppmo_000\.ninmonkey\dev\appdata\vscode-venv-options.json
-
-
 #  #1 : refactor to update-hashtable
 $script:__code_venvState = @{
     ConfigRoot = '~/.dev-nin/'
@@ -26,7 +23,6 @@ mkdir $__code_venvState.ConfigDirPrefix -Force | Out-Null
 $__code_venvState = Join-Hashtable $__code_venvState @{
     ConfigVenvOption = Join-Path $__code_venvState.ConfigDirPrefix 'code-venv-option.json'
 }
-# Get-VSCodeVenvOption | To->Json | Sc ~/.dev-nin/vscode/vscode-venv-options.json
 
 class VSCodeVenvOption {
     [string]$DefaultBinPath
@@ -40,7 +36,7 @@ class VSCodeVenvOption {
 function Set-VSCodeVenvOption {
     <#
     .synopsis
-        quick hack: save metadat
+        quick hack: save metadat . #6
     .notes
         future could be one command
             venv-config <set|get> [key] [value]
@@ -59,13 +55,19 @@ function Set-VSCodeVenvOption {
         [object]$ConfigOption
     )
 
-    if ($ConfigOption -is 'hashtable') {
-        $UpdateMode = 'PartialMerge'
-    }
-    elseif ( $ConfigOption -is 'VSCodeVenvOption') {
+    <# #6
+    $ConfigOption -is 'VSCodeVenvOption'
+        may fail cause type doesn't exist, in the global scope
+    #>
+    if ($ConfigOption.GetType().FullName -eq 'VSCodeVenvOption') {
         $UpdateMode = 'Direct'
     }
-    else {
+
+    if ($ConfigOption -is 'hashtable') {
+        $UpdateMode = 'PartialMerge'
+    } elseif ( $ConfigOption -is 'VSCodeVenvOption') {
+        $UpdateMode = 'Direct'
+    } else {
         throw "UnhandledType: $($ConfigOption.GetType().Name)"
     }
 
@@ -93,7 +95,7 @@ function Set-VSCodeVenvOption {
         $validKeys = @('DefaultBinPath', 'DefaultDataDir', 'DefaultExtensionDir')
         # or
         # $ValidKeys = $curConfig | Iter->PropName
-
+        #Refactor: update-hashtable or update-object
         $ConfigOption.GetEnumerator() | ForEach-Object {
             $Key = $_.Key ; $Value = $_.Value
             if ($Key -notin $validKeys ) {
@@ -123,7 +125,7 @@ function Set-VSCodeVenvOption {
         }
     }
 
-    'Writing to: {0}' -f @($__code_venvState.ConfigVenvOption) | Write-Debug
+    'Writing to: "{0}"' -f @($__code_venvState.ConfigVenvOption) | Write-Verbose
     $curConfig | To->Json -EnumsAsStrings -ea stop | Sc -path $__code_venvState.ConfigVenvOption
 
     Get-Content $__code_venvState.ConfigVenvOption | bat -l json | Write-Host
@@ -150,7 +152,7 @@ function Get-VSCodeVenvOption {
         return $defaultConfig
     }
 
-    'reading from: {0}' -f @($__code_venvState.ConfigVenvOption) | Write-Debug
+    'Config file: "{0}"' -f @($__code_venvState.ConfigVenvOption) | Write-Verbose
     try {
 
         $curConfig = Get-Content (Get-Item $__code_venvState.ConfigVenvOption)

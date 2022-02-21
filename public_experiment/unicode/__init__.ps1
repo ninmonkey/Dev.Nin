@@ -30,7 +30,7 @@ try {
     | Write-Debug
 } catch {
     Write-Warning "warning: $_"
-    Write-Error "Error: $_"
+    # Write-Error "Error: $_"
     # $PSCmdlet.ThrowTerminatingError( $_ )
 }
 
