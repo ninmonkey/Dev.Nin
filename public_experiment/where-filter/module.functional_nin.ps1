@@ -1,17 +1,23 @@
-$experimentToExport.function += @(
-    # 'Test-AllTrue'
-    'Test-AnyTrue'
-    'Test-AnyFalse'
+#Requires -Version 7
 
-    'Test-AllTrue'
-    # 'Test-AnyTrue' #6 #1
-)
-$experimentToExport.alias += @(
-    # 'All' # breaks pester
-    # 'Any'
-    # 'Test-AllTrue'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        # 'Test-AllTrue'
+        'Test-AnyTrue'
+        'Test-AnyFalse'
 
+        'Test-AllTrue'
+        'Test-AllFalse'
+        # 'Test-AnyTrue' #6 #1
+        # ''
+    )
+    $experimentToExport.alias += @(
+        # 'All' # breaks pester
+        # 'Any'
+        # 'Test-AllTrue'
+
+    )
+}
 
 # New-Alias 'Test-AllTrue' -Value 'functional\Test-All' -Description 'Will be rewriting module "functional", currently a wrapper'
 
@@ -19,6 +25,9 @@ function Test-AnyTrue {
     <#
     .synopsis
         at least one expression is true
+    .notes
+        future:
+            - [ ] alias versions like 'Assert-AnyTrue' which throw if false
     .link
         functional\Test-Any
     #>
@@ -51,6 +60,23 @@ function Test-AnyFalse {
     return $false
 }
 
+function Test-AllFalse {
+    <#
+    .synopsis
+        All expressions evaluate to true
+    .link
+        functional\Test-All
+    #>
+    [OutputType([boolean])]
+    Param()
+
+    foreach ($e in $input) {
+        if ($e) {
+            return $false
+        }
+    }
+    return $true
+}
 function Test-AllTrue {
     <#
     .synopsis
@@ -109,3 +135,8 @@ function Test-AllTrue {
 
 #     Write-Error 'nyi' -Category NotImplemented
 # }
+
+
+if (! $experimentToExport) {
+    # ...
+}

@@ -1,5 +1,5 @@
 BeforeAll {
-    Import-Module Dev.Nin #-Force
+    Import-Module Dev.Nin
 }
 
 Describe 'Functional Dev.Nin' {
@@ -42,11 +42,36 @@ Describe 'Functional Dev.Nin' {
 
         }
     }
-    Describe 'Test-AllFalse' -Skip {
-        It 'First' {
-            $true, $true, $false
-            | Dev.Nin\Test-AllFalse
-            | Should -Be $False
+    Describe 'Test-AllFalse' {
+        It 'Test-AllFalse <Sample> is <Expected>' -ForEach @(
+            @{
+                Sample   = $true, $false
+                Expected = $false
+            }
+            @{
+                Sample   = $null, $true
+                Expected = $false
+            }
+            @{
+                Sample   = $true
+                Expected = $false
+            }
+            @{
+                Sample   = $false
+                Expected = $true
+            }
+            @{
+                Sample   = $true, '', $true
+                Expected = $false
+            }
+            @{
+                Sample   = '', $null, ''
+                Expected = $true
+            }
+        ) {
+            $Sample | Dev.Nin\Test-AllFalse
+            | Should -Be $Expected
+
         }
     }
     Describe 'Test-AnyTrue' {
