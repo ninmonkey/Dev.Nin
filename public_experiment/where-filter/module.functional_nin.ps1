@@ -2,24 +2,43 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        # 'Test-AllTrue'
         'Test-AnyTrue'
         'Test-AnyFalse'
-
         'Test-AllTrue'
         'Test-AllFalse'
-        # 'Test-AnyTrue' #6 #1
-        # ''
+
+        # 'Assert-AnyTrue'
+        # 'Assert-AnyFalse'
+        # 'Assert-AllTrue'
+        # 'Assert-AllFalse'
+        # #6 #1
     )
     $experimentToExport.alias += @(
-        # 'All' # breaks pester
-        # 'Any'
-        # 'Test-AllTrue'
+
 
     )
 }
 
-# New-Alias 'Test-AllTrue' -Value 'functional\Test-All' -Description 'Will be rewriting module "functional", currently a wrapper'
+# Assert-AnyTrue {
+#     # should output be the union [ $null | Exception ]
+#     [OutputType([boolean])]
+#     Param()
+
+#     if (Test-AnyTrue $Input) {
+#         return
+#     }
+
+#     # todo: ask for advice on exception throwing
+#     $errorRecord = [ErrorRecord]::new(
+#         <# exception: #>
+#         [Exception]::new(
+#             <# message: #> 'AssertException: Test-AnyTrue was false'),
+#         <# errorId: #> 'AssertionFailed.Test-AnyTrue',
+#         <# errorCategory: #> 'InvalidResult',
+#         <# targetObject: #> 'input')
+#     $PSCmdlet.ThrowTerminatingError(
+#         <# errorRecord: #> $errorRecord)
+# }
 
 function Test-AnyTrue {
     <#
@@ -29,7 +48,13 @@ function Test-AnyTrue {
         future:
             - [ ] alias versions like 'Assert-AnyTrue' which throw if false
     .link
-        functional\Test-Any
+        Dev.Nin\Test-AnyTrue
+    .link
+        Dev.Nin\Test-AnyFalse
+    .link
+        Dev.Nin\Test-AllTrue
+    .link
+        Dev.Nin\Test-AllFalse
     #>
     [OutputType([boolean])]
     Param()
@@ -47,7 +72,13 @@ function Test-AnyFalse {
     .synopsis
         at least one expression is false
     .link
-        functional\Test-Any
+        Dev.Nin\Test-AnyTrue
+    .link
+        Dev.Nin\Test-AnyFalse
+    .link
+        Dev.Nin\Test-AllTrue
+    .link
+        Dev.Nin\Test-AllFalse
     #>
     [OutputType([boolean])]
     Param()
@@ -63,7 +94,15 @@ function Test-AnyFalse {
 function Test-AllFalse {
     <#
     .synopsis
-        All expressions evaluate to true
+        All expressions evaluate to false
+    .link
+        Dev.Nin\Test-AnyTrue
+    .link
+        Dev.Nin\Test-AnyFalse
+    .link
+        Dev.Nin\Test-AllTrue
+    .link
+        Dev.Nin\Test-AllFalse
     .link
         functional\Test-All
     #>
@@ -82,6 +121,14 @@ function Test-AllTrue {
     .synopsis
         All expressions evaluate to true
     .link
+        Dev.Nin\Test-AnyTrue
+    .link
+        Dev.Nin\Test-AnyFalse
+    .link
+        Dev.Nin\Test-AllTrue
+    .link
+        Dev.Nin\Test-AllFalse
+    .link
         functional\Test-All
     #>
     [OutputType([boolean])]
@@ -94,49 +141,6 @@ function Test-AllTrue {
     }
     return $true
 }
-
-# function Test-AnyTrue {
-#     <#
-#     .synopsis
-#     are any one of the expressions true ?
-#     .link
-#         functional\Test-Any
-#     #>
-#     [Alias('?Any')] # 'Any'
-#     [CmdletBinding()]
-#     param()
-
-#     Write-Error 'nyi' -Category NotImplemented
-# }
-
-# function Test-AllTrue {
-#     <#
-#     .synopsis
-#     are all expressions true ?
-#     .LINK
-#         functional\Test-All
-#     .example
-#         PS> # Do they evaluate as true?
-
-#             @($true, $false) | ?All
-#             @($true, $false) | ?All -AreTrue
-#             # false
-
-#         PS> # filter  evaluate as true?
-#             #
-#         ... | ?All -NotNull
-#     #>
-#     [Alias('?All')] # 'all'
-#     [CmdletBinding()]
-#     param(
-
-#     )
-
-
-#     Write-Error 'nyi' -Category NotImplemented
-# }
-
-
 if (! $experimentToExport) {
     # ...
 }

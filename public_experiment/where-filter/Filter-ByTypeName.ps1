@@ -57,21 +57,57 @@ function Filter-ByTypeName {
     }
     process {
 
+        [hashtable]$dbg = @{}
 
-        foreach ($t_name in $IsType) {
+        $dbg += @{
+            InputType = $InputObject.GetType().FullName
+            IsType    = $IsType | Join-String -sep ', ' -SingleQuote
+            NotType   = $IsNotType | Join-String -sep ', ' -SingleQuote
+        }
+
+        $dbg | Format-HashTable -AsString | Write-Debug
+
+        $okayState_Includes = $IsType | ForEach-Object {
+            $t_name = $_ -as 'type'
+            if ($null -eq $t_name) {
+                return
+            }
             $InputObject -is $t_name
+        } | Test-AnyTrue
+
+        $dbg += @{
+            okayState_Include = $okayState_Includes
+            okayState_Exclude = $okayState_Excludes
         }
 
+        $okayState_Excludes = $IsNotType | ForEach-Object {
+            $t_name = $_ -as 'type'
+            if ($null -eq $t_name) {
+                return
+            }
+            $InputObject -is $t_name
+        } | Test-AllFalse
+
+        # at the end, if lists are empty, then set defaults
         if ($IsType.count -eq 0) {
-            $stateGood_isRightType = $true
+            $okayState_Includes = $true
         }
-        # foreach($t_name in $IsType) {
-        #     if($t_name )
-        # }
 
-        if ($IsNotType.count -le 0) {
-            $stateGood_NotType = $true
+        if ($IsNotType.count -eq 0) {
+            $okayState_Excludes = $true
         }
+
+        $dbg += @{
+            okayState_Include2 = $okayState_Includes
+            okayState_Exclude2 = $okayState_Excludes
+        }
+
+        $dbg | Format-HashTable -FormatMode Table -AsString | Write-Debug
+
+        if ($okayState_Includes -and $okayState_Excludes) {
+            return $InputObject
+        }
+        return
     }
     end {
     }
