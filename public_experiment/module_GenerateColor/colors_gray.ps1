@@ -3,10 +3,10 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        '_colorDump_Gray'
+        '_new-GrayColor'
     )
     $experimentToExport.alias += @(
-        'Color->Gray' # _colorDump_Gray
+        'Color->Gray' # _new-GrayColor
 
     )
 }
@@ -16,7 +16,7 @@ parent
     public_experiment/current/module_GenerateColor/generateTask_grays.ps1
 #>
 
-function _colorDump_Gray {
+function _new-GrayColor {
     # // function c_gray {
     [Alias('Color->Gray')]
     param(

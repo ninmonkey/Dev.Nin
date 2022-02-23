@@ -48,19 +48,26 @@ function Measure-ObjectCount {
         [Parameter()][switch]$IgnoreBlank,
 
         # optional label using infa output
-        [Parameter()][string]$Label
+        [Parameter()][string]$Label,
+
+
+        # extra options
+        [Parameter()][hashtable]$Options
 
 
     )
     begin {
-        $Config = @{
-            PrintOnEveryObject  = $true
-            PrintNewElementType = $true
+        [hashtalbe]$Config = @{
+            PrintOnEveryObject                  = $false
+            PrintNewElementType                 = $false
+            Experimental_AutoEnableEnableWIPref = $false
         }
         $original_infaPref = $InformationPreference
 
         if ($PassThru -or $Label) {
-            $InformationPreference = 'Continue'
+            if ($Config['Experimental_AutoEnableEnableWIPref']) {
+                $InformationPreference = 'Continue'
+            }
         }
         $objectList = [List[object]]::new() # maybe redundant now?
         switch ($PassThru) {
@@ -72,6 +79,7 @@ function Measure-ObjectCount {
             }
 
         }
+        $Config = Join-Hashtable $Config ($Options ?? @{})
     }
     process {
         switch ($PassThru) {
@@ -110,7 +118,9 @@ function Measure-ObjectCount {
     end {
         if ($PassThru -or $Label) {
             # can't assume reaches end, or can I reset value on IDisposal/destructor
-            $InformationPreference = $original_infaPref
+            if ($Config['Experimental_AutoEnableEnableWIPref']) {
+                $InformationPreference = $original_infaPref
+            }
         }
         switch ($PassThru) {
             $true {
@@ -137,5 +147,7 @@ function Measure-ObjectCount {
 
 
 if (! $experimentToExport) {
+    3, 4.5, (Get-Item .) , (Get-Date), $null, 50 | len -PassThru -InformationAction Ignore
+    | Out-Null
     # ...
 }
