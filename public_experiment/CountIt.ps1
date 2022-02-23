@@ -1,13 +1,23 @@
 using namespace System.Collections.Generic
+#Requires -Version 7
 
-# $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Measure-ObjectCount'
+        # ''
+    )
+    $experimentToExport.alias += @(
+        'Len'
+        # ''
+    )
+}
 
-$experimentToExport.function += @(
-    'Measure-ObjectCount'
-)
-$experimentToExport.alias += @(
-    'Len'
-)
+
+# no longer applies?  # $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
+
+
+
+
 function Measure-ObjectCount {
     <#
     .synopsis
@@ -24,34 +34,108 @@ function Measure-ObjectCount {
     #>
 
     [alias( 'CountIt', 'Count', 'Len')]
-    [CmdletBinding(PositionalBinding = $false)]
+    [CmdletBinding()]
     param(
         #Input from the pipeline
         [Parameter(Mandatory, ValueFromPipeline)]
         [object[]]$InputObject,
 
+        # instead write count to write-information, pipe object normally
+        [Parameter()][switch]$PassThru,
+
         # do not count 'Blank' values
         [Alias('IgnoreNull')]
-        [switch]$IgnoreBlank
+        [Parameter()][switch]$IgnoreBlank,
+
+        # optional label using infa output
+        [Parameter()][string]$Label
+
+
     )
     begin {
-        $objectList = [List[object]]::new()
+        $Config = @{
+            PrintOnEveryObject  = $true
+            PrintNewElementType = $true
+        }
+        $original_infaPref = $InformationPreference
+
+        if ($PassThru -or $Label) {
+            $InformationPreference = 'Continue'
+        }
+        $objectList = [List[object]]::new() # maybe redundant now?
+        switch ($PassThru) {
+            $true {
+
+            }
+            default {
+                [int]$_totalItems = 0
+            }
+
+        }
     }
     process {
-        $InputObject | ForEach-Object {
-            $objectList.Add( $_ )
+        switch ($PassThru) {
+            $true {
+                $_totalItems++
+                $InputObject
+
+                if (! $Config.PrintOnEveryObject) {
+                    return
+                }
+                $msg = '{0}: {1}' -f @(
+                    $Label ?? 'len'
+                    $objectList.Count
+                )
+
+                if ($Config.PrintNewElementType) {
+                    $msg += ' [{0}]' -f @(
+                        $InputObject
+                        | Dev.Nin\Get-WhatIsShortTypeName
+                        | write-color 'gray45'
+                    )
+
+                }
+                $msg | Write-Information
+
+            }
+            default {
+                $InputObject | ForEach-Object {
+                    $objectList.Add( $_ )
+                }
+            }
+
         }
+
     }
     end {
-        if ( $IgnoreBlank) {
-            $objectList
-            | Dev.Nin\Where-IsNotBlank
-            | Measure-Object | ForEach-Object Count
-            return
+        if ($PassThru -or $Label) {
+            # can't assume reaches end, or can I reset value on IDisposal/destructor
+            $InformationPreference = $original_infaPref
         }
-        $objectList
-        | Measure-Object | ForEach-Object Count
+        switch ($PassThru) {
+            $true {
+                'Len: {0}' -f $_totalItems
+                #   | Write-Information
+              | Write-Information
+                return
+            }
+            default {
+                if ( $IgnoreBlank) {
+                    $objectList
+                    | Dev.Nin\Where-IsNotBlank
+                    | Measure-Object | ForEach-Object Count
+                    return
+                }
+                $objectList
+                | Measure-Object | ForEach-Object Count
+            }
 
+        }
 
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }
