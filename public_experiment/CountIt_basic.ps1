@@ -3,11 +3,11 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Measure-ObjectCount'
+        'Measure-ObjectCount_basic'
         # ''
     )
     $experimentToExport.alias += @(
-        'Len'
+        'Len_basic'
         # ''
     )
 }
@@ -18,15 +18,15 @@ if ( $experimentToExport ) {
 
 
 
-function Measure-ObjectCount {
+function Measure-ObjectCount_basic {
     <#
     .synopsis
-        ~~Simple~~. Counts items. Shortcut for the cli. Crazy variant of Dev.Nin\Measure-ObjectCount_basic
+        Simple. Counts items. Shortcut for the cli, simplifed version of Dev.Nin\Measure-ObjectCount
     .description
        This is for cases where you had to use
        ... | Measure-Object | % Count | ...
     .notes
-        Future: maybe parameter to measure line vs byte vs enumerate
+        -
     .example
         🐒> ls . | Count
     .outputs
@@ -35,9 +35,10 @@ function Measure-ObjectCount {
         Dev.Nin\Measure-ObjectCount
     .link
         Dev.Nin\Measure-ObjectCount_basic
+
     #>
 
-    [alias( 'CountIt', 'Count', 'Len')]
+    [alias( 'CountIt', 'Len_basic')]
     [CmdletBinding()]
     param(
         #Input from the pipeline
@@ -61,7 +62,8 @@ function Measure-ObjectCount {
 
     )
     begin {
-        [hashtable]$Config = @{
+        Throw "'$PSCommandPath'-instead just grab the older version a couple commits ago"
+        [hashtalbe]$Config = @{
             PrintOnEveryObject                  = $false
             PrintNewElementType                 = $false
             Experimental_AutoEnableEnableWIPref = $false
@@ -151,43 +153,7 @@ function Measure-ObjectCount {
 
 
 if (! $experimentToExport) {
-    if ($true) {
-        h1 'pass'
-
-        0..3 | len -PassThru
-        | Join-String -sep ', ' | write-color 'orange'
-
-        h1 'none'
-
-        0..3 | len
-        | Join-String -sep ', ' | write-color 'orange'
-        h1 'pass -Infa'
-
-        0..3 | len -PassThru -infa continue
-        | Join-String -sep ', ' | write-color 'orange'
-
-        h1 'none -Infa'
-
-        0..3 | len -infa continue
-        | Join-String -sep ', ' | write-color 'orange'
-
-        hr -fg magenta
-
-        'now:
-            $Options @{}
-
-            [ ] print on every add
-            [ ] print current count, on every add
-        '
-    }
-
-    if ($false) {
-        3, 4.5, (Get-Item .) , (Get-Date), $null, 50 | len -PassThru -InformationAction Ignore
-        | Out-Null
-        # ...
-
-
-        0..3 | len -PassThru | Join-String -sep ', ' | write-color
-        | len -label 'fin' -PassThru
-    }
+    3, 4.5, (Get-Item .) , (Get-Date), $null, 50 | len -PassThru -InformationAction Ignore
+    | Out-Null
+    # ...
 }

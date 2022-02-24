@@ -22,8 +22,6 @@ function ConvertFrom-NumberRange {
 
                 RGB(50%, 100%, 10%) => RGB( 127, 255, 25)
 
-
-
             map the interval [a,b] onto the interval [c,d] in that order
             (meaning f(a)=c and f(b)=d), assuming a≠b.
 
@@ -44,29 +42,34 @@ function ConvertFrom-NumberRange {
             https://math.stackexchange.com/a/914843/9259
         #>
     # [outputtype( number )]
-    [Alias('To->TransformRange')]
+    [Alias(
+        'To->TransformRange',
+        'Map->Range'
+    )]
     [cmdletbinding()]
     param(
-        # docs
+        # value to transform
         [Alias('X')]
         [parameter(Mandatory, ValueFromPipeline)]
         [object]$Value,
 
-        [Alias('A', 'Min1')]
+        # Min of first range
+        [Alias('A', 'Minimum1')]
         [parameter(Mandatory, Position = 0)]
-        [object]$Minimum1,
+        [object]$Min1,
 
-        [Alias('B', 'Max1')]
+        # Max of first range
+        [Alias('B', 'Maximum1')]
         [parameter(Mandatory, Position = 0)]
-        [object]$Maximum1,
+        [object]$Max1,
 
-        [Alias('C', 'Min2')]
+        [Alias('C', 'Minimum2')]
         [parameter(Mandatory, Position = 0)]
-        [object]$Minimum12,
+        [object]$Min2,
 
-        [Alias('D', 'Max2')]
+        [Alias('D', 'Maximum2')]
         [parameter(Mandatory, Position = 0)]
-        [object]$Maximum2
+        [object]$Max2
 
         # extra options
         # [Parameter()][hashtable]$Options
@@ -83,14 +86,50 @@ function ConvertFrom-NumberRange {
         @(
             # >  (meaning f(a)=c and f(b)=d), assuming a≠b.
             $Minimum1 -ne $Maximum1   # a≠b.
-        )
+        ) | Dev.Nin\Test-AllTrue
     }
     process {
-    }
-    end {
         <#
             f(t) = c + ( (d - c)  / (b - a) ) * (t - a)
+            f(x) = $Min2 + ( ($Max2 - $Min2)  / ($Max1 - $min1) ) * ($X - $Min1)
         #>
+        @{
+            AsString = $false;
+            X = $Value; A = $Min1 ; B = $Max1 ; C = $Min2; D = $Max2
+        } | Format-HashTable -FormatMode SingleLine | Write-Debug
+        @{
+            AsString = $true;
+            X = $Value; A = $Min1 ; B = $Max1 ; C = $Min2; D = $Max2
+        } | Format-HashTable -FormatMode SingleLine -AsString | Write-Debug
+        @{
+            AsString = $false;
+            X = $Value; A = $Min1 ; B = $Max1 ; C = $Min2; D = $Max2
+        } | Format-HashTable -FormatMode SingleLine | Out-String | Write-Debug
+        @{
+            AsString = $true;
+            X = $Value; A = $Min1 ; B = $Max1 ; C = $Min2; D = $Max2
+        } | Format-HashTable -FormatMode SingleLine -AsString | Out-String | Write-Debug
+
+
+
+        $Min2 + ( ($Max2 - $Min2) / ($Max1 - $min1) ) * ($X - $Min1)
+
+        # minified
+        # ($Minimum2) + ((($Maximum2) - ($Minimum2))  / ($Maximum2 - ($Minimum1)) ) * ($Value - $Minimum1)
+        <#
+        ($Min2) + (
+            ( ($Max2) - ($Min2)) / ($Max2 - ($Min1) )
+        ) * ($Value - $Min1)
+                ($Minimum2) + (
+                    (
+                        ($Maximum2) - ($Minimum2)) / ($Maximum2 - ($Minimum1)
+                    )
+                ) * ($Value - $Minimum1)
+        #>
+
+
+    }
+    end {
 
     }
 }
