@@ -1,14 +1,18 @@
+#Requires -Version 7
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Invoke-GHRepoList'
+        '_enumerateProperty_gh_repoList'
+    )
+    $experimentToExport.alias += @(
+        'Gh->RepoList' # 'Invoke-GHRepoList'
+    )
+}
+
 # allows script to be ran alone, or, as module import
 
-$experimentToExport.function += @(
-    'Invoke-GHRepoList'
-    '_enumerateProperty_gh_repoList'
-)
-$experimentToExport.alias += @(
-    'Gh->RepoList' # 'Invoke-GHRepoList'
-
-
-)
+$script:__gh_cache ??= @{}
 function _enumerateProperty_gh_repoList {
     <#
     .synopsis
@@ -39,9 +43,6 @@ function _processGHRepoListRecord {
 
 }
 
-$__gh_cache ??= @{
-
-}
 function Invoke-GHRepoList {
     <#
     .synopsis
@@ -52,6 +53,7 @@ function Invoke-GHRepoList {
     .example
         Invoke-GHRepoList -infa Continue dfinke Public -Debug -Verbose
     .notes
+        #6 WIP
         - [ ] future: autocomplete Owner
             - [ ] popuplate using my 'starred' and 'followed' people
 
@@ -122,12 +124,17 @@ function Invoke-GHRepoList {
         [Parameter()]
         [switch]$SkipAutoConvertFromJson,
 
+        # show files, user may delete or use them.
+        [Parameter()]
+        [switch]$ShowCache,
+
         # return full json (skip jq)
         [Parameter()]
         [switch]$PassThru
 
     )
-    end {
+    begin {
+        $DestBase = '~\.ninmonkey\cache\github'
         $Color = @{
             FGDimYellow    = [PoshCode.Pansies.RgbColor]'#937E5E'
             TermThemeFG    = [PoshCode.Pansies.RgbColor]'#EBB667'
@@ -137,6 +144,13 @@ function Invoke-GHRepoList {
             FGDim          = [rgbcolor]'#7C7C73'
             FGDim2         = [rgbcolor]'#A2A296'
         }
+        if ($ShowCache) {
+            Get-ChildItem $DestBase
+            $DestBase | Join-String -DoubleQuote | Label 'root: '
+
+        }
+    }
+    end {
 
         $cache = $script:__gh_cache
 
@@ -205,7 +219,7 @@ function Invoke-GHRepoList {
             $binResponse = & gh $GhArgs
             $cache[$GitRepoOwner] = $binResponse
             try {
-                $DestBase = '~\.ninmonkey\cache\github'
+
                 $Name = 'gh_RepoList-{0}.json' -f @($GitRepoOwner)
                 $fullpath = Join-Path $DestBase $Name
                 Write-Debug "Attempting to save cache to: '$FullPath'"
@@ -239,4 +253,9 @@ function Invoke-GHRepoList {
 
 
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

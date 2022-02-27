@@ -92,6 +92,8 @@ function Invoke-GHCloneRepoWithSymbols {
     .description
         tags: gh, github, cli, clone, util
         Desc
+
+        #6 WIP:
     .link
         Dev.Nin\Invoke-GHRepoList
     .outputs
@@ -195,7 +197,7 @@ function Invoke-GHCloneRepo {
 
         # don't actually invoke
         [Alias('TestOnly')]
-        [switch]$WhatIf = $true
+        [switch]$WhatIf
 
     )
 
@@ -229,6 +231,8 @@ function Invoke-GHCloneRepo {
             $strQuerySrc = "${OwnerName}/${RepoName}"
             $strExport = "${basePath}/${OwnerName}/${RepoName}"
             $finalCommand_render = "repo clone $strQuerySrc $strExport"
+            @('Final render: ' ; $finalCommand_render ) | Join-String | Write-Debug
+
             $GhArgs = @(
                 'repo'
                 'clone'

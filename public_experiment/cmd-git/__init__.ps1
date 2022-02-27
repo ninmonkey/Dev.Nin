@@ -41,7 +41,7 @@ try {
 }
 
 $sortedFiles
-| ForEach-Object {
+| ForEach-Object -ea stop { # test: stop /w -ea stop below
     $curFile
     $curFile = $_
 
@@ -52,7 +52,8 @@ $sortedFiles
     try {
         . $curFile
     } catch {
-        Write-Error -Message 'bad' -ErrorRecord $_
+        # Write-Error -Message 'bad' -ErrorRecord $_
+        $PSCmdlet.WriteError($_)
         # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
         #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile

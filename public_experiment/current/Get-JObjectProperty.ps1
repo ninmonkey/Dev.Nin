@@ -24,6 +24,8 @@ function Get-JObjectProperty {
 
         very soon, pull advanced functionality to Get-NinOBject
         more broad, reusable, simple logic here
+        - [ ] bug beacuse mid-refactor:
+            - [ ] jProp -PassThru: doesn't display abbreviated names
 
             - [ ] formating.ps1xml
             - [ ] automatically filter by " | Get-Unique -OnType"

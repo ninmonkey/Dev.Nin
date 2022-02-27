@@ -146,7 +146,7 @@ function Edit-FunctionSource {
                         # & code-insiders @codeArgs
                     }
                     else {
-                        '<', $Path, '>' -join ''
+                        '<', $Path, '>' -join '' | Write-Information
                     }
                 }
                 else {

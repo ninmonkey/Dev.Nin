@@ -6,7 +6,7 @@
         }
     ],
     "settings": {
-        "editor.fontSize": 17, // 20, // 17,
+        // "editor.fontSize": 17, // 20, // 17,
         "editor.fontFamily": "'cascadia code pl', 'Consolas', 'Courier New', monospace",
         // "terminal.integrated.fontSize": 12, // 16,
         "snippets.viewer.sortSnippetsByName": true,

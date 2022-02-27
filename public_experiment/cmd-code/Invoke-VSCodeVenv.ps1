@@ -221,9 +221,13 @@ function Invoke-VSCodeVenv {
         - [ ] validate folders always default to new, and files default to re-use
         - [ ] optionally collect full profile, would that make re-using require less confirmations?
 
-        POC
-            - [ ] code-venv -ResumeSession
-            - [ ] '-reuse -g <filename>'
+        Future:
+            - [ ] --status
+            - [ ] --log <level>
+            - [ ] --wait
+            - [ ] --inspect-brk-extensions <port>
+            - [ ] --status
+            - [ ] --verbose'
             - [ ] '-r -a <path>'
             - [ ] '-n -a <path>'
     .link
@@ -236,6 +240,18 @@ function Invoke-VSCodeVenv {
         ConvertFrom-ScriptExtent
     .example
         🐒> gi .\normalize.css | Code-vEnv
+    .example
+        # If you want normal behavior, with parameters summarized:
+        🐒> Code .\temp.py -Infa Continue
+        --------------------------------------------------------------------------------------
+        "Open 📄 File?"
+        --------------------------------------------------------------------------------------
+        LineNumber? Y
+        which: code.cmd
+        execute: code.cmd
+        --reuse-window --goto "C:\testing\Powershell\temp.py"
+        LoadItem:
+        C:\testing\Powershell\temp.py
     .example
         🐒> $profile | code-venv
     .example
@@ -508,7 +524,7 @@ function Invoke-VSCodeVenv {
             #     }
             # }
         }
-        '🦎 -> ended'
+        '🦎 -> ended' | Write-Debug
 
 
         # if($prioritizeInsidersBin)
@@ -557,7 +573,6 @@ function Invoke-VSCodeVenv {
         @(
             if (Test-IsDirectory $TargetPath) {
                 hr
-
                 'Open 📁 a directory?'
                 | Join-String -DoubleQuote
                 | Write-Color 'blue'
@@ -574,7 +589,7 @@ function Invoke-VSCodeVenv {
                     hr
                 )
             }
-        ) | Wi
+        ) | Write-Information
 
         [string[]]$codeArgs = @()
 
@@ -640,7 +655,7 @@ function Invoke-VSCodeVenv {
 
             if ($PSCmdlet.ShouldProcess("($CodeBin, $DataDIr)", 'ResumeSession')) {
 
-                __printCodeArgs | wi
+                __printCodeArgs | Write-Information
                 #  Actual invoke here. You don't want it to be a
                 # child process of the shell, which will kill it when the parent ies.
                 # Also, that would spam log output
@@ -661,13 +676,13 @@ function Invoke-VSCodeVenv {
         } else {
             # always use goto, even without line numbers. it's more resistant to errors
             if (! $LineNumber) {
-                'LineNumber? Y' | Write-Color $Color.FgBold | wi
+                'LineNumber? Y' | Write-Color $Color.FgBold | Write-Information
                 $CodeArgs += @(
                     '--goto'
                     (Get-Item $Target | Join-String -DoubleQuote)
                 )
             } else {
-                'LineNumber? Y' | Write-Color $Color.FgBold | wi
+                'LineNumber? Y' | Write-Color $Color.FgBold | Write-Information
                 $codeArgs += @(
                     '--goto'
                     '"{0}:{1}:{2}"' -f @(
@@ -695,7 +710,6 @@ function Invoke-VSCodeVenv {
 
                 ) | Write-Debug
             }
-            # Wait-Debugger
             if ($false) {
                 if (! $Env:NoColor) {
 
@@ -714,13 +728,6 @@ function Invoke-VSCodeVenv {
                         "`n"
                     ) | Join-String
                     | Write-Debug
-
-                    # $StrOperation = "`nCode = $BoldBinCode", "`nDataDir = $DataDIr"
-                    # | Join-String -sep "`n" -op "`n" -os "`n"
-
-                    # | Join-String -sep "`n" -op "`n" -os "`n"
-                    # | write-color magenta
-                    # | write-color magenta
                 }
             }
             if (Test-IsDirectory -ea ignore $targetPath) {
@@ -729,7 +736,7 @@ function Invoke-VSCodeVenv {
                 $ConfirmPreference = 'None'
             }
 
-            label 'which' $CodeBin
+            label 'which' $CodeBin | Write-Information
             if ($PSCmdlet.ShouldProcess($strTarget, $strOperation)) {
 
                 @(
@@ -798,22 +805,11 @@ function Invoke-VSCodeVenv {
         # }
 
 
-        '🐱‍🐉 end of: process {..}'
+        '🐱‍🐉 end of: process { .. }' | Write-Debug
     }
 
     end {
-        # $metaInfo | Format-Table -auto | Out-String | Write-Debug
-        $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'"
-        | Out-String | Write-Debug
-        $metaInfo | Sort-Hashtable -SortBy Key |  Ft -AutoSize
-        Write-Debug 'checklist:
-    - [ ] open file (append to session)
-    - [ ] and from pipeline
-    - [ ] --status
-    - [ ] --log <level>
-    - [ ] --wait
-    - [ ] --inspect-brk-extensions <port>
-    - [ ] --status
-    - [ ] --verbose'
+        '🐱‍🐉 final: end { .. }' | Write-Debug
+        $metaInfo | Format-Dict -Title "DevNin\Code-vEnv -> '$PSCommandPath'" | Out-String | Write-Debug
     }
 }
