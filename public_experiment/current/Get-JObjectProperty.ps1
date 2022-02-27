@@ -1,3 +1,5 @@
+using namespace System.Collections.Generic
+
 #Requires -Version 7
 
 if ( $experimentToExport ) {
@@ -72,14 +74,14 @@ function Get-JObjectProperty {
     begin {
         # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
         [hashtable]$Config = @{
-            NullStr         = "`u{2400}"
+            NullStr          = "`u{2400}"
 
 
             # half working
-            UniqueType      = $True
+            UniqueType       = $True
 
             # == NYI == #6
-            IncludeProperty = @(
+            IncludeProperty  = @(
                 'Name'
                 'Value'
                 'TypeNameOfValue'
@@ -95,7 +97,7 @@ function Get-JObjectProperty {
 
             # == NYI == $KeyList
         }
-        [list[object]]$objectList = [list[object]]::new()
+        [List[object]]$objectList = [list[object]]::new()
         $Config = Join-Hashtable $Config ($Options ?? @{})
 
         $KeyList = @{

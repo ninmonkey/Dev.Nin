@@ -7,7 +7,7 @@ if ( $experimentToExport ) {
         'pprint_list'
     )
     $experimentToExport.alias += @(
-        'pp.List' # ''
+        'Pp->List' # ''
     )
 }
 
@@ -31,7 +31,7 @@ function pprint_list {
 
             $selectedFiles | ForEach-Object Name | pprint_list -label 'go 2'
     #>
-    [Alias('pp.List')]
+    [Alias('Pp->List')]
     [cmdletbinding()]
     param(
         [Alias('Items')]
