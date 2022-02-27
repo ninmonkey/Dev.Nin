@@ -46,8 +46,8 @@ try {
 
     $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
     | Write-Verbose
-    $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
-    | Write-Warning
+    # $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
+    # | Write-Warning
 } catch {
     # Write-Warning "[w] warning: $_"
     Write-Error "[e] Error: $_"
@@ -70,25 +70,25 @@ $sortedFiles
     | Write-Verbose
     # are these safe? or will it alter where-object?
     # Write-Debug "[dev.nin] importing experiment '$($_.Name)'"
-    try {
-        . $curFile
-    } catch {
-        $msg = "[e] __init__ => `"$($_.GetType().Name)`""
-        # wait-debugger
+    # try {
+    . $curFile
+    # } catch {
+    $msg = "[e] __init__ => `"$($_.GetType().Name)`""
+    # wait-debugger
 
-        # $msg | Write-Warning
+    # $msg | Write-Warning
 
-        $PSCmdlet.WriteError( $_ )
+    # $PSCmdlet.WriteError( $_ )
 
-        # Write-Error -Message '[ee] bad' _
-        # throw '[ee] bad'
+    # Write-Error -Message '[ee] bad' _
+    # throw '[ee] bad'
 
-        # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
+    # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
-        #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
-        # $PSCmdlet.WriteError( $_ )
-    }
+    #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # Write-Error -ea continue -Message "Importing failed on: '$curFile'" -ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
+    # $PSCmdlet.WriteError( $_ )
+    # }
 }
 
 
