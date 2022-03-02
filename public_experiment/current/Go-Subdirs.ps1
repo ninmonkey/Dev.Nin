@@ -15,9 +15,26 @@ if ( $experimentToExport ) {
 
 
 function _Dive-Chain {
+    <#
+    .notes
+
+        todo:
+        - [ ] params could include '[-2]' to go up 2 dirs
+            - [ ] could be neat, start off with CWD
+                >  DiveChain '.'
+                then hit '[-2]
+                    [-2] will preview folder names
+        - [ ] preview files in dir, or relative time
+        - [ ] dir dropdown selection
+            sortby modified or name
+        - [ ] preview that it's a empty dir, skip it
+
+    #>
     param(
         [string]$Query,
         [int]$MaxDepth = 3
+
+        # [string]$SortyBy = # [ 'Modified', 'Name' ]
     )
     $curDepth = 0
     $orginalRoot = Get-Location
@@ -29,12 +46,34 @@ function _Dive-Chain {
     while ($curDepth -le $MaxDepth) {
         $curDepth++
 
-        $Destination = fd -t d -t d | fzf | Select-Object -First 1 | Get-Item
+        $Destination = @(
+            @(
+                $SpecialStr.reset
+                fd -t d -t d
+            ) | fzf | Select-Object -First 1
+        )
+        switch ($Destination) {
+            '[reset]' {
+                'reset'
+                return
+            }
+            '[undo]' {
+                'undo'
+                return
+            }
+        }
+
+        # else it should be a file
+        $query = $Destination | Get-Item
+
         $Destination = @(
             '[reset]'
             '[undo]'
             $Destination
         )
+
+        # switch($Mode)
+
         Get-Location | ConvertTo-RelativePath -BasePath $orginalRoot
         | write-color 'orange'
         hr
