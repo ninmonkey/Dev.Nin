@@ -5,7 +5,7 @@ if ( $experimentToExport ) {
         'Write-TypeSummaryColors'
     )
     $experimentToExport.alias += @(
-        'Fmt->TypeSummary🎨'
+        'Fmt->TypeSummary'
         # 'A'
     )
 }
@@ -14,8 +14,12 @@ function Write-TypeSummaryColors {
     <#
     .synopsis
         double items in the pipeline
+    .link
+        Dev.Nin\Format-ModuleSummary
+    .link
+        Dev.Nin\Write-TypeSummaryColors
     #>
-    [Alias('Fmt->TypeSummary🎨')]
+    [Alias('Fmt->TypeSummary')]
     [CmdletBinding()] #
     param(
         [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
