@@ -17,6 +17,18 @@ function __formatItem_Folder {
     <#
             .synopsis
                 handles formatting directories for Format-ChildItemSummary
+            .example
+                PS>
+                    Get-ChildItem . -File
+                    | ForEach-Object {
+                        $item = $_
+                        if ($_ | Test-IsDirectory) {
+                            __formatItem_Folder $item
+                        } else {
+                            __formatItem_File $item
+                        }
+                    }
+                    | Dev.Nin\str csv
             .link
                 Dev.Nin\__formatItem_Folder
             .link
