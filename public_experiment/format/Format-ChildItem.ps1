@@ -18,6 +18,7 @@ function Format-ChildItemSummary {
         summarize newest files
     .notes
             .
+        # todo: 2022
     .example
         🐒> lsnew
         ----------------------------------------------
@@ -42,18 +43,20 @@ function Format-ChildItemSummary {
         [Parameter()]
         [uint]$MaxItems = 10,
 
-        # for : ls . -Directory
+        # for :  ls . -Directory
+        # switches show only file or dir
         [Parameter()]
         [switch]$DirectoryOnly,
 
         # for : ls . -File
+        # switches show only file or dir
         [Parameter()]
         [switch]$FileOnly,
 
-        # filtering mode
+        # filtering mode, the future may include more types
         [Parameter()]
         [validateSet('Files', 'Directories', 'Both')]
-        [string]$FilterMode,
+        [string[]]$FilterMode,
 
         # hash of extra options
         [Alias('Config')]
@@ -101,24 +104,37 @@ function Format-ChildItemSummary {
             }
         }
 
-        $childSplat = @{
+        [hashtable]$childSplat = @{
             Path = $Path
         }
+        if((! $DirectoryOnly.IsPresent) -and (! $FileOnly.IsPresent)) {
+            # this may be redundant / or just set this as the base defaults
+            $childSplat['File'] = $true
+            $childSplat['Directory'] = $true
+        }
+
+        # switches force one or the other
+        if ($DirectoryOnly.IsPresent ) {
+            $childSplat['File'] = $false
+            $childSplat['Directory'] = $true
+        }
+        if ($FileOnly.IsPresent ) {
+            $childSplat['File'] = $true
+            $childSplat['Directory'] = $false
+        }
+
+
+
+        # filters are any combination
+
         switch ($FilterMode) {
             'Files' {
-                $childSplat['File'] = $true
-            }
-            $FileOnly {
                 $childSplat['File'] = $true
             }
             'Directories' {
                 $childSplat['Directory'] = $true
             }
-            $DirectoryOnly {
-                $childSplat['Directory'] = $true
-            }
-            default {
-            }
+            default {}
         }
 
         $newest = Get-ChildItem @childSplat
