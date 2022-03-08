@@ -154,11 +154,11 @@ function Format-Dict {
             ValueFromPipeline
         )][object]$InputObject, # instead, whichever type allows most dict types
 
-        [alias('Title')]
-        [parameter()][String]$ConfigTitle,
+
+        [parameter()][String]$Title,
         # extra options
         [Parameter()]
-        [hashtable]$Options
+        [hashtable]$Options = @{}
     )
     begin {
         $ColorType = @{
@@ -180,6 +180,13 @@ function Format-Dict {
             Title                 = 'Dict'
             DisplayTypeName       = $true
         }
+        if ($Title) {
+            # $Options['Title'] = $Title
+            # @($null)?['b']
+
+            # prevednts/fixes all errors
+            $Options = Join-Hashtable $Options (@{'Title' = $Title })
+        }
         $Config = Join-Hashtable $Config ($Options ?? @{})
         $Config.JoinOuter = @{
             OutputPrefix = "`n${fg:\gray30}{0} = {{`n" -f @($Config.Title ?? 'Dict')
@@ -190,7 +197,7 @@ function Format-Dict {
             OutputPrefix = @(
                 # was: `n$($ConfigTitle) = {{ {0}`n"
                 "`n"
-                $ConfigTitle
+                $Config.Title
                 " = {{ {0}`n"
             ) -join ''
         }

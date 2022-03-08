@@ -106,27 +106,31 @@ function Format-ChildItemSummary {
 
         [hashtable]$childSplat = @{
             Path = $Path
+            File      = $true
+            Directory = $true
         }
-        if((! $DirectoryOnly.IsPresent) -and (! $FileOnly.IsPresent)) {
-            # this may be redundant / or just set this as the base defaults
-            $childSplat['File'] = $true
-            $childSplat['Directory'] = $true
+        # $childSplat['F ile'] = $true
+        # $childSplat['Directory'] = $true
+
+
+        if ($false) {
+            if ((! $DirectoryOnly.IsPresent) -and (! $FileOnly.IsPresent)) {
+                # this may be redundant / or just set this as the base defaults
+            }
         }
 
         # switches force one or the other
-        if ($DirectoryOnly.IsPresent ) {
-            $childSplat['File'] = $false
+        # I forget where, sometimes not using IsPresent changes behavior
+        if ($DirectoryOnly.IsPresent -and $DirectoryOnly) {
             $childSplat['Directory'] = $true
+            $childSplat['File'] = $false
         }
-        if ($FileOnly.IsPresent ) {
-            $childSplat['File'] = $true
+        if ($FileOnly.IsPresent -and $FileOnly) {
             $childSplat['Directory'] = $false
+            $childSplat['File'] = $true
         }
-
-
 
         # filters are any combination
-
         switch ($FilterMode) {
             'Files' {
                 $childSplat['File'] = $true
@@ -134,7 +138,8 @@ function Format-ChildItemSummary {
             'Directories' {
                 $childSplat['Directory'] = $true
             }
-            default {}
+            default {
+            }
         }
 
         $newest = Get-ChildItem @childSplat

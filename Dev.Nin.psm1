@@ -1,5 +1,7 @@
 ﻿New-Alias 'Join-hashTable' -Value 'Ninmonkey.Console\Join-Hashtable' -Description 'to prevent PSScriptTools\Join-Hashtable' -ea ignore
 
+__countDuplicateLoad -key 'Dev.Nin.psm1'
+
 function __yell {
     <#
     .synopsis
