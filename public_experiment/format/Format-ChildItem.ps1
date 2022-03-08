@@ -4,6 +4,8 @@ using namespace Management.Automation
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Format-ChildItemSummary'
+        '__formatItem_Folder'
+        '__formatItem_File'
     )
     $experimentToExport.alias += @(
         'LsNew'
@@ -11,6 +13,69 @@ if ( $experimentToExport ) {
     )
 }
 
+function __formatItem_Folder {
+    <#
+            .synopsis
+                handles formatting directories for Format-ChildItemSummary
+            .link
+                Dev.Nin\__formatItem_Folder
+            .link
+                Dev.Nin\__formatItem_File
+            #>
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [object]$curItem
+    )
+    process {
+        $ChildCountSingleDepth = Get-ChildItem -Path $curItem | len
+        $typeColor = 'paleGoldenRod' #DBDCA8
+        $typeIcon = '📁'
+        $TemplateRender = '{2}{0} [{1}]' -f @(
+            $curItem.name | Write-Color $TypeColor
+            $ChildCountSingleDepth
+            | Write-Color 'gray60'
+            '{0}' -f @(
+                # if (! $TypeIcon) {
+                #     $null
+                # } else {
+                $TypeIcon
+                # , ' ' -join ''
+                # }
+            )
+
+        )
+        # 1 / 0
+        $TemplateRender
+    }
+}
+function __formatItem_File {
+    <#
+            .synopsis
+                handles formatting filetypes for Format-ChildItemSummary
+            .link
+                Dev.Nin\__formatItem_Folder
+            .link
+                Dev.Nin\__formatItem_File
+            #>
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [object]$curItem
+    )
+    process {
+        $TypeColor = 'gray90'
+        '{2}{0} [{1}]' -f @(
+            $curItem.name | Write-Color $TypeColor
+            $curItem.Length | Format-FileSize | Write-Color 'gray60'
+            '{0}' -f @(
+                if (! $TypeIcon) {
+                    $null
+                } else {
+                    $TypeIcon, ' ' -join ''
+                }
+            )
+        )
+    }
+}
 
 function Format-ChildItemSummary {
     <#
@@ -105,37 +170,32 @@ function Format-ChildItemSummary {
         }
 
         [hashtable]$childSplat = @{
-            Path = $Path
+            Path      = $Path
             File      = $true
             Directory = $true
         }
         # $childSplat['F ile'] = $true
         # $childSplat['Directory'] = $true
 
-
-        if ($false) {
-            if ((! $DirectoryOnly.IsPresent) -and (! $FileOnly.IsPresent)) {
-                # this may be redundant / or just set this as the base defaults
-            }
-        }
-
         # switches force one or the other
         # I forget where, sometimes not using IsPresent changes behavior
-        if ($DirectoryOnly.IsPresent -and $DirectoryOnly) {
-            $childSplat['Directory'] = $true
-            $childSplat['File'] = $false
-        }
-        if ($FileOnly.IsPresent -and $FileOnly) {
-            $childSplat['Directory'] = $false
-            $childSplat['File'] = $true
+        if ($false) {
+            if ($DirectoryOnly.IsPresent -and $DirectoryOnly) {
+                $childSplat['File'] = $false
+            }
+            if ($FileOnly.IsPresent -and $FileOnly) {
+                $childSplat['Directory'] = $false
+            }
         }
 
         # filters are any combination
         switch ($FilterMode) {
             'Files' {
                 $childSplat['File'] = $true
+                # should render iter right now, simplifies states
             }
             'Directories' {
+                # should render iter right now, simplifies states
                 $childSplat['Directory'] = $true
             }
             default {
@@ -151,61 +211,7 @@ function Format-ChildItemSummary {
         }
 
         # $newest = Get-ChildItem $Path | Sort-Object lastWriteTime -desc -Top $MaxItems
-        function __formatItem_Folder {
-            <#
-            .synopsis
-                handles formatting directories for Format-ChildItemSummary
-            #>
-            param(
-                [Parameter(Mandatory, Position = 0)]
-                [object]$curItem
-            )
-            process {
-                $ChildCountSingleDepth = Get-ChildItem -Path $curItem | len
-                $typeColor = 'paleGoldenRod' #DBDCA8
-                $typeIcon = '📁'
-                $TemplateRender = '{2}{0} [{1}]' -f @(
-                    $curItem.name | Write-Color $TypeColor
-                    $ChildCountSingleDepth
-                    | Write-Color 'gray60'
-                    '{0}' -f @(
-                        # if (! $TypeIcon) {
-                        #     $null
-                        # } else {
-                        $TypeIcon
-                        # , ' ' -join ''
-                        # }
-                    )
 
-                )
-                # 1 / 0
-                $TemplateRender
-            }
-        }
-        function __formatItem_File {
-            <#
-            .synopsis
-                handles formatting filetypes for Format-ChildItemSummary
-            #>
-            param(
-                [Parameter(Mandatory, Position = 0)]
-                [object]$curItem
-            )
-            process {
-                $TypeColor = 'gray90'
-                '{2}{0} [{1}]' -f @(
-                    $curItem.name | Write-Color $TypeColor
-                    $curItem.Length | Format-FileSize | Write-Color 'gray60'
-                    '{0}' -f @(
-                        if (! $TypeIcon) {
-                            $null
-                        } else {
-                            $TypeIcon, ' ' -join ''
-                        }
-                    )
-                )
-            }
-        }
 
         $newest
         | Join-String {
