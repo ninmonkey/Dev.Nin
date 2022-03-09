@@ -44,11 +44,19 @@ function Get-JObjectProperty {
     - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7.1>
     - <https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-7.1>
 
+    .example
+        PS>
+
+            (Get-Process)[0]
+            | jProp -FilterType IgnoreNullValue
+h1 'auto'
+$someP | jProp -FilterType IgnoreBasicType
+ | sort type
     #>
     [Alias('jProp')]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
-        [object]$InputObject,
+        [object[]]$InputObject,
 
         # custom object
         [Parameter()][switch]$PassThru,
@@ -69,7 +77,15 @@ function Get-JObjectProperty {
         # [Parameter()][switch]$IgnoreWhite,
 
         # extra options
-        [Parameter()][hashtable]$Options
+        [Parameter()][hashtable]$Options,
+
+
+        # extra non-hashtable options, makes parameset collisions easier
+        [ValidateSet(
+            'IgnoreNullValue', 'OnlyNullValue',
+            'IgnoreBasicType', 'OnlyBasicType'
+        )]
+        [Parameter()][string[]]$FilterType
     )
     begin {
         # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
@@ -118,7 +134,7 @@ function Get-JObjectProperty {
     }
 
     process {
-        $objectList.Add( $InputObject )
+        $objectList.AddRange( $InputObject )
     }
     end {
         if ($Config.UniqueType) {
@@ -147,25 +163,59 @@ function Get-JObjectProperty {
             return
         }
 
+
         $objectList | ForEach-Object {
             $curObject = $_
             # $_.GetType() | Format-TypeName -Brackets | Write-Host
             $curObject.psobject.properties | ForEach-Object {
-                $Value = $_.Value
+                $prop = $_
+                # Wait-Debugger
+
+                # early exist if wrong type
+                switch ($FilterType) {
+                    'IgnoreNullValue' {
+                        if ($null -eq $prop.value) {
+                            return
+                        }
+                        break
+                    }
+                    'OnlyNullValue' {
+                        if ($null -eq $prop.value) {
+                            # ..
+                        } else {
+                            return
+                        }
+                        break
+                    }
+                    default {
+                        # throw "UnhandledFilterType: '$FilterType'"
+                    }
+                }
+
+
+                $Value = $prop.Value
                 $ValueStr = $Value ?? $Config.NullStr
                 $Type = if ($null -eq $Value) {
                     '[{0}]' -f $Config.NullStr
                 } else {
-                    $Value.GetType() | Format-TypeName -Brackets
+                    try {
+                        try {
+                            $Value.GetType() | Format-TypeName -Brackets
+                        } catch {
+                            $Value | ShortName
+                        }
+                    } catch {
+                        ($Value)?.GetType() ?? '<bad>'
+                    }
                 }
 
                 $ValueStr = switch ($Value) {
                     {
-                        $_ -is 'string' -and $_ -eq [string]::Empty
+                        $prop -is 'string' -and $prop -eq [string]::Empty
                     } {
                         '␠'
                     }
-                    { $null -eq $_ } {
+                    { $null -eq $prop } {
                         '[{0}]' -f $Config.NullStr
                     }
                     default {
@@ -178,12 +228,12 @@ function Get-JObjectProperty {
 
 
                 $meta = @{
-                    PsTypeName  = 'JmPropList'
-                    Name        = $_.Name
-                    Value       = $_.Value # Valueformatted
-                    ValueStr       = $ValueStr # todo: return value if not being formatted
-                    Type        = $Type
-                    TypeOfValue = $_.TypeNameOfValue | Format-TypeName -WithBrackets
+                    PsTypeName = 'JmPropList'
+                    Name       = $prop.Name
+                    Value      = $prop.Value # Valueformatted
+                    ValueStr   = $ValueStr # todo: return value if not being formatted
+                    Type       = $Type
+                    # TypeOfValue = $prop.TypeNameOfValue | Format-TypeName -WithBrackets
                 }
                 [pscustomobject]$meta
             } | Sort-Object -p $Config.SortBy
