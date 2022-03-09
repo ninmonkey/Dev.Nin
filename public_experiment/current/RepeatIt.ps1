@@ -17,6 +17,9 @@ function Invoke-RepeatScriptBlock {
     stronx:
         maybe he has a relative time completer
         as an attributes
+    todo:
+        InputObject pipe or praram ?
+        Pipe a scripblock or pipe a func to repeat
 
     example cases:
         <ScriptBlock> [NumTimes] [SleepBetween]
@@ -27,6 +30,10 @@ function Invoke-RepeatScriptBlock {
        2] Repeat -Until '2hours'
     .example
         PS> RepeatIt 5 { 0.. 5 } { "`n`n"  } | str csv -SingleQuote
+    .link
+        Dev.Nin\Invoke-RepeatScriptBlock
+    .link
+        Dev.Nin\Invoke-RepeatScriptBlock_minimal
     .outputs
           [string | None]
 

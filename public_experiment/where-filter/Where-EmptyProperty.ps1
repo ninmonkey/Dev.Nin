@@ -28,8 +28,11 @@ function Where-EmptyProperty {
         [object]$InputObject
     )
 
-    begin {}
+    begin {
+
+    }
     process {
+        Write-Warning 'total rewrite, this is ancient'
 
         $foundAnyNull = $false
 

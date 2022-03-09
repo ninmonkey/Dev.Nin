@@ -1,4 +1,4 @@
-BeforeAll { _
+BeforeAll {
     Import-Module Dev.Nin -Force
 }
 
@@ -9,12 +9,22 @@ Describe 'ConvertFrom-NumberRange' {
             | Should -Be 255
         }
     }
+    Convert 'Failed Precondition Throws' {
+        it 'A = b'  {
+            { Dev.Nin\ConvertFrom-NumberRange -A 0 -b 0 -c 10 -d 100 -X 4 }
+            | Should -Throw -because 'a == b'
+        }
+        it 'out of bounds'  {
+            { Dev.Nin\ConvertFrom-NumberRange -A 0 -b 10 -c 10 -d 20 -X 4 }
+            | Should -Throw -because 'X ⊄ [a, b]'
+        }
+    }
     Context 'Dynamic Int' {
         It '(maybe) Perfect Int: fn(<x>) [<Min1>, <Min2>] => [<Min2, Max2>] = <ExpectedX>' -ForEach @(
             @{
-                $Min1 = 0 ; $Max1 = 255
-                $Min2 = 0 ; $Max2 = 100
-                $X = 255 ; $ExpectedX = 100
+                Min1 = 0 ; Max1 = 255
+                Min2 = 0 ; Max2 = 100
+                X = 255 ; ExpectedX = 100
 
             }
         ) {

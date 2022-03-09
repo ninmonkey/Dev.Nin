@@ -542,8 +542,16 @@ function Join-StringStyle {
                 $InputLines.Add( '␀' )
             } else {
                 if (! $ScriptBlockFormat) {
-                    $InputLines.Add( $_ )
+                    # if using [list[string]],  if it's a non-object, error because
+                    # there's no PSCO to string coercion path
+                    # I am not sure whether it will be useful, in the future,
+                    # to preserve this as an object for some functionality
+                    # or maybe stepped pipeline would have more flexibility
+                    # with obj verses str
+                    # wait,
+                    $InputLines.Add( [string]$_ )
                 } else {
+                    # future: cleaner join on SB
                     $render = & $ScriptBlock $InputLines
                     $InputLines.Add( $Render )
                 }

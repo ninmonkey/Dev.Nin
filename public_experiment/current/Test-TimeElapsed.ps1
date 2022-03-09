@@ -14,6 +14,8 @@ function Test-TimeElapsed {
     <#
     .synopsis
         quickly test whether an amount of time has elapsed
+    .description
+        Test-HasTimeElapsed?
     .notes
         todo:
             - [ ] is this the right exception
@@ -32,11 +34,12 @@ function Test-TimeElapsed {
         [Parameter(Mandatory, Position = 0)]
         [datetime]$StartTime,
 
+        # todo: arg transformation RelativeTs #5e
         [Alias('RelativeTs')]
         [Parameter(Mandatory, Position = 1)]
         [object]$RelativeTimespan
     )
-
+    $RelativeTimespan = RelativeTs -RelativeText $RelativeTimespan
 
     $now = [datetime]::Now
     $delta = $now - $StartTime

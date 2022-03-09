@@ -159,15 +159,19 @@ function Get-WhatIsShortPSTypeName {
         [AllowEmptyString()]
         [AllowNull()]
         [parameter(ValueFromPipeline, Position = 0, Mandatory)]
-        $InputObject
+        $InputObject,
+
+        # extra options
+        [Parameter()][hashtable]$Options
     )
     begin {
-        $Config = @{
+        [hashtable]$Config = @{
             RegexIgnoreList = @(
                 'System.MarshalByRefObject'
                 'System.Object'
             ) | RegexLiteral
         }
+        $Config = Join-Hashtable $Config ($Options ?? @{})
     }
     process {
         if ($null -eq $InputObject) {
@@ -176,8 +180,8 @@ function Get-WhatIsShortPSTypeName {
 
         $InputObject.PSTypeNames
         | Where-Object {
-            foreach($re in $Config.RegexIgnoreList) {
-                if($_ -match $re) {
+            foreach ($re in $Config.RegexIgnoreList) {
+                if ($_ -match $re) {
                     return $false
                 }
             }
