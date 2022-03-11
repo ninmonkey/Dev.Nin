@@ -40,17 +40,20 @@ function Invoke-NinFormatter {
 
         # # pipe script contents
         # # Must allow null for piping split text
-        [cmdletbinding(DefaultParameterSetName = 'FromPipeline')]
+        [cmdletbinding(DefaultParameterSetName = 'FromParam')]
         [Alias('InputObject')]
         [AllowEmptyString()]
         [AllowNull()]
+        # [Parameter(
+        #     ParameterSetName = 'FromParam',
+        #     Mandatory, Position = 0
+        # )]
+        # [Parameter(
+        #     ParameterSetName = 'FromPipeline',
+        #     Mandatory, ValueFromPipeline
+        # )]
         [Parameter(
-            ParameterSetName = 'FromParam',
-            Mandatory, Position = 0
-        )]
-        [Parameter(
-            ParameterSetName = 'FromPipeline',
-            Mandatory, ValueFromPipeline
+            Mandatory, Position = 0, ValueFromPipeline
         )]
         [string[]]$ScriptDefinition,
 
@@ -131,9 +134,10 @@ function Invoke-NinFormatter {
 
         # Write-Warning 'wip: formatting - rewrite'
         Invoke-Formatter @invokeFormatterSplat
+        #  ; return;
 
 
-        if ('debug') {
+        if ($false) {
             $ScriptDefinition | Endcap🎨 Bold 'ScriptDef'
             $FinalText | Endcap🎨 Bold 'FinalText'
         }
