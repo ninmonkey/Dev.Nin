@@ -111,15 +111,29 @@ function Measure-ObjectCount {
 
             }
             default {
-                $InputObject | ForEach-Object {
-                    $objectList.Add( $_ )
-                }
+                $objectList.AddRange( $InputObject )
+                # $InputObject | ForEach-Object {
+                #     $objectList.Add( $_ )
+                # }
             }
 
         }
 
     }
     end {
+
+        $itemCount = if ( $IgnoreBlank) {
+            $objectList
+            | Dev.Nin\Where-IsNotBlank
+            | Measure-Object | ForEach-Object Count
+            return
+        } else {
+            $itemCount = $objectList
+            | Measure-Object | ForEach-Object Count
+        }
+
+        return
+
         if ($PassThru -or $Label) {
             # can't assume reaches end, or can I reset value on IDisposal/destructor
             if ($Config['Experimental_AutoEnableEnableWIPref']) {
@@ -144,7 +158,27 @@ function Measure-ObjectCount {
                 | Measure-Object | ForEach-Object Count
             }
 
+
         }
+        # switch ($PassThru) {
+        #     $true {
+        #         'Len: {0}' -f $_totalItems
+        #         #   | Write-Information
+        #       | Write-Information
+        #         return
+        #     }
+        #     default {
+        #         if ( $IgnoreBlank) {
+        #             $objectList
+        #             | Dev.Nin\Where-IsNotBlank
+        #             | Measure-Object | ForEach-Object Count
+        #             return
+        #         }
+        #         $objectList
+        #         | Measure-Object | ForEach-Object Count
+        #     }
+
+        # }
 
     }
 }
