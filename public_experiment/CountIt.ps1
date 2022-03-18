@@ -25,6 +25,30 @@ function Measure-ObjectCount {
     .description
        This is for cases where you had to use
        ... | Measure-Object | % Count | ...
+
+
+        ## Mode 1: count
+
+            - outputs length as an int, no objects
+
+            ls . * | len
+
+        ## mode 2: -PassThru
+
+            - object using normal output stream
+            - length printed as write-information (to not affect user)
+
+            ls . * | len -PassThru | ft Name, LastWriteTIme
+
+
+        ## mode 3: don't finish, display
+
+
+            ls . * | len -PassThru -Options @{PrintOnEveryObject=$true} | ft Name, LastWriteTIme
+
+            0..4 | Len -PassThru -InformationAction Continue -Options @{PrintOnEveryObject=$true} -Label 'increment'
+
+
     .notes
         Future: maybe parameter to measure line vs byte vs enumerate
     .example
@@ -62,28 +86,21 @@ function Measure-ObjectCount {
     )
     begin {
         [hashtable]$Config = @{
-            PrintOnEveryObject                  = $false
-            PrintNewElementType                 = $false
-            Experimental_AutoEnableEnableWIPref = $false
+            PrintOnEveryIteration                 = $false
+            OutputMode                            = $PassThru ? 'OnlyInt' : 'WithInformation'
+            'Experimental_AutoEnableEnableWIPref' = $true
+            'Label'                               = $Label ?? 'Len'
         }
+        $Config = Join-Hashtable $Config ($Options ?? @{})
         $original_infaPref = $InformationPreference
+        $objectList = [List[object]]::new()
+
 
         if ($PassThru -or $Label) {
             if ($Config['Experimental_AutoEnableEnableWIPref']) {
                 $InformationPreference = 'Continue'
             }
         }
-        $objectList = [List[object]]::new() # maybe redundant now?
-        switch ($PassThru) {
-            $true {
-
-            }
-            default {
-                [int]$_totalItems = 0
-            }
-
-        }
-        $Config = Join-Hashtable $Config ($Options ?? @{})
     }
     process {
         switch ($PassThru) {
@@ -95,7 +112,7 @@ function Measure-ObjectCount {
                     return
                 }
                 $msg = '{0}: {1}' -f @(
-                    $Label ?? 'len'
+                    $Config.Label
                     $objectList.Count
                 )
 
@@ -125,37 +142,49 @@ function Measure-ObjectCount {
         $itemCount = if ( $IgnoreBlank) {
             $objectList
             | Dev.Nin\Where-IsNotBlank
-            | Measure-Object | ForEach-Object Count
+            | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
             return
         } else {
-            $itemCount = $objectList
-            | Measure-Object | ForEach-Object Count
+            $objectList
+            | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
         }
+        # Wait-Debugger
 
-        return
 
+        # $z = 'noop'
         if ($PassThru -or $Label) {
             # can't assume reaches end, or can I reset value on IDisposal/destructor
             if ($Config['Experimental_AutoEnableEnableWIPref']) {
-                $InformationPreference = $original_infaPref
+                $InformationPreference = 'continue'
+                # $InformationPreference = $original_infaPref
             }
+            # $z = 'noop'
+
         }
+        'Infa is on' | write-color 'magenta' | Write-Information
         switch ($PassThru) {
             $true {
-                'Len: {0}' -f $_totalItems
+                '{0}: {1}' -f @(
+                    $Label
+                    $_totalItems
+                )
                 #   | Write-Information
               | Write-Information
+                # $z = 'noop'
                 return
             }
             default {
                 if ( $IgnoreBlank) {
                     $objectList
                     | Dev.Nin\Where-IsNotBlank
-                    | Measure-Object | ForEach-Object Count
+                    | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
+                    # $z = 'noop'
                     return
                 }
                 $objectList
-                | Measure-Object | ForEach-Object Count
+                | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
+                # $z = 'noop'
+
             }
 
 
@@ -171,11 +200,11 @@ function Measure-ObjectCount {
         #         if ( $IgnoreBlank) {
         #             $objectList
         #             | Dev.Nin\Where-IsNotBlank
-        #             | Measure-Object | ForEach-Object Count
+        #             | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
         #             return
         #         }
         #         $objectList
-        #         | Measure-Object | ForEach-Object Count
+        #         | Microsoft.PowerShell.Utility\Measure-Object | ForEach-Object Count
         #     }
 
         # }
