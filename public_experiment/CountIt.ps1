@@ -21,7 +21,7 @@ if ( $experimentToExport ) {
 function dev.Measure-ObjectCount {
     <#
     .synopsis
-        ~~Simple~~. Counts items. Shortcut for the cli. Crazy variant of Dev.Nin\Measure-ObjectCount_basic
+        ~~Simple~~. Counts items. Shortcut for the cli. Crazy version of variant of Dev.Nin\Measure-ObjectCount
     .description
        This is for cases where you had to use
        ... | Measure-Object | % Count | ...
@@ -56,9 +56,9 @@ function dev.Measure-ObjectCount {
     .outputs
           [int]
     .link
-        Dev.Nin\Measure-ObjectCount
+        Ninmonkey.Console\Measure-ObjectCount
     .link
-        Dev.Nin\Measure-ObjectCount_basic
+        Dev.Nin\dev.Measure-ObjectCount
     #>
 
     [alias( 'dev.Len')]
