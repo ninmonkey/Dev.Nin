@@ -3,22 +3,17 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Measure-ObjectCount_basic'
+        'Measure-ObjectCount'
         # ''
     )
     $experimentToExport.alias += @(
-        'Len_basic'
-        # ''
+        'Count', 'Len'
+        #'Len_basic' # 'Measure-ObjectCount
+
     )
 }
 
-
-# no longer applies?  # $StringModule_DontInjectJoinString = $true # https://github.com/FriedrichWeinmann/string/#join-string-and-powershell-core
-
-
-
-
-function Measure-ObjectCount_basic {
+function Measure-ObjectCount {
     <#
     .synopsis
         Simple. Counts items. Shortcut for the cli, simplifed version of Dev.Nin\Measure-ObjectCount
@@ -34,38 +29,27 @@ function Measure-ObjectCount_basic {
     .link
         Dev.Nin\Measure-ObjectCount
     .link
-        Dev.Nin\Measure-ObjectCount_basic
+        Dev.Nin\Measure-ObjectCount
 
     #>
 
-    [alias( 'CountIt', 'Len_basic')]
+    [alias( 'Count', 'Len')]
     [CmdletBinding()]
     param(
         #Input from the pipeline
         [Parameter(Mandatory, ValueFromPipeline)]
         [object[]]$InputObject,
 
-        # instead write count to write-information, pipe object normally
-        [Parameter()][switch]$PassThru,
+        # # instead write count to write-information, pipe object normally
+        # [Parameter()][switch]$PassThru,
 
-        # do not count 'Blank' values
+        # # do not count 'Blank' values
         [Alias('IgnoreNull')]
-        [Parameter()][switch]$IgnoreBlank,
-
-        # optional label using infa output
-        [Parameter()][string]$Label,
-
-
-        # extra options
-        [Parameter()][hashtable]$Options
-
+        [Parameter()][switch]$IgnoreBlank
 
     )
     begin {
-        Throw "'$PSCommandPath'-instead just grab the older version a couple commits ago"
         [hashtalbe]$Config = @{
-            PrintOnEveryObject                  = $false
-            PrintNewElementType                 = $false
             Experimental_AutoEnableEnableWIPref = $false
         }
         $original_infaPref = $InformationPreference

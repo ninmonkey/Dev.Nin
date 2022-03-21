@@ -3,11 +3,11 @@ using namespace System.Collections.Generic
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Measure-ObjectCount'
+        'dev.Measure-ObjectCount'
         # ''
     )
     $experimentToExport.alias += @(
-        'Len'
+        'dev.Len'
         # ''
     )
 }
@@ -18,7 +18,7 @@ if ( $experimentToExport ) {
 
 
 
-function Measure-ObjectCount {
+function dev.Measure-ObjectCount {
     <#
     .synopsis
         ~~Simple~~. Counts items. Shortcut for the cli. Crazy variant of Dev.Nin\Measure-ObjectCount_basic
@@ -61,7 +61,7 @@ function Measure-ObjectCount {
         Dev.Nin\Measure-ObjectCount_basic
     #>
 
-    [alias( 'CountIt', 'Count', 'Len')]
+    [alias( 'dev.Len')]
     [CmdletBinding()]
     param(
         #Input from the pipeline

@@ -199,7 +199,7 @@ $public = @(
     'Dev-GetNewestItem'
 
     'Get-Exponentiation'
-    'Edit-FunctionSource'
+    # 'Edit-FunctionSource'
     'Start-DevTimer'
 
 
@@ -266,7 +266,7 @@ $functionsToExport = @(
 
     'Get-Exponentiation'
 
-    'Edit-FunctionSource'
+    # 'Edit-FunctionSource'
 
 
 
@@ -334,7 +334,7 @@ $aliasesToExport = @(
     'NameFrom'
 
     ## Other
-    'EditFunc' # Edit-FunctionSource
+    # 'EditFunc' # Edit-FunctionSource
     'Table'
     'Pow'
     'Man'
