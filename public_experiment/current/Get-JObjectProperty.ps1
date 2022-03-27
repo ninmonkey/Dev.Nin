@@ -193,6 +193,7 @@ $someP | jProp -FilterType IgnoreBasicType
                 }
 
 
+                # this segment was sleep deprived
                 $Value = $prop.Value
                 $ValueStr = $Value ?? $Config.NullStr
                 $Type = if ($null -eq $Value) {
@@ -205,7 +206,11 @@ $someP | jProp -FilterType IgnoreBasicType
                             $Value | ShortName
                         }
                     } catch {
-                        ($Value)?.GetType() ?? '<bad>'
+                        if ($null -eq $Value) {
+                            '<bad>'
+                        } else {
+                            $Value.GetType()
+                        }
                     }
                 }
 
