@@ -10,6 +10,18 @@ if ( $experimentToExport ) {
 }
 
 
+enum itemSortOrder_devNin {
+    Ascending = 0
+    Asc = 0
+
+    Descending = 1
+    Desc = 1
+
+    # for when you want to show arrows
+    Top
+    Bottom
+}
+
 function _write-FormatSortOrder {
     <#
     .synopsis
@@ -29,12 +41,20 @@ function _write-FormatSortOrder {
     param(
         [String]$Label = 'Newest',
 
+        # what direction does it render?
         [parameter()]
-        [ValidateSet('Ascending', 'Descending', 'Bottom', 'Top', 'Asc', 'Desc')]
-        [String]$Order = 'Ascending',
+        # [String]$Order = 'Ascending',
+        [itemSortOrder_devNin]$Order = [itemSortOrder_devNin]::Ascending,
+
+
 
         # extra options
-        [Parameter()][hashtable]$Options
+        [Parameter()]
+        [ArgumentCompletions(
+            '@{FormatMode="HighlightName"}',
+            '@{FormatMode="simple"}'
+        )]
+        [hashtable]$Options
 
         # [parameter()]
         # [object]$Fg,
@@ -71,6 +91,8 @@ function _write-FormatSortOrder {
                 #         $Label
                 #     )
                 # }
+                $orderEnumStr = $Order.ToString()
+                $orderEnumStr = $order
                 & {
                     # $fg = [rgbcolor]'gray45' | ForEach-Object tostring
                     # $bg = [rgbcolor]'gray15' | ForEach-Object tostring
@@ -83,7 +105,8 @@ function _write-FormatSortOrder {
                     $Template = "${cBold}{0}${cDim} SortBy:${cBold}{1}${cDim}${cBold} {0}"
 
                     $Template -f @(
-                        $Rune[$Order]
+                        $Rune[$Order.ToString()]
+                        # $Rune[$orderEnumStr]
                         $Label
                     )
                 }
@@ -91,7 +114,8 @@ function _write-FormatSortOrder {
             }
             'Simple' {
                 '{0} Sortby: {1} {0}' -f @(
-                    $Rune[$Order]
+                    # $Rune[$orderEnumStr]
+                    $Rune[$Order.ToString()]
                     $Label
                 ) | Write-Color @dimGlow
 
