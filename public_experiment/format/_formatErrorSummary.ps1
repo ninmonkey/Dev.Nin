@@ -11,12 +11,56 @@ if ( $experimentToExport ) {
         #  testing
         'showErr'
         'formatErr'
+
+
+        'ConvertTo-HashToArgumentCompletionLiteral'
     )
     $experimentToExport.alias += @(
         'Inspect->ErrorType'
         # ''
+        'to->ArgumentCompletionsLiteral' # 'ConvertTo-HashToArgumentCompletionLiteral'
     )
 }
+
+function ConvertTo-HashToArgumentCompletionLiteral {
+    <#
+    .synopsis
+        for raw inline literals
+    .notes
+        future: added command:
+            .. | str HereString
+
+    #>
+    [Alias('to->ArgumentCompletionsLiteral')]
+    [CmdletBinding()]
+    param(
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, Position = 0)]
+        [Alias('InputObject')]
+        [string]$CodeSnippet,
+        [switch]$SkipFormatting
+    )
+
+    $accum = $CodeSnippet -replace '(\r?\n)', "`n" -replace "'", "''"
+    if (! $SkipFormatting) {
+        # $accum = $accum | Invoke-NinFormatter -wa ignore
+    }
+    $accum | Join-String -SingleQuote
+
+    #     $rawIn = @'
+    # @{ColorErrorRed = [rgbcolor]'seaGreen2'; ColorFg = [rgbcolor]'darkseagreen4'}
+    # '@ -replace "'", '"' -replace ';', "`n" | Invoke-NinFormatter
+}
+
+$convertToHashToArgumentCompletionLiteralSplat = @{
+    CodeSnippet = (
+        '@{ColorErrorRed = [rgbcolor]"seaGreen2" ColorFg = [rgbcolor]"darkseagreen4" }'
+    )
+}
+
+ConvertTo-HashToArgumentCompletionLiteral @convertToHashToArgumentCompletionLiteralSplat
+
+
 function showErr {
     <#
     .synopsis
@@ -51,6 +95,7 @@ function showErr {
         🐒> showErr -Recent
         # shows 0, does not call clear on errors if -reset
     #>
+    # [Alias('showErr')] # convert to alias
     [cmdletbinding()]
     param(
         # err obj
@@ -65,32 +110,59 @@ function showErr {
         # max results limit
         [Alias('Limit')]
         [Parameter()]
-        [int]$MaxLimit
+        [int]$MaxLimit = 3
     )
     begin {
-
         [list[object]]$errorList = [list[object]]::new()
-
-
     }
     process {
-        $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
-        $errorList.add( $Target )
+        # clean-todo: replace with resolve->ErrorInfo
+        # scope:global (or +1) is sometimes required when using debuggers with dev tools
+        # was:  $Target = $ErrorObject ?? $global:Error # sometimes required when using debuggers
+        $Target = $ErrorObject ?? $error ?? $global:Error
+        $errorList.Add( $Target )
+        # $errorList.AddRange( $Target )
+        <#
+            line:
+                $errorList.AddRange( $Target )
+            vs
+                $errorList.Add( $Target )
+            throws
+                Cannot convert the "System.Collections.ArrayList" value of
+                type "System.Collections.ArrayList" to type
+                "System.Collections.Generic.IEnumerable`1[System.Object]"
+        #>
     }
     end {
         $deltaCount = (err? -PassThru).deltaCount
+
+        <#
+        I think this originally had write-warning, to get past being consumed.
+        #>
+        $meta = [Ordered]@{
+            Recent     = $Recent
+            DeltaCount = $deltaCount
+            MaxLimit   = $MaxLimit
+        }
+
         if ($Recent) {
             $MaxLimit = $deltaCount
+            $meta['MaxLimit_AfterRecent'] = $MaxLimit
         }
 
         if ($MaxLimit) {
+            # Write-Warning 'max'
             $results = $errorList | Select-Object -First $MaxLimit
             | ReverseIt
         } else {
+            # Write-Warning 'not'
             $results = $errorList
             | ReverseIt
         }
-        $results | Dev.Nin\formatErr | str hr
+        $meta['ResultCount'] = $results.count
+        $results
+        | Dev.Nin\formatErr
+        | Dev.Nin\str hr
 
         $splat_FormatSortOrder = @{
             Label   = 'Newest'
@@ -99,6 +171,7 @@ function showErr {
         }
 
         _write-FormatSortOrder @splat_FormatSortOrder
+        $meta | Format-Table -AutoSize | Out-String | Write-Debug
     }
 
     <#
@@ -189,7 +262,9 @@ function formatErr {
         [Parameter()][switch]$AsRaw,
 
         # options
-        [Parameter()][hashtable]$Options = @{}
+        [Parameter()]
+        [ArgumentCompletions('@{ColorErrorRed = [rgbcolor]"gray35"}')]
+        [hashtable]$Options = @{}
     )
     begin {
         # $Colors = @{
