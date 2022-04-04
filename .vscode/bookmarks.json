@@ -99,12 +99,12 @@
 			"path": "public_experiment/cmd-code/Invoke-VSCodeVenv.ps1",
 			"bookmarks": [
 				{
-					"line": 16,
+					"line": 15,
 					"column": 21,
 					"label": "$script:__venv  = state "
 				},
 				{
-					"line": 375,
+					"line": 376,
 					"column": 4,
 					"label": "venv process {...}"
 				}

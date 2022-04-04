@@ -1,5 +1,5 @@
 using namespace PoshCode.Pansies
-
+Set-Alias 'Join-Hashtable' -Value Ninmonkey.Console\Join-HashTable
 $dev_colors = @{
     Yellow      = [RgbColor]::FromRgb(235, 203, 139)
     Yellow2     = [RgbColor]'#E0F543'

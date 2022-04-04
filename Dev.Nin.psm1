@@ -1,6 +1,6 @@
-﻿New-Alias 'Join-hashTable' -Value 'Ninmonkey.Console\Join-Hashtable' -Description 'to prevent PSScriptTools\Join-Hashtable' -ea ignore
+﻿
 
-__countDuplicateLoad -key 'Dev.Nin.psm1'
+# __countDuplicateLoad -key 'Dev.Nin.psm1'
 
 function __yell {
     <#
@@ -36,7 +36,7 @@ $formatData = @(
 # write-warning ('.' * 120 | Join-string -op '  warn')
 # write-error ('.' * 120 | Join-string -op '  error')
 
-
+$PSCommandPath, '__getAutoloadChildItem + Find-ItemsToAutoload -> refactor old code' -join ' ' | Write-Warning
 function Find-ItemsToAutoload {
     <#
     .synopsis

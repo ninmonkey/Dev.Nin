@@ -3,6 +3,9 @@
         {
             "name": "Dev.Nin",
             "path": "."
+        },
+        {
+            "path": "..\\..\\..\\..\\..\\..\\..\\..\\nin_temp\\tinyModule"
         }
     ],
     "settings": {
