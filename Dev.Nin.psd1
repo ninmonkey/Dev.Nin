@@ -51,7 +51,7 @@
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules   = @(
         'Ninmonkey.Console'
-        'Utility' # Seemingly science
+        # 'Utility' # Seemingly science
         'Pansies'
     )
 

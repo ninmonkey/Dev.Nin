@@ -5,11 +5,10 @@ if ( $experimentToExport ) {
         'dev.Invoke-JmGitCommand'
     )
     $experimentToExport.alias += @(
+        'git->JGit' # 'dev.Invoke-JmGitCommand'
         # 'A'
     )
 }
-
-
 
 function dev.Invoke-JmGitCommand {
     <#
@@ -24,6 +23,10 @@ function dev.Invoke-JmGitCommand {
 
             # fails
             PS> JGit Log oneline maxcount 10
+
+    .example
+        PS> JGit Branch r -WhatIf fancy desc r
+            JGit Branch r fancy
 
     .example
         PS>
@@ -45,6 +48,7 @@ function dev.Invoke-JmGitCommand {
     #>
     [alias(
         # 'JGit'
+        'git->JGit'
     )]
     param(
         # Required first mode

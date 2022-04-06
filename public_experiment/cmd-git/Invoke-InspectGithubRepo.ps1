@@ -1,18 +1,25 @@
 #Requires -Module pansies
-#Requires -Version 7.0.0
+#Requires -Version 7
 
-$experimentToExport.function += @(
-    'Invoke-InspectGithubRepo'
-)
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Invoke-InspectGithubRepo'
+    )
+    $experimentToExport.alias += @(
+
+    )
+}
+
 # $experimentToExport.alias += @()
 function Invoke-InspectGithubRepo {
     <#
     .synopsis
-        queries some git info
+        queries github using 'hg' returns repos as objects
     .notes
 
     #>
-    # [Alias('WriteTextColor', 'Write-Color')]
+    # [Alias('a')]
+    [Output('object')]
     [cmdletbinding(PositionalBinding = $false)]
     param(
         # empty the cache
