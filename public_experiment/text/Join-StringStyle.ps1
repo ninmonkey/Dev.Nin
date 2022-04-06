@@ -1,51 +1,13 @@
-
+#Requires -Version 7
 # allows script to be ran alone, or, as module import
-if (! $DebugInlineToggle -and $ExperimentToExport) {
+if ( $DebugInlineToggle ) {
     $experimentToExport.function += @(
         'Join-StringStyle'
-
     )
     $experimentToExport.alias += @(
-        'Str'
-        #
-        #for the main command, i'm not sure if I want
-        # 'Join-StringStyle'
-        # 'Join-StyleString'
-        # ideas for alias names?
-
-
-        if ($true) {
-            # allow user override/disable for aggressive aliases
-            # or maybe an arg to Import-Module for exluding aliases
-            # 'JoinStr',
-            # 'Csv', 'NL',
-            # 'HR',
-            # 'Prefix', 'Suffix',
-            # 'QuotedList', #single/double
-            # 'UL', 'Checklist'
-        }
-
-        # Like prefix, but "key: Value" pairs
-        # 'Pair'
+        'str' #  'Join-StringStyle'
     )
-
-    $DisabledNamesThatWillBeMetadata = @(
-        'Cli_Interactive🖐', 'Format🎨', 'Style🎨', 'TextProcessing📚'
-    )
-    # $MaybeAlias?_DisabledList = @(
-    #     'Label' # Same thing? as Prefix?
-    #     'Op'
-    #     'Op🐒'
-    #     'OpStr'
-    #     'Pre'
-    #     'Prefix'
-    #     'QuotedList'
-    #     'Suffix'
-    #     'UList'
-
-    # )
 }
-
 
 function Join-StringStyle {
     <#
@@ -55,6 +17,20 @@ function Join-StringStyle {
         this function may turn into an entry point
             customizing defaults based on smart aliases
     .notes
+        failure case:
+                🐒> Get-ChildItem . | f 5 | ForEach-Object{
+                    $_ | dict 'name', 'Length', 'LastWriteTIme'
+                    } | str nl 2
+                System.Collections.Specialized.OrderedDictionary
+
+                System.Collections.Specialized.OrderedDictionary
+
+                System.Collections.Specialized.OrderedDictionary
+
+                System.Collections.Specialized.OrderedDictionary
+
+                System.Collections.Specialized.OrderedDictionary
+
         future:
             - [ ] prefix/suffix on itself
             -
@@ -102,6 +78,10 @@ function Join-StringStyle {
                 ls . -File | New-HashtableFromObject Name
                 | % tostring | Str hr
 
+    .example
+        # finds history, pretty easy quick summary
+        PS> history | ? CommandLine -Match 'formatErr.*options'
+            | str hr -Unique CommandLine
     .example
         🐒> 0..3 | str csv
             0,1,2,3
@@ -567,7 +547,6 @@ function Join-StringStyle {
         # }
     }
     end {
-        # Wait-Debugger
         # single/double are exlusive
         if ($DoubleQuote) {
             $splat_JoinStyle['DoubleQuote'] = $true
