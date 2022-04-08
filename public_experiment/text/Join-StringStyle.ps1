@@ -1,6 +1,7 @@
 #Requires -Version 7
 # allows script to be ran alone, or, as module import
-if ( $DebugInlineToggle ) {
+
+if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Join-StringStyle'
     )
