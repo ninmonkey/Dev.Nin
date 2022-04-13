@@ -19,7 +19,7 @@ nyi:
 function pprint_datatypeAsBits {
     param( $TypeInfo )
     if ($null -eq $TypeInfo) {
-        return 
+        return
     }
     if (!($TypeInfo -is 'type')) {
         $type = $TypeInfo.GetType()
@@ -37,7 +37,8 @@ function pprint_datatypeAsBits {
 }
 
 
-if (! $experimentToExport) {
+if ($False) {
+    # if (! $experimentToExport) {
     [UInt16], [Int16], [Int64]
     | ForEach-Object {
         hr

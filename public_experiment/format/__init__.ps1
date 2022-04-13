@@ -9,7 +9,7 @@
     'experimentFuncMetadata'     = @()
     # 'formatData' = @()
 }
-$ErrorActionPreference = 'stop'
+# $ErrorActionPreference = 'stop'
 # & {
 
 if ($true) {

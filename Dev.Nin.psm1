@@ -110,7 +110,7 @@ $private = @(
     # quick experiments
     '_dig'
     '_test_encodedecode'
-    '_Lsd'
+    # '_Lsd'
 
     # '_toastTimer'
     '_getSpecialAndEnv'
@@ -132,7 +132,7 @@ $public_QuickExperiment = @(
     '_get_commandMine'
     'testEncode'
     'testDecode'
-    'Lsd'
+    # 'Lsd'
 
     'Find-DevItem'
     # special folders?

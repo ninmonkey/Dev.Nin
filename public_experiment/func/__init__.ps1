@@ -12,27 +12,27 @@
 $ErrorActionPreference = 'stop'
 # & {
 
-try {
-    # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -filter '*.ps1'
-    | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object {
-        # are these safe? or will it alter where-object?
-        # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$'
-    }
-    $filteredFiles
-    | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
-    | Write-Debug
-
-    $sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
-    $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
-    | Write-Debug
-} catch {
-    Write-Warning "warning: $_"
-    Write-Error "Error: $_"
-    # $PSCmdlet.ThrowTerminatingError( $_ )
+# try {
+# Don't dot tests, don't call self.
+$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
+| Where-Object { $_.Name -ne '__init__.ps1' }
+| Where-Object {
+    # are these safe? or will it alter where-object?
+    # Write-Debug "removing test: '$($_.Name)'"
+    $_.Name -notmatch '\.tests\.ps1$'
 }
+$filteredFiles
+| Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+| Write-Debug
+
+$sortedFiles = $filteredFiles | Sort-Object { @('Write-TextColor') -contains $_.BaseName } -Descending
+$sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
+| Write-Debug
+# } catch {
+# Write-Warning "warning: $_"
+# Write-Error "Error: $_"
+# $PSCmdlet.ThrowTerminatingError( $_ )
+# }
 
 $sortedFiles
 | ForEach-Object {
@@ -46,7 +46,8 @@ $sortedFiles
     try {
         . $curFile
     } catch {
-        Write-Error -Message 'bad' -ErrorRecord $_
+        Write-Warning -Message "Error: $_" -ErrorRecord $_
+        Write-Error -Message "Error: $_" -ErrorRecord $_
         # Write-Error -ea continue -ErrorRecord $_ -Message "Importing failed on: '$curFile'" -
 
         #-ErrorRecord $_ -Category InvalidResult -ErrorId 'AutoImportModuleFailed' -TargetObject $curFile
