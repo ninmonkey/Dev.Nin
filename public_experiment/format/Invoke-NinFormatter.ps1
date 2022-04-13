@@ -11,6 +11,8 @@ if ( $experimentToExport ) {
     )
 }
 
+# fix saved preset
+
 function Invoke-NinFormatter {
     <#
     .synopsis
@@ -105,7 +107,10 @@ function Invoke-NinFormatter {
         #         Write-Error -ea stop -Category NotImplemented -Message 'Unhandled ParameterSet' -TargetObject $PSCmdlet.ParameterSetName
         #     }
         # }
-
+        Write-Warning 'wip: use a clean rewrite from start,
+            1] delegate roles
+            2] stringbuilder or [list].AppendRange( $InputObject ) to build  str
+        '
     }
     process {
         # switch ($PSCmdlet.ParameterSetName) {
@@ -137,10 +142,10 @@ function Invoke-NinFormatter {
         #  ; return;
 
 
-        if ($false) {
-            $ScriptDefinition | Endcap🎨 Bold 'ScriptDef'
-            $FinalText | Endcap🎨 Bold 'FinalText'
-        }
+        # if ($false) {
+        #     $ScriptDefinition | Endcap🎨 Bold 'ScriptDef'
+        #     $FinalText | Endcap🎨 Bold 'FinalText'
+        # }
 
         # Wait-Debugger
         # return

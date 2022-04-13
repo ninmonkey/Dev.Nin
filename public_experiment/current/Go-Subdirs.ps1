@@ -1,5 +1,6 @@
 #Requires -Version 7
 # wip dev,nin: todo:2022-03
+# fun !
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Dive-SubDirectory'
@@ -16,9 +17,12 @@ if ( $experimentToExport ) {
 
 function _Dive-Chain {
     <#
+    .synopsis
+        interactive find directories below  you
     .notes
 
         todo:
+        - [ ] current folder : description of children
         - [ ] params could include '[-2]' to go up 2 dirs
             - [ ] could be neat, start off with CWD
                 >  DiveChain '.'
@@ -36,11 +40,17 @@ function _Dive-Chain {
 
         # [string]$SortyBy = # [ 'Modified', 'Name' ]
     )
+    [hashtable]$dbg = [ordered]@{
+        MaxDepth    = $MaxDepth
+        Query       = $Query
+        InitialPath = Get-Location
+    }
     $curDepth = 0
     $orginalRoot = Get-Location
     $SpecialStr = @{
         'reset' = '[reset]'
         'undo'  = '[undo] nyi state push pop'
+        'quit'  = '[quit]'
     }
 
     while ($curDepth -le $MaxDepth) {
@@ -49,9 +59,14 @@ function _Dive-Chain {
         $Destination = @(
             @(
                 $SpecialStr.reset
+                '[reset]'
+                '[undo]'
                 fd -t d -t d
             ) | fzf | Select-Object -First 1
         )
+
+        $dbg['Destination'] = $Destination
+        # if it only returns one value, then -eq check works
         switch ($Destination) {
             '[reset]' {
                 'reset'
@@ -61,16 +76,18 @@ function _Dive-Chain {
                 'undo'
                 return
             }
+            '[quit]' {
+                'quit'
+                $curDepth = $MaxDepth
+                return
+            }
         }
 
         # else it should be a file
         $query = $Destination | Get-Item
 
-        $Destination = @(
-            '[reset]'
-            '[undo]'
-            $Destination
-        )
+
+
 
         # switch($Mode)
 

@@ -9,6 +9,8 @@ if ( $experimentToExport ) {
         '_mapUriQueryDict'
         '_mapUrlDecode'
         '_mapUrlEncode'
+        '_fmt_FilepathForwardSlash'
+        '_fmt_FilepathWithoutUsernamePrefix'
     )
     $experimentToExport.alias += @(
 
@@ -20,6 +22,84 @@ if ( $experimentToExport ) {
     #     $z -notcontains $_
     # }
 }
+
+function _fmt_FilepathForwardSlash {
+    <#
+    .synopsis
+        formats reverse slashes forward, if text, otherwise coerce
+    .notes
+        future: extend to fileinfo format type
+        todo: move to functions
+    .example
+
+        PS> gi C:\nin_temp\.output\ | _fmt_FilepathForwardSlash
+
+            C:/nin_temp/.output/
+
+    #>
+    param(
+        # Object or path to map
+        [Alias('PSPath', 'Path', 'FullName')]
+        [Parameter(
+            Mandatory, ValueFromPipeline,
+            ValueFromPipelineByPropertyName)]
+        [object]$InputObject,
+
+        # What to replace it with
+        [Parameter(Position = 0)]
+        [string]$ReplaceWith = '/'
+    )
+    process {
+        $Render = $InputObject | ForEach-Object tostring
+        $render -replace '\\', $ReplaceWith
+    }
+}
+function _fmt_FilepathWithoutUsernamePrefix {
+    <#
+    .synopsis
+        removes what is 'my document's  from filepath prefix
+    .notes
+        and skydrive, if possible
+    .example
+
+        PS> gi C:\nin_temp\.output\ | _fmt_FilepathForwardSlash
+
+            C:/nin_temp/.output/
+
+    #>
+    param(
+        # Object or path to map
+        [Parameter(
+            Mandatory, ValueFromPipeline,
+            ValueFromPipelineByPropertyName)]
+        [object]$InputObject,
+
+        # What to replace it with
+        [Parameter(Position = 0)]
+        [string]$ReplaceWith = '^'
+    )
+    process {
+        # future: maybe Resolve-FileInfo, then It would
+        # auto convert to Item if possible, or bad ?
+        $renderPath = $InputObject | ForEach-Object Tostring
+        $Re = @{}
+        $Re['SkyDrive'] = [REgex]::Escape( (Join-Path $Env:UserProfile 'SkyDrive/documents/2021') )
+        $re['UserProfile'] = [Regex]::Escape( $Env:UserProfile )
+
+        $accum = $renderPath -replace $Re['SkyDrive'], $ReplaceWIth
+        $accum = $accum -replace $Re['UserProfile'], $ReplaceWIth
+        return $accum
+
+        # $prefixUser =
+        # # if ($fullPath -notmatch $prefixUser ) {
+        # #     $prefixUser =
+        # # }
+        # $fullPath
+        # $fullPath -replace $prefixUser, $ReplaceWIth
+    }
+}
+
+
 
 function _mapStripNSPrefix {
     # strip namespace system  : 1-liner

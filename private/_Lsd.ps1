@@ -1,4 +1,4 @@
-﻿function Lsd {
+﻿function Lsd_old {
     <#
     .synopsis
         tiny wrapper hack, still pretty prints.
@@ -21,6 +21,8 @@
         [Parameter(Position = 0)]
         [string]$Path
     )
+
+    Write-Warning "Old $PSCommandPath"
 
     # Get-process {
     # $x = 3

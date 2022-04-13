@@ -1,14 +1,16 @@
 #Requires -Version 7
 
-
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'ConvertFrom-NativeGitStatus'
         'Peek-GitChanges'
     )
     $experimentToExport.alias += @(
-        'Peek->GitChanges' # 'Peek-GitChanges'
+        'Git->NativeGitStatus' # 'ConvertFrom-NativeGitStatus'
         'Git->PeekChanges' # 'Peek-GitChanges'
+        # 'Peek->GitChanges' # 'Peek-GitChanges'
+        # 'Git->PeekChanges' # 'Peek-GitChanges'
+
     )
 }
 
@@ -20,6 +22,9 @@ enum GitStatusState {
     Deleted = 3
     D = 3
     # '??' = 1 # Can't easily declare an enum value named '??'
+
+    # todo: create argument transformation which always handles '??'
+    # and, auto-converts to the long-name versions
 }
 
 function ConvertFrom-NativeGitStatus {
@@ -32,7 +37,7 @@ function ConvertFrom-NativeGitStatus {
                 PS> Verb-Noun -Options @{ Title='Other' }
             #>
     # [outputtype( [string[]] )]
-    # [Alias('x')]
+    [Alias('Git->NativeGitStatus')]
     [cmdletbinding()]
     param(
         # docs
@@ -85,7 +90,12 @@ function ConvertFrom-NativeGitStatus {
             }
         } | ForEach-Object {
             $cur = $_
-            $tryCoerce = [GitStatusState]$_.Status
+            $tryCoerce = if ($_.Status -eq '??') {
+                # trying to set '??' to an enum is tricky, future arg transformation
+                [GitStatusState]::Modified
+            } else {
+                [GitStatusState]$_.Status
+            }
             $MaybePath = Join-Path $BasePath $_.RelativePath
             $maybeI = Get-Item $maybePath -ea SilentlyContinue
             $meta = @{
@@ -94,6 +104,7 @@ function ConvertFrom-NativeGitStatus {
                 'MaybePath'              = $maybePath
                 'LastWriteTime'          = ($maybeI)?.LastWriteTime ?? '[null]'
                 'MaybeI'                 = $maybeI
+                'Size'                   = ($MaybeI)?.Length | Format-FileSize
                 'Length'                 = ($MaybeI)?.Length
                 'DeltaLines'             = '...wip'
                 'DeltaBytes'             = '...wip'
@@ -109,9 +120,10 @@ function ConvertFrom-NativeGitStatus {
 }
 
 function Peek-GitChanges {
-    [Alias('Peek->GitChanges', 'Git->PeekChanges')]
+    # finish me now
+    [Alias('Git->PeekChanges')]
     param()
-    @'
+    throw @'
 idea:
     - [ ]  display changed files in git
     - [ ]  pipe to fzf
@@ -119,9 +131,4 @@ idea:
     - [ ] save selection of files
     - [ ] 'git add' those files
 '@
-}
-
-
-if (! $experimentToExport) {
-    # ...
 }

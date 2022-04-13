@@ -19,19 +19,27 @@ function Get-SavedRegex {
     #>
     [Alias('regex->Saved', 'savedRegex')]
     [cmdletbinding()]
-    param()
+    param(
+
+        # First parameter to the regex
+        [Alias('Var1')]
+        [Parameter()]
+        [string]$Variable1
+    )
     begin {
         $SavedHardcoded = @(
             @{
                 'Name'        = 'Find-JsonSettingSkipCommented'
                 'Description' = '...stuff'
-                'Tags'        = @('Json', 'Config')
+                'Tags'        = @('Json', 'Config')                # 'Variables' = @{
+                #     'Pattern' = [regex]::escape(  )
+                # }
                 'Web'         = 'https://regex101.com/r/S6R8l9/1'
                 'Pattern'     = @'
 (?x)
 (?<!\/\/\s*)
 (?<QueryStr>
-\"editor\.quickSuggestions\"
+{{var1}}              # ex: \"editor\.quickSuggestions\"
 )
 '@
             }
@@ -39,8 +47,17 @@ function Get-SavedRegex {
 
     }
     process {
+        $selectedRegex = $SavedHardcoded
+        | Where-Object Name -EQ 'Find-JsonSettingSkipCommented'
+        #| % Pattern
+        $selectedRegex | Format-Table -auto | Out-String
+        | Join-String -op 'Selected: ' | Write-Debug
+
     }
     end {
-        return $SavedHardcoded
+        $Variable1 ??= $selectedRegex['Var1Default']
+        $regexVar1 = [regex]::Escape('{{var1}}')
+        $FinalText = $selectedRegex['Pattern'] -replace $regexVar1, $Variable1
+        return $FinalText
     }
 }
