@@ -2,13 +2,18 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
+        'Write-PStyleBold'
+        'Write-SemanticBold'
+        'Write-SemanticClear'
+        'Write-SemanticDefault'
+        'Write-SemanticPair'
         # ''
     )
     $experimentToExport.alias += @(
         # ''
     )
 }
-
+# check me
 $script:__colorSemantic = @{
     FgZero    = 'gray0'
     FgDim4    = 'gray10'
@@ -92,6 +97,7 @@ function Write-SemanticBold {
 
 }
 function Write-SemanticDefault {
+    # no-op ?
     [Alias('Semantic->Bold')]
     param()
 
