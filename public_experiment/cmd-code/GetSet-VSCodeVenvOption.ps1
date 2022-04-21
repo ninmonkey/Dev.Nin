@@ -13,14 +13,22 @@ if ( $experimentToExport ) {
 $script:__code_venvState = @{
     ConfigRoot = '~/.dev-nin/'
 }
-$__code_venvState = Join-Hashtable $__code_venvState @{
-    ConfigDirPrefix = Join-Path $__code_venvState.ConfigRoot 'vscode'
-}
+
+
+# $__code_venvState = Ninmonkey.Console\Join-Hashtable $__code_venvState @{
+#     ConfigDirPrefix = Join-Path $__code_venvState['ConfigRoot'] 'vscode'
+# }
+
+$script:__code_venvState['ConfigDirPrefix'] = Join-Path $__code_venvState['ConfigRoot'] 'vscode'
 
 # mkdir ~/.dev-nin/vscode/ -Force | Out-Null
-mkdir $__code_venvState.ConfigDirPrefix -Force | Out-Null
+try {
+    mkdir $__code_venvState.ConfigDirPrefix -Force # | Out-Null
+} catch {
+    Write-Warning "error creating path: '$_' from '$PSCommandPath'"
+}
 
-$__code_venvState = Join-Hashtable $__code_venvState @{
+$__code_venvState = Ninmonkey.Console\Join-Hashtable $__code_venvState @{
     ConfigVenvOption = Join-Path $__code_venvState.ConfigDirPrefix 'code-venv-option.json'
 }
 
@@ -130,6 +138,7 @@ function Set-VSCodeVenvOption {
 
     Get-Content $__code_venvState.ConfigVenvOption | bat -l json | Write-Host
 }
+
 function Get-VSCodeVenvOption {
     <#
     .synopsis
@@ -158,8 +167,7 @@ function Get-VSCodeVenvOption {
         $curConfig = Get-Content (Get-Item $__code_venvState.ConfigVenvOption)
         | From->Json
 
-    }
-    catch {
+    } catch {
         Write-Error -ea continue $_
         $curConfig = $defaultConfig
     }
