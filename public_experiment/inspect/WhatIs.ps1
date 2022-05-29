@@ -4,33 +4,63 @@ if ( $experimentToExport ) {
         # 'Get-WhatObjectType' ?
         'Get-WhatTypeInfo'
         'Get-WhatIsShortTypeName'
-        'Get-WhatGenericTypeInfo' # to make
+        'Get-WhatGenericTypeInfo' # nyi
         'Get-WhatIsShortPSTypeName'
+
+        #
+        'Resolve-TypeInfo'
+        'Inspect->GenericInfo' # 'Get-WhatGenericTypeInfo'
+
     )
-    $experimentToExport.alias +=
-    @(
+    $experimentToExport.alias += @(
+        # '?' # 'Resolve-TypeInfo'
+        'Resolve->TypeInfo' # 'Resolve-TypeInfo'
+
         'ShortName' #  'Get-WhatIsShortTypeName'
         'ShortPSTypeName' # 'Get-WhatIsShortPSTypeName'
         'Inspect->TypeInfo'
         'Inspect->Interface' # 'Get-WhatInterfaceTypeInfo'
-
         'Inspect->GenericInfo' # to make
         # 'Find-ObjectProperty'
         # 'New-Sketch'
     )
 }
 # }
+# function Resolve-BasicTypeInfo
 
+# function Invoke-WhatCommand {
+#     [Alias('WhatType')]
+#     [CmdletBinding()]
+#     param(
+#         [ValidateSet('Generic', 'Interface', 'ShortName')]
+#         [string]$CommandName
+#     )
+#     begin {
+#         Write-Warning 'I''m not sure I want this command'
+#     }
+#     process {
+#         'not sure if thi will let me pipem be discoverable,  and etc... unless it''s a proxy'
+#     }
+#     end {
+#     }
+
+# }
 function Resolve-TypeInfo {
 
     <#
     .SYNOPSIS
-        Resolve a typeInfo instance, or else error
+        Resolve a typeInfo instance, or else $null
     .description
-        If type isn't found, error'ClassExplorer\Find-Type'
+        I'm using the term "TypeInfo" for resolved types
+
     .notes
+        next:
+            implement [ResolvedTypeInfoParamAttribute()]
         future:
             - [ ] optionally run output through [Format-TypeName] to strip extra 'AssemblyQualifiedName' info
+
+
+            - [ ] If type isn't found, error'ClassExplorer\Find-Type'
 
         refactor / share code for
             Dev.Nin\ResolveTypeInfo
@@ -54,9 +84,41 @@ function Resolve-TypeInfo {
 
         }
         $tinfo
+        .link
+        Get-WhatIsShortTypeName
+    .link
+        Get-WhatIsShortPSTypeName
+    .link
+        Resolve-TypeName
+    .link
+        Resolve-TypeInfo
+    .link
+        Get-WhatInterfaceTypeInfo
+    .link
+        Get-WhatGenericTypeInfo
     #>
-    throw "nyi: $PSCommandPath"
+
     #6 WIP
+    [Alias('Resolve->TypeInfo')]
+    [OutputType('RuntimeType', 'Reflection.TypeInfo', $null)]
+    param(
+        [Parameter(Mandatory, Position = 0,
+            ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [object]$InputObject
+    )
+    process {
+        $obj = $InputObject
+        if ($null -eq $obj) {
+            return
+        }
+        if ($obj -is 'type') {
+            return $Obj
+        }
+        $tinfo = $Obj.GetType()
+        return $tinfo
+
+
+    }
 }
 
 function Get-WhatGenericTypeInfo {
@@ -66,7 +128,7 @@ function Get-WhatGenericTypeInfo {
     param(
     )
     #6 WIP
-    "nyi: $PSCommandPath"
+    throw "nyi: $PSCommandPath"
 }
 function Get-WhatInterfaceTypeInfo {
     <#
@@ -113,6 +175,8 @@ function Get-WhatInterfaceTypeInfo {
         # $InputObject.GetType().Name
     }
 }
+
+
 function Get-WhatIsShortTypeName {
     <#
     .synopsis
@@ -136,8 +200,16 @@ function Get-WhatIsShortTypeName {
         if ($null -eq $InputObject) {
             return
         }
+        # resolve-TypeInfo
+        $tinfo = if ($InputObject -is 'type') {
+            $tinfo = $InputObject
+        } else {
+            $tinfo = $InputObject.GetType()
+        }
+        $Tinfo | _mapFormatShortName
 
-        $InputObject.GetType() | _mapFormatShortName
+
+        $InputObject.GetType()
         # $InputObject | _mapFormatShortName
     }
 }
@@ -256,8 +328,8 @@ function Get-WhatTypeInfo {
             # PSTypeNames = $f.pstypenames | convert 'type' | Format-TypeName -Brackets | str csv
         }
 
-        $meta.type | format-typename -Brackets
-        $meta | format-typename -Brackets
+        $meta.type | Format-TypeName -Brackets
+        $meta | Format-TypeName -Brackets
 
         # Name =
         # FullName
@@ -309,7 +381,7 @@ if (! $experimentToExport ) {
 
     $res = What-TypeInfo (Get-Item . )
     $res | Format-List
-    hr
+    Hr
     $sample = ((Get-Command ls).Parameters)
     $tinfo = $sample.GetType()
     $tinfo | HelpFromType -PassThru
