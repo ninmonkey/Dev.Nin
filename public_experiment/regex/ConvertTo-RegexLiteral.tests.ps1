@@ -2,11 +2,11 @@
 
 Describe 'ConvertTo-RegexLiteral' -Tag Unit {
     BeforeAll {
-        Import-Module Dev.nin -Force
+        Import-Module Ninmonkey.Console -Force
         $ErrorActionPreference = 'Stop'
     }
     It 'Runs without error' {
-        { ConvertTo-RegexLiteral 'stuff', 'other' }
+        { Ninmonkey.Console\ConvertTo-RegexLiteral 'stuff', 'other' }
         | Should -Not -Throw
     }
     Describe 'Verify Patterns for Dotnet are still valid' {
@@ -16,11 +16,11 @@ Describe 'ConvertTo-RegexLiteral' -Tag Unit {
             | Should -Be $True
         }
         It 'Whether Escaped braces match - Convert to Foreach' {
-            # $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
+            # $EscapeBasic = $RawInput | Ninmonkey.Console\ConvertTo-RegexLiteral
             $RawInput = 'sdjf}dfsd'
-            $EscapeBasic = $RawInput | ConvertTo-RegexLiteral
-            $EscapeVS = $RawInput | ConvertTo-RegexLiteral -AsVSCode
-            $EscapeRg = $RawInput | ConvertTo-RegexLiteral -AsRipgrepPattern
+            $EscapeBasic = $RawInput | Ninmonkey.Console\ConvertTo-RegexLiteral
+            $EscapeVS = $RawInput | Ninmonkey.Console\ConvertTo-RegexLiteral -AsVSCode
+            $EscapeRg = $RawInput | Ninmonkey.Console\ConvertTo-RegexLiteral -AsRipgrepPattern
 
             ($RawInput -match $EscapeBasic) | Should -Be $True
             ($RawInput -match $EscapeVS) | Should -Be $True

@@ -16,6 +16,19 @@ if ( $experimentToExport ) {
 # $experimentToExport.alias += @(
 
 # )
+# $ExecutionContext.InvokeCommand.GetCommandName('git', $true)
+# $ExecutionContext.InvokeCommand.GetCommandName('git')
+# $ExecutionContext.InvokeCommand.GetCommandName
+# $sess.InvokeCommand.GetCommand('code.exe', [CommandTypes]::Application )
+# $sess.InvokeCommand.GetCommand('code.cmd', [CommandTypes]::Application )
+# $sess.InvokeCommand.GetCommand('code', [CommandTypes]::Application )
+# & $Null
+
+# $nativeCommand = $ExecutionContext.InvokeCommand.GetCommandName(
+#     <# name: #> 'wsl',
+#     <# nameIsPattern: #> $false,
+#     <# returnFullName: #> $true) | Get-Item
+
 function Invoke-IAutomationNativeCommand {
     <#
     .SYNOPSIS

@@ -126,28 +126,28 @@ function pprint_list {
 
 
 
-if (! $experimentToExport) {
-    # Example usage
-    $Error.clear()
-    $all_files = Get-ChildItem . -Depth 2
-    $selectedFiles = $all_files | Select-Object -First 14
+# if ($false) {
+#     # Example usage
+#     $Error.clear()
+#     $all_files = Get-ChildItem . -Depth 2
+#     $selectedFiles = $all_files | Select-Object -First 14
 
-    pprint_list -Items $selectedFiles -Label 'Ful6lPath'
+#     pprint_list -Items $selectedFiles -Label 'Ful6lPath'
 
-    $selectedFiles
-    | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
-    | pprint_list -label 'Test Super long wrapping -- with ending'
+#     $selectedFiles
+#     | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
+#     | pprint_list -label 'Test Super long wrapping -- with ending'
 
-    $selectedFiles
-    | ForEach-Object { $_.FullName * 3 | Join-String }
-    | pprint_list -label 'Test Super long wrapping -- No End'
+#     $selectedFiles
+#     | ForEach-Object { $_.FullName * 3 | Join-String }
+#     | pprint_list -label 'Test Super long wrapping -- No End'
 
-    $selectedFiles
-    | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
-    | pprint_list -label 'Name_Only '
+#     $selectedFiles
+#     | ForEach-Object { $_.FullName * 3 | Join-String -os "`n" }
+#     | pprint_list -label 'Name_Only '
 
-    $selectedFiles
-    | To->RelativePath
-    | pprint_list -label 'Name_Only '
-    # ...
-}
+#     $selectedFiles
+#     | To->RelativePath
+#     | pprint_list -label 'Name_Only '
+#     # ...
+# }

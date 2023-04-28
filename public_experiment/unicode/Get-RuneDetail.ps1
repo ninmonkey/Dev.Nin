@@ -38,9 +38,11 @@ function Get-RuneDetail {
     param(
         # Docstring
         # Input Text/string
+        # added, to prevent errors on blank or null
+        [AllowNull()]
+        [AllowEmptyCollection()]
         [Parameter(Position = 0, Mandatory, ValueFromPipeline)]
         [string]$InputText
-
     )
 
     begin {
@@ -54,6 +56,19 @@ function Get-RuneDetail {
         # re-run-through before moving to nin
     }
     process {
+        # todo: bug: errors when null, not getting caught # or system was cached
+        if ( [string]::IsNullOrEmpty( $INputText) ) {
+            Write-Debug '[RuneInfo]: leaving early (good)'
+            return
+        }
+        if ($null -eq $InputText) {
+            Write-Error -ea continue "[RuneInfo] ShouldNeverReach: NullValueException '$PSCommandPath'"
+            return
+        }
+        Write-Debug '[RuneInfo]: continue'
+
+
+
         $InputText.EnumerateRunes()
         | ForEach-Object {
             $rune = $_

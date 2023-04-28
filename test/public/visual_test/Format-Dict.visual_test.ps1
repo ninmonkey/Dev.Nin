@@ -1,5 +1,5 @@
 Import-Module dev.nin -Force -wa ignore | Out-Null
-hr
+# hr
 
 'see also: ./test/public/visual_test/Find-Property.visual_test.ps1'
 $SampleText = @{

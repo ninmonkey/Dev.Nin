@@ -46,17 +46,24 @@ function New-CompletionResult {
     }
 }
 
+function findByName {
+    param(
+        [Parameter(Mandatory, Position = 0)]
+        [string]$Color
+    )
+}
+
 # New-CompletionResult  -Debug
 # hr
 # [CompletionResult]::new( '/all', '/All', [CompletionResultType]::ParameterName, 'all' )
-
+return
 
 <# from SeeminglyScience #>
 class EncodingArgumentCompleter : IArgumentCompleter {
     hidden static [string[]] $s_encodings
 
     static EncodingArgumentCompleter() {
-        $allEncodings = [Encoding]::GetEncodings()
+        $allEncodings = [Text.Encoding]::GetEncodings()
         $names = [string[]]::new($allEncodings.Length + 7)
         $names[0] = 'ASCII'
         $names[1] = 'BigEndianUnicode'

@@ -9,45 +9,15 @@ if ( $experimentToExport ) {
     )
 }
 
-function RegexReplaceArray {
-    <#
-    .synopsis
-        transforms using a list of (key -> value) pairs
-    .description
-        ..
-    .notes
-        future:
-            use a struct type record instead
-    .example
-        $Replacements = @(
-            , ('-', '─')
-            , ('\', '└')
-            , ('-', '─')
-            , ('|', '│')
-            , ('+', '├')
-        )
-    .outputs
+if ($true) {
 
-    #>
-    [Alias('RegexReplaceArray')]
-    [CmdletBinding(PositionalBinding = $false)]
-    param(
-
+    $Replacements = @(
+        , ('-', '─')
+        , ('\', '└')
+        , ('-', '─')
+        , ('|', '│')
+        , ('+', '├')
     )
-
-    begin {
-    }
-    process {
-        Write-Error -Category NotImplemented 'wip: nyi'
-
-        # todo: always wrap CmdletExceptionWrapper: From Sci
-    }
-    end {
-    }
-}
-
-if ($false) {
-
     # $newItemSplat = @{
     #     ItemType = 'Directory'
     #     Path     = $PSScriptRoot
@@ -163,11 +133,72 @@ if ($false) {
         }
 
     }
+    # to capture in dev.nin
 
+}
 
+function String-ReplaceRegexList {
+    <#
+    .synopsis
+        transforms using a list of (key -> value) pairs
+    .description
+        ..
+    .notes
+        future:
+            use a struct type record instead
+    .example
+        $Replacements = @(
+            , ('-', '─')
+            , ('\', '└')
+            , ('-', '─')
+            , ('|', '│')
+
+            , ('+', '├')
+        )
+    .outputs
+
+    #>
+    [Alias('String-ReplaceRegexList')]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+
+    )
+
+    begin {
+    }
+    process {
+        Write-Error -Category NotImplemented 'wip: nyi'
+
+        # todo: always wrap CmdletExceptionWrapper: From Sci
+    }
+    end {
+    }
 }
 
 
 if (! $experimentToExport) {
     # ...
+
+    $Replacements | ConvertTo-Json
+
+
+    PSScriptTools\Show-Tree c:\programs -Depth 3
+    | Join-String -sep "`n" | ForEach-Object {
+        $accum = $_
+        foreach ($pair in $Replacements) {
+            $pattern = [regex]::Escape( $pair[0] )
+            $replace = $pair[1]
+            $accum = $accum -replace $pattern, $replace
+        }
+        $accum
+    }
+
+
+    h1 'Replacement mapping'
+    , $Replacements | Join-String -sep "`n" {
+        '{0} ⇒ {1}' -f @(
+            $_[0] | New-Text -fg red | ForEach-Object tostring
+            $_[1] | New-Text -fg green | ForEach-Object tostring
+        )
+    }
 }

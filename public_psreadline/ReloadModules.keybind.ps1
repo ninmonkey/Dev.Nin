@@ -1,6 +1,8 @@
 #Requires -Version 7
 
-throw 'never reaches here'
+
+# do me
+# throw 'never reaches here'
 
 if ( $PSRL_experimentToExport ) {
 

@@ -1,3 +1,4 @@
+
 $experimentToExport.function += @(
     'Show-CommandUsed'
 )
@@ -44,8 +45,15 @@ function Show-CommandUsed {
         $CommandName | ForEach-Object {
             $nameList.Add( $_ )
         }
+        Write-Warning @'
+todo
+- [ ] use AST of prev command to find all types
+- [ ] then filter as mine or not
+
+'@
     }
     end {
+
 
         $result = $nameList | ForEach-Object {
             $curName = $_

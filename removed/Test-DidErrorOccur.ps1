@@ -132,6 +132,7 @@ function Test-DidErrorOccur {
                 $indexLabel = '{0,-2} ' -f $curIndex
                 [string]$_ | ShortenString
                 | Join-String -op $indexLabel
+                # todo:mergeColor
                 # hr 1 -fg magenta
                 $curIndex++ | Out-Null
             } | Join-String -sep "`n" -op "`n"
@@ -153,6 +154,7 @@ errors: {0}, new {1}, {2}
                     $turnsSinceLastCount
                 )
             } elseif ($OutputFormatMode -eq 'default') {
+                # todo:mergeColor
                 "`n"
                 @(
                     '[E]: {0} ' -f @($curCount)

@@ -22,7 +22,11 @@ function Test-IsNotBlank {
     .link
         [string]::IsNullOrWhiteSpace
     .link
-        Dev.Nin\Assert-IsNotBlank
+        Ninmonkey.Console\Test-IsNotBlank
+    .link
+        Ninmonkey.Console\Where-IsNotBlank
+    # .link
+    #     Dev.Nin\Assert-IsNotBlank
     .outputs
         boolean
     #>

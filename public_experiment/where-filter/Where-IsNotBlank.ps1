@@ -22,17 +22,20 @@ function Where-IsNotBlank {
 
         to toggle
         Or even replacing a true-null with "␀"
+    .link
+        Ninmonkey.Console\Test-IsNotBlank
+    .link
+        Ninmonkey.Console\Where-IsNotBlank
 
     .outputs
-        boolean
+        [object]
     .link
         Test-IsNotBlank
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '', Justification = 'internal experiments, personal REPL')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseApprovedVerbs', '',
+        Justification = 'internal experiments, personal REPL')]
     [Alias(
         '?NotBlank'
-        # 'TextProcessing📚.Where-IsNotBlank',
-        # 'Filter🕵.IsNotBlank' # meta: tags
     )]
     [outputtype([object])]
     [cmdletbinding(PositionalBinding = $false)]

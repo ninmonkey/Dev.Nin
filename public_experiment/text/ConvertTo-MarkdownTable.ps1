@@ -1,19 +1,20 @@
 
 $experimentToExport.function += @(
-    'ConvertTo-MarkdownTable'
+    'ConvertTo-MarkdownTable_dev.nin'
 )
 $experimentToExport.alias += @(
-    'Convert.MarkdownTable'
-    'Convert➝MdTable'
+    'dev.Convert.MarkdownTable'
+    'dev.Convert➝MdTable'
 )
 
-function ConvertTo-MarkdownTable {
+function ConvertTo-MarkdownTable_dev.nin {
     <#
     .synopsis
         exports any object as a markdown-table
     .description
         .
     .notes
+    todo: push to separat lib: /marking
         future:
             - [ ] autosort some column by default
             - [ ] args to sort columns
@@ -23,8 +24,8 @@ function ConvertTo-MarkdownTable {
         Dev.Nin\Str
     #>
     [Alias(
-        'Convert.MarkdownTable',
-        'Convert➝MdTable'
+        'dev.Convert.MarkdownTable',
+        'dev.Convert➝MdTable'
     )]
     [cmdletbinding()]
     param(
@@ -57,5 +58,6 @@ function ConvertTo-MarkdownTable {
     process {
 
     }
-    end {}
+    end {
+    }
 }

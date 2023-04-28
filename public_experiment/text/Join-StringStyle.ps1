@@ -1,12 +1,14 @@
 #Requires -Version 7
-# allows script to be ran alone, or, as module import
 
+# allows script to be ran alone, or, as module import
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Join-StringStyle'
     )
     $experimentToExport.alias += @(
-        'str' #  'Join-StringStyle'
+        'JoinStr', #  'Join-StringStyle'
+        'Str', #  'Join-StringStyle'
+        'Csv' #  'Join-StringStyle'
     )
 }
 
@@ -196,9 +198,10 @@ function Join-StringStyle {
 
             I'm not currently using func aliases like 'csv'
         #>
-        'Str'
-        # 'JoinStr',
-        # 'Csv', 'NL',
+        'JoinStr',
+        'Str',
+        'Csv'
+        #  'NL',
         # 'HR',
         # 'Prefix', 'Suffix',
         # 'Table',
@@ -446,7 +449,7 @@ function Join-StringStyle {
                     $extraLines = $separator -as [int]
                     $extraLines ??= 1
                 }
-                $splat_JoinStyle.Separator = hr -ExtraLines $extraLines | ForEach-Object tostring
+                $splat_JoinStyle.Separator = Hr -ExtraLines $extraLines | ForEach-Object tostring
 
             }
             # 'Pair' {
