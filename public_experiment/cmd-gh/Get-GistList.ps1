@@ -6,16 +6,15 @@ if (! $DebugInlineToggle ) {
         'Get-GitCommitHash'
     )
     $experimentToExport.alias += @(
-        'GitTool💻-Gist-List'
-        'GitTool💻-Gist-Files'
-        # .
-        'GitTool💻-Get-CommitHash'
+        # 'GitTool💻-Gist-List'
+        # 'GitTool💻-Gist-Files'
+        # # .
+        # 'GitTool💻-Get-CommitHash'
     )
 
     $script:__devGist_cache = $null # __doc__: replace with MiniModules\LazyCache
     $script:__devGist_Files_cache = @{}
-}
-else {
+} else {
     $script:__devGist_cache ??= $null # __doc__: replace with MiniModules\LazyCache
     $script:__devGist_Files_cache ??= @{}
 }
@@ -154,7 +153,11 @@ function Get-GistList {
         $query = $cachedStdout
         | ForEach-Object {
             $record = $_ -split '\t'
-            $maybeDate = try { $record[4] -as 'datetime' } catch { $record[4] }
+            $maybeDate = try {
+                $record[4] -as 'datetime' 
+            } catch {
+                $record[4] 
+            }
             [pscustomobject]@{
                 Hash     = $record[0]
                 Title    = $record[1]

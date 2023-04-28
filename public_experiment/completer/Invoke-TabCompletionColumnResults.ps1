@@ -1,12 +1,16 @@
 using namespace Management.Automation
 
-$experimentToExport.function += @(
-    'Invoke-TestTabExpansionResults'
-)
-$experimentToExport.alias += @(
-    'DevTool💻-Params-TestTabExpansionResults' # actual command
-    'Example🔖-TestTabExpansionResults' # example usage
-)
+if ($experimentToExport) {
+    $experimentToExport.function += @(
+        'Invoke-TestTabExpansionResults'
+    )
+    $experimentToExport.alias += @(
+        'DevTool💻-Params-TestTabExpansionResults' # actual command
+        'Example🔖-TestTabExpansionResults' # example usage
+    )
+} else {
+    Write-Warning 'InlineTest, so functions are not exported'
+}
 
 function Invoke-TestTabExpansionResults {
     <#
@@ -39,8 +43,9 @@ function Invoke-TestTabExpansionResults {
             try {
                 $res = (TabExpansion2 -inputScript $InputScript -cursorColumn $curCol -ea stop)
             } catch {
-                Write-Warning "Error: $_"
-                $res = $null ?? "[`u{2400}]" # do not quit
+                Write-Error -ErrorRecord $_ 'failedComplete'
+                # Write-Warning "Error: $_"
+                # $res = $null ?? "[`u{2400}]" # do not quit
             }
             # [pscustomobject]@{
             #     Step     = $curCol
@@ -56,7 +61,8 @@ function Invoke-TestTabExpansionResults {
                 ResultType     = $resMatch.ResultType ?? "[`u{2400}]"
                 ToolTip        = $resMatch.ToolTip ?? "[`u{2400}]"
                 Matching       = if ($res) {
-                    $(res)?.CompletionMatches.Matching ?? "[`u{2400}]" 
+                    $res.CompletionMatches.Matching ?? "[`u{2400}]"
+                    # $(res)?.CompletionMatches.Matching ?? "[`u{2400}]"
                 }
                 Object         = $res ?? "[`u{2400}]"
             }

@@ -39,6 +39,7 @@ function _lazyImportIsStale_iter0 {
     .synopsis
         watch a single file for changes
     .example
+
             $target = gi 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\_formatErrorSummary.ps1'
             if(Test-IsLazyImportStale -WatchFile $target -ea Continue -Verbose) { Import-Module Dev.Nin -Force }
     .example

@@ -2,11 +2,11 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        'Invoke-GHRepoList'
+        'Invoke-GHRepoList_dev'
         '_enumerateProperty_gh_repoList'
     )
     $experimentToExport.alias += @(
-        'Gh->RepoList' # 'Invoke-GHRepoList'
+        'Gh->RepoList_dev' # 'Invoke-GHRepoList_dev'
     )
 }
 
@@ -37,13 +37,15 @@ function _processGHRepoListRecord {
     process {
         $Json | ConvertFrom-Json
         | ForEach-Object {
+            $_
+            Write-Warning 'nyi, don''t remember what it was for'
 
         }
     }
 
 }
 
-function Invoke-GHRepoList {
+function Invoke-GHRepoList_dev {
     <#
     .synopsis
         experiment with querying /w gh cli
@@ -51,7 +53,7 @@ function Invoke-GHRepoList {
         original query was like this:
             gh repo list JustinGrote --source --json=$proplist --limit 999 | Set-Content 'api_response.json'
     .example
-        Invoke-GHRepoList -infa Continue dfinke Public -Debug -Verbose
+        Invoke-GHRepoList_dev -infa Continue dfinke Public -Debug -Verbose
     .notes
         #6 WIP
         - [ ] future: autocomplete Owner
@@ -81,7 +83,7 @@ function Invoke-GHRepoList {
     .link
         Dev.Nin\_enumerateProperty_gh_repoList
     #>
-    [Alias('Gh->RepoList')]
+    [Alias('Gh->RepoList_dev')]
     [CmdletBinding()]
     param (
         [ALias('Owner')]
@@ -195,7 +197,9 @@ function Invoke-GHRepoList {
             }
         }
         $GhArgs += @(
-            "--json=$propList"
+            '--json'
+            $propList # $propList -join ','
+            # "--json=$propList"
         )
 
 

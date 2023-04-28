@@ -2,10 +2,10 @@
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
-        # 'F'
+
     )
     $experimentToExport.alias += @(
-        # 'A'
+
     )
 }
 
@@ -25,7 +25,6 @@ if ($script:___throttleTaskList) {
 
                 'cleaning...'
                 $logs | Remove-Item
-
 
                 Start-Sleep 1
                 $logs = Get-ChildItem C:\Windows\Temp *.evtx

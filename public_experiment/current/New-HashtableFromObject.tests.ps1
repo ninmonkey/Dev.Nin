@@ -1,5 +1,6 @@
 BeforeAll {
     Import-Module Dev.Nin -Force
+    # future: Move to /ninmonkey/console
 }
 
 Describe 'New-HashtableFromObject' {

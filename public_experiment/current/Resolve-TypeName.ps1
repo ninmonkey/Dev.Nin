@@ -5,7 +5,8 @@ if ( $experimentToExport ) {
         'Resolve-TypeName'
     )
     $experimentToExport.alias += @(
-        'FullName'
+        'FullName'      # 'Resolve-TypeName'
+        'To->TypeName'  # 'Resolve-TypeName'
     )
 }
 
@@ -16,6 +17,20 @@ function Resolve-TypeName {
         Resolve a type's FullName from an instance, a 'type', typename as a string, or using wildcards.
     .description
         If type isn't found, it will use a wildcard search using 'ClassExplorer\Find-Type'
+
+    .link
+        Get-WhatIsShortTypeName
+    .link
+        Get-WhatIsShortPSTypeName
+    .link
+        Resolve-TypeName
+    .link
+        Resolve-TypeInfo
+    .link
+        Get-WhatInterfaceTypeInfo
+    .link
+        Get-WhatGenericTypeInfo
+
     .notes
         future:
             - [ ] optionally run output through [Format-TypeName] to strip extra 'AssemblyQualifiedName' info
@@ -37,7 +52,10 @@ function Resolve-TypeName {
     #>
 
     [CmdletBinding(  )]
-    [Alias('FullName')]
+    [Alias(
+        'FullName',
+        'To->TypeName'
+    )]
     [OutputType([String])]
 
     Param (
@@ -67,6 +85,41 @@ function Resolve-TypeName {
     }
 
     process {
+
+        # original was stable
+        if ($False) {
+            #
+            # function _resolveTypeInfo {
+            #     # resolve as typeinfo
+            #     param( $Type )
+            #     $tinfo = if ($Type -is 'type') {
+            #         $Type
+            #     } else {
+            #         ($Type)?.GetType() ?? "`u{2400}"
+            #     }
+            #     return $tinfo
+            # }
+        }
+
+        # $target = (Get-Item . | ForEach-Object GetTYpe )
+        try {
+            # this implicityly catches strings, in all cases ?
+            $target = $InputObject
+            $isType = $target -as 'type' -is 'type'
+            # wont this lose pstypenames, if added?
+            #       $target -as 'type' -is 'type'
+
+            $tinfo = $isType ? $target -as 'type' : $target.GetType()
+        } catch {
+            if ($_ -match 'unable to find type') {
+                (Find-Type  ) | Assert-OneOrNone
+            }
+
+        }
+        $tinfo
+        hr
+        return
+
         $isAType = $inputObject -as 'type' -is 'type'
         if (! $isAType ) {
             $tinfo = $InputObject.GetType()

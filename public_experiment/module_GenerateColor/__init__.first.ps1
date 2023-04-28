@@ -29,6 +29,7 @@ the "Real" module init is in:
         # BlockSequence        = 0x2586..0x258f | Convert-CharFromCodepoint
         # BlockSequenceAndBack = @(0x2586..0x258f) + @(0x258f..0x2586) | Convert-CharFromCodepoint
     }
+
     $__nancy.Delimiter = @(
         '▸', '⇢', '⁞', '┐', '⇽', '▂'
     )
@@ -49,6 +50,14 @@ the "Real" module init is in:
         'UnderPublic🕵️‍♀️'
         'My🐒 Validation🕵'
     ) | Sort-Object -Unique
+
+    $__nancy.BigBlob = @(
+        '▸·⇢⁞ ┐⇽▂'
+        '⁞🐛💻▸⇢📄📁⁞ ┐⇽▂🏠🖧'
+        '➙🠚▸·⇢⁞ ┐⇽▂↦[]≠∈⇒'
+        '∅▸·⇢⁞ ┐⇽▂↦[]≠∈⇒'
+        '- ▸·⇢⁞ ┐⇽▂⸻'
+    ) -join "`n"
 
 }
 

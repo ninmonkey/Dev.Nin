@@ -18,6 +18,9 @@ function objTypes_basic {
         [Parameter(Position = 0, ValueFromPipeline)]
         [object]$InputObject
     )
+    begin {
+        Write-Warning 'might only need a resolve->typeinfo'
+    }
     process {
         $InputObject.GetType().Name
         $InputObject.PSTypeNames
@@ -39,6 +42,8 @@ function objTypes_basic {
             | Format-IndentText -Depth 2
 
         }
+    }
+    end {
     }
 }
 
@@ -63,6 +68,7 @@ function objTypes {
         [Parameter()][hashtable]$Options
     )
     begin {
+        Write-Warning 'current state, not getting correct child summary, might only need resolve->typeinfo'
         # [hashtable]$ColorType = Join-Hashtable $ColorType ($Options.ColorType ?? @{})
         [hashtable]$Config = @{
             BaseDepth = 1
@@ -71,14 +77,14 @@ function objTypes {
         $Str = @{}
 
         $Str.ColorDim = @(
-            '' | Write-color -fg (Color->Gray 30)
+            '' | Write-Color -fg (Color->Gray 30)
         ) -join ''
 
         $Str.PrefixPSTypenames = @(
             'PSTypeNames: ' | Write-Color -fg (Color->Gray 50)
             $PSStyle.Reset
             # $Str.ColorDim
-            '' | Write-color -fg (Color->Gray 30)
+            '' | Write-Color -fg (Color->Gray 30)
             # "${fg:clear}"
             # $PSStyle.Foreground
         ) -join ''
@@ -120,6 +126,9 @@ function objTypes {
 
         }
     }
+    end {
+    }
+
 }
 
 function objTypes_oneline {

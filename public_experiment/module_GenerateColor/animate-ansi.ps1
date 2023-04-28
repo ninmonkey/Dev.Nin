@@ -7,13 +7,14 @@ function __lerp {
     .synopsis
         used for example: animating 35 frames over 2 seconds
 
-
+    interpolate make me
     #>
 
     param (
         $Value, $Min, $Max
     )
 }
+Write-Warning "Impl __lerp: $PSCommandPath"
 
 function __enumerateAnimation {
     <#
@@ -25,3 +26,5 @@ function __enumerateAnimation {
 
     'NYI: also see: _enumerateColorGradient'
 }
+
+# __enumerateAnimation

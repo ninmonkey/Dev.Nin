@@ -418,6 +418,35 @@ $When = (Get-Date).ToString('u')
         | Sort-Object LastWriteTime
         | Format-Table -GroupBy $TableByDay
     }
+    $state.propsToLiteral = {
+        <#
+        .synopsis
+            print out all properties and types, as a type definition
+        .example
+            PS> propsToLiteral (get-date) | bat -fpl ps1
+        #>
+
+        param(
+            [object]$Target
+        )
+        $Target.psobject.properties
+        | Sort-Object Name | Join-String -sep "`n" {
+            #        $_.Value.GetType().Name, $_.Name
+
+            @(
+                '[{0}]${1}' -f @(
+                    $_.Value.GetType()
+                    $_.Name
+                )
+                | Join-String -sep ' ' -op
+            )
+
+        }
+    }
+
+
+
+
     $state.Table_GroupByDay = {
         <#
         .synopsis
@@ -492,7 +521,7 @@ $When = (Get-Date).ToString('u')
     }
     $state.Pwsh_ShowRunningArgs = {
         # [tip] using joinstring
-        Get-Process pwsh | jstr -sep (hr 2) { $_.CommandLine -replace '\s-', "`n-" }
+        Get-Process pwsh | jStr -sep (Hr 2) { $_.CommandLine -replace '\s-', "`n-" }
     }
 
     $state.Command_DumpInfoPretty = {
@@ -511,10 +540,10 @@ $When = (Get-Date).ToString('u')
             'PSScriptRoot'                   = $PSScriptRoot | Get-Item
         }
 
-        h1 'Top'
+        H1 'Top'
         $dbg | Format-List
 
-        h1 'PSDefaultParameterValues'
+        H1 'PSDefaultParameterValues'
         $dbg.PSDefaultParameterValues | Sort-Hashtable -SortBy Key | format-dict
 
     }
@@ -555,15 +584,15 @@ $When = (Get-Date).ToString('u')
 
     }
     $state.Color_DumpAnimatedAnsiFW = {
-        h1 'basic'
+        H1 'basic'
         $i = 0
         RepeatIt 3 {
             $i++
             Get-ColorWheel -Count 100 -HueStep 56
             | _write-AnsiBlock -NoName | obj | Format-Wide -AutoSize ##(30 + $i)
         }
-        hr -fg magenta
-        h1 'more involved'
+        Hr -fg magenta
+        H1 'more involved'
         $maxLoops = 3 ; $loopCount = 0
         $hueStep = Get-Random -Maximum 120 -Minimum 0
         $wheelSteps = Get-Random -Maximum 300 -Minimum 100
@@ -610,21 +639,21 @@ $When = (Get-Date).ToString('u')
             }
 
             $td.GetEnumerator() | ForEach-Object {
-                h1 $_.Key
+                H1 $_.Key
                 $_.Value | s * | Format-List *
 
-                label 'member' 'default display property set'
+                Label 'member' 'default display property set'
                 $_
             }
 
             $td.members.keys
-            | str csv ' ' | label 'TD.members.keys'
+            | str csv ' ' | Label 'TD.members.keys'
 
             $td | ForEach-Object defaultdisplaypropertyset
-            | str csv ' ' | label 'TD.DefaultDisplayPropertySet'
+            | str csv ' ' | Label 'TD.DefaultDisplayPropertySet'
 
             $td | ForEach-Object defaultdisplaypropertyset | ForEach-Object ReferencedProperties
-            | str csv ' ' | label 'TD.DefaultDisplayPropertySet.ReferencedProperties'
+            | str csv ' ' | Label 'TD.DefaultDisplayPropertySet.ReferencedProperties'
 
 
 
@@ -738,5 +767,5 @@ function Invoke-MiniFuncDump {
             [2] completer **tooltips** show the __doc__ str for that function.
         '
         }
-    }
+    }Get-Location
 }

@@ -1,4 +1,5 @@
 #Requires -Version 7
+# Write-Warning ('-.' * 30 -join '' | Join-String -op "$PSCommandPath I am in wrong path")
 
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
@@ -11,6 +12,8 @@ if ( $experimentToExport ) {
         '_mapUrlEncode'
         '_fmt_FilepathForwardSlash'
         '_fmt_FilepathWithoutUsernamePrefix'
+        # 'off'
+        # 'on'
     )
     $experimentToExport.alias += @(
 
@@ -23,6 +26,42 @@ if ( $experimentToExport ) {
     # }
 }
 
+
+function _fmt_GenericTypeNameToShort {
+    <#
+    .synopsis
+        formats reverse slashes forward, if text, otherwise coerce
+    .notes
+        future:
+        todo:
+    .example
+
+        PS>
+
+            C:/nin_temp/.output/
+    .link
+        Dev.Nin\_mapFormatShortName
+
+    #>
+    param(
+        # Object or path to map
+        # [Alias('PSPath', 'Path', 'FullName')]
+        [Parameter(
+            Mandatory, ValueFromPipeline,
+            ValueFromPipelineByPropertyName)]
+        [object]$InputObject
+
+        # # What to replace it with
+        # [Parameter(Position = 0)]
+        # [string]$ReplaceWith = '/'
+    )
+    process {
+
+        throw 'woah code not ready'
+        $Render = $InputObject | ForEach-Object tostring
+        $render -replace '\\', $ReplaceWith
+    }
+}
 function _fmt_FilepathForwardSlash {
     <#
     .synopsis
@@ -152,6 +191,7 @@ function _mapUriQueryDict {
 
 
     #>
+    param()
     process {
 
         $uri = [uri]$_
@@ -206,17 +246,17 @@ if (! $experimentToExport) {
     )
 
 
-    h1 'map query to dict'
+    H1 'map query to dict'
     $samples | _mapUriQueryDict
 
-    h1 'misc'
+    H1 'misc'
     '%2Fdevrel%2Fe6f942e8-55a7-4c86-b8e3-7456508ea850' | _mapUrlDecode
-    | label 'decode url'
+    | Label 'decode url'
 
-    h1 'functions in script'
+    H1 'functions in script'
     lsFunc -Path 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\func\func_map_dump.ps1' | ForEach-Object Name | Sort-Object -Unique
 
-    h1 'functions in script (dynamic path)'
+    H1 'functions in script (dynamic path)'
     lsfunc -Path $PSCommandPath
     | ForEach-Object Name | Sort-Object -Unique | str csv -SingleQuote
     #| cl

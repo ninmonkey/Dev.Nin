@@ -5,6 +5,7 @@ function _formatColorNameTooltip {
     .description
         like this, but the qoutes is a colored block
         Goldenrod1' '
+
     .example
         🐒> _formatColorNameTooltip seagreen
         SeaGreen ' '
@@ -15,6 +16,7 @@ function _formatColorNameTooltip {
         SeaGreen '␛[97m␛[48;2;46;139;87m ␛[49m␛[39m'
     #>
     param(
+        # todo next
         #  color name pair
         [Parameter(
             Mandatory, Position = 0,
@@ -54,7 +56,8 @@ function Get-ColorNameArgumentCompletion {
         [string]$Name
     )
 
-    begin {}
+    begin {
+    }
     process {
         'nyi:
         this will format tooltips in the completer like
@@ -64,5 +67,6 @@ function Get-ColorNameArgumentCompletion {
     '
 
     }
-    end {}
+    end {
+    }
 }

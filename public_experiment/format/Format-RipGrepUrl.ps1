@@ -26,6 +26,7 @@ function Format-RipGrepResult {
             shell\Ninmonkey.Profile\Ninmonkey.Profile.psm1
 2021\dotfiles_git\power
 
+
     .example
             PS> rg -c -tps 'invoke-restmethod'
                 | Format-RipGrepResult -AsText

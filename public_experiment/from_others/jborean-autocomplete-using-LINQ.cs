@@ -1,4 +1,5 @@
 
+// # neat
 internal class PrivilegeCompletor : IArgumentCompleter
 {
     public IEnumerable<CompletionResult> CompleteArgument(string commandName, string parameterName,

@@ -17,15 +17,76 @@ if ( $experimentToExport ) {
 enum GitStatusState {
     Untracked = 1
     U = 1
+    # '??' = 1
     Modified = 2
     M = 2
     Deleted = 3
     D = 3
-    # '??' = 1 # Can't easily declare an enum value named '??'
-
-    # todo: create argument transformation which always handles '??'
-    # and, auto-converts to the long-name versions
+    Ignored = 4
+    I = 4
+    # '!!' = 4
 }
+
+
+# '??' = 1 # Can't easily declare an enum value named '??'
+
+# todo: create argument transformation which always handles '??'
+# and, auto-converts to the long-name versions
+<#
+
+        n the following table, these three classes are shown in separate sections, and these characters are used for X and Y fields for the first two sections that show tracked paths:
+
+        ' ' = unmodified
+
+        M = modified
+
+        T = file type changed (regular file, symbolic link or submodule)
+
+        A = added
+
+        D = deleted
+
+        R = renamed
+
+        C = copied (if config option status.renames is set to "copies")
+
+        U = updated but unmerged
+
+
+
+
+        man git-status:
+
+            X          Y     Meaning
+            -------------------------------------------------
+                [AMD]   not updated
+            M        [ MTD]  updated in index
+            T        [ MTD]  type changed in index
+            A        [ MTD]  added to index
+            D                deleted from index
+            R        [ MTD]  renamed in index
+            C        [ MTD]  copied in index
+            [MTARC]          index and work tree matches
+            [ MTARC]    M    work tree changed since index
+            [ MTARC]    T    type changed in work tree since index
+            [ MTARC]    D    deleted in work tree
+                    R    renamed in work tree
+                    C    copied in work tree
+            -------------------------------------------------
+            D           D    unmerged, both deleted
+            A           U    unmerged, added by us
+            U           D    unmerged, deleted by them
+            U           A    unmerged, added by them
+            D           U    unmerged, deleted by us
+            A           A    unmerged, both added
+            U           U    unmerged, both modified
+            -------------------------------------------------
+            ?           ?    untracked
+            !           !    ignored
+            -------------------------------------------------
+
+    #>
+
 
 function ConvertFrom-NativeGitStatus {
     <#

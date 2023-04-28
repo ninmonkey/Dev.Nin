@@ -52,7 +52,8 @@ function _write-FormatSortOrder {
         [Parameter()]
         [ArgumentCompletions(
             '@{FormatMode="HighlightName"}',
-            '@{FormatMode="simple"}'
+            '@{FormatMode="simple"}',
+            '@{FormatMode="simple"; Fg="gray60"; Bg="gray30" }'
         )]
         [hashtable]$Options
 

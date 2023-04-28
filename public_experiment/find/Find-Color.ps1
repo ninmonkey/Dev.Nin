@@ -83,6 +83,9 @@ function Test-WriteColorSampleMessage {
             [PoshCode.Pansies.ColorSpaces.ColorSpace]
             [PoshCode.Pansies.ColorSpaces.Rgb]
             [PoshCode.Pansies.RgbColor]
+
+        see also:
+            pastel: cli command
     #>
     [Alias('Color->TestMessage')]
     param(

@@ -13,6 +13,7 @@ function Format-WritePaddedText {
     <#
         .synopsis
             sugar for [string].PaddLeft(..) on the pipelin
+            # finish me
         .notes
             .
             See immutatble string ets

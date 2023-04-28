@@ -20,6 +20,7 @@ function Get-JObjectProperty {
     .example
         ls . | select -first 1 | PropList | ft Type, TypeOfValue, Name, Value
     .notes
+        JProp v0.1
         future:
             - [ ] normal props
                 render dark

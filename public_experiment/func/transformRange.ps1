@@ -10,6 +10,7 @@ if ( $experimentToExport ) {
     )
 }
 
+
 # function Convert-NumberRangeFromRange-NumberRange {
 function ConvertFrom-NumberRange {
     <#
@@ -60,15 +61,15 @@ function ConvertFrom-NumberRange {
 
         # Max of first range
         [Alias('B', 'Maximum1')]
-        [parameter(Mandatory, Position = 0)]
+        [parameter(Mandatory, Position = 1)]
         [object]$Max1,
 
         [Alias('C', 'Minimum2')]
-        [parameter(Mandatory, Position = 0)]
+        [parameter(Mandatory, Position = 2)]
         [object]$Min2,
 
         [Alias('D', 'Maximum2')]
-        [parameter(Mandatory, Position = 0)]
+        [parameter(Mandatory, Position = 3)]
         [object]$Max2
 
         # extra options
@@ -83,12 +84,25 @@ function ConvertFrom-NumberRange {
         # }
         # $Config = Join-Hashtable $Config ($Options ?? @{})
         # preconditions
-        @(
-            # >  (meaning f(a)=c and f(b)=d), assuming a≠b.
-            $Minimum1 -ne $Maximum1   # a≠b.
-        ) | Dev.Nin\Test-AllTrue
+        if ($Min1 -eq $Max1) {
+            Write-Error -Message 'Precondition failed: a ≠ b' -Category InvalidArgument -TargetObject @{
+                A = $Min1; B = $Max1; Min2 = $Min2; Max2 = $Max2; X = $Value # or Category: InvalidData ?
+            }
+            if (!($value -ge $Min1 -and $Value -le $max1)) {
+                Write-Error -Message 'Precondition failed: a ≤ x ≤ b' -Category InvalidArgument -TargetObject @{
+                    A = $Min1; B = $Max1; Min2 = $Min2; Max2 = $Max2; X = $Value
+                }
+
+            }
+            # @(
+            #     # >  (meaning f(a)=c and f(b)=d), assuming a≠b.
+            #     $Min1 -ne $Max1   # a≠b.
+            # ) | Dev.Nin\Test-AllTrue
+            # $Min
+        }
     }
     process {
+
         <#
             f(t) = c + ( (d - c)  / (b - a) ) * (t - a)
             f(x) = $Min2 + ( ($Max2 - $Min2)  / ($Max1 - $min1) ) * ($X - $Min1)
@@ -112,24 +126,11 @@ function ConvertFrom-NumberRange {
 
 
 
-        $Min2 + ( ($Max2 - $Min2) / ($Max1 - $min1) ) * ($X - $Min1)
-
-        # minified
-        # ($Minimum2) + ((($Maximum2) - ($Minimum2))  / ($Maximum2 - ($Minimum1)) ) * ($Value - $Minimum1)
-        <#
-        ($Min2) + (
-            ( ($Max2) - ($Min2)) / ($Max2 - ($Min1) )
-        ) * ($Value - $Min1)
-                ($Minimum2) + (
-                    (
-                        ($Maximum2) - ($Minimum2)) / ($Maximum2 - ($Minimum1)
-                    )
-                ) * ($Value - $Minimum1)
-        #>
-
+        $Min2 + ( ($Max2 - $Min2) / ($Max1 - $min1) ) * ($Value - $Min1)
 
     }
     end {
+        # Write-Warning 'does not run '
 
     }
 }

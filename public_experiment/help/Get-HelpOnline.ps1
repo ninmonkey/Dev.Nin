@@ -26,7 +26,7 @@ function Get-HelpOnline {
         🐒>
     #>
 
-    [Alias('ho')]
+    # [Alias('ho')]
     [CmdletBinding(PositionalBinding = $false)]
     param(
         # command or text to look up
@@ -40,19 +40,22 @@ function Get-HelpOnline {
 
         try {
             $InputObject
-            | Resolve-CommandName
-            | help -Online
-            return
-        } catch [System.Management.Automation.PSInvalidOperationException] {
-            'todo: Try fallback'
-            $_.Exception.ToString()
-            Write-Error $_
+            | Resolve-CommandName -ea stop
+            | help -Online -ea stop
+
+            'full way [1]'
+            # } catch [System.Management.Automation.InvalidOperationException ] {
+        } catch {
+            'failed way [2]'
+            # 'todo: Try fallback'
+            # $_.Exception.ToString()
+            # Write-color -fg 'blue' -t $_
         }
 
         "maybe it's a type?"
-        hr
+        Hr
         $InputObject | Get-ObjectTypeInfo
-        hr
+        Hr
         $InputObject | get-objectTypeHelp
 
     }

@@ -79,6 +79,7 @@ function Test-TabExpansionResult {
             [System.Management.Automation.Language.Ast]
             [System.Management.Automation.Language.Token]
             [System.Management.Automation.Language.IScriptPosition]
+
     .link
         [ArgumentCompleterAttribute]
     .link
@@ -122,7 +123,7 @@ function Test-TabExpansionResult {
             Query      = $CommandText
             Id         = $id++
         }
-        [pscustomobject]( Join-HashTable $meta $mergeOther )
+        [pscustomobject]( Join-Hashtable $meta $mergeOther )
     }
 }
 

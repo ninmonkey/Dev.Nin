@@ -7,9 +7,9 @@ if ( $experimentToExport ) {
     $experimentToExport.alias += @(
         'Dev->FindTypeData' # 'Find-DefinedTypeData'
 
+
     )
 }
-
 function Find-DefinedTypeData {
     <#
         .synopsis
@@ -41,6 +41,7 @@ function Find-DefinedTypeData {
                 Get-Item @ignoreSplat 'G:\2021-github-downloads\dotfiles\SeeminglyScience'
                 Get-Item @ignoreSplat "${Env:UserProfile}\skydrive\Documents\PowerShell\Modules"
             )
+                    #todo: try
         }
         $Config = Join-Hashtable $Config ($Options ?? @{})
 

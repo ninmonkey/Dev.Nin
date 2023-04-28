@@ -8,6 +8,11 @@ if ($experimentToExport) {
     )
 }
 
+function InfiniteArgs {
+    param()
+    $args.count
+    $args -join ', '
+}
 function Invoke-PropertyChain {
     <#
     .synopsis
@@ -90,7 +95,7 @@ if (! $experimentToExport) {
     $lvlDiagnostic = @{
         Debug             = $true
         InformationAction = 'continue'
-        Verbose           = $true
+        Verbose           = $truep
     }
     Get-Item . | Dive.Prop '.GetType().FullName' -AsIEX
 

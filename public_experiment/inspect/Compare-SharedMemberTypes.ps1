@@ -63,7 +63,7 @@ function Compare-SharedMemberTypes {
         # which mode
         [alias('Mode')]
         [ValidateSet('GetMember', 'FindMember', 'Properties')]
-        [Parameter()][string]$CompareMode = 'FindMember'
+        [Parameter()][string]$CompareMode = 'Properties'  # 'FindMember'
     )
 
     begin {
@@ -71,9 +71,7 @@ function Compare-SharedMemberTypes {
         $ObjectList = [list[object]]::new()
     }
     process {
-        $InputObject | ForEach-Object {
-            $ObjectList.Add( $_ )
-        }
+        $ObjectList.AddRange( $InputObject )
     }
     end {
         $comparisonList = switch ($CompareMode) {

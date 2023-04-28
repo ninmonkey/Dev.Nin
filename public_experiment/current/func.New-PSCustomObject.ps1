@@ -66,6 +66,7 @@ function New-NinPSCustomObject {
         }
     }
     end {
+        Write-Warning 'this is wrong code, this is the new-textobject version, this one should be able to pipe'
     }
 }
 

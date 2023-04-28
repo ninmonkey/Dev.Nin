@@ -29,6 +29,13 @@ function New-HashtableLookup {
 
         future:
         - [ ] allow object to be param
+        - [ ]
+
+        todo:
+
+            - [ ] fix errors when:  when
+                $PSVersionTable | dict  # 0 found
+                $PSVersionTable | dict '.*' # works
     .example
         PS> ls . -File | New-HashtableLookup 'Length'
 
@@ -220,17 +227,25 @@ function New-HashtableFromObject {
             # $filteredNames = $PropNames
         } else {
             # todo: refactor using AnyTrue or AnyFalse , maybe in Utility
-            # $ErrorActionPreference = 'stop'
+            $ErrorActionPreference = 'stop'
+            # Wait-Debugger
             $filteredNames = $PropNames | Where-Object {
                 $curName = $_
                 foreach ($pattern in $IncludeProperty) {
                     #do I try catch on the innermost test?
-                    if ($curName -match $Pattern) {
-                        $true; return;
+                    try {
+                        if ($curName -match $Pattern) {
+                            $true; return;
+                        }
+                    } catch {
+                        'Regex error with Pattern {0} on: {1}' -f @(
+                            $pattern
+                            $curName
+                        ) | Write-Error -ea continue
                     }
                 }
             }
-            # $ErrorActionPreference = 'stop'
+            $ErrorActionPreference = 'stop'
         }
         $filteredNames | str csv -sort | Write-Color gray | Join-String -op 'Included Props: ' | Write-Debug
         if (! $ExcludeProperty ) {
@@ -293,6 +308,13 @@ function New-HashtableFromObject {
 
         $filteredNames | ForEach-Object {
             $curName = $_
+
+            # ???
+            if ( [string]::IsNullOrWhiteSpace( $curName )) {
+                return
+            }
+
+
             $targetObj = $InputObject.psobject.properties
 
             # needs verbose null test if PS5

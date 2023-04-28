@@ -1,23 +1,165 @@
-# if ($BadDebugEnabled) {
+#Requires -Version 7
+# test this
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Dump->PropListSketch'
+        'Completion-PropertyName'
+        '_get-ObjectProperty' # is Iter->Prop
+        #
+        '_iPropSketch'
+    )
+    $experimentToExport.alias += @(
+        # 'iterProp'
+        'Iter->Prop' # _get-ObjectProperty
 
-$experimentToExport.function += @(
-    '_enumerateProperty'
-    'Completion->PropertyName'
-    '_get-ObjectProperty' # is Iter->Prop
-)
-$experimentToExport.alias += @(
-    # 'iterProp'
-    'Iter->Prop'
-    'Iter->PropName'
+        'Iter->PropName'    # Completion-PropertyName
+        'Completions->PropertyName' # Completion-PropertyName
 
 
-    # 'Find-ObjectProperty'
-    # 'New-Sketch'
-)
-# }
-# fix me
 
-function Completion->PropertyName {
+        # 'Find-ObjectProperty'
+        # 'New-Sketch'
+
+    )
+}
+
+
+function _iPropSketch {
+    <#
+    .synopsis
+        sketch until DevNin\Iprop is refactored
+    .example
+        get-date | _iPropSketch -Options @{MaxWidth=10}
+        get-date | _iPropSketch -Options @{MaxWidth=40}
+    .example
+
+        get-date | _iPropSketch -Options @{MaxWidth=5; ShortenAllCol=$false; SortOrder=@('Value', 'Name')}
+        get-date | _iPropSketch -Options @{MaxWidth=5; ShortenAllCol=$false; SortOrder=@('Name', 'Type')}
+
+    #>
+    param(
+        [parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        $InputObject,
+
+        # extra options
+        [Parameter()][hashtable]$Options,
+
+
+        # should be redundant if formatter is specified
+        [Parameter()][switch]$PassThru
+    )
+    # temp func before iProp is refactord
+    begin {
+        [hashtable]$Config = @{
+            MaxWidth      = 40
+            ShortenAllCol = $true
+            SortOrder     = 'Type', 'Name', 'Value'
+        }
+        $Config = Join-Hashtable $Config ($Options ?? @{})
+
+    }
+    process {
+        if ($null -eq $InputObject) {
+            return
+        }
+
+        $formatTableSplat_basic = [ordered]@{
+            Property = 'Name', 'Value', 'TypeNameOfValue',
+            @{
+                n = 'TypeOfValue'
+                e = { $_.value.GetType().Name }
+            }
+        }
+
+        $actualType = $InputObject.GetType()
+        $reportedType = $InputObject.TypeNameOfValue
+
+        $formatTableSplat = [ordered]@{
+            Property = @(
+                'Name'
+                @{
+                    n = 'Type'
+                    e = { $_.value.GetType().Name }
+                }
+                'TypeNameOfValue'
+                'Value'
+            )
+        }
+
+
+        $render = $InputObject
+        | Iter->Prop
+        | ForEach-Object {
+            $curProp = $_
+            $tinfo_actual = $curProp.Value.GetType().FullName
+            $tinfo_reported = $curProp.TypeNameOfValue
+            $tinfo_diff = $tinfo_actual -ne $tinfo_reported
+
+            # $maybeShort = $_.| ShortenString 40 -FromEnd
+            $colMax = $Config.MaxWidth
+
+            # $Config_ShortenAllCols = $true
+            if ($Config.ShortenAllCol) {
+                $meta = [ordered]@{
+                    Name  = $curProp.Name
+                    | ShortenString -max $colMax -FromEnd
+
+                    Type  = $tinfo_actual | ShortName
+                    | ShortenString -max $colMax -FromEnd
+
+                    TName = $tinfo_diff ? $tinfo_reported : ''
+                    | ShortenString -max $colMax -FromEnd
+
+                    Value = $curProp.Value
+                    | ShortenString -max $colMax -FromEnd
+
+                }
+            } else {
+                $meta = [ordered]@{
+                    Name  = $curProp.Name
+
+
+                    Type  = $tinfo_actual | ShortName
+                    | ShortenString -max $colMax -FromEnd
+
+
+                    TName = $tinfo_diff ? $tinfo_reported : ''
+
+
+                    Value = $curProp.Value
+                    | ShortenString -max $colMax
+
+                }
+
+            }
+            [pscustomobject]$meta
+            $curProp
+
+        }
+        | Sort-Object $Config.SortOrder
+
+        if ( $PassThru) {
+            $render
+            return
+        }
+        $render
+        | Format-Table -auto
+
+
+        <#
+        auto short only if too long
+            'Microsoft.PowerShell.Commands.DisplayHintType'
+                | if($_.toString().length -le 40) {
+                @( '...';
+                $_ | ShortenString 40 -FromEnd
+                ) -join ''
+                } else { $_ }
+        #>
+    }
+}
+
+function Completion-PropertyName {
+    # re-evaluate me
     <#
     .synopsis
         Generate completions for an object's property names
@@ -26,7 +168,9 @@ function Completion->PropertyName {
         'Completer' -> script that does more logic
     #>
     [Alias(
+        'Completions->PropertyName',
         'Iter->PropName'
+
     )]
     [cmdletbinding()]
     param(
@@ -49,6 +193,7 @@ function Completion->PropertyName {
     }
 }
 function _get-ObjectProperty {
+    # todo: rename me
     <#
     .synopsis
         sugar for '$x.psobject.properties' # rename to functon: Iter-ObjectProperty
@@ -59,11 +204,12 @@ function _get-ObjectProperty {
     .link
         dev.nin\EnumerateProperty
     .link
-        Dev.Nin\Completion->PropertyName
+        Dev.Nin\Completion-PropertyName
 
     #>
     [Alias(
         'Iter->Prop'
+        # '_enumerateProp'
     )]
     [OutputType([Management.Automation.PSMemberInfoCollection[Management.Automation.PSPropertyInfo]])]
     [cmdletbinding()]
@@ -83,7 +229,7 @@ function _get-ObjectProperty {
     process {
         switch ($PropertyType) {
             'DefaultDisplayPropertySet' {
-                'nyi'
+                throw 'nyi'
             }
             'PSObject' {
                 $InputObject.psobject.properties
@@ -97,11 +243,12 @@ function _get-ObjectProperty {
 }
 
 
-function _enumerateProperty {
+function _dumpPropertySketch {
     <#
     .synopsis
-    zero filtering. sugar for $x.psobject.properties.
+        obsolete function. zero filtering. sugar for $x.psobject.properties.
     .description
+        obsolete function.
         .not sure if this should be called enumerate, becase you enumerate all values,
         or if this is an iterator (at least c style)
     .example
@@ -132,7 +279,7 @@ function _enumerateProperty {
         [object]$InputObject,
 
         # preset column order, and to out-griview
-        [alias('oGv')]
+        # [alias('oGv')]
         [parameter()]
         [switch]$OutGridView
     )
@@ -189,4 +336,9 @@ function _enumerateProperty {
         | Sort-Object Name # TypeNameOfValue
         | Out-GridView -PassThru -Title $title_ogv
     }
+}
+
+
+if (! $experimentToExport) {
+    # ...
 }

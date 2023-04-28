@@ -2,15 +2,20 @@
 
 $experimentToExport.function += @(
     'Format-Dict'
-    if ($true) {
-        # export private funcs
-        # or better, enumerate: $__RegisteredFormatDictExtension
-        '_FormatDictItem_ColorList'
-        '_FormatDictItem_ColorSingle'
-        '_FormatDictItem_Filepath'
-        '_FormatDictItem_Filepath'
-        '_FormatDictItem_Boolean'
-    }
+
+    # export private funcs
+    # or better, enumerate: $__RegisteredFormatDictExtension
+    '_FormatDictItem_ColorList'
+    '_FormatDictItem_ColorSingle'
+    '_FormatDictItem_Filepath'
+    # '_FormatDictItem_Filepath'
+    '_FormatDictItem_Boolean'
+    '_FormatDictItem_TrueNull'
+    # '_FormatDictItem_ShortTypeName'
+    # '_FormatDictItem_ControlChar' # or
+    '_FormatDictItem_BlankText'
+    '_FormatDictItem_EmptyCollection'
+
 )
 $experimentToExport.alias += @(
     'fDict'
@@ -20,6 +25,20 @@ $experimentToExport.alias += @(
 )
 # }
 
+Write-Warning "🚀importing $PSCommandPath"
+# submodule constants
+$script:__fdItemStr = @{
+    'trueNull'      = '[true $null]' | Write-Color gray40
+    'null'          = '[␀]' | Write-Color gray60
+    'trueEmptyStr'  = '[String]::Empty' | Write-Color gray60
+    'blankStr'      = '[Blank String]' | Write-Color gray60
+    'whitespaceStr' = '[whitespace]' | Write-Color gray60
+
+
+    'emptyList'     = '[empty List[]]' | Write-Color gray60
+    'emptyHash'     = '[empty Dict{}]' | Write-Color gray60
+    # 'emptyStr'     = '[␀]' | write-color gray60
+}
 
 function _FormatDictItem_Filepath {
     <#
@@ -56,6 +75,7 @@ function _FormatDictItem_ColorList {
         }
     }
 }
+
 function _FormatDictItem_Boolean {
     <#
     .synopsis
@@ -64,19 +84,203 @@ function _FormatDictItem_Boolean {
         Input is object, to allow for other truthy values
     .example
        PS> 4, $true, 1, 0.0, $false, 0 | _FormatDictItem_Boolean
+    .example
+       PS> 4, $true, 1, 0.0, $false, 0 | _FormatDictItem_Boolean
+    .example
+       PS> '', ' ', $null, ,@(), ,$null, $true, $false, 1, 2, 0
+       | _FormatDictItem_Boolean
+
     #>
     [cmdletbinding()]
     param(
         #  color instance
+        [AllowNull()]
+        [AlloWEmptyCollection()]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
+        [object]$InputObject,
+
+        # when not strict, fallback to a truthy test
+        # instead of coercing nulls, numbers, etc.
+        [switch]$Strict
+    )
+    process {
+        if ($Strict -and $InputObject -isnot 'boolean') {
+            'Non-Boolean passed: {0} as {1}' -f @(
+                $InputObject
+                $InputObject.GetType()
+            ) | Write-Error
+            return
+        }
+        $truthy = [bool]$InputObject # might be redundant, might help some cases
+        $color = $truthy ? 'green' : 'red'
+
+        Write-Color -fg $color -t $InputObject -ea continue
+    }
+}
+function _FormatDictItem_TrueNull {
+    <#
+    .synopsis
+        Format-Dict Extension: True nulls or blank text?  [bool expression]
+    .description
+        .
+    .notes
+
+    .example
+        🐒> _FormatDictItem_TrueNull
+            [true $null]
+    .example
+        🐒> $null, @() | _FormatDictItem_TrueNull
+            [true $null]
+            [␀]
+    .example
+        🐒> _FormatDictItem_TrueNull
+            [true $null]
+
+    .example
+       🐒> '', $null, @(), $null | _FormatDictItem_TrueNull -Debug
+            DEBUG: Not null 'string'
+            [␀]
+            [true $null]
+            DEBUG: Not null 'System.Object[]'
+            [␀]
+            [true $null]
+
+    #>
+    [OutputType('string')]
+    [cmdletbinding()]
+    param(
+        #  color instance
+        [Parameter(ValueFromPipeline, Position = 0)]
         [object]$InputObject
     )
     process {
-        $truthy = [bool]$InputObject
-        $color = $truthy ? 'green' : 'red'
-        Write-Color -fg $color -t $InputObject
+        if ($null -eq $InputObject) {
+
+            $script:__fdItemStr['trueNull']
+            # | write-color 'gray40'
+            # '[true null]'
+            return
+        }
+        Write-Debug "Not null '$($InputObject.GetType())'"
+        '[invalid]' | write-color -fg gray60
+        return
+        $script:__fdItemStr['null']
+        # | write-color 'gray60'
     }
 }
+
+function _FormatDictItem_BlankText {
+    <#
+    .synopsis
+        Format-Dict Extension: control char only or blank text?  [null scalar]
+    .description
+        with args, prints:
+            [␀] or [truenull]
+
+        without args, prints:
+            [truenull]
+    .notes
+        sdfsd
+    .example
+       PS> $null | _FormatDictItem_Boolean
+        [␀] or [truenull]
+    #>
+    [OutputType('string')]
+    [cmdletbinding()]
+    param(
+        [Alias('Text')]
+        [Parameter(Position = 0, ValueFromPipeline)]
+        [AllowNull()]
+        [AllowEmptyCollection()]
+        [AllowEmptyString()]
+        [string]$InputObject
+    )
+    process {
+        if ($null -eq $InputObject) {
+            _FormatDictItem_TrueNull
+            return
+        }
+        if ($InputObject -eq '') {
+            return $__fdItemStr['trueEmptyStr']
+        }
+        if ( [String]::IsNullOrEmpty($InputObject) ) {
+            return $__fdItemStr['blankStr']
+        }
+        if ( [String]::IsNullOrWhiteSpace( $InputObject)) {
+            return $__fdItemStr['whitespaceStr']
+        }
+        # otherwise control chars? non-control whitespace should be triggered above ?
+        if ($true) {
+            $kwargs = @{
+                InputText = $InputObject
+                # PreserveWhitespace = $true
+                # PreserveNewline = $true
+                # Options = @{}
+            }
+
+            Format-ControlChar @kwargs
+            return
+        }
+        return $InputObject
+        # no?
+    }
+}
+
+# function _FormatDictItem_EmptyCollection {
+#     <#
+#     .synopsis
+#         Format-Dict Extension: emtpy collection [object[]]
+#     .description
+#         .
+#     .notes
+#         sdfsd
+#     .example
+#        PS> $null | _FormatDictItem_Boolean
+#         [␀] or [truenull]
+#     #>
+#     [OutputType('string')]
+#     [cmdletbinding()]
+#     param(
+#         [Alias('Text')]
+#         [Parameter(Position = 0, ValueFromPipeline)]
+#         [AllowNull()]
+#         [AllowEmptyCollection()]
+#         [AllowEmptyString()]
+#         [string]$InputObject
+#     )
+#     process {
+#         if ($null -eq $InputObject) {
+#             _FormatDictItem_TrueNull
+#             return
+#         }
+#         if ($InputObject -eq '') {
+#             return $__fdItemStr['trueEmptyStr']
+#         }
+#         if ( [String]::IsNullOrEmpty($InputObject) ) {
+#             return $__fdItemStr['blankStr']
+#         }
+#         if ( [String]::IsNullOrWhiteSpace( $InputObject)) {
+#             return $__fdItemStr['whitespaceStr']
+#         }
+#         # otherwise control chars? non-control whitespace should be triggered above ?
+#         if ($true) {
+#             $kwargs = @{
+#                 InputText = $InputObject
+#                 # PreserveWhitespace = $true
+#                 # PreserveNewline = $true
+#                 # Options = @{}
+#             }
+
+#             Format-ControlChar @kwargs
+#             return
+#         }
+#         return $InputObject
+#         # no?
+#     }
+# }
+
+
+
 function _FormatDictItem_ColorSingle {
     <#
     .synopsis
@@ -128,9 +332,16 @@ function Format-Dict {
     .synopsis
         experimental. 'pretty print dict', using Pwsh 7
     .notes
+        see: Dev.Nin\_FormatDictItem_ColorSingle
+
         tags: console, ANSI, color, formatting
         - [ ] todo: passthru to see currrent config
 
+    ## for '_FormatDictItem_*' functions, should handling be:
+
+        [1] assert types strict, or
+        [2] silently ignore type mismatches, output nothing
+        [3] zero checking, so mismatch like text to _TrueNull is still gray
 
         - [ ] print to other streams:
             How can I remove the need to do 'format-dict | out-string | out-debug'
@@ -139,6 +350,9 @@ function Format-Dict {
         - [ ] sketch. not optimizied at all
         - [ ] doesn't have recursion
         - [ ] coerce values better?
+
+    .link
+        Dev.Nin\_FormatDictItem_ColorSingle
     #>
     [Alias('fDict')]
     [outputtype( [string[]] )]

@@ -1,5 +1,5 @@
 #Requires -Version 7
-
+# wip dev,nin: todo:2022-02
 if ( $experimentToExport ) {
     $experimentToExport.function += @(
         'Test-ObjectHasProperty'
@@ -11,6 +11,8 @@ if ( $experimentToExport ) {
         # get test-contains parameter name for psreadline
     )
 }
+
+## todo: post blog: [2022/02]
 
 function Test-ObjectHasProperty {
     <#

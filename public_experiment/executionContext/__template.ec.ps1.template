@@ -1,0 +1,52 @@
+#Requires -Version 7
+using namespace Management.Automation
+
+if ( $experimentToExport ) {
+    $experimentToExport.function += @(
+        'Ec-Command'
+    )
+    $experimentToExport.alias += @(
+        'Ec->Command' # 'Ec-Command'
+
+    )
+}
+
+function Ec-Command {
+    <#
+    .synopsis
+        <command> from ExecutionContext sugar, mostly as a reference
+    .description
+        examples using ExecutionContext
+        (sugar for ExecutionContext, mostly as a reference)
+    .notes
+
+    .example
+        🐒>
+    .outputs
+          [string | None]
+    #>
+    [Alias(
+        'ec->Command'
+    )]
+    [CmdletBinding(PositionalBinding = $false)]
+    param(
+
+        # related info from  members or docs
+        [Alias('RelatedInfo')]
+        [Parameter()]
+        [switch]$Help
+
+    )
+
+    begin {
+        if ($Help) {
+            return $ExecutionContext.InvokeCommand | Fm *get*comm*
+        }
+
+    }
+    process {
+
+    }
+    end {
+    }
+}
