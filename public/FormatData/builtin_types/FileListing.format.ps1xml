@@ -1,5 +1,5 @@
 <Configuration>
-    <!-- originally based on: <https://gist.github.com/SeeminglyScience/35c67a450367a493e56b0ab46623bf47#file-profile-format-ps1xml> -->
+    <!-- originally based on:  <https://gist.github.com/SeeminglyScience/35c67a450367a493e56b0ab46623bf47#file-profile-format-ps1xml> -->
     <SelectionSets>
         <SelectionSet>
             <Name>CustomGCI</Name>

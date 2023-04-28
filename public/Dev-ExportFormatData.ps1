@@ -22,6 +22,8 @@ function Dev-ExportFormatData {
 
     Get-FormatData -TypeName $TypeName -PowerShellVersion 7.1
     | Export-FormatData -Path Temp:"\ninmonkey\FormatData\$typeName.Format.ps1xml"
+
+    # Dev-ExportFormatData -TypeName 'System.Diagnostics.Process'
 }
 
 # Get-FormatData *bits* | Export-FormatData -FilePath './exports/bits.format.ps1xml'

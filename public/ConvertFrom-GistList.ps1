@@ -38,9 +38,9 @@ function ConvertFrom-GistList {
 
 
 
-# $myGistRaw = gh gist list --limit 100
+# $myGistRaw ??= gh gist list --limit 100
 # $MyGist = $myGistRaw | ForEach-Object {
-#     _parse_gistList $_
+#     ConvertFrom-GistList $_
 # }
 
 # $myGistRaw.count, $myGist.count | Join-String -Separator ', ' | Label 'Counts'

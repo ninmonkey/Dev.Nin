@@ -16,6 +16,7 @@ function New-VtEscapeClearSequence {
         generate reset ansi sequences
     .description
         -Fg or -Bg, if none are specified, it clears both
+        written before $PSStyle.Reset
     .example
         PS> New-VtEscapeClearSequence -Background -Foreground | Format-ControlChar
 

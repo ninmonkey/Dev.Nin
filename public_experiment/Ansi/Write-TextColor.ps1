@@ -1,5 +1,5 @@
+#Requires -Version 7.0
 #Requires -Module pansies
-#Requires -Version 7.0.0
 $experimentToExport.function += @(
     'Write-TextColor'
 )

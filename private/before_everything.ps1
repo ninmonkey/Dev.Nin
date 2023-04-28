@@ -1,7 +1,7 @@
-function __getDirectChildFolders {
+function __getDirectChildFolders_old {
     <#
     .synopsis
-        (not actually used) Find all folders at a single depth ( direct descendant)
+        obsolete -> Ninmonkey.Console\Get-DirectChildItem (not actually used) Find all folders at a single depth ( direct descendant)
     .description
         sugar for:
             Get-ChildItem -Directory
@@ -15,16 +15,17 @@ function __getDirectChildFolders {
         [string]$Path
     )
     process {
-        Get-ChildItem -Directory
-        | ForEach-Object { Get-ChildItem $_ -Directory }
+        Get-ChildItem -Directory -Force
+        | ForEach-Object { Get-ChildItem $_ -Directory -Force }
     }
 }
-function __getAutoloadChildItem {
+$PSCommandPath, 'Delete me -> kill dead' -join ' ' | Write-Warning
+function __getAutoloadChildItem_old {
     <#
     .synopsis
         (not actually used) find child scripts to run, with common filters
     .example
-        __getAutoloadChildItem -path 'public_autoloader'
+        __getAutoloadChildItem_old -path 'public_autoloader'
     #>
     [cmdletbinding()]
     param(
@@ -74,18 +75,23 @@ function __getAutoloadChildItem {
     }
 }
 
-if ($false) {
-    # autoloader: init: depth 1
-    # func: autoload self, depth 1:
-    __getDirectChildFolders -path '.' | Where-Object {
-        $curPath = $_
-        h1 $curPath | Write-Host
-        $maybeInit = Get-Item -ea ignore -Path (Join-Path $curPath '__init__.ps1')
-        if ( $MaybeInit ) {
-            return $true
-        }
-        return $true
-    }
-}
 
-# yell "auto loader wrapper WIP: '$PSCommandPath' "
+#     '__getAutoloadChildItem_old'
+#     '__getDirectChildFolders_old'
+# )
+
+# if ($false) {
+#     # autoloader: init: depth 1
+#     # func: autoload self, depth 1:
+#     __getDirectChildFolders_old -path '.' | Where-Object {
+#         $curPath = $_
+#         h1 $curPath | Write-Host
+#         $maybeInit = Get-Item -ea ignore -Path (Join-Path $curPath '__init__.ps1')
+#         if ( $MaybeInit ) {
+#             return $true
+#         }
+#         return $true
+#     }
+# }
+
+# # yell "auto loader wrapper WIP: '$PSCommandPath' "

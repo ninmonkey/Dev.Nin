@@ -17,7 +17,7 @@ enum ColorWhenMode {
     Auto
 }
 
-enum FiletypeEnum {
+enum FiletypeEnum { # wasn't finished
 
     # -t, --type <filetype>...           Filter by type: file (f), directory (d), symlink (l),
     #                                    executable (x), empty (e), socket (s), pipe (p)

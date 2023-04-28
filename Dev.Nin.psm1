@@ -10,6 +10,7 @@ function __yell {
     param(
         [string]$Message
     )
+    throw "'Deprecated use'"
     @(
         "`n---------------------`n"
         '.' * 120 | Join-String -op '  error'

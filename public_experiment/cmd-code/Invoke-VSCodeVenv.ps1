@@ -1,5 +1,6 @@
-"run --->>>> '$PSCommandPath'" | Write-Color 'gray80' -bg 'gray30'
-| Write-Warning
+# __countDuplicateLoad -key 'Invoke-VSCodeVenv'
+# "run --->>>> '$PSCommandPath'" | Write-Color 'gray80' -bg 'gray30'
+# | Write-Warning
 
 
 if ($experimentToExport) {
@@ -27,10 +28,12 @@ $script:__venv ??= @{
     }
 }
 
+# 'todo' : remove all non-start-process invokes, to prevent killing processes
+
 function __format_HighlightVenvPath {
     <#
     .synopsis
-        colorizes breadcrumb to emphasize version number
+        obsolete. colorizes breadcrumb to emphasize version number
     .example
         obsolete
 
@@ -206,10 +209,6 @@ function Invoke-VSCodeVenv {
                 - [4] parameter -ForceCode / -ForceInsider
 
             Other functions, like 'editfunc' will invoke 'vscode-venv' , **not** codee or code-insider
-
-
-
-
         . - next:
             - [ ] argument transformation attribute:
                 supports [Path] or [VsCodeFilePath]

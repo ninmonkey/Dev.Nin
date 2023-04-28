@@ -22,6 +22,7 @@ function _format_HslColorString {
     PS>
         $hsl_color = [rgbcolor]::FromRgb(15, 232, 49).ToHsl()
 
+
         $hsl_color |  _format_HslColorString
 
     # output

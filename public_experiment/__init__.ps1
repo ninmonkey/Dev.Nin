@@ -18,39 +18,39 @@ if (!( $null -eq $script:experimentToExport)) {
     # 'formatData' = @()
 }
 
-try {
-    . (Join-Path $PSScriptRoot '__init__.first.ps1')
+# try {
+. (Join-Path $PSScriptRoot '__init__.first.ps1')
 
-    # Don't dot tests, don't call self.
-    $filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
-    | Where-Object { $_.Name -ne '__init__.ps1' }
-    | Where-Object { $_.Name -ne '__init__.first.ps1' }
-    | Where-Object {
-        # are these safe? or will it alter where-object?
-        # Write-Debug "removing test: '$($_.Name)'"
-        $_.Name -notmatch '\.tests\.ps1$' -and
-        $_.Name -match '\.ps1$'
-    }
-    $filteredFiles
-    | Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
-    | Write-Debug
-
-    $sortedFiles = $filteredFiles | Sort-Object {
-        @('Write-TextColor') -contains $_.BaseName
-    } -Descending
-
-    $sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
-    | Write-Debug
-
-
-
-
-} catch {
-    throw "'$PSCommandPath' => '$_'"
-    # Write-Warning "Exception: $_"
-    # Write-Warning "Exception: $_"
-    # $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
+# Don't dot tests, don't call self.
+$filteredFiles = Get-ChildItem -File -Path (Get-Item -ea stop $PSScriptRoot) -Filter '*.ps1'
+| Where-Object { $_.Name -ne '__init__.ps1' }
+| Where-Object { $_.Name -ne '__init__.first.ps1' }
+| Where-Object {
+    # are these safe? or will it alter where-object?
+    # Write-Debug "removing test: '$($_.Name)'"
+    $_.Name -notmatch '\.tests\.ps1$' -and
+    $_.Name -match '\.ps1$'
 }
+$filteredFiles
+| Join-String -sep ', ' -SingleQuote FullName -op 'Filtered Imports: '
+| Write-Debug
+
+$sortedFiles = $filteredFiles | Sort-Object {
+    @('Write-TextColor') -contains $_.BaseName
+} -Descending
+
+$sortedFiles | Join-String -sep ', ' -SingleQuote FullName -op 'Sorted Imports: '
+| Write-Debug
+
+. (Get-Item 'C:\Users\cppmo_000\SkyDrive\Documents\2021\Powershell\My_Github\Dev.Nin\public_experiment\text\__init__.ps1')
+
+
+# } catch {
+# throw "'$PSCommandPath' => '$_'"
+# Write-Warning "Exception: $_"
+# Write-Warning "Exception: $_"
+# $PSCmdlet.ThrowTerminatingError( $_ ) # todo: Maybe remove this
+# }
 
 $sortedFiles
 | ForEach-Object {
